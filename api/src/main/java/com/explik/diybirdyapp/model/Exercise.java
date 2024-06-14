@@ -1,19 +1,37 @@
 package com.explik.diybirdyapp.model;
 
 public class Exercise {
-    private long id;
+    private String id;
+    private String exerciseType;
+    private String word;
 
     public Exercise() { }
 
-    public Exercise(long id) {
+    public Exercise(String id) {
         this.id = id;
     }
 
-    public long getId() {
+    public String getId() {
         return this.id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getExerciseType() {
+        return this.exerciseType;
+    }
+
+    public void setExerciseType(String exerciseType) {
+        this.exerciseType = exerciseType;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
     }
 }
