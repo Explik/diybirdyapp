@@ -1,0 +1,7 @@
+<div class="exercise-container">
+    <h2>Write a sentence using "{{word}}"</h2>
+    <textarea [(ngModel)]="userInput" placeholder="Type your sentence here..."></textarea>
+    <button (click)="checkSentence()">Check</button>
+    <button (click)="resetExercise()">Reset</button>
+    <div class="message">{{ message }}</div>
+</div>
