@@ -3,6 +3,10 @@ export interface BaseExercise {
     exerciseType: string; 
 }
 
-export interface WriteSentenceExercise extends BaseExercise {
+export interface WriteSentenceUsingWordExercise extends BaseExercise {
     word: string;
+}
+
+export interface TranslateSentenceExercise extends BaseExercise {
+    originalSentence: string;
 }

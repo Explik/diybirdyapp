@@ -20,16 +20,6 @@ public class ExerciseController {
     @Autowired
     private ExerciseService exerciseService;
 
-    @GetMapping("/exercise")
-    public List<Exercise> all() {
-        List<Exercise> exercises = new ArrayList<>();
-        exercises.add(new Exercise("1"));
-        exercises.add(new Exercise("2"));
-        exercises.add(new Exercise("3"));
-
-        return exercises;
-    }
-
     @GetMapping("/exercise/{id}")
     public Exercise single(@PathVariable long id) {
         return exerciseService.getExercise(id);

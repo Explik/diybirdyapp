@@ -3,12 +3,12 @@ import { BaseExercise } from '../../interfaces/exercise.interface';
 import { ActivatedRoute } from '@angular/router';
 import { ExerciseService } from '../../services/exercise.service';
 import { CommonModule } from '@angular/common';
-import { WriteSentenceExerciseComponent } from '../write-sentence-exercise/write-sentence-exercise.component';
+import { WriteSentenceExerciseUsingWordComponent } from '../write-sentence-using-word-exercise/write-sentence-using-word-exercise.component';
 
 @Component({
   selector: 'app-dynamic-exercise',
   standalone: true,
-  imports: [CommonModule, WriteSentenceExerciseComponent],
+  imports: [CommonModule, WriteSentenceExerciseUsingWordComponent],
   templateUrl: './dynamic-exercise.component.html'
 })
 export class DynamicExerciseComponent {

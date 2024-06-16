@@ -1,6 +1,8 @@
 package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.Exercise;
+import com.explik.diybirdyapp.model.WriteSentenceUsingWordExercise;
+import com.explik.diybirdyapp.converter.ExerciseConverter;
 import jakarta.annotation.PostConstruct;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -8,35 +10,35 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class ExerciseService {
+    private final Map<String, ExerciseConverter<? extends Exercise>> converters = new HashMap<>();
+
     @Autowired
     private TinkerGraph graph;
 
+    @Autowired
+    public ExerciseService(List<ExerciseConverter<? extends Exercise>> converters) {
+        converters.forEach(c -> this.converters.put(c.getExerciseType(), c));
+    }
+
     public Exercise getExercise(long id) {
-        Vertex actionVertex = graph.traversal().V().hasLabel("action")
+        Vertex exerciseVertex = graph.traversal().V().hasLabel("exercise")
                 .has("id", id + "")
-                .has("exerciseType", "write-sentence-exercise")
                 .next();
+        if (exerciseVertex == null)
+            throw new IllegalArgumentException("Exercise " + id + " was not found");
 
-        if (actionVertex == null) {
-            return null; // Or throw an exception if preferred
+        String exerciseType = exerciseVertex.value("exerciseType");
+        ExerciseConverter<? extends Exercise> exerciseConverter = converters.get(exerciseType);
+        if (exerciseConverter == null) {
+            throw new IllegalArgumentException("Exercise type " + exerciseType + " is not supported");
         }
 
-        Vertex wordVertex = graph.traversal().V(actionVertex.id())
-                .out("relatedTo")
-                .hasLabel("word")
-                .next();
-
-        if (wordVertex == null) {
-            return null; // Or throw an exception if preferred
-        }
-
-        Exercise exercise = new Exercise();
-        exercise.setId(actionVertex.property("id").value().toString());
-        exercise.setExerciseType("write-sentence-exercise");
-        exercise.setWord(wordVertex.property("word").value().toString());
-
-        return exercise;
+        return exerciseConverter.convert(graph.traversal(), exerciseVertex);
     }
 }

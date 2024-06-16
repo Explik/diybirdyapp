@@ -14,13 +14,25 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Vertex actionVertex = graph.addVertex("action");
-        actionVertex.property("id", "1");
-        actionVertex.property("exerciseType", "write-sentence-exercise");
+        // Exercise 1 - Write sentence using word "example"
+        Vertex exerciseVertex1 = graph.addVertex("exercise");
+        exerciseVertex1.property("id", "1");
+        exerciseVertex1.property("exerciseType", "write-sentence-using-word-exercise");
 
-        Vertex wordVertex = graph.addVertex("word");
-        wordVertex.property("word", "example");
+        Vertex wordVertex1 = graph.addVertex("text");
+        wordVertex1.property("value", "example");
 
-        actionVertex.addEdge("relatedTo", wordVertex);
+        exerciseVertex1.addEdge("basedOn", wordVertex1);
+
+        // Exercise 2 - Translate sentence to Danish
+        Vertex exerciseVertex2 = graph.addVertex("exercise");
+        exerciseVertex2.property("id", "2");
+        exerciseVertex2.property("exerciseType", "translate-sentence-exercise");
+        exerciseVertex2.property("targetLanguage", "Danish");
+
+        Vertex wordVertex2 = graph.addVertex("text");
+        wordVertex2.property("value", "This is an example sentence");
+
+        exerciseVertex2.addEdge("basedOn", wordVertex2);
     }
 }

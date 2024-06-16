@@ -1,16 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BaseExercise, WriteSentenceExercise } from '../../interfaces/exercise.interface';
+import { BaseExercise, WriteSentenceUsingWordExercise } from '../../interfaces/exercise.interface';
 
 @Component({
   selector: 'write-sentence-exercise',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './write-sentence-exercise.component.html',
-  styleUrl: './write-sentence-exercise.component.css'
+  templateUrl: './write-sentence-using-word-exercise.component.html',
+  styleUrl: './write-sentence-using-word-exercise.component.css'
 })
-export class WriteSentenceExerciseComponent implements OnInit {
-  @Input() data: WriteSentenceExercise | undefined
+export class WriteSentenceExerciseUsingWordComponent implements OnInit {
+  @Input() data: WriteSentenceUsingWordExercise | undefined
 
   word: string = '';
   userInput: string = '';
