@@ -27,7 +27,7 @@ public class DataInitializer implements CommandLineRunner {
         // Exercise 2 - Translate sentence to Danish
         Vertex exerciseVertex2 = graph.addVertex("exercise");
         exerciseVertex2.property("id", "2");
-        exerciseVertex2.property("exerciseType", "translate-sentence-exercise");
+        exerciseVertex2.property("exerciseType", "write-translated-sentence-exercise");
         exerciseVertex2.property("targetLanguage", "Danish");
 
         Vertex wordVertex2 = graph.addVertex("text");

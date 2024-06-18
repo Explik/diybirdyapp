@@ -1,12 +1,12 @@
 package com.explik.diybirdyapp.model;
 
-public class TranslateSentenceExercise extends Exercise {
+public class WriteTranslatedSentenceExercise extends Exercise {
     private String originalSentence;
     private String targetLanguage;
 
     @Override
     public String getExerciseType() {
-        return "translate-sentence-exercise";
+        return "write-translated-sentence-exercise";
     }
 
     public String getOriginalSentence() {

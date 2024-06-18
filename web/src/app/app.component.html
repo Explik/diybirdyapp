@@ -4,8 +4,13 @@
 
 <nav>
   <h1>DIY birdy app</h1>
-  <a [routerLink]="['/exercise', 1]">Exercise 1</a>
-  <a [routerLink]="['/exercise', 2]">Exercise 2</a>
+
+  <ul>
+    <li *ngFor="let exercise of exercises">
+      <a [routerLink]="['/exercise', exercise.id]">Exercise {{exercise.id}}</a>
+    </li>
+    <li><a href="#" (click)="createRandomExercise()">Add random exercise</a></li>
+  </ul>
 </nav>
 
 <router-outlet />

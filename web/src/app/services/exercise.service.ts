@@ -12,8 +12,16 @@ export class ExerciseService {
 
   constructor(private http: HttpClient) { }
 
+  createExercise<T>(exercise: T): Observable<T> {
+    return this.http.post(this.baseUrl, exercise) as Observable<T>;
+  }
+
   getExercise(id: string): Observable<BaseExercise> {
     return this.http.get<BaseExercise>(`${this.baseUrl}/${id}`);
+  }
+
+  getExercises(): Observable<BaseExercise[]> {
+    return this.http.get<BaseExercise[]>(`${this.baseUrl}`);
   }
 
   submitExerciseAnswer(id: string, userInput: string): Observable<any> {
