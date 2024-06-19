@@ -1,6 +1,9 @@
 package com.explik.diybirdyapp.model;
 
-public class WriteTranslatedSentenceExercise extends Exercise {
+import com.explik.diybirdyapp.annotations.ExerciseType;
+
+@ExerciseType("write-translated-sentence-exercise")
+public class WriteTranslatedSentenceExercise extends Exercise<WrittenAnswer> {
     private String originalSentence;
     private String targetLanguage;
 

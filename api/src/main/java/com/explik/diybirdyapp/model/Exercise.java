@@ -1,7 +1,8 @@
 package com.explik.diybirdyapp.model;
 
-public abstract class Exercise {
+public abstract class Exercise<T extends ExerciseAnswer> {
     public String id;
+    public T exerciseAnswer;
 
     public String getId() {
         return id;
@@ -11,5 +12,13 @@ public abstract class Exercise {
         this.id = id;
     }
 
-    public abstract  String getExerciseType();
+    public T getExerciseAnswer() {
+        return this.exerciseAnswer;
+    }
+
+    public void setExerciseAnswer(T exerciseAnswer) {
+        this.exerciseAnswer = exerciseAnswer;
+    }
+
+    public abstract String getExerciseType();
 }

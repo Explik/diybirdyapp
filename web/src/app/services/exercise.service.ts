@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { from, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { BaseExercise, WriteSentenceUsingWordExercise } from '../interfaces/exercise.interface';
+import { BaseExercise, BaseExerciseAnswer, WriteSentenceUsingWordExercise } from '../interfaces/exercise.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +24,7 @@ export class ExerciseService {
     return this.http.get<BaseExercise[]>(`${this.baseUrl}`);
   }
 
-  submitExerciseAnswer(id: string, userInput: string): Observable<any> {
-    return from([])
-    //return this.http.post(`${this.baseUrl}/${id}/answer`, { sentence: userInput });
+  submitExerciseAnswer(id: string, exerciseWithAnswer: BaseExercise): Observable<any> {
+    return this.http.post(`${this.baseUrl}/${id}/answer`, exerciseWithAnswer);
   }
 }

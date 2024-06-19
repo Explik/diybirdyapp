@@ -35,15 +35,23 @@ public class ExerciseService {
         converters.forEach(c -> this.converters.put(c.getExerciseType(), c));
     }
 
-    public Exercise createExercise(Map<String, Object> data) {
-        String exerciseType = (String) data.get("exerciseType");
-        ExerciseConverter<? extends Exercise> converter = converters.get(exerciseType);
-        if (converter == null) {
-            throw new IllegalArgumentException("Unknown exercise type: " + exerciseType);
-        }
+    public Exercise createExercise(Exercise<?> data) {
+        var converter = GetConverter(data);
         converter.create(graph.traversal(), data);
 
-        return getExercise(data.get("id").toString());
+        return getExercise(data.getId());
+    }
+
+    public Exercise createExerciseAnswer(Exercise<?> data) {
+        if (data.getId() == null)
+            throw new IllegalArgumentException("Missing exercise id");
+        if (data.getExerciseAnswer() == null)
+            throw new IllegalArgumentException("Missing exercise answer");
+
+        var converter = GetConverter(data);
+        converter.update(graph.traversal(), data);
+
+        return getExercise(data.getId());
     }
 
     public Exercise getExercise(String id) {
@@ -67,5 +75,15 @@ public class ExerciseService {
                 .toStream()
                 .map(v -> new GenericExercise(v.value("id"), v.value("exerciseType")))
                 .collect(Collectors.toList());
+    }
+
+    private ExerciseConverter<?> GetConverter(Exercise<?> exercise) {
+        String exerciseType = exercise.getExerciseType();
+        ExerciseConverter<? extends Exercise> converter = converters.get(exerciseType);
+
+        if (converter == null)
+            throw new IllegalArgumentException("Unknown exercise type: " + exerciseType);
+
+        return converter;
     }
 }

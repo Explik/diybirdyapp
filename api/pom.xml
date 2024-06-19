@@ -17,6 +17,7 @@
 		<java.version>22</java.version>
 		<tinkerpop.version>3.5.3</tinkerpop.version>
 		<springboot.version>3.3.0</springboot.version>
+		<reflections.version>0.10.2</reflections.version>
 	</properties>
 	<dependencies>
 		<!-- Spring Boot dependencies -->
@@ -51,6 +52,13 @@
 			<groupId>org.apache.tinkerpop</groupId>
 			<artifactId>tinkergraph-gremlin</artifactId>
 			<version>${tinkerpop.version}</version>
+		</dependency>
+
+		<!-- Reflection dependency  -->
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${reflections.version}</version>
 		</dependency>
 	</dependencies>
 

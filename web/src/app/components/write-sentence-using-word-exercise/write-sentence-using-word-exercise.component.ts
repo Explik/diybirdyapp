@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BaseExercise, WriteSentenceUsingWordExercise } from '../../interfaces/exercise.interface';
+import { BaseExercise, WriteSentenceUsingWordExercise, WrittenExerciseAnswer } from '../../interfaces/exercise.interface';
+import { ExerciseService } from '../../services/exercise.service';
 
 @Component({
   selector: 'write-sentence-exercise',
@@ -16,6 +17,10 @@ export class WriteSentenceExerciseUsingWordComponent implements OnInit {
   userInput: string = '';
   message: string = '';
 
+  constructor(
+    private exerciseService: ExerciseService,
+  ) {}
+
   ngOnInit(): void {
     if (!this.data)
       return; 
@@ -24,6 +29,15 @@ export class WriteSentenceExerciseUsingWordComponent implements OnInit {
   }
 
   checkSentence(): void {
+    if (!this.data)
+      return; 
+    
+    const exercise: WriteSentenceUsingWordExercise = {
+      ...this.data,
+      exerciseAnswer: { id: "6", answerType: "written-answer", text: this.userInput }
+    };
+    this.exerciseService.submitExerciseAnswer(this.data.id, exercise).subscribe();
+
     if (this.userInput.includes(this.word)) {
       this.message = 'Correct!';
     } else {
