@@ -1,6 +1,6 @@
-package com.explik.diybirdyapp.model;
+package com.explik.diybirdyapp.graph.model;
 
-public class WrittenAnswer extends ExerciseAnswer {
+public class WrittenExerciseAnswer extends ExerciseAnswer {
     private String text;
 
     @Override

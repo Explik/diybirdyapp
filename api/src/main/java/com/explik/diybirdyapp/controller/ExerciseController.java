@@ -1,16 +1,14 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.model.Exercise;
+import com.explik.diybirdyapp.graph.model.Exercise;
 
-import com.explik.diybirdyapp.serializer.ExerciseAnswerSerializer;
+import com.explik.diybirdyapp.graph.model.ExerciseFeedback;
 import com.explik.diybirdyapp.serializer.ExerciseSerializer;
 import com.explik.diybirdyapp.service.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 
 @RestController
 public class ExerciseController {
@@ -37,7 +35,7 @@ public class ExerciseController {
     }
 
     @PostMapping("/exercise/{id}/answer")
-    public Exercise createExerciseAnswer(@PathVariable String id, @RequestBody String json) {
+    public ExerciseFeedback createExerciseAnswer(@PathVariable String id, @RequestBody String json) {
         Exercise exercise = exerciseSerializer.deserialize(json);
         exercise.setId(id);
 

@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.serializer;
 
 import com.explik.diybirdyapp.annotations.ExerciseType;
-import com.explik.diybirdyapp.model.Exercise;
+import com.explik.diybirdyapp.graph.model.Exercise;
 import org.springframework.stereotype.Component;
 
 @Component

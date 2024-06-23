@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.model;
+package com.explik.diybirdyapp.graph.model;
 
 public abstract class Exercise<T extends ExerciseAnswer> {
     public String id;

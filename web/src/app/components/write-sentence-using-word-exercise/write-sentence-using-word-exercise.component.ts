@@ -34,7 +34,7 @@ export class WriteSentenceExerciseUsingWordComponent implements OnInit {
     
     const exercise: WriteSentenceUsingWordExercise = {
       ...this.data,
-      exerciseAnswer: { id: "6", answerType: "written-answer", text: this.userInput }
+      exerciseAnswer: { id: this.getRandomInt(1000) + "", answerType: "written-answer", text: this.userInput }
     };
     this.exerciseService.submitExerciseAnswer(this.data.id, exercise).subscribe();
 
@@ -44,6 +44,10 @@ export class WriteSentenceExerciseUsingWordComponent implements OnInit {
       this.message = `The sentence must include the word: ${this.word}`;
     }
   }
+
+  getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }  
 
   resetExercise(): void {
     this.userInput = '';

@@ -1,9 +1,9 @@
-package com.explik.diybirdyapp.model;
+package com.explik.diybirdyapp.graph.model;
 
 import com.explik.diybirdyapp.annotations.ExerciseType;
 
 @ExerciseType("write-sentence-using-word-exercise")
-public class WriteSentenceUsingWordExercise extends Exercise<WrittenAnswer> {
+public class WriteSentenceUsingWordExercise extends Exercise<WrittenExerciseAnswer> {
     private String word;
 
     @Override
