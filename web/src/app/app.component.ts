@@ -1,8 +1,8 @@
 import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { BaseExercise, WriteSentenceUsingWordExercise } from './interfaces/exercise.interface';
-import { ExerciseService } from './services/exercise.service';
+import { BaseExercise, WriteSentenceUsingWordExercise } from './modules/exercise/models/exercise.interface';
+import { ExerciseService } from './modules/exercise/services/exercise.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -11,7 +11,8 @@ export interface WriteSentenceUsingWordExercise extends BaseExercise {
 
 export interface TranslateSentenceExercise extends BaseExercise {
     originalSentence: string;
-    exerciseAnswer?: WrittenExerciseAnswer
+    targetLanguage: string;
+    exerciseAnswer?: WrittenExerciseAnswer;
 }
 
 export interface BaseExerciseAnswer {

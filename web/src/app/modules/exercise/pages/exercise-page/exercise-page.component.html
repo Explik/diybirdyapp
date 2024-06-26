@@ -1,0 +1,67 @@
+<app-session-container>
+    <!-- Header -->
+     <div header class="flex items-center">
+        <app-exit-icon-button class="pl-2 pr-0 flex-none"></app-exit-icon-button>
+        <app-progress-bar [progress]="40" class="flex-grow"></app-progress-bar>
+     </div>
+    
+    <!-- Content -->
+    <div content class="px-12 py-6 max-w-lg mx-auto">
+        <app-instruction 
+            [title]="instruction" 
+            [instruction]="subInstruction"
+            class="block mb-8">
+        </app-instruction>
+
+        <app-text-quote *ngIf="textQuote" [text]="textQuote" class="block pb-10"></app-text-quote>
+
+        <app-text-field
+            [state]="state"
+            [result]="result"
+            [(ngModel)]="input"
+            class="block my-6"></app-text-field>
+
+        <app-text-field
+            *ngIf="lastAnswer"
+            [state]="'result'"
+            [result]="'success'"
+            [ngModel]="lastAnswer.text"
+            class="block my-6"></app-text-field>
+
+        <div *ngIf="feedbackType == 'first-answer-exercise-feedback'"
+            class="max-w-md w-full bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+          <div class="flex items-center mb-4">
+              <div class="bg-purple-500 text-white rounded-full p-2">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8v.01M12 17h.01M12 7h.01M12 6h.01M11 6h.01M13 6h.01M13 5h.01M12 9v.01M12 12v.01M12 13h.01M11 12h.01M13 11h.01M12 14h.01M11 14h.01M13 14h.01M12 15h.01M11 10h.01M13 10h.01M11 11h.01M13 12h.01M12 11h.01"></path>
+                  </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-800 ml-4">First answer</h3>
+          </div>
+          <p class="text-gray-700">
+             Go girl, this was your first answering this question 
+          </p>
+      </div>
+
+        <div *ngIf="feedbackType == 'repeat-last-answer-exercise-feedback'"
+              class="max-w-md w-full bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+            <div class="flex items-center mb-4">
+                <div class="bg-purple-500 text-white rounded-full p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8v.01M12 17h.01M12 7h.01M12 6h.01M11 6h.01M13 6h.01M13 5h.01M12 9v.01M12 12v.01M12 13h.01M11 12h.01M13 11h.01M12 14h.01M11 14h.01M13 14h.01M12 15h.01M11 10h.01M13 10h.01M11 11h.01M13 12h.01M12 11h.01"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 ml-4">Last answer</h3>
+            </div>
+            <p class="text-gray-700">
+                Deja vu, you have seen this before. Did you answer the same thing as last time? 
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <p footer class="px-12 mx-auto max-w-xl">
+        <app-text-button state="secondary" label="Skip" class="fixed bottom-16 left"></app-text-button>
+        <app-text-button (click)="handleCheckClicked()" state="primary" label="Check Answer" class="fixed bottom-16 right-16"></app-text-button>
+    </p>
+</app-session-container>

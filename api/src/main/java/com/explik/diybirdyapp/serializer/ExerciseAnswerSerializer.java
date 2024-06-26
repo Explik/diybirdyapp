@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExerciseAnswerSerializer extends GenericSerializer<ExerciseAnswer, ExerciseAnswerType> {
     public ExerciseAnswerSerializer() {
-        super("exerciseType", ExerciseAnswer.class, ExerciseAnswerType.class, ExerciseAnswerType::value);
+        super("answerType", ExerciseAnswer.class, ExerciseAnswerType.class, ExerciseAnswerType::value);
     }
 }

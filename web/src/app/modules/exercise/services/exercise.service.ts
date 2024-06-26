@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { from, Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { BaseExercise, BaseExerciseAnswer, WriteSentenceUsingWordExercise } from '../interfaces/exercise.interface';
+import { environment } from '../../../../environments/environment';
+import { BaseExercise, BaseExerciseAnswer, WriteSentenceUsingWordExercise } from '../models/exercise.interface';
 
 @Injectable({
   providedIn: 'root'
