@@ -9,7 +9,9 @@
     <li *ngFor="let exercise of exercises">
       <a [routerLink]="['/exercise', exercise.id]">Exercise {{exercise.id}}</a>
     </li>
-    <li><a href="#" (click)="createRandomExercise()">Add random exercise</a></li>
+    <li><a href="#" (click)="createWritingExercise()">Add writing exercise</a></li>
+    <li><a href="#" (click)="createTranslateExercise()">Add translate exercise</a></li>
+    <li><a href="#" (click)="createMultipleExercise()">Add multiple choice exercise</a></li>
   </ul>
 </nav>
 

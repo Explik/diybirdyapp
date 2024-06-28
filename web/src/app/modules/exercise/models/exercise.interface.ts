@@ -23,3 +23,18 @@ export interface BaseExerciseAnswer {
 export interface WrittenExerciseAnswer extends BaseExerciseAnswer {
     text: string
 }
+
+export interface MultipleChoiceExerciseAnswer extends BaseExerciseAnswer {
+    optionId: string
+}
+
+export interface MultipleChoiceOption {
+    id: string,
+    text: string;
+    result?: "success" | "failure";
+}
+
+export interface MultipleTextChoiceOptionExercise extends BaseExercise {
+    options: MultipleChoiceOption[];
+    exerciseAnswer?: MultipleChoiceExerciseAnswer;
+}
