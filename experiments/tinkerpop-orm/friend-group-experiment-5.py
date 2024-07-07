@@ -116,6 +116,23 @@ class Person:
     def set_knows_id(self, knows_id): 
         self.friend_ids = knows_id
 
+class PersonLight: 
+    def __init__(self: int) -> None:
+        self.id: int = None
+        self.name: str = None
+
+    def get_id(self):
+        return self.id 
+    
+    def set_id(self, id): 
+        self.id = id
+
+    def get_name(self):
+        return self.name 
+    
+    def set_name(self, name): 
+        self.name = name
+
 class PersonRepository: 
     def __init__(self, graph) -> None:
         self.framed_graph = FramedGraph(
@@ -127,6 +144,10 @@ class PersonRepository:
                     ["age", Person.get_age, Person.set_age],
                     ["city", Person.get_city, Person.set_city],
                     [__.out('knows').values('id').fold(), Person.get_knows_id, Person.set_knows_id]
+                ],
+                "PersonLight": [
+                    ["id", PersonLight.get_id, PersonLight.set_id],
+                    ["name", PersonLight.get_name, PersonLight.set_name]
                 ]
             })
     
@@ -135,23 +156,26 @@ class PersonRepository:
             lambda g: g.V().has('person', 'name', name)
         ).next('Person')
 
-    def get_friend_group_of(self, name: str) -> list[Person]:
+    def get_friend_group_of(self, name: str) -> list[PersonLight]:
         return self.framed_graph.traverse(
             lambda g: g.V().has('person', 'name', name).out('knows').aggregate('friends')
-        ).to_list('Person')
+        ).to_list('PersonLight')
 
 # Output the results 
 repository = PersonRepository(g)
 charlie = repository.get_person('Charlie')
 charlie_friends = repository.get_friend_group_of('Charlie')
 
-def print_friend(person): 
+def print_person(person): 
     print(f"Person {person.name} (Id: {person.id}, Age: {person.age}, City: {person.city}) knows: {person.friend_ids}")
 
-print_friend(charlie)
+def print_person_light(person): 
+    print(f"Person {person.name} (Id: {person.id})")
+
+print_person(charlie)
 print("has friends")
 for member in charlie_friends: 
-    print_friend(member)
+    print_person_light(member)
 
 # Close the connection
 remoteConn.close()
