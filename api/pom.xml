@@ -37,6 +37,12 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
 		<!-- Tinkerpop dependencies -->
 		<dependency>
 			<groupId>org.apache.tinkerpop</groupId>
@@ -52,6 +58,13 @@
 			<groupId>org.apache.tinkerpop</groupId>
 			<artifactId>tinkergraph-gremlin</artifactId>
 			<version>${tinkerpop.version}</version>
+		</dependency>
+
+		<!-- TinkerPop ORM library -->
+		<dependency>
+			<groupId>com.syncleus.ferma</groupId>
+			<artifactId>ferma</artifactId>
+			<version>3.3.2</version>
 		</dependency>
 
 		<!-- Reflection dependency  -->

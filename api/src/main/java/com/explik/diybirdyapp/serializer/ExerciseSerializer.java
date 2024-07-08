@@ -1,13 +1,13 @@
 package com.explik.diybirdyapp.serializer;
 
-import com.explik.diybirdyapp.annotations.ExerciseType;
-import com.explik.diybirdyapp.graph.model.Exercise;
+import com.explik.diybirdyapp.annotations.Discriminator;
+import com.explik.diybirdyapp.model.Exercise;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseSerializer extends GenericSerializer<Exercise, ExerciseType> {
+public class ExerciseSerializer extends GenericSerializer<Exercise> {
     public ExerciseSerializer() {
-        super("exerciseType", Exercise.class, ExerciseType.class, ExerciseType::value);
+        super("exerciseType", Exercise.class);
     }
 }
 
