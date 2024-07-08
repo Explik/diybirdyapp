@@ -15,19 +15,19 @@
 
         <app-text-quote *ngIf="textQuote" [text]="textQuote" class="block pb-10"></app-text-quote>
 
-        <app-text-field
+        <app-correctable-text-field
             *ngIf="isTextExercise"
             [state]="state"
             [result]="result"
             [(ngModel)]="input"
-            class="block my-6"></app-text-field>
+            class="block my-6"></app-correctable-text-field>
 
-        <app-text-field
+        <app-correctable-text-field
             *ngIf="isTextExercise && lastAnswer"
             [state]="'result'"
             [result]="'success'"
             [ngModel]="lastAnswer.text"
-            class="block my-6"></app-text-field>
+            class="block my-6"></app-correctable-text-field>
 
         <app-select-option-field *ngIf="!isTextExercise" [state]="state" [options]="inputOptions" />
 

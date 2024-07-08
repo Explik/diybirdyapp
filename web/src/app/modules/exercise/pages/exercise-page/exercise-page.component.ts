@@ -3,7 +3,7 @@ import { SessionContainerComponent } from '../../components/session-container/se
 import { ProgressBarComponent } from '../../../../shared/components/progress-bar/progress-bar.component';
 import { ExitIconButtonComponent } from "../../../../shared/components/exit-icon-button/exit-icon-button.component";
 import { InstructionComponent } from '../../components/instruction/instruction.component';
-import { TextFieldComponent } from "../../components/text-field/text-field.component";
+import { CorrectableTextFieldComponent } from "../../../../shared/components/correctable-text-field/correctable-text-field.component";
 import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
 import { CommonModule } from '@angular/common';
@@ -19,7 +19,7 @@ import { SelectOptionFieldComponent } from "../../components/select-option-field
     standalone: true,
     templateUrl: './exercise-page.component.html',
     styleUrl: './exercise-page.component.css',
-    imports: [CommonModule, FormsModule, SessionContainerComponent, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, TextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent, SelectOptionFieldComponent]
+    imports: [CommonModule, FormsModule, SessionContainerComponent, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent, SelectOptionFieldComponent]
 })
 export class ExercisePageComponent {
     exerciseId: string | undefined = undefined;
