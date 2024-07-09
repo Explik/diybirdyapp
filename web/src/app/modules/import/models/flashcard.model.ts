@@ -1,6 +1,6 @@
-export interface Flashcard {
+export interface TranslationFlashcard {
+    leftLabel: string, 
     leftValue: string,
-    rightValue: string,
-    leftLanguage: string, 
-    rightLanguage: string
+    rightLabel: string
+    rightValue: string
 }

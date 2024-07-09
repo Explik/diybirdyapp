@@ -1,0 +1,7 @@
+<div>
+    @for(flashcard of flashcards; track flashcard) {
+        <app-translation-flashcard [flashcard]="flashcard" class="block mb-4">
+        </app-translation-flashcard>
+    }
+    <app-text-button [label]="'＋ Add flashcard'" (click)="handleAddFlashcard()"></app-text-button>
+</div>

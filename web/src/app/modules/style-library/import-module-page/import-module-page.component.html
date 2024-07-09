@@ -5,6 +5,10 @@
 </div>
 
 <div class="p-12">
-    <app-translation-flashcard>
+    <app-translation-flashcard [flashcard]="flashcards[0]">
     </app-translation-flashcard>
+</div>
+
+<div class="p-12">
+    <app-flashcard-container [flashcards]="flashcards"></app-flashcard-container>
 </div>

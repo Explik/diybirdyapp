@@ -1,12 +1,12 @@
 <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4">
     <!-- Left Language Abbreviation and Text Field -->
     <div class="flex flex-col flex-grow">
-        <span class="text-gray-500 text-sm mb-1">DE</span>
-        <app-text-field (rows)="1"></app-text-field>
+        <span class="text-gray-500 text-sm mb-1">{{flashcard.leftLabel}}</span>
+        <app-text-field [(ngModel)]="flashcard.leftValue" (rows)="1"></app-text-field>
     </div>
     
     <!-- Arrow Button -->
-    <button class="focus:outline-none flex flex-col items-center justify-center">
+    <button (click)="handleSwitchValues()" class="focus:outline-none flex flex-col items-center justify-center">
         <!-- Left Arrow -->
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform rotate-90" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M7.293 9.293a1 1 0 011.414 0L12 12.586V4a1 1 0 112 0v8.586l3.293-3.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -19,7 +19,7 @@
     
     <!-- Right Language Abbreviation and Text Field -->
     <div class="flex flex-col flex-grow">
-        <span class="text-gray-500 text-sm mb-1">EN</span>
-        <app-text-field (rows)="1"></app-text-field>
+        <span class="text-gray-500 text-sm mb-1">{{flashcard.rightLabel}}</span>
+        <app-text-field [(ngModel)]="flashcard.rightValue" (rows)="1"></app-text-field>
     </div>
 </div>
