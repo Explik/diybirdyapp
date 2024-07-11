@@ -54,6 +54,13 @@
 			<version>${tinkerpop.version}</version>
 		</dependency>
 
+		<!-- TinkerPop ORM library -->
+		<dependency>
+			<groupId>com.syncleus.ferma</groupId>
+			<artifactId>ferma</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+
 		<!-- Reflection dependency  -->
 		<dependency>
 			<groupId>org.reflections</groupId>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslationFlashcard } from '../../models/flashcard.model';
 import { TranslationFlashcardComponent } from "../translation-flashcard/translation-flashcard.component";
 import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
@@ -12,11 +12,14 @@ import { TextButtonComponent } from "../../../../shared/components/text-button/t
 })
 export class FlashcardContainerComponent {
   @Input() flashcards: TranslationFlashcard[] = [];
+  @Output() addFlashcard = new EventEmitter<void>();
+  @Output() saveFlashcards = new EventEmitter<void>();
 
   handleAddFlashcard() {
-    const leftLabel = this.flashcards.length ? this.flashcards[0].leftLabel : "";
-    const rightLabel = this.flashcards.length ? this.flashcards[0].rightLabel : "";
+    this.addFlashcard?.emit();
+  }
 
-    this.flashcards.push({ leftLabel, rightLabel, leftValue: "", rightValue: "" });
+  handleSaveFlashcards() {
+    this.saveFlashcards?.emit();
   }
 }

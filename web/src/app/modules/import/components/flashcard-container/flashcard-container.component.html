@@ -3,5 +3,9 @@
         <app-translation-flashcard [flashcard]="flashcard" class="block mb-4">
         </app-translation-flashcard>
     }
-    <app-text-button [label]="'＋ Add flashcard'" (click)="handleAddFlashcard()"></app-text-button>
+
+    <div>
+        <app-text-button [label]="'＋ Add flashcard'" (click)="handleAddFlashcard()"></app-text-button>
+        <app-text-button [label]="'Save flashcards'" (click)="handleSaveFlashcards()" class="float-right"></app-text-button>
+    </div>
 </div>
