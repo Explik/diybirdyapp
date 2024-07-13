@@ -25,7 +25,7 @@ export class FlashcardPageComponent implements OnInit {
     const leftLabel = this.flashcards.length ? this.flashcards[0].leftLabel : "";
     const rightLabel = this.flashcards.length ? this.flashcards[0].rightLabel : "";
 
-    this.flashcards.push({ leftLabel, rightLabel, leftValue: "", rightValue: "" });
+    this.flashcards = [...this.flashcards, { leftLabel, rightLabel, leftValue: "", rightValue: "" }];
   }
 
   saveFlashcards() {
