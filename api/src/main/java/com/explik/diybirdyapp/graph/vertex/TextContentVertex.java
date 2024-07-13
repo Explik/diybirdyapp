@@ -6,14 +6,16 @@ import com.syncleus.ferma.annotations.Property;
 
 public abstract class TextContentVertex extends AbstractVertexFrame {
     @Property("value")
-    public abstract void getValue();
+    public abstract String getValue();
 
     @Property("value")
-    public abstract void setValue();
+    public abstract void setValue(String value);
 
-    @Adjacency(label = "hasLanguage")
-    public abstract LanguageVertex getLanguage();
+    public LanguageVertex getLanguage() {
+        return traverse(g -> g.out("hasLanguage")).nextExplicit(LanguageVertex.class);
+    }
 
-    @Adjacency(label = "hasLanguage")
-    public abstract void setLanguage(LanguageVertex vertex);
+    public void setLanguage(LanguageVertex vertex) {
+        addFramedEdgeExplicit("hasLanguage", vertex);
+    }
 }

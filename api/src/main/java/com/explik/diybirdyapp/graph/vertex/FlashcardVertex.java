@@ -1,17 +1,23 @@
 package com.explik.diybirdyapp.graph.vertex;
 
+import com.syncleus.ferma.AbstractVertexFrame;
 import com.syncleus.ferma.annotations.Adjacency;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
-public abstract class FlashcardVertex {
-    @Adjacency(label = "hasLeftContent")
-    public abstract TextContentVertex getLeftContent();
+public abstract class FlashcardVertex extends AbstractVertexFrame {
+    public TextContentVertex getLeftContent() {
+        return traverse(g -> g.out("hasLeftContent")).nextExplicit(TextContentVertex.class);
+    }
 
-    @Adjacency(label = "hasLeftContent")
-    public abstract void setLeftContent(TextContentVertex vertex);
+    public void setLeftContent(TextContentVertex vertex) {
+        addFramedEdgeExplicit("hasLeftContent", vertex);
+    }
 
-    @Adjacency(label = "hasRightContent")
-    public abstract TextContentVertex getRightContent();
+    public TextContentVertex getRightContent() {
+        return traverse(g -> g.out("hasRightContent")).nextExplicit(TextContentVertex.class);
+    }
 
-    @Adjacency(label = "hasRightContent")
-    public abstract void setRightContent(TextContentVertex vertex);
+    public void setRightContent(TextContentVertex vertex) {
+        addFramedEdgeExplicit("hasRightContent", vertex);
+    }
 }

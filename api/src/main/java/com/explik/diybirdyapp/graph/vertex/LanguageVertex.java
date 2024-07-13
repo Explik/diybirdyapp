@@ -15,11 +15,11 @@ public abstract class LanguageVertex extends AbstractVertexFrame {
     public abstract String getAbbreviation();
 
     @Property("abbreviation")
-    public abstract void setAbbreviation();
+    public abstract void setAbbreviation(String abbreviation);
 
     @Property("name")
-    public abstract void getName();
+    public abstract String getName();
 
     @Property("name")
-    public abstract void setName();
+    public abstract void setName(String name);
 }
