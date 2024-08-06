@@ -3,6 +3,8 @@ package com.explik.diybirdyapp.controller.dto;
 import com.explik.diybirdyapp.graph.model.LanguageModel;
 
 public class FlashcardDto {
+    private String id;
+
     private String leftValue;
     private LanguageModel leftLanguage;
 
@@ -10,6 +12,14 @@ public class FlashcardDto {
     private LanguageModel rightLanguage;
 
     public FlashcardDto() {}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     // Getter for leftValue
     public String getLeftValue() {

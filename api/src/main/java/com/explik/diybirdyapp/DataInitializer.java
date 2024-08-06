@@ -44,35 +44,48 @@ public class DataInitializer implements CommandLineRunner {
 
     public void addInitialFlashcardData() {
         Vertex langVertex1 = graph.addVertex("language");
+        langVertex1.property("id", "langVertex1");
         langVertex1.property("abbreviation", "DA");
         langVertex1.property("name", "Danish");
 
         Vertex langVertex2 = graph.addVertex("language");
+        langVertex2.property("id", "langVertex2");
         langVertex2.property("abbreviation", "EN");
         langVertex2.property("name", "English");
 
         Vertex textVertex1 = graph.addVertex("textContent");
+        textVertex1.property("id", "textVertex1");
         textVertex1.property("value", "Hej verden");
         textVertex1.addEdge("hasLanguage", langVertex1);
 
         Vertex textVertex2 = graph.addVertex("textContent");
+        textVertex2.property("id", "textVertex2");
         textVertex2.property("value", "Hello world");
         textVertex2.addEdge("hasLanguage", langVertex2);
 
         Vertex textVertex3 = graph.addVertex("textContent");
+        textVertex3.property("id", "textVertex3");
         textVertex3.property("value", "Hej John");
         textVertex3.addEdge("hasLanguage", langVertex1);
 
         Vertex textVertex4 = graph.addVertex("textContent");
+        textVertex4.property("id", "textVertex4");
         textVertex4.property("value", "Hey John");
         textVertex4.addEdge("hasLanguage", langVertex2);
 
         Vertex flashcardVertex1 = graph.addVertex("flashcard");
+        flashcardVertex1.property("id", "flashcardVertex1");
         flashcardVertex1.addEdge("hasLeftContent", textVertex1);
         flashcardVertex1.addEdge("hasRightContent", textVertex2);
 
         Vertex flashcardVertex2 = graph.addVertex("flashcard");
+        flashcardVertex2.property("id", "flashcardVertex2");
         flashcardVertex2.addEdge("hasLeftContent", textVertex3);
         flashcardVertex2.addEdge("hasRightContent", textVertex4);
+
+        Vertex flashcardSetVertex = graph.addVertex("flashcardSet");
+        flashcardSetVertex.property("id", "flashcardSetVertex");
+        flashcardSetVertex.addEdge("hasFlashcard", flashcardVertex1);
+        flashcardSetVertex.addEdge("hasFlashcard", flashcardVertex2);
     }
 }

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.graph.model;
 
 public class LanguageModel {
+    private String id;
     private String abbreviation;
     private String name;
 
@@ -8,9 +9,18 @@ public class LanguageModel {
     public LanguageModel() {}
 
     // Parameterized constructor
-    public LanguageModel(String abbreviation, String name) {
+    public LanguageModel(String id, String abbreviation, String name) {
+        this.id = id;
         this.abbreviation = abbreviation;
         this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     // Getter for abbreviation

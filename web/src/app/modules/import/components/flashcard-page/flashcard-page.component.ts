@@ -21,11 +21,16 @@ export class FlashcardPageComponent implements OnInit {
     });
   }
 
+  // TODO Add support for language selection
   addFlashcard() {
-    const leftLabel = this.flashcards.length ? this.flashcards[0].leftLabel : "";
-    const rightLabel = this.flashcards.length ? this.flashcards[0].rightLabel : "";
-
-    this.flashcards = [...this.flashcards, { leftLabel, rightLabel, leftValue: "", rightValue: "" }];
+    const flashcard = { 
+      leftLanguage: { id: "langVertex1" },
+      rightLanguage: { id: "langVertex2" }
+    };
+    
+    this.service.createFlashcard(flashcard).subscribe(data => {
+      this.flashcards = [...this.flashcards, data];
+    });
   }
 
   saveFlashcards() {

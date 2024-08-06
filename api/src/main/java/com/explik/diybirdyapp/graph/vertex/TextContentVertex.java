@@ -16,6 +16,7 @@ public abstract class TextContentVertex extends AbstractVertexFrame {
     }
 
     public void setLanguage(LanguageVertex vertex) {
+        // TODO Remove existing language if any
         addFramedEdgeExplicit("hasLanguage", vertex);
     }
 }

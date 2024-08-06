@@ -11,9 +11,10 @@ import { TranslationFlashcard } from "../models/flashcard.model";
     private baseUrl = `${environment.apiUrl}/flashcard`;
   
     constructor(private http: HttpClient) { }
-  
-    createFlashcard<T>(exercise: T): Observable<any> {
-      return this.http.post(this.baseUrl, exercise);
+
+
+    createFlashcard(flashcard: any): Observable<TranslationFlashcard> {
+        return this.http.post<TranslationFlashcard>(this.baseUrl, flashcard);
     }
 
     getFlashcards(): Observable<TranslationFlashcard[]> {

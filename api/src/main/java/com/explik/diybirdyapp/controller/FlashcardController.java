@@ -20,9 +20,11 @@ public class FlashcardController {
     FlashcardService service;
 
     @PostMapping("/flashcard")
-    public void create(@RequestBody FlashcardDto dto)  {
+    public FlashcardDto create(@RequestBody FlashcardDto dto)  {
         var model = modelMapper.map(dto, FlashcardModel.class);
-        service.add(model);
+        var newModel = service.add(model);
+
+        return modelMapper.map(newModel, FlashcardDto.class);
     }
 
     @GetMapping("/flashcard")
