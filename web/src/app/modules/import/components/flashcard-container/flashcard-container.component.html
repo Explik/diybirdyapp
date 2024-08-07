@@ -1,4 +1,20 @@
 <div>
+    <div>
+        <label for="leftLanguageSelect">Choose a language:</label>
+        <select id="leftLanguageSelect" (change)="handleUpdateLeftLanguage($event)">
+          <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+            {{ language.name }}
+          </option>
+        </select>
+
+        <label for="rightLanguageSelect">Choose a language:</label>
+        <select id="rightLanguageSelect" (change)="handleUpdateRightLanguage($event)">
+          <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+            {{ language.name }}
+          </option>
+        </select>
+    </div>
+
     @for(flashcard of flashcards; track flashcard) {
         <app-translation-flashcard [flashcard]="flashcard" class="block mb-4">
         </app-translation-flashcard>

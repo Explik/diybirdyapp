@@ -1,5 +1,8 @@
 <p>flashcard-page works!</p>
 <app-flashcard-container 
     [flashcards]="flashcards"
+    [flashcardLanguages]="flashcardLanguages"
     (addFlashcard)="addFlashcard()"
+    (updateLeftLanguage)="updateLeftLanguage($event)"
+    (updateRightLanguage)="updateRightLanguage($event)"
     (saveFlashcards)="saveFlashcards()"></app-flashcard-container>

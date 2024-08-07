@@ -5,3 +5,9 @@ export class TranslationFlashcard {
     rightLabel: string = "";
     rightValue: string = "";
 }
+
+export class FlashcardLanguage {
+    id: string = "";
+    abbreviation: string = "";
+    name: string = "";
+}
