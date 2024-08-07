@@ -17,6 +17,10 @@ public class FlashcardService {
         return repository.add(model);
     }
 
+    public FlashcardModel update(FlashcardModel model) {
+        return repository.update(model);
+    }
+
     public List<FlashcardModel> getAll() {
         return repository.getAll();
     }

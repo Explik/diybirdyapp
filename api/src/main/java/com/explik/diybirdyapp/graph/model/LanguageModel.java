@@ -8,6 +8,11 @@ public class LanguageModel {
     // Default constructor
     public LanguageModel() {}
 
+    // Id only constructor
+    public LanguageModel(String id) {
+        this.id = id;
+    }
+
     // Parameterized constructor
     public LanguageModel(String id, String abbreviation, String name) {
         this.id = id;

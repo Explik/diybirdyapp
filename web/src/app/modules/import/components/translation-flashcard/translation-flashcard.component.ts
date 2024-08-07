@@ -12,7 +12,7 @@ import { TranslationFlashcard } from '../../models/flashcard.model';
     imports: [CommonModule, FormsModule, TextFieldComponent]
 })
 export class TranslationFlashcardComponent {
-    @Input() flashcard: TranslationFlashcard = { leftLabel: "", leftValue: "", rightLabel: "", rightValue: "" };
+    @Input() flashcard: TranslationFlashcard = { id: "", leftLabel: "", leftValue: "", rightLabel: "", rightValue: "" };
 
     handleSwitchValues() {
         const temp = this.flashcard.leftValue;

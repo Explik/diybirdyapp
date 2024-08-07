@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.graph.model;
 
 public class FlashcardModel {
-    private long id;
+    private String id;
 
     private String leftValue;
     private LanguageModel leftLanguage;
@@ -13,7 +13,7 @@ public class FlashcardModel {
     public FlashcardModel() {}
 
     // Parameterized constructor
-    public FlashcardModel(long id, String leftValue, LanguageModel leftLanguage, String rightValue, LanguageModel rightLanguage) {
+    public FlashcardModel(String id, String leftValue, LanguageModel leftLanguage, String rightValue, LanguageModel rightLanguage) {
         this.id = id;
         this.leftValue = leftValue;
         this.leftLanguage = leftLanguage;
@@ -21,11 +21,11 @@ public class FlashcardModel {
         this.rightLanguage = rightLanguage;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

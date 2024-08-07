@@ -18,7 +18,7 @@ export class ImportModulePageComponent {
   textFieldValue: string = "preset"
 
   flashcards: TranslationFlashcard[] = [
-    { leftLabel: "DE", leftValue: "Hallo welt", rightLabel: "EN", rightValue: "Hello world" },
-    { leftLabel: "DE", leftValue: "", rightLabel: "EN", rightValue: "" },
+    { id: "2", leftLabel: "DE", leftValue: "Hallo welt", rightLabel: "EN", rightValue: "Hello world" },
+    { id: "3", leftLabel: "DE", leftValue: "", rightLabel: "EN", rightValue: "" },
   ];
 }

@@ -9,4 +9,6 @@ public interface FlashcardRepository {
     FlashcardModel get(String id);
 
     List<FlashcardModel> getAll();
+
+    FlashcardModel update(FlashcardModel flashcardModel);
 }

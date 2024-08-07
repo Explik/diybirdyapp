@@ -41,22 +41,12 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         if (flashcardModel.getRightLanguage() == null || flashcardModel.getRightLanguage().getId() == null)
             throw new IllegalArgumentException("rightLanguage is missing");
 
-        var languageVertex1 = framedGraph
-            .traverse(g -> g.V().has("language", "id", flashcardModel.getLeftLanguage().getId()))
-            .nextExplicit(LanguageVertex.class);
-
-        var languageVertex2 = framedGraph
-            .traverse(g -> g.V().has("language", "id", flashcardModel.getRightLanguage().getId()))
-            .nextExplicit(LanguageVertex.class);
-
         // Binds flashcard content
-        var textContentVertex1 = framedGraph.addFramedVertex(TextContentVertex.class, T.label, "textContent");
-        textContentVertex1.setLanguage(languageVertex1);
-
-        var textContentVertex2 = framedGraph.addFramedVertex(TextContentVertex.class, T.label, "textContent");
-        textContentVertex2.setLanguage(languageVertex2);
+        var textContentVertex1 = createTextContent(framedGraph, flashcardModel.getLeftLanguage().getId());
+        var textContentVertex2 = createTextContent(framedGraph, flashcardModel.getRightLanguage().getId());
 
         var flashcardVertex = framedGraph.addFramedVertex(FlashcardVertex.class, T.label, "flashcard");
+        flashcardVertex.setId(flashcardVertex.getId() + "");
         flashcardVertex.setLeftContent(textContentVertex1);
         flashcardVertex.setRightContent(textContentVertex2);
 
@@ -67,7 +57,11 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     public FlashcardModel get(String id) {
         var vertex = framedGraph
             .traverse(g -> g.V().has("flashcard", "id", id))
-            .nextExplicit(FlashcardVertex.class);
+            .nextOrDefaultExplicit(FlashcardVertex.class, null);
+
+        if (vertex == null)
+            throw new IllegalArgumentException("Flashcard with id " + id + " not found");
+
         return create(vertex);
     }
 
@@ -81,6 +75,39 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
             .stream()
             .map(FlashcardRepositoryImpl::create)
             .toList();
+    }
+
+    @Override
+    public FlashcardModel update(FlashcardModel flashcardModel) {
+        if (flashcardModel.getId() == null)
+            throw new IllegalArgumentException("Flashcard is missing id");
+
+        var flashcardVertex = framedGraph
+            .traverse(g -> g.V().has("flashcard", "id", flashcardModel.getId() + ""))
+            .nextOrDefaultExplicit(FlashcardVertex.class, null);
+
+        if (flashcardVertex == null)
+            throw new IllegalArgumentException("Flashcard with id " + flashcardModel.getId() + " not found");
+
+        if (flashcardModel.getLeftLanguage() != null) {
+            var languageVertex = getLanguageVertex(framedGraph, flashcardModel.getLeftLanguage().getId());
+            flashcardVertex.getLeftContent().setLanguage(languageVertex);
+        }
+
+        if (flashcardModel.getRightLanguage() != null) {
+            var languageVertex = getLanguageVertex(framedGraph, flashcardModel.getRightLanguage().getId());
+            flashcardVertex.getRightContent().setLanguage(languageVertex);
+        }
+
+        if (flashcardModel.getLeftValue() != null) {
+            flashcardVertex.getLeftContent().setValue(flashcardModel.getLeftValue());
+        }
+
+        if (flashcardModel.getRightValue() != null) {
+            flashcardVertex.getRightContent().setValue(flashcardModel.getRightValue());
+        }
+
+        return create(flashcardVertex);
     }
 
     private static FlashcardModel create(FlashcardVertex v) {
@@ -101,5 +128,20 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
                     rightLanguage.getId(),
                     rightLanguage.getAbbreviation(),
                     rightLanguage.getName()));
+    }
+
+    private static TextContentVertex createTextContent(FramedGraph framedGraph, String languageId) {
+        var languageVertex = getLanguageVertex(framedGraph, languageId);
+        var textContentVertex = framedGraph.addFramedVertex(TextContentVertex.class, T.label, "textContent");
+
+        textContentVertex.setLanguage(languageVertex);
+
+        return textContentVertex;
+    }
+
+    private static LanguageVertex getLanguageVertex(FramedGraph framedGraph, String languageId) {
+        return framedGraph
+            .traverse(g -> g.V().has("language", "id", languageId))
+            .nextExplicit(LanguageVertex.class);
     }
 }

@@ -27,6 +27,14 @@ public class FlashcardController {
         return modelMapper.map(newModel, FlashcardDto.class);
     }
 
+    @PutMapping("/flashcard")
+    public FlashcardDto update(@RequestBody FlashcardDto dto)  {
+        var model = modelMapper.map(dto, FlashcardModel.class);
+        var newModel = service.update(model);
+
+        return modelMapper.map(newModel, FlashcardDto.class);
+    }
+
     @GetMapping("/flashcard")
     public List<FlashcardDto> getAll() {
         var models = service.getAll();
