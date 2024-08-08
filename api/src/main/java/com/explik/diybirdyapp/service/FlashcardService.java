@@ -6,6 +6,7 @@ import com.explik.diybirdyapp.graph.repository.FlashcardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Component
@@ -21,7 +22,7 @@ public class FlashcardService {
         return repository.update(model);
     }
 
-    public List<FlashcardModel> getAll() {
-        return repository.getAll();
+    public List<FlashcardModel> getAll(@Nullable String setId) {
+        return repository.getAll(setId);
     }
 }

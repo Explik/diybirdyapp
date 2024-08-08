@@ -7,14 +7,11 @@ import com.explik.diybirdyapp.graph.GraphHelper;
 import com.explik.diybirdyapp.graph.model.FlashcardModel;
 import com.explik.diybirdyapp.graph.model.LanguageModel;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 public class FlashcardRepositoryImplTest {
@@ -25,6 +22,7 @@ public class FlashcardRepositoryImplTest {
     void givenNewlyCreatedFlashcard_whenAdd_thenReturnFlashcard() {
         var flashcard = new FlashcardModel(
             null,
+            "flashcardDeck1",
             "left-value",
             new LanguageModel("lang1"),
             "right-value",
@@ -33,6 +31,7 @@ public class FlashcardRepositoryImplTest {
         var savedFlashcard1 = repository.add(flashcard);
 
         assertNotNull(savedFlashcard1.getId());
+        assertNotNull(savedFlashcard1.getDeckId());
         assertEquals("lang1", savedFlashcard1.getLeftLanguage().getId());
         assertEquals("lang2", savedFlashcard1.getRightLanguage().getId());
     }
@@ -54,6 +53,7 @@ public class FlashcardRepositoryImplTest {
     void givenNewlyCreatedFlashcard_whenGetById_thenReturnFlashcard() {
         var flashcard = new FlashcardModel(
             null,
+            "flashcardDeck1",
             "left-value",
             new LanguageModel("lang1"),
             "right-value",
@@ -108,9 +108,11 @@ public class FlashcardRepositoryImplTest {
             var content2 = GraphHelper.addTextContentWithLanguage(graph, "content2", lang2);
             var content3 = GraphHelper.addTextContentWithLanguage(graph, "content3", lang3);
 
-            GraphHelper.addFlashcardWithTextContent(graph, "pre-existent-id", content1, content2);
-            GraphHelper.addFlashcardWithTextContent(graph, "flashcard1", content1, content2);
-            GraphHelper.addFlashcardWithTextContent(graph, "flashcard2", content2, content3);
+            var flashcard0 = GraphHelper.addFlashcardWithTextContent(graph, "pre-existent-id", content1, content2);
+            var flashcard1 = GraphHelper.addFlashcardWithTextContent(graph, "flashcard1", content1, content2);
+            var flashcard2 = GraphHelper.addFlashcardWithTextContent(graph, "flashcard2", content2, content3);
+
+            GraphHelper.addFlashcardDeckWithFlashcards(graph, "flashcardDeck1", flashcard0, flashcard1, flashcard2);
 
             return graph;
         }

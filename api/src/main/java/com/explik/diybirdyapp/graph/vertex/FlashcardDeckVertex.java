@@ -5,7 +5,7 @@ import com.syncleus.ferma.annotations.Property;
 
 import java.util.List;
 
-public abstract class FlashcardSetVertex extends AbstractVertexFrame {
+public abstract class FlashcardDeckVertex extends AbstractVertexFrame {
     @Property("id")
     public abstract String getId();
 

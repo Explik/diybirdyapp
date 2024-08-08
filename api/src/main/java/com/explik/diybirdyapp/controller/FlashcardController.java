@@ -36,8 +36,8 @@ public class FlashcardController {
     }
 
     @GetMapping("/flashcard")
-    public List<FlashcardDto> getAll() {
-        var models = service.getAll();
+    public List<FlashcardDto> getAll(@RequestParam(required = false) String deckId) {
+        var models = service.getAll(deckId);
 
         return models.stream()
             .map(s -> modelMapper.map(s, FlashcardDto.class))

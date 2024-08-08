@@ -8,7 +8,7 @@ public interface FlashcardRepository {
 
     FlashcardModel get(String id);
 
-    List<FlashcardModel> getAll();
+    List<FlashcardModel> getAll(String deckId);
 
     FlashcardModel update(FlashcardModel flashcardModel);
 }

@@ -1,7 +1,5 @@
 package com.explik.diybirdyapp.graph;
 
-import com.explik.diybirdyapp.graph.vertex.LanguageVertex;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 
@@ -44,6 +42,16 @@ public class GraphHelper {
         vertex.addEdge("hasLeftContent", contentVertex1);
         vertex.addEdge("hasRightContent", contentVertex2);
 
+        return vertex;
+    }
+
+    public static Vertex addFlashcardDeckWithFlashcards(TinkerGraph graph, String id, Vertex... flashcardVertices) {
+        var vertex = graph.addVertex("flashcardDeck");
+        vertex.property("id", id);
+
+        for(var flashcardVertex : flashcardVertices) {
+            vertex.addEdge("hasFlashcard", flashcardVertex);
+        }
         return vertex;
     }
 }

@@ -83,9 +83,14 @@ public class DataInitializer implements CommandLineRunner {
         flashcardVertex2.addEdge("hasLeftContent", textVertex3);
         flashcardVertex2.addEdge("hasRightContent", textVertex4);
 
-        Vertex flashcardSetVertex = graph.addVertex("flashcardSet");
-        flashcardSetVertex.property("id", "flashcardSetVertex");
-        flashcardSetVertex.addEdge("hasFlashcard", flashcardVertex1);
-        flashcardSetVertex.addEdge("hasFlashcard", flashcardVertex2);
+        Vertex flashcardDeckVertex1 = graph.addVertex("flashcardDeck");
+        flashcardDeckVertex1.property("id", "flashcardDeckVertex1");
+        flashcardDeckVertex1.property("name", "First ever flashcard deck");
+        flashcardDeckVertex1.addEdge("hasFlashcard", flashcardVertex1);
+
+        Vertex flashcardDeckVertex2 = graph.addVertex("flashcardDeck");
+        flashcardDeckVertex2.property("id", "flashcardDeckVertex2");
+        flashcardDeckVertex2.property("name", "Second ever flashcard deck");
+        flashcardDeckVertex2.addEdge("hasFlashcard", flashcardVertex2);
     }
 }

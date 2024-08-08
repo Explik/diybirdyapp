@@ -7,7 +7,7 @@
 
   <ul>
     <li>
-      <a [routerLink]="['/flashcard']">Flashcard</a>
+      <a [routerLink]="['/flashcard-deck']">Flashcard decks</a>
     </li>
     <li *ngFor="let exercise of exercises">
       <a [routerLink]="['/exercise', exercise.id]">Exercise {{exercise.id}}</a>

@@ -1,9 +1,7 @@
 package com.explik.diybirdyapp.graph.vertex;
 
 import com.syncleus.ferma.AbstractVertexFrame;
-import com.syncleus.ferma.annotations.Adjacency;
 import com.syncleus.ferma.annotations.Property;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 
 public abstract class FlashcardVertex extends AbstractVertexFrame {
     @Property("id")
@@ -11,6 +9,10 @@ public abstract class FlashcardVertex extends AbstractVertexFrame {
 
     @Property("id")
     public abstract void setId(String id);
+
+    public FlashcardDeckVertex getDeck() {
+        return traverse(g -> g.in("hasFlashcard")).nextOrDefaultExplicit(FlashcardDeckVertex.class, null);
+    }
 
     public TextContentVertex getLeftContent() {
         return traverse(g -> g.out("hasLeftContent")).nextOrDefaultExplicit(TextContentVertex.class, null);

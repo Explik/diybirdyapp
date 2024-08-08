@@ -4,27 +4,36 @@ import { Flashcard, FlashcardLanguage } from '../../models/flashcard.model';
 import { ImportService } from '../../services/import.service';
 import { zip } from 'rxjs';
 import { RecursivePartial } from '../../../../shared/models/util.model';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-flashcard-page',
+  selector: 'app-flashcard-deck-page',
   standalone: true,
-  imports: [FlashcardContainerComponent],
-  templateUrl: './flashcard-page.component.html',
-  styleUrl: './flashcard-page.component.css'
+  imports: [RouterModule, FlashcardContainerComponent],
+  templateUrl: './flashcard-deck-page.component.html',
+  styleUrl: './flashcard-deck-page.component.css'
 })
-export class FlashcardPageComponent implements OnInit {
+export class FlashcardDeckPageComponent implements OnInit {
   originalFlashcards: Flashcard[] = []; 
+  flashcardDeckId?: string = undefined;
   flashcards: Flashcard[] = [];
   flashcardLanguages: FlashcardLanguage[] = [];
 
-  constructor(private service: ImportService) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private service: ImportService) {}
 
   ngOnInit(): void {
-    this.service.getFlashcards().subscribe(data => {
-      this.flashcards = data;
-
-      // TODO Use proper deep copy
-      this.originalFlashcards = JSON.parse(JSON.stringify(data));
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      this.flashcardDeckId = id ?? undefined;
+      
+      this.service.getFlashcards(id).subscribe(data => {
+        this.flashcards = data;
+  
+        // TODO Use proper deep copy
+        this.originalFlashcards = JSON.parse(JSON.stringify(data));
+      });
     });
 
     this.service.getFlashcardLanguages().subscribe(data => {
@@ -35,6 +44,7 @@ export class FlashcardPageComponent implements OnInit {
   // TODO Add support for language selection
   addFlashcard() {
     const flashcard = { 
+      deckId: this.flashcardDeckId,
       leftLanguage: { id: "langVertex1" },
       rightLanguage: { id: "langVertex2" }
     };

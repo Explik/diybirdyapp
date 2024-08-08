@@ -3,7 +3,7 @@ import { TextFieldComponent } from '../../../shared/components/text-field/text-f
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FlashcardContainerComponent } from "../../import/components/flashcard-container/flashcard-container.component";
-import { FlashcardPageComponent } from "../../import/components/flashcard-page/flashcard-page.component";
+import { FlashcardDeckPageComponent } from "../../import/components/flashcard-deck-page/flashcard-deck-page.component";
 import { Flashcard, FlashcardLanguage } from '../../import/models/flashcard.model';
 import { GenericFlashcardComponent } from "../../import/components/generic-flashcard/generic-flashcard.component";
 
@@ -12,7 +12,7 @@ import { GenericFlashcardComponent } from "../../import/components/generic-flash
     standalone: true,
     templateUrl: './import-module-page.component.html',
     styleUrl: './import-module-page.component.css',
-    imports: [CommonModule, FormsModule, TextFieldComponent, FlashcardContainerComponent, FlashcardPageComponent, GenericFlashcardComponent]
+    imports: [CommonModule, FormsModule, TextFieldComponent, FlashcardContainerComponent, FlashcardDeckPageComponent, GenericFlashcardComponent]
 })
 export class ImportModulePageComponent {
   textFieldValue: string = "preset"
@@ -23,7 +23,7 @@ export class ImportModulePageComponent {
   ]
 
   flashcards: Flashcard[] = [
-    { id: "2", leftLanguage: this.languages[0], leftValue: "Hallo welt", rightLanguage: this.languages[1], rightValue: "Hello world" },
-    { id: "3", leftLanguage: this.languages[0], leftValue: "", rightLanguage: this.languages[1], rightValue: "" },
+    { id: "2", deckId: "1", leftLanguage: this.languages[0], leftValue: "Hallo welt", rightLanguage: this.languages[1], rightValue: "Hello world" },
+    { id: "3", deckId: "1", leftLanguage: this.languages[0], leftValue: "", rightLanguage: this.languages[1], rightValue: "" },
   ];
 }

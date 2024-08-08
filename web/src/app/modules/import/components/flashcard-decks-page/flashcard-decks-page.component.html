@@ -1,0 +1,7 @@
+<p>flashcard-sets-page works!</p>
+
+<ul>
+    <li *ngFor="let deck of flashcardDecks">
+      <a [routerLink]="['/flashcard-deck', deck.id]">Deck "{{deck.name}}"</a>
+    </li>
+  </ul>
