@@ -1,13 +1,7 @@
-export class TranslationFlashcard {
-    id: string = "";
-    leftLabel: string = "";
-    leftValue: string = "";
-    rightLabel: string = "";
-    rightValue: string = "";
+export interface Flashcard extends FlashcardDto {
+    
 }
 
-export class FlashcardLanguage {
-    id: string = "";
-    abbreviation: string = "";
-    name: string = "";
+export interface FlashcardLanguage extends LanguageDto {
+
 }

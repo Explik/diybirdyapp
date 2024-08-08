@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FlashcardContainerComponent } from "../flashcard-container/flashcard-container.component";
-import { FlashcardLanguage, TranslationFlashcard } from '../../models/flashcard.model';
+import { Flashcard, FlashcardLanguage } from '../../models/flashcard.model';
 import { ImportService } from '../../services/import.service';
 import { zip } from 'rxjs';
 import { RecursivePartial } from '../../../../shared/models/util.model';
@@ -13,11 +13,9 @@ import { RecursivePartial } from '../../../../shared/models/util.model';
   styleUrl: './flashcard-page.component.css'
 })
 export class FlashcardPageComponent implements OnInit {
-  originalFlashcards: TranslationFlashcard[] = []; 
-  flashcards: TranslationFlashcard[] = [];
+  originalFlashcards: Flashcard[] = []; 
+  flashcards: Flashcard[] = [];
   flashcardLanguages: FlashcardLanguage[] = [];
-  newLeftLanguageId?: string = undefined;
-  newRightLanguageId?: string = undefined;
 
   constructor(private service: ImportService) {}
 
@@ -37,21 +35,13 @@ export class FlashcardPageComponent implements OnInit {
   // TODO Add support for language selection
   addFlashcard() {
     const flashcard = { 
-      leftLanguage: { id: this.newLeftLanguageId ??  "langVertex1" },
-      rightLanguage: { id: this.newRightLanguageId ?? "langVertex2" }
+      leftLanguage: { id: "langVertex1" },
+      rightLanguage: { id: "langVertex2" }
     };
     
     this.service.createFlashcard(flashcard).subscribe(data => {
       this.flashcards = [...this.flashcards, data];
     });
-  }
-
-  updateLeftLanguage(languageId: string) {
-    this.newLeftLanguageId = languageId;
-  }
-
-  updateRightLanguage(languageId: string) {
-    this.newRightLanguageId = languageId;
   }
 
   saveFlashcards() {
@@ -62,16 +52,6 @@ export class FlashcardPageComponent implements OnInit {
       const originalFlashcard = this.originalFlashcards[i];
       const currentFlashcard = this.flashcards[i] as RecursivePartial<FlashcardDto>;
 
-      if (this.newLeftLanguageId) {
-        currentFlashcard.leftLanguage ??= {};
-        currentFlashcard.leftLanguage.id = this.newLeftLanguageId;
-      }
-
-      if (this.newRightLanguageId) {
-        currentFlashcard.rightLanguage ??= {};
-        currentFlashcard.rightLanguage.id = this.newRightLanguageId;
-      }
-
       // TODO Add proper deep equal
       if (JSON.stringify(originalFlashcard) == JSON.stringify(currentFlashcard))
         continue;
@@ -81,8 +61,6 @@ export class FlashcardPageComponent implements OnInit {
 
     zip(...buffer).subscribe(data => {
       this.originalFlashcards = JSON.parse(JSON.stringify(this.flashcards));
-      this.newLeftLanguageId = undefined;
-      this.newRightLanguageId = undefined;
     });
   }
 }
