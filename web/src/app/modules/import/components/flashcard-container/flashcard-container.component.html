@@ -1,5 +1,9 @@
 <div>
     <div>
+      <label for="name">Name:</label>
+      <app-text-field [(ngModel)]="name" (rows)="1"></app-text-field>
+    </div>
+    <div>
         <label for="leftLanguageSelect">Choose a language:</label>
         <select id="leftLanguageSelect" (change)="handleUpdateLeftLanguage($event)">
           <option *ngFor="let language of flashcardLanguages" [value]="language.id">
@@ -31,6 +35,6 @@
 
     <div>
         <app-text-button [label]="'＋ Add flashcard'" (click)="handleAddFlashcard()"></app-text-button>
-        <app-text-button [label]="'Save flashcards'" (click)="handleSaveFlashcards()" class="float-right"></app-text-button>
+        <app-text-button [label]="'Save changes'" (click)="handleSaveFlashcards()" class="float-right"></app-text-button>
     </div>
 </div>

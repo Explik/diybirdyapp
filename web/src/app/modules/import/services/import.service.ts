@@ -35,9 +35,22 @@ import { RecursivePartial } from "../../../shared/models/util.model";
         .pipe(map((arr) => arr.map(this.mapLanguageDtoToModel)));
     }
 
+    createFlashcardDeck(flashcardDeck: RecursivePartial<FlashcardDeckDto>): Observable<FlashcardDeckDto> {
+      return this.http.post<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(this.mapSetDtoToModel));
+    }
+
+    getFlashcardDeck(id: string): Observable<FlashcardDeck> {
+      return this.http.get<FlashcardDeckDto>(this.flashcardDeckBaseUrl + "/" + id)
+        .pipe(map(this.mapSetDtoToModel));
+    }
+
     getFlashcardDecks(): Observable<FlashcardDeck[]> {
       return this.http.get<FlashcardDeckDto[]>(this.flashcardDeckBaseUrl)
         .pipe(map((arr) => arr.map(this.mapSetDtoToModel)));
+    }
+
+    updateFlashcardDeck(flashcardDeck: RecursivePartial<FlashcardDeckDto>): Observable<FlashcardDeckDto> {
+      return this.http.put<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(this.mapSetDtoToModel));
     }
 
     mapDtoToModel(x: FlashcardDto): Flashcard {

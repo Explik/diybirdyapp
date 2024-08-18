@@ -14,9 +14,22 @@ import { FormsModule } from '@angular/forms';
     imports: [TextButtonComponent, CommonModule, FormsModule, GenericFlashcardComponent, TextFieldComponent]
 })
 export class FlashcardContainerComponent {
+  _name: string | undefined = undefined;
+
+  @Input()
+  get name() {
+    return this._name;
+  }
+  set name(val: string | undefined) {
+    this.nameChange.emit(val);
+    this._name = val;
+  }
+  @Output() nameChange = new EventEmitter<string>();
+
   @Input() flashcards: Flashcard[] = [];
   @Input() flashcardLanguages: FlashcardLanguage[] = [];
 
+  
   @Output() addFlashcard = new EventEmitter<void>();
   @Output() saveFlashcards = new EventEmitter<void>();
 

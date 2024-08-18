@@ -4,4 +4,7 @@
     <li *ngFor="let deck of flashcardDecks">
       <a [routerLink]="['/flashcard-deck', deck.id]">Deck "{{deck.name}}"</a>
     </li>
+    <li style="cursor: pointer;">
+      <a target="_blank" (click)="addFlashcardDeck()">Add deck</a> 
+    </li>
   </ul>

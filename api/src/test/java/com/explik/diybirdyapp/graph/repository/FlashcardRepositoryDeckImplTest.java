@@ -9,13 +9,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class FlashcardRepositoryDeckImplTest {
     @Autowired
     FlashcardDeckRepository repository;
+
+    @Test
+    void givenNewlyCreatedFlashcardDeck_whenAdd_thenReturnFlashcardDeck() {
+        var flashcardDeck = new FlashcardDeckModel();
+
+        var savedFlashcardDeck = repository.add(flashcardDeck);
+
+        assertNotNull(savedFlashcardDeck.getId());
+        assertNotNull(savedFlashcardDeck.getName());
+    }
 
     @Test
     void givenNonExistentFlashcardDeck_whenGetById_thenThrowsException() {
@@ -28,6 +37,16 @@ public class FlashcardRepositoryDeckImplTest {
     void givenPreExistentFlashcardDeck_whenGetById_thenReturnFlashcard() {
         var actual = repository.get("pre-existent-id");
         assertEquals("pre-existent-id", actual.getId());
+    }
+
+    @Test
+    void givenNewlyCreatedFlashcardDeck_whenGetById_thenReturnFlashcard() {
+        var flashcardDeck = new FlashcardDeckModel();
+
+        var savedFlashcardDeck1 = repository.add(flashcardDeck);
+        var savedFlashcardDeck2 = repository.get(savedFlashcardDeck1.getId());
+
+        assertEquals(savedFlashcardDeck1.getId(), savedFlashcardDeck2.getId());
     }
 
     @Test

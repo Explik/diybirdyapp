@@ -21,4 +21,12 @@ export class FlashcardDecksPageComponent implements OnInit {
       this.flashcardDecks = data;
     });
   }
+
+  addFlashcardDeck() {
+    const flashcardDeck = {};
+
+    this.service.createFlashcardDeck(flashcardDeck).subscribe(data => {
+      this.flashcardDecks = [...this.flashcardDecks, data];
+    });
+  }
 }

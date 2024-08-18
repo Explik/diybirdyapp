@@ -14,8 +14,10 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   styleUrl: './flashcard-deck-page.component.css'
 })
 export class FlashcardDeckPageComponent implements OnInit {
+  originalName?: string = undefined;
   originalFlashcards: Flashcard[] = []; 
   flashcardDeckId?: string = undefined;
+  name?: string = undefined;
   flashcards: Flashcard[] = [];
   flashcardLanguages: FlashcardLanguage[] = [];
 
@@ -28,6 +30,13 @@ export class FlashcardDeckPageComponent implements OnInit {
       const id = params.get('id');
       this.flashcardDeckId = id ?? undefined;
       
+      if (id) {
+        this.service.getFlashcardDeck(id).subscribe(data => {
+          this.name = data.name;
+          this.originalName = data.name;
+        });
+      }
+
       this.service.getFlashcards(id).subscribe(data => {
         this.flashcards = data;
   
@@ -56,8 +65,12 @@ export class FlashcardDeckPageComponent implements OnInit {
 
   saveFlashcards() {
     const buffer = [];
-    const maxLength = Math.max(this.originalFlashcards.length, this.flashcards.length);
 
+    if (this.flashcardDeckId && this.originalName != this.name) {
+      buffer.push(this.service.updateFlashcardDeck({ id: this.flashcardDeckId, name: this.name }));
+    }
+
+    const maxLength = Math.max(this.originalFlashcards.length, this.flashcards.length);
     for(let i = 0; i < maxLength; i++) {
       const originalFlashcard = this.originalFlashcards[i];
       const currentFlashcard = this.flashcards[i] as RecursivePartial<FlashcardDto>;
@@ -70,6 +83,7 @@ export class FlashcardDeckPageComponent implements OnInit {
     }
 
     zip(...buffer).subscribe(data => {
+      this.originalName = this.name;
       this.originalFlashcards = JSON.parse(JSON.stringify(this.flashcards));
     });
   }

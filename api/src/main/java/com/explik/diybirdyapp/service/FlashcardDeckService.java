@@ -12,6 +12,10 @@ public class FlashcardDeckService {
     @Autowired
     FlashcardDeckRepository repository;
 
+    public FlashcardDeckModel add(FlashcardDeckModel model) {
+        return repository.add(model);
+    }
+
     public FlashcardDeckModel get(String id) {
         return repository.get(id);
     }

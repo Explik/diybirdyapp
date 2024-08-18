@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class FlashcardRepositoryImpl implements FlashcardRepository {
@@ -46,7 +47,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var textContentVertex2 = createTextContent(framedGraph, flashcardModel.getRightLanguage().getId());
 
         var flashcardVertex = framedGraph.addFramedVertex(FlashcardVertex.class, T.label, "flashcard");
-        flashcardVertex.setId(flashcardVertex.getId() + "");
+        flashcardVertex.setId(UUID.randomUUID().toString());
         flashcardVertex.setLeftContent(textContentVertex1);
         flashcardVertex.setRightContent(textContentVertex2);
 

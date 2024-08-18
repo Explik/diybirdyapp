@@ -5,11 +5,13 @@ import com.explik.diybirdyapp.graph.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.graph.vertex.FlashcardVertex;
 import com.syncleus.ferma.DelegatingFramedGraph;
 import com.syncleus.ferma.FramedGraph;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
@@ -20,6 +22,15 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
             FlashcardVertex.class,
             FlashcardDeckVertex.class);
         framedGraph = new DelegatingFramedGraph<>(graph, vertexTypes);
+    }
+
+    @Override
+    public FlashcardDeckModel add(FlashcardDeckModel model) {
+        var flashcardDeckVertex = framedGraph.addFramedVertex(FlashcardDeckVertex.class, T.label, "flashcardDeck");
+        flashcardDeckVertex.setId(UUID.randomUUID().toString());
+        flashcardDeckVertex.setName("");
+
+        return create(flashcardDeckVertex);
     }
 
     @Override
