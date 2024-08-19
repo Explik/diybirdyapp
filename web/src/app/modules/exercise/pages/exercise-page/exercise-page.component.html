@@ -7,41 +7,9 @@
     
     <!-- Content -->
     <div content class="px-12 py-6 max-w-lg mx-auto">
-        <app-instruction 
-            [title]="instruction" 
-            [instruction]="subInstruction"
-            class="block mb-8">
-        </app-instruction>
-
-        <app-text-quote *ngIf="textQuote" [text]="textQuote" class="block pb-10"></app-text-quote>
-
-        <app-correctable-text-field
-            *ngIf="isTextExercise"
-            [state]="state"
-            [result]="result"
-            [(ngModel)]="input"
-            class="block my-6"></app-correctable-text-field>
-
-        <app-correctable-text-field
-            *ngIf="isTextExercise && lastAnswer"
-            [state]="'result'"
-            [result]="'success'"
-            [ngModel]="lastAnswer.text"
-            class="block my-6"></app-correctable-text-field>
-
-        <app-select-option-field *ngIf="!isTextExercise" [state]="state" [options]="inputOptions" />
-
-        <app-info-box 
-            *ngIf="feedbackType == 'first-answer-exercise-feedback'" 
-            [title]="'First answer'"
-            [description]="'Go girl, this was your first answering this question'">
-        </app-info-box>
-
-        <app-info-box 
-            *ngIf="feedbackType == 'repeat-last-answer-exercise-feedback'" 
-            [title]="'Last answer'"
-            [description]="'Deja vu, you have seen this before. Did you answer the same thing as last time? '">
-        </app-info-box>
+        @for (component of components; track component) {
+            <ng-container *ngComponentOutlet="component.component; inputs: component.inputs"></ng-container>
+        }
     </div>
 
     <!-- Footer -->

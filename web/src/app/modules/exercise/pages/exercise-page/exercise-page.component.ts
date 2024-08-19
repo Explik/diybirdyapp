@@ -6,22 +6,26 @@ import { InstructionComponent } from '../../components/instruction/instruction.c
 import { CorrectableTextFieldComponent } from "../../../../shared/components/correctable-text-field/correctable-text-field.component";
 import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { TextQuoteComponent } from "../../../../shared/components/text-quote/text-quote.component";
 import { ExerciseService } from '../../services/exercise.service';
 import { ActivatedRoute } from '@angular/router';
 import { BaseExercise, BaseExerciseAnswer, MultipleChoiceExerciseAnswer, MultipleChoiceOption, MultipleTextChoiceOptionExercise, TranslateSentenceExercise, WriteSentenceUsingWordExercise, WrittenExerciseAnswer } from "../../models/exercise.interface";
 import { InfoBoxComponent } from '../../components/info-box/info-box.component';
 import { SelectOptionFieldComponent } from "../../components/select-option-field/select-option-field.component";
+import { ExerciseComponent } from '../../models/exerciseComponent.interface';
+import { ExerciseComponentService } from '../../services/exerciseComponent.service';
 
 @Component({
     selector: 'app-exercise-page',
     standalone: true,
     templateUrl: './exercise-page.component.html',
     styleUrl: './exercise-page.component.css',
-    imports: [CommonModule, FormsModule, SessionContainerComponent, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent, SelectOptionFieldComponent]
+    imports: [CommonModule, FormsModule, NgComponentOutlet, SessionContainerComponent, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent, SelectOptionFieldComponent]
 })
 export class ExercisePageComponent {
+    components: ExerciseComponent[] = []
+
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
     isTextExercise: boolean = true;
@@ -44,39 +48,15 @@ export class ExercisePageComponent {
 
     constructor(
         private route: ActivatedRoute,
-        private exerciseService: ExerciseService,
+        private exerciseService: ExerciseComponentService,
       ) {}
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
           const id = params.get('id') ?? "1";
           
-          this.exerciseService.getExercise(id).subscribe(data => {
-            this.exerciseId = data.id;
-            this.exerciseType = data.exerciseType;
-
-            if (data.exerciseType === "write-translated-sentence-exercise") {
-                const exercise = <TranslateSentenceExercise>data;
-                this.instruction = "Translate the sentence"; 
-                this.subInstruction = `Translate the sentence below into ${exercise.targetLanguage}`;
-                this.textQuote = exercise.originalSentence;
-                this.isTextExercise = true;
-            }
-            if (data.exerciseType === 'write-sentence-using-word-exercise') {
-                const exercise = <WriteSentenceUsingWordExercise>data;
-                this.instruction = "Write an original sentence";
-                this.subInstruction = `Write a sentence using the word "${exercise.word}"`;
-                this.textQuote = undefined;
-                this.isTextExercise = true;
-            }
-            if (data.exerciseType === "multiple-text-choice-exercise") {
-                const exercise = <MultipleTextChoiceOptionExercise>data;
-                this.instruction = "Pick the correct option";
-                this.subInstruction = `What is the translation of dog?"`;
-                this.inputOptions = exercise.options;
-                this.textQuote = undefined;
-                this.isTextExercise = false;
-            }
+          this.exerciseService.getExerciseComponents(id).subscribe(data => {
+            this.components = data;
           });
         });
     }
@@ -109,15 +89,15 @@ export class ExercisePageComponent {
             };
         }
 
-        this.exerciseService.submitExerciseAnswer(this.exerciseId!, exercise).subscribe(data => {
-            this.state = 'result'
-            this.result = Math.random() > 0.5 ? 'success' : 'failure';
-            this.inputOptions.forEach(o => o.result = 'failure');
-            this.inputOptions[this.getRandomInt(3)].result = 'success'
+        // this.exerciseService.submitExerciseAnswer(this.exerciseId!, exercise).subscribe(data => {
+        //     this.state = 'result'
+        //     this.result = Math.random() > 0.5 ? 'success' : 'failure';
+        //     this.inputOptions.forEach(o => o.result = 'failure');
+        //     this.inputOptions[this.getRandomInt(3)].result = 'success'
 
-            this.feedbackType = data.feedbackType;
-            this.lastAnswer = data.lastAnswer;
-        });
+        //     this.feedbackType = data.feedbackType;
+        //     this.lastAnswer = data.lastAnswer;
+        // });
     }
 
     getRandomInt(max: number) {
