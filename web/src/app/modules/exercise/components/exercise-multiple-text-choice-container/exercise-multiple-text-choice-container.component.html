@@ -1,0 +1,8 @@
+<app-instruction 
+    title="Pick the correct option"
+    instruction="What is the translation of dog?"></app-instruction>
+
+<app-correctable-multiple-choice-field
+    *ngIf="input"
+    state="input"
+    [options]="input!.options"></app-correctable-multiple-choice-field>

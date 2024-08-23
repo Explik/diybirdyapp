@@ -1,8 +1,8 @@
 import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
-import { BaseExercise, MultipleChoiceOption, MultipleTextChoiceOptionExercise, TranslateSentenceExercise, WriteSentenceUsingWordExercise } from './modules/exercise/models/exercise.interface';
-import { ExerciseService } from './modules/exercise/services/exercise.service';
+import { GenericExercise, MultipleChoiceOption } from './modules/exercise/models/exercise.interface';
+import { ExerciseContentService } from './modules/exercise/services/exerciseContent.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,52 +14,52 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   title = 'diy-birdy-app';
-  exercises: BaseExercise[] | undefined = undefined;
+  exercises: GenericExercise[] | undefined = undefined;
 
   constructor(
-    private exerciseService: ExerciseService,
+    private exerciseService: ExerciseContentService,
   ) {}
 
   ngOnInit(): void {
-      this.exerciseService.getExercises().subscribe(data => {
-        this.exercises = data;
-      });
+      // this.exerciseService.getExercises().subscribe(data => {
+      //   this.exercises = data;
+      // });
   }
 
   createWritingExercise() {
-    const exercise: WriteSentenceUsingWordExercise = { 
-      id: this.getRandomInt(0, 100), 
-      exerciseType: "write-sentence-using-word-exercise", 
-      word: "random" 
-    };
-    this.exerciseService.createExercise(exercise).subscribe(this.addExercise);
+    // const exercise: WriteSentenceUsingWordExercise = { 
+    //   id: this.getRandomInt(0, 100), 
+    //   exerciseType: "write-sentence-using-word-exercise", 
+    //   word: "random" 
+    // };
+    // this.exerciseService.createExercise(exercise).subscribe(this.addExercise);
   }
 
   createTranslateExercise() {
-    const exercise: TranslateSentenceExercise = { 
-      id: this.getRandomInt(0, 100), 
-      exerciseType: "write-translated-sentence-exercise", 
-      originalSentence: "Hello great word",
-      targetLanguage: "Danish", 
-    };
-    this.exerciseService.createExercise(exercise).subscribe(this.addExercise);
+    // const exercise: TranslateSentenceExercise = { 
+    //   id: this.getRandomInt(0, 100), 
+    //   exerciseType: "write-translated-sentence-exercise", 
+    //   originalSentence: "Hello great word",
+    //   targetLanguage: "Danish", 
+    // };
+    // this.exerciseService.createExercise(exercise).subscribe(this.addExercise);
   }
 
   createMultipleExercise() {
-    const exercise: MultipleTextChoiceOptionExercise = {
-      id: this.getRandomInt(0, 100), 
-      exerciseType: "multiple-text-choice-exercise", 
-      options: [
-        { id: this.getRandomInt(0, 100), text: "Hun" },
-        { id: this.getRandomInt(0, 100), text: "Hund" },
-        { id: this.getRandomInt(0, 100), text: "Hunlig" },
-        { id: this.getRandomInt(0, 100), text: "Hundeliv" },
-      ]
-    }
-    this.exerciseService.createExercise(exercise).subscribe(this.addExercise);
+    // const exercise: MultipleTextChoiceOptionExercise = {
+    //   id: this.getRandomInt(0, 100), 
+    //   exerciseType: "multiple-text-choice-exercise", 
+    //   options: [
+    //     { id: this.getRandomInt(0, 100), text: "Hun" },
+    //     { id: this.getRandomInt(0, 100), text: "Hund" },
+    //     { id: this.getRandomInt(0, 100), text: "Hunlig" },
+    //     { id: this.getRandomInt(0, 100), text: "Hundeliv" },
+    //   ]
+    // }
+    // this.exerciseService.createExercise(exercise).subscribe(this.addExercise);
   }
 
-  addExercise(exercise: BaseExercise) {
+  addExercise(exercise: GenericExercise) {
     this.exercises ??= [];
     this.exercises = [...(this.exercises ?? []), exercise];
   }

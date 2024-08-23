@@ -1,16 +1,17 @@
 <div class="flex items-center space-x-2">
-  <ng-container *ngIf="state === 'input'; else resultTemplate">
-    <textarea [(ngModel)]="value" onchange="onUpdatedValue" class="border border-gray-300 rounded px-4 py-2 w-full" rows="3"></textarea>
+  <ng-container *ngIf="!value.feedback; else resultTemplate">
+    <textarea [(ngModel)]="value.text" onchange="onUpdatedValue" class="border border-gray-300 rounded px-4 py-2 w-full" rows="3"></textarea>
   </ng-container>
+  
   <ng-template #resultTemplate>
     <div class="flex items-center space-x-2">
       
-      <span *ngIf="result === 'success'" class="text-green-500">
+      <span *ngIf="value.feedback!.state === 'success'" class="text-green-500">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
       </span>
-      <span *ngIf="result === 'failure'" class="text-red-500">
+      <span *ngIf="value.feedback!.state === 'failure'" class="text-red-500">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>

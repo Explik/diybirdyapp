@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { SessionContainerComponent } from '../../components/session-container/session-container.component';
+import { Component, Injector, Input, OnInit, Type } from '@angular/core';
 import { ProgressBarComponent } from '../../../../shared/components/progress-bar/progress-bar.component';
 import { ExitIconButtonComponent } from "../../../../shared/components/exit-icon-button/exit-icon-button.component";
 import { InstructionComponent } from '../../components/instruction/instruction.component';
@@ -8,99 +7,51 @@ import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { TextQuoteComponent } from "../../../../shared/components/text-quote/text-quote.component";
-import { ExerciseService } from '../../services/exercise.service';
+import { ExerciseContentService } from '../../services/exerciseContent.service';
 import { ActivatedRoute } from '@angular/router';
-import { BaseExercise, BaseExerciseAnswer, MultipleChoiceExerciseAnswer, MultipleChoiceOption, MultipleTextChoiceOptionExercise, TranslateSentenceExercise, WriteSentenceUsingWordExercise, WrittenExerciseAnswer } from "../../models/exercise.interface";
 import { InfoBoxComponent } from '../../components/info-box/info-box.component';
-import { SelectOptionFieldComponent } from "../../components/select-option-field/select-option-field.component";
-import { ExerciseComponent } from '../../models/exerciseComponent.interface';
-import { ExerciseComponentService } from '../../services/exerciseComponent.service';
+import { ExerciseDataService } from '../../services/exerciseData.service';
+import { ExerciseWriteSentenceUsingWordContainerComponent } from '../../components/exercise-write-sentence-using-word-container/exercise-write-sentence-using-word-container.component';
+import { ExerciseWriteTranslatedSentenceContainerComponent } from '../../components/exercise-write-translated-sentence-container/exercise-write-translated-sentence-container.component';
+import { ExerciseService } from '../../services/exercise.service';
 
 @Component({
     selector: 'app-exercise-page',
     standalone: true,
     templateUrl: './exercise-page.component.html',
     styleUrl: './exercise-page.component.css',
-    imports: [CommonModule, FormsModule, NgComponentOutlet, SessionContainerComponent, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent, SelectOptionFieldComponent]
+    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent]
 })
 export class ExercisePageComponent {
-    components: ExerciseComponent[] = []
-
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
-    isTextExercise: boolean = true;
-    feedbackType: string | undefined = undefined;
-    lastAnswer: WrittenExerciseAnswer | undefined = undefined;
-
-    instruction: string = "Unknown exercise";
-    subInstruction: string = "Still unknown exercise";
-    textQuote?: string = "Ehh..."
-    
-    input: string = 'Hello world'
-    inputOptions: MultipleChoiceOption[] = [
-        { id: "100", text: "Option 1", result: undefined },
-        { id: "101", text: "Option 2", result: undefined },
-        { id: "101", text: "Option 3", result: undefined },
-        { id: "101", text: "Option 4", result: undefined },
-    ]
-    state: 'input'|'result' = 'input'
-    result: 'success' | 'failure' | null = null;
+    exerciseComponent: Type<any> | null = null;
 
     constructor(
         private route: ActivatedRoute,
-        private exerciseService: ExerciseComponentService,
-      ) {}
+        private exerciseService: ExerciseService,
+        private exerciseDataService: ExerciseDataService) {}
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
           const id = params.get('id') ?? "1";
           
-          this.exerciseService.getExerciseComponents(id).subscribe(data => {
-            this.components = data;
+          this.exerciseDataService.getExercise(id).subscribe(data => {
+            this.exerciseId = data.id;
+            this.exerciseType = data.exerciseType;
+            this.exerciseService.setExercise(data);
+
+            switch(this.exerciseType) {
+                case "write-sentence-using-word-exercise": 
+                    this.exerciseComponent = ExerciseWriteSentenceUsingWordContainerComponent;
+                    break;
+                case "write-translated-sentence-exercise": 
+                    this.exerciseComponent = ExerciseWriteTranslatedSentenceContainerComponent;
+                    break;
+                default: 
+                    throw new Error("Unknown exercise type " + this.exerciseType);
+            }
           });
         });
-    }
-
-    handleCheckClicked() {
-        if (this.state === 'result')
-            return;
-
-        let exercise: BaseExercise; 
-        if (this.exerciseType === "multiple-text-choice-exercise") {
-            exercise = {
-                id: this.exerciseId!, 
-                exerciseType: this.exerciseType!,
-                exerciseAnswer: { 
-                    id: this.getRandomInt(1000) + "",
-                    answerType: "multiple-choice-exercise-answer", 
-                    optionId: this.inputOptions[0].id
-                } as MultipleChoiceExerciseAnswer
-            };
-        }
-        else {
-            exercise = {
-                id: this.exerciseId!, 
-                exerciseType: this.exerciseType!,
-                exerciseAnswer: { 
-                    id: this.getRandomInt(1000) + "",
-                    answerType: "written-exercise-answer", 
-                    text: this.input 
-                } as WrittenExerciseAnswer
-            };
-        }
-
-        // this.exerciseService.submitExerciseAnswer(this.exerciseId!, exercise).subscribe(data => {
-        //     this.state = 'result'
-        //     this.result = Math.random() > 0.5 ? 'success' : 'failure';
-        //     this.inputOptions.forEach(o => o.result = 'failure');
-        //     this.inputOptions[this.getRandomInt(3)].result = 'success'
-
-        //     this.feedbackType = data.feedbackType;
-        //     this.lastAnswer = data.lastAnswer;
-        // });
-    }
-
-    getRandomInt(max: number) {
-        return Math.floor(Math.random() * max);
     }
 }

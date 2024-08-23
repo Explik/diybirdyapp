@@ -1,30 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { from, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, skipUntil } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { BaseExercise, BaseExerciseAnswer, WriteSentenceUsingWordExercise } from '../models/exercise.interface';
+import { Exercise } from '../models/exercise.interface';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ExerciseService {
-  private baseUrl = `${environment.apiUrl}/exercise`;  // Replace with your actual API URL
+    private exercise$: BehaviorSubject<ExerciseDto|undefined> = new BehaviorSubject<ExerciseDto|undefined>(undefined);
 
-  constructor(private http: HttpClient) { }
+    getExercise(): Observable<ExerciseDto|undefined> {
+        return this.exercise$.asObservable();
+    }
 
-  createExercise<T>(exercise: T): Observable<T> {
-    return this.http.post(this.baseUrl, exercise) as Observable<T>;
-  }
-
-  getExercise(id: string): Observable<BaseExercise> {
-    return this.http.get<BaseExercise>(`${this.baseUrl}/${id}`);
-  }
-
-  getExercises(): Observable<BaseExercise[]> {
-    return this.http.get<BaseExercise[]>(`${this.baseUrl}`);
-  }
-
-  submitExerciseAnswer(id: string, exerciseWithAnswer: BaseExercise): Observable<any> {
-    return this.http.post(`${this.baseUrl}/${id}/answer`, exerciseWithAnswer);
-  }
+    setExercise(exercise: ExerciseDto) {
+        this.exercise$.next(exercise);
+    }
 }
