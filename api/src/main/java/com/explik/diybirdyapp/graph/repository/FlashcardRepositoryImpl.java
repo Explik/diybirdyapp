@@ -1,11 +1,11 @@
 package com.explik.diybirdyapp.graph.repository;
 
 import com.explik.diybirdyapp.graph.model.FlashcardModel;
-import com.explik.diybirdyapp.graph.model.LanguageModel;
+import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
 import com.explik.diybirdyapp.graph.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.graph.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.graph.vertex.LanguageVertex;
-import com.explik.diybirdyapp.graph.vertex.TextContentVertex;
+import com.explik.diybirdyapp.graph.vertex.FlashcardLanguageVertex;
+import com.explik.diybirdyapp.graph.vertex.TextVertex;
 import com.syncleus.ferma.DelegatingFramedGraph;
 import com.syncleus.ferma.FramedGraph;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -24,8 +24,8 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var vertexTypes = List.of(
             FlashcardVertex.class,
             FlashcardDeckVertex.class,
-            LanguageVertex.class,
-            TextContentVertex.class);
+            FlashcardLanguageVertex.class,
+            TextVertex.class);
         framedGraph = new DelegatingFramedGraph<>(graph, vertexTypes);
     }
 
@@ -53,7 +53,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
         flashcardDeckVertex.addFramedEdgeExplicit("hasFlashcard", flashcardVertex);
 
-        return create(flashcardVertex);
+        return flashcardVertex.toFlashcardModel();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         if (vertex == null)
             throw new IllegalArgumentException("Flashcard with id " + id + " not found");
 
-        return create(vertex);
+        return vertex.toFlashcardModel();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
         return vertices
             .stream()
-            .map(FlashcardRepositoryImpl::create)
+            .map(FlashcardVertex::toFlashcardModel)
             .toList();
     }
 
@@ -119,44 +119,22 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
             flashcardVertex.getRightContent().setValue(flashcardModel.getRightValue());
         }
 
-        return create(flashcardVertex);
+        return flashcardVertex.toFlashcardModel();
     }
 
-    private static FlashcardModel create(FlashcardVertex v) {
-            var set = v.getDeck();
-            var leftContent = v.getLeftContent();
-            var rightContent = v.getRightContent();
-            var leftLanguage = leftContent.getLanguage();
-            var rightLanguage = rightContent.getLanguage();
-
-            return new FlashcardModel(
-                v.getId(),
-                set.getId(),
-                leftContent.getValue(),
-                new LanguageModel(
-                    leftLanguage.getId(),
-                    leftLanguage.getAbbreviation(),
-                    leftLanguage.getName()),
-                rightContent.getValue(),
-                new LanguageModel(
-                    rightLanguage.getId(),
-                    rightLanguage.getAbbreviation(),
-                    rightLanguage.getName()));
-    }
-
-    private static TextContentVertex createTextContent(FramedGraph framedGraph, String languageId) {
+    private static TextVertex createTextContent(FramedGraph framedGraph, String languageId) {
         var languageVertex = getLanguageVertex(framedGraph, languageId);
-        var textContentVertex = framedGraph.addFramedVertex(TextContentVertex.class, T.label, "textContent");
+        var textContentVertex = framedGraph.addFramedVertex(TextVertex.class, T.label, "textContent");
 
         textContentVertex.setLanguage(languageVertex);
 
         return textContentVertex;
     }
 
-    private static LanguageVertex getLanguageVertex(FramedGraph framedGraph, String languageId) {
+    private static FlashcardLanguageVertex getLanguageVertex(FramedGraph framedGraph, String languageId) {
         return framedGraph
             .traverse(g -> g.V().has("language", "id", languageId))
-            .nextExplicit(LanguageVertex.class);
+            .nextExplicit(FlashcardLanguageVertex.class);
     }
 
     private static FlashcardDeckVertex getFlashcardDeckVertex(FramedGraph framedGraph, String deckId) {

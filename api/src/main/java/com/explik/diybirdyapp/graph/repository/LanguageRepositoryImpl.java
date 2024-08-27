@@ -1,10 +1,7 @@
 package com.explik.diybirdyapp.graph.repository;
 
-import com.explik.diybirdyapp.graph.model.FlashcardModel;
-import com.explik.diybirdyapp.graph.model.LanguageModel;
-import com.explik.diybirdyapp.graph.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.graph.vertex.LanguageVertex;
-import com.explik.diybirdyapp.graph.vertex.TextContentVertex;
+import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.graph.vertex.FlashcardLanguageVertex;
 import com.syncleus.ferma.DelegatingFramedGraph;
 import com.syncleus.ferma.FramedGraph;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -18,15 +15,15 @@ public class LanguageRepositoryImpl implements LanguageRepository {
     private final FramedGraph framedGraph;
 
     public LanguageRepositoryImpl(@Autowired TinkerGraph graph) {
-        var vertexTypes = List.of(LanguageVertex.class);
+        var vertexTypes = List.of(FlashcardLanguageVertex.class);
         framedGraph = new DelegatingFramedGraph<>(graph, vertexTypes);
     }
 
     @Override
-    public List<LanguageModel> getAll() {
+    public List<FlashcardLanguageModel> getAll() {
         var vertices = framedGraph
             .traverse(g -> g.V().hasLabel("language"))
-            .toListExplicit(LanguageVertex.class);
+            .toListExplicit(FlashcardLanguageVertex.class);
 
         return vertices
             .stream()
@@ -34,8 +31,8 @@ public class LanguageRepositoryImpl implements LanguageRepository {
             .toList();
     }
 
-    private static LanguageModel create(LanguageVertex v) {
-        return new LanguageModel(
+    private static FlashcardLanguageModel create(FlashcardLanguageVertex v) {
+        return new FlashcardLanguageModel(
             v.getId(),
             v.getAbbreviation(),
             v.getName());

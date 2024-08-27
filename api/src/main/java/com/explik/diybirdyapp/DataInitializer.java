@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp;
 
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         addInitialExerciseData();
-        addInitialFlashcardData();
+        addInitialFlashcardAndFlashcardExerciseData();
     }
 
     public void addInitialExerciseData() {
@@ -26,9 +25,10 @@ public class DataInitializer implements CommandLineRunner {
         exerciseVertex1.property("exerciseType", "write-sentence-using-word-exercise");
 
         Vertex wordVertex1 = graph.addVertex("text");
+        wordVertex1.property("id", "1");
         wordVertex1.property("value", "example");
 
-        exerciseVertex1.addEdge("basedOn", wordVertex1);
+        exerciseVertex1.addEdge("hasContent", wordVertex1);
 
         // Exercise 2 - Translate sentence to Danish
         Vertex exerciseVertex2 = graph.addVertex("exercise");
@@ -37,12 +37,40 @@ public class DataInitializer implements CommandLineRunner {
         exerciseVertex2.property("targetLanguage", "Danish");
 
         Vertex wordVertex2 = graph.addVertex("text");
+        wordVertex2.property("id", "2");
         wordVertex2.property("value", "This is an example sentence");
 
-        exerciseVertex2.addEdge("basedOn", wordVertex2);
+        exerciseVertex2.addEdge("hasContent", wordVertex2);
+
+        // Exercise 3 - Multiple choice text exercise
+        Vertex exerciseVertex3 = graph.addVertex("exercise");
+        exerciseVertex3.property("id", "3");
+        exerciseVertex3.property("exerciseType", "multiple-choice-text-exercise");
+
+        Vertex wordVertex3 = graph.addVertex("text");
+        wordVertex3.property("id", "3");
+        wordVertex3.property("value", "Random option 1");
+
+        Vertex wordVertex4 = graph.addVertex("text");
+        wordVertex4.property("id", "4");
+        wordVertex4.property("value", "Random option 2");
+
+        Vertex wordVertex5 = graph.addVertex("text");
+        wordVertex5.property("id", "5");
+        wordVertex5.property("value", "Random option 3");
+
+        Vertex wordVertex6 = graph.addVertex("text");
+        wordVertex6.property("id", "6");
+        wordVertex6.property("value", "Correct option");
+
+        exerciseVertex3.addEdge("hasOption", wordVertex3);
+        exerciseVertex3.addEdge("hasOption", wordVertex4);
+        exerciseVertex3.addEdge("hasOption", wordVertex5);
+        exerciseVertex3.addEdge("hasOption", wordVertex6);
+        exerciseVertex3.addEdge("hasCorrectOption", wordVertex6);
     }
 
-    public void addInitialFlashcardData() {
+    public void addInitialFlashcardAndFlashcardExerciseData() {
         Vertex langVertex1 = graph.addVertex("language");
         langVertex1.property("id", "langVertex1");
         langVertex1.property("abbreviation", "DA");
@@ -92,5 +120,11 @@ public class DataInitializer implements CommandLineRunner {
         flashcardDeckVertex2.property("id", "flashcardDeckVertex2");
         flashcardDeckVertex2.property("name", "Second ever flashcard deck");
         flashcardDeckVertex2.addEdge("hasFlashcard", flashcardVertex2);
+
+        // Exercise 4 - Flashcard exercise
+        Vertex exerciseVertex1 = graph.addVertex("exercise");
+        exerciseVertex1.property("id", "4");
+        exerciseVertex1.property("exerciseType", "review-flashcard-content-exercise");
+        exerciseVertex1.addEdge("hasContent", flashcardVertex1);
     }
 }

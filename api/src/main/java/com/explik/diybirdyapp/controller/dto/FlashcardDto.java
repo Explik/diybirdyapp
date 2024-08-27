@@ -1,16 +1,16 @@
 package com.explik.diybirdyapp.controller.dto;
 
-import com.explik.diybirdyapp.graph.model.LanguageModel;
+import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
 
 public class FlashcardDto {
     private String id;
     private String deckId;
 
     private String leftValue;
-    private LanguageModel leftLanguage;
+    private FlashcardLanguageModel leftLanguage;
 
     private String rightValue;
-    private LanguageModel rightLanguage;
+    private FlashcardLanguageModel rightLanguage;
 
     public FlashcardDto() {}
 
@@ -41,12 +41,12 @@ public class FlashcardDto {
     }
 
     // Getter for leftLanguage
-    public LanguageModel getLeftLanguage() {
+    public FlashcardLanguageModel getLeftLanguage() {
         return leftLanguage;
     }
 
     // Setter for leftLanguage
-    public void setLeftLanguage(LanguageModel leftLanguage) {
+    public void setLeftLanguage(FlashcardLanguageModel leftLanguage) {
         this.leftLanguage = leftLanguage;
     }
 
@@ -61,12 +61,12 @@ public class FlashcardDto {
     }
 
     // Getter for rightLanguage
-    public LanguageModel getRightLanguage() {
+    public FlashcardLanguageModel getRightLanguage() {
         return rightLanguage;
     }
 
     // Setter for rightLanguage
-    public void setRightLanguage(LanguageModel rightLanguage) {
+    public void setRightLanguage(FlashcardLanguageModel rightLanguage) {
         this.rightLanguage = rightLanguage;
     }
 }

@@ -4,17 +4,16 @@ export interface TextInput {
     text: string
 }
 
-export interface CorrectableTextInput {
-    text: string,
-    feedback?: {
-        state: resultState
-    }
+export interface TextInputFeedback {
+    state: resultState
 }
 
-export interface CorrectableMultipleChoiceTextInput {
-    options: Record<string, string>;
-    feedback?: {
-        state: resultState,
-        correctOptionIds: string
+export interface MultipleChoiceTextInput {
+    options: { id: string, text: string, result?: string }[]
+}
+
+export class DefaultInput {
+    static TEXT_INPUT: TextInput = {
+        text: ""
     }
 }

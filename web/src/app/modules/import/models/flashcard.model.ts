@@ -2,7 +2,7 @@ export interface Flashcard extends FlashcardDto {
     
 }
 
-export interface FlashcardLanguage extends LanguageDto {
+export interface FlashcardLanguage extends FlashcardLanguageDto {
 
 }
 

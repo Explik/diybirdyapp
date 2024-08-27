@@ -4,7 +4,7 @@ import { InstructionComponent } from "../instruction/instruction.component";
 import { TextQuoteComponent } from "../../../../shared/components/text-quote/text-quote.component";
 import { CorrectableTextFieldComponent } from "../../../../shared/components/correctable-text-field/correctable-text-field.component";
 import { TextContent } from '../../../../shared/models/content.interface';
-import { CorrectableTextInput, TextInput } from '../../../../shared/models/input.interface';
+import { TextInput, TextInputFeedback } from '../../../../shared/models/input.interface';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -17,14 +17,16 @@ import { CommonModule } from '@angular/common';
 export class ExerciseWriteTranslatedSentenceContainerComponent implements OnInit {
   targetLanguage?: string;
   content?: TextContent;
-  input?: CorrectableTextInput;
+  input?: TextInput;
+  inputFeedback?: TextInputFeedback;
 
   constructor(private service: ExerciseContentService) { }
 
   ngOnInit(): void {
     this.service.getProperty("targetLanguage").subscribe(data => this.targetLanguage = data);
     this.service.getContent<TextContent>("text-content").subscribe(data => this.content = data);
-    this.service.getInput<CorrectableTextInput>("text-input").subscribe(data => this.input = data);
+    this.service.getInput<TextInput>("text-input").subscribe(data => this.input = data);
+    this.service.getInputFeedback<TextInputFeedback>("text-input-feedback").subscribe(data => this.inputFeedback = data);
   }
 
   handleCheckAnswer() {

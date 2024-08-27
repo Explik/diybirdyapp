@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.controller.dto.FlashcardDto;
 import com.explik.diybirdyapp.graph.model.FlashcardModel;
 import com.explik.diybirdyapp.graph.repository.FlashcardRepository;
 import org.springframework.beans.factory.annotation.Autowired;

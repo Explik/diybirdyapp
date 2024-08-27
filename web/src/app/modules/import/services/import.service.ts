@@ -31,7 +31,7 @@ import { RecursivePartial } from "../../../shared/models/util.model";
     }
 
     getFlashcardLanguages(): Observable<FlashcardLanguage[]> {
-      return this.http.get<LanguageDto[]>(this.languageBaseUrl)
+      return this.http.get<FlashcardLanguageDto[]>(this.languageBaseUrl)
         .pipe(map((arr) => arr.map(this.mapLanguageDtoToModel)));
     }
 
@@ -64,7 +64,7 @@ import { RecursivePartial } from "../../../shared/models/util.model";
       };
     }
 
-    mapLanguageDtoToModel(x: LanguageDto): LanguageModel {
+    mapLanguageDtoToModel(x: FlashcardLanguageDto): FlashcardLanguage {
       return {
         id: x.id,
         abbreviation: x.abbreviation,

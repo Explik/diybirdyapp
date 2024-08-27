@@ -14,6 +14,8 @@ import { ExerciseDataService } from '../../services/exerciseData.service';
 import { ExerciseWriteSentenceUsingWordContainerComponent } from '../../components/exercise-write-sentence-using-word-container/exercise-write-sentence-using-word-container.component';
 import { ExerciseWriteTranslatedSentenceContainerComponent } from '../../components/exercise-write-translated-sentence-container/exercise-write-translated-sentence-container.component';
 import { ExerciseService } from '../../services/exercise.service';
+import { ExerciseMultipleTextChoiceContainerComponent } from '../../components/exercise-multiple-text-choice-container/exercise-multiple-text-choice-container.component';
+import { ExerciseReviewFlashcardContentContainerComponent } from '../../components/exercise-review-flashcard-content-container/exercise-review-flashcard-content-container.component';
 
 @Component({
     selector: 'app-exercise-page',
@@ -37,8 +39,11 @@ export class ExercisePageComponent {
           const id = params.get('id') ?? "1";
           
           this.exerciseDataService.getExercise(id).subscribe(data => {
+            if (!data)
+                return;
+
             this.exerciseId = data.id;
-            this.exerciseType = data.exerciseType;
+            this.exerciseType = data.type;
             this.exerciseService.setExercise(data);
 
             switch(this.exerciseType) {
@@ -47,6 +52,12 @@ export class ExercisePageComponent {
                     break;
                 case "write-translated-sentence-exercise": 
                     this.exerciseComponent = ExerciseWriteTranslatedSentenceContainerComponent;
+                    break;
+                case "multiple-choice-text-exercise":
+                    this.exerciseComponent = ExerciseMultipleTextChoiceContainerComponent;
+                    break;
+                case "review-flashcard-content-exercise":
+                    this.exerciseComponent = ExerciseReviewFlashcardContentContainerComponent;
                     break;
                 default: 
                     throw new Error("Unknown exercise type " + this.exerciseType);

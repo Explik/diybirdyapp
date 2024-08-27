@@ -4,7 +4,7 @@ import { InstructionComponent } from "../instruction/instruction.component";
 import { CommonModule } from '@angular/common';
 import { CorrectableTextFieldComponent } from "../../../../shared/components/correctable-text-field/correctable-text-field.component";
 import { GenericExercise } from '../../models/exercise.interface';
-import { CorrectableTextInput, TextInput } from '../../../../shared/models/input.interface';
+import { TextInput } from '../../../../shared/models/input.interface';
 
 @Component({
   selector: 'app-exercise-write-sentence-using-word-container',
@@ -15,13 +15,13 @@ import { CorrectableTextInput, TextInput } from '../../../../shared/models/input
 })
 export class ExerciseWriteSentenceUsingWordContainerComponent implements OnInit {
   word?: string;
-  input?: CorrectableTextInput;
+  input?: TextInput;
 
   constructor(private service: ExerciseContentService) { }
   
   ngOnInit(): void {
     this.service.getProperty("word").subscribe(data => this.word = data);
-    this.service.getInput<CorrectableTextInput>("text-input").subscribe(data => this.input = data);
+    this.service.getInput<TextInput>("text-input").subscribe(data => this.input = data);
   }
 
   handleCheckAnswer() {

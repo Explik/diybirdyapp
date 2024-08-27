@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { CorrectableTextInput } from '../../models/input.interface';
 import { FormsModule } from '@angular/forms';
+import { TextInput, TextInputFeedback } from '../../models/input.interface';
 
 @Component({
   selector: 'app-correctable-text-field',
@@ -11,5 +11,6 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule]
 })
 export class CorrectableTextFieldComponent {
-  @Input({required: true}) value!: CorrectableTextInput;
+  @Input({required: true}) value!: TextInput;
+  @Input() feedback?: TextInputFeedback;
 }

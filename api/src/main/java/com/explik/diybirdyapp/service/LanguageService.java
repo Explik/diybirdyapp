@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.graph.model.LanguageModel;
+import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
 import com.explik.diybirdyapp.graph.repository.LanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ public class LanguageService {
     @Autowired
     LanguageRepository repository;
 
-    public List<LanguageModel> getAll() {
+    public List<FlashcardLanguageModel> getAll() {
         return repository.getAll();
     }
 }

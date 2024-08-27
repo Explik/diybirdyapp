@@ -5,16 +5,16 @@ public class FlashcardModel {
     private String deckId;
 
     private String leftValue;
-    private LanguageModel leftLanguage;
+    private FlashcardLanguageModel leftLanguage;
 
     private String rightValue;
-    private LanguageModel rightLanguage;
+    private FlashcardLanguageModel rightLanguage;
 
     // Default constructor
     public FlashcardModel() {}
 
     // Parameterized constructor
-    public FlashcardModel(String id, String deckId, String leftValue, LanguageModel leftLanguage, String rightValue, LanguageModel rightLanguage) {
+    public FlashcardModel(String id, String deckId, String leftValue, FlashcardLanguageModel leftLanguage, String rightValue, FlashcardLanguageModel rightLanguage) {
         this.id = id;
         this.deckId = deckId;
         this.leftValue = leftValue;
@@ -50,12 +50,12 @@ public class FlashcardModel {
     }
 
     // Getter for leftLanguage
-    public LanguageModel getLeftLanguage() {
+    public FlashcardLanguageModel getLeftLanguage() {
         return leftLanguage;
     }
 
     // Setter for leftLanguage
-    public void setLeftLanguage(LanguageModel leftLanguage) {
+    public void setLeftLanguage(FlashcardLanguageModel leftLanguage) {
         this.leftLanguage = leftLanguage;
     }
 
@@ -70,12 +70,12 @@ public class FlashcardModel {
     }
 
     // Getter for rightLanguage
-    public LanguageModel getRightLanguage() {
+    public FlashcardLanguageModel getRightLanguage() {
         return rightLanguage;
     }
 
     // Setter for rightLanguage
-    public void setRightLanguage(LanguageModel rightLanguage) {
+    public void setRightLanguage(FlashcardLanguageModel rightLanguage) {
         this.rightLanguage = rightLanguage;
     }
 

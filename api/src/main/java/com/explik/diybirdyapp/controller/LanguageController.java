@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.FlashcardDto;
-import com.explik.diybirdyapp.controller.dto.LanguageDto;
+import com.explik.diybirdyapp.controller.dto.FlashcardLanguageDto;
 import com.explik.diybirdyapp.service.LanguageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,11 @@ public class LanguageController {
     LanguageService service;
 
     @GetMapping("/language")
-    public List<LanguageDto> getAll() {
+    public List<FlashcardLanguageDto> getAll() {
         var models = service.getAll();
 
         return models.stream()
-            .map(s -> modelMapper.map(s, LanguageDto.class))
+            .map(s -> modelMapper.map(s, FlashcardLanguageDto.class))
             .collect(Collectors.toList());
     }
 }
