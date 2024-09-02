@@ -1,0 +1,25 @@
+<div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4">
+    <!-- Left Language Abbreviation and Text Field -->
+    <div class="flex flex-col flex-grow">
+        <ng-content select="[left]" />
+    </div>
+    
+    <!-- Arrow Button -->
+    <div class="flex flex-col items-center justify-center">
+        <button (click)="handleSwitchSides()" class="focus:outline-none items-center justify-center">
+            <!-- Left Arrow -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform rotate-90" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 9.293a1 1 0 011.414 0L12 12.586V4a1 1 0 112 0v8.586l3.293-3.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+            <!-- Right Arrow -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 -mt-1 transform -rotate-90" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.707 10.707a1 1 0 00-1.414 0L8 14.414V6a1 1 0 10-2 0v8.414l-3.293-3.293a1 1 0 10-1.414 1.414l5 5a1 1 0 001.414 0l5-5a1 1 0 000-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Right Language Abbreviation and Text Field -->
+    <div class="flex flex-col flex-grow">
+        <ng-content select="[right]" />
+    </div>
+</div>

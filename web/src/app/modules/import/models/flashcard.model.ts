@@ -1,6 +1,11 @@
-export interface TranslationFlashcard {
-    leftLabel: string, 
-    leftValue: string,
-    rightLabel: string
-    rightValue: string
+export interface Flashcard extends FlashcardDto {
+    
+}
+
+export interface FlashcardLanguage extends FlashcardLanguageDto {
+
+}
+
+export interface FlashcardDeck extends FlashcardDeckDto {
+    
 }

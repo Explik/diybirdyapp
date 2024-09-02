@@ -1,52 +1,16 @@
-<app-session-container>
-    <!-- Header -->
-     <div header class="flex items-center">
-        <app-exit-icon-button class="pl-2 pr-0 flex-none"></app-exit-icon-button>
-        <app-progress-bar [progress]="40" class="flex-grow"></app-progress-bar>
-     </div>
-    
-    <!-- Content -->
-    <div content class="px-12 py-6 max-w-lg mx-auto">
-        <app-instruction 
-            [title]="instruction" 
-            [instruction]="subInstruction"
-            class="block mb-8">
-        </app-instruction>
-
-        <app-text-quote *ngIf="textQuote" [text]="textQuote" class="block pb-10"></app-text-quote>
-
-        <app-correctable-text-field
-            *ngIf="isTextExercise"
-            [state]="state"
-            [result]="result"
-            [(ngModel)]="input"
-            class="block my-6"></app-correctable-text-field>
-
-        <app-correctable-text-field
-            *ngIf="isTextExercise && lastAnswer"
-            [state]="'result'"
-            [result]="'success'"
-            [ngModel]="lastAnswer.text"
-            class="block my-6"></app-correctable-text-field>
-
-        <app-select-option-field *ngIf="!isTextExercise" [state]="state" [options]="inputOptions" />
-
-        <app-info-box 
-            *ngIf="feedbackType == 'first-answer-exercise-feedback'" 
-            [title]="'First answer'"
-            [description]="'Go girl, this was your first answering this question'">
-        </app-info-box>
-
-        <app-info-box 
-            *ngIf="feedbackType == 'repeat-last-answer-exercise-feedback'" 
-            [title]="'Last answer'"
-            [description]="'Deja vu, you have seen this before. Did you answer the same thing as last time? '">
-        </app-info-box>
+<!-- Header -->
+    <div header class="flex items-center">
+    <app-exit-icon-button class="pl-2 pr-0 flex-none"></app-exit-icon-button>
+    <app-progress-bar [progress]="40" class="flex-grow"></app-progress-bar>
     </div>
 
-    <!-- Footer -->
-    <p footer class="px-12 mx-auto max-w-xl">
-        <app-text-button state="secondary" label="Skip" class="fixed bottom-16 left"></app-text-button>
-        <app-text-button (click)="handleCheckClicked()" state="primary" label="Check Answer" class="fixed bottom-16 right-16"></app-text-button>
-    </p>
-</app-session-container>
+<!-- Content -->
+<div content class="px-12 py-6 max-w-lg mx-auto">
+    <ng-container *ngComponentOutlet="exerciseComponent" />
+</div>
+
+<!-- Footer -->
+<p footer class="px-12 mx-auto max-w-xl">
+    <app-text-button state="secondary" label="Skip" class="fixed bottom-16 left"></app-text-button>
+    <app-text-button state="primary" label="Check Answer" class="fixed bottom-16 right-16"></app-text-button>
+</p>

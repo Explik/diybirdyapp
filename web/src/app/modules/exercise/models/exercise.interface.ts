@@ -1,31 +1,41 @@
-export interface BaseExercise {
-    id: string;
-    exerciseType: string; 
-    exerciseAnswer?: BaseExerciseAnswer
-}
-
-export interface WriteSentenceUsingWordExercise extends BaseExercise {
-    word: string;
-    exerciseAnswer?: WrittenExerciseAnswer
-}
-
-export interface TranslateSentenceExercise extends BaseExercise {
-    originalSentence: string;
-    targetLanguage: string;
-    exerciseAnswer?: WrittenExerciseAnswer;
-}
-
-export interface BaseExerciseAnswer {
+export interface GenericExercise {
     id: string,
-    answerType: string
+    type: string,
+    data: any,
+    header?: ExerciseHeader,
+    subHeader?: ExerciseSubHeader,
+    content?: GenericExerciseContent,
+    input?: GenericExerciseInput,
+    button?: GenericExerciseButton
 }
 
-export interface WrittenExerciseAnswer extends BaseExerciseAnswer {
+export interface ExerciseHeader {
     text: string
 }
 
-export interface MultipleChoiceExerciseAnswer extends BaseExerciseAnswer {
-    optionId: string
+export interface ExerciseSubHeader {
+    text: string
+}
+
+export interface GenericExerciseContent {
+    type: string
+}
+
+export interface TextExerciseContent extends GenericExerciseContent {
+    text: string
+}
+
+export interface GenericExerciseInput {
+    type: string
+}
+
+export interface TextExerciseInput extends GenericExerciseInput {
+    type: "text-input"
+}
+
+export interface MultipleChoiceExerciseInput extends GenericExerciseInput {
+    type: "multiple-choice-input",
+    options: MultipleChoiceOption[];
 }
 
 export interface MultipleChoiceOption {
@@ -34,7 +44,19 @@ export interface MultipleChoiceOption {
     result?: "success" | "failure";
 }
 
-export interface MultipleTextChoiceOptionExercise extends BaseExercise {
-    options: MultipleChoiceOption[];
-    exerciseAnswer?: MultipleChoiceExerciseAnswer;
+export interface GenericExerciseButton {
+    type: string
+}
+
+export interface CheckAnswerExerciseButton {
+    type: "check-answer-button"
+}
+
+export interface Exercise {
+    
+}
+
+export interface ExerciseAnswer {
+    id: string;
+    exerciseId: string;
 }

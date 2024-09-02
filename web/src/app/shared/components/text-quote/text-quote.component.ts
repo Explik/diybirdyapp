@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { TextContent } from '../../models/content.interface';
 
 @Component({
   selector: 'app-text-quote',
@@ -8,5 +9,5 @@ import { Component, Input } from '@angular/core';
   styleUrl: './text-quote.component.css'
 })
 export class TextQuoteComponent {
-  @Input() text: string = "" 
+  @Input({ required: true }) content!: TextContent
 }

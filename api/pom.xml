@@ -26,6 +26,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${springboot.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -35,6 +36,12 @@
 					<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Tinkerpop dependencies -->
@@ -54,6 +61,20 @@
 			<version>${tinkerpop.version}</version>
 		</dependency>
 
+		<!-- TinkerPop ORM library -->
+		<dependency>
+			<groupId>com.syncleus.ferma</groupId>
+			<artifactId>ferma</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+
+		<!-- Mapper library -->
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
 		<!-- Reflection dependency  -->
 		<dependency>
 			<groupId>org.reflections</groupId>
@@ -68,6 +89,29 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>${springboot.version}</version>
+			</plugin>
+
+			<plugin>
+				<groupId>cz.habarta.typescript-generator</groupId>
+				<artifactId>typescript-generator-maven-plugin</artifactId>
+				<version>3.2.1263</version>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>process-classes</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<jsonLibrary>jackson2</jsonLibrary>
+					<classPatterns>
+						<pattern>com.explik.diybirdyapp.controller.dto.*</pattern>
+					</classPatterns>
+					<outputFile>../web/src/app/shared/models/endpoints.d.ts</outputFile>
+					<outputKind>global</outputKind>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
