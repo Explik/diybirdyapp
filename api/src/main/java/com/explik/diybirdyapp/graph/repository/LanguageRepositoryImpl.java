@@ -1,10 +1,8 @@
 package com.explik.diybirdyapp.graph.repository;
 
 import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
-import com.explik.diybirdyapp.graph.vertex.FlashcardLanguageVertex;
-import com.syncleus.ferma.DelegatingFramedGraph;
-import com.syncleus.ferma.FramedGraph;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import com.explik.diybirdyapp.graph.vertex.LanguageVertex;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,18 +10,15 @@ import java.util.List;
 
 @Component
 public class LanguageRepositoryImpl implements LanguageRepository {
-    private final FramedGraph framedGraph;
+    private final GraphTraversalSource traversalSource;
 
-    public LanguageRepositoryImpl(@Autowired TinkerGraph graph) {
-        var vertexTypes = List.of(FlashcardLanguageVertex.class);
-        framedGraph = new DelegatingFramedGraph<>(graph, vertexTypes);
+    public LanguageRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
+        this.traversalSource = traversalSource;
     }
 
     @Override
     public List<FlashcardLanguageModel> getAll() {
-        var vertices = framedGraph
-            .traverse(g -> g.V().hasLabel("language"))
-            .toListExplicit(FlashcardLanguageVertex.class);
+        var vertices = LanguageVertex.findAll(traversalSource);
 
         return vertices
             .stream()
@@ -31,7 +26,7 @@ public class LanguageRepositoryImpl implements LanguageRepository {
             .toList();
     }
 
-    private static FlashcardLanguageModel create(FlashcardLanguageVertex v) {
+    private static FlashcardLanguageModel create(LanguageVertex v) {
         return new FlashcardLanguageModel(
             v.getId(),
             v.getAbbreviation(),

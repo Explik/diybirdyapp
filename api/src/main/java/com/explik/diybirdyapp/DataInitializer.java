@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp;
 
-import org.apache.tinkerpop.gremlin.structure.Graph;
+import com.explik.diybirdyapp.graph.vertex.*;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
-    private Graph graph;
+    private GraphTraversalSource traversalSource;
 
     @Override
     public void run(String... args) throws Exception {
@@ -19,112 +20,111 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     public void addInitialExerciseData() {
-        // Exercise 1 - Write sentence using word "example"
-        Vertex exerciseVertex1 = graph.addVertex("exercise");
-        exerciseVertex1.property("id", "1");
-        exerciseVertex1.property("exerciseType", "write-sentence-using-word-exercise");
+        var exerciseVertex1 = ExerciseVertex.create(traversalSource);
+        exerciseVertex1.setId("1");
+        exerciseVertex1.setType("write-sentence-using-word-exercise");
 
-        Vertex wordVertex1 = graph.addVertex("text");
-        wordVertex1.property("id", "1");
-        wordVertex1.property("value", "example");
+        var wordVertex1 = TextContentVertex.create(traversalSource);
+        wordVertex1.setId("1");
+        wordVertex1.setValue("example");
 
-        exerciseVertex1.addEdge("hasContent", wordVertex1);
+        exerciseVertex1.setContent(wordVertex1);
 
         // Exercise 2 - Translate sentence to Danish
-        Vertex exerciseVertex2 = graph.addVertex("exercise");
-        exerciseVertex2.property("id", "2");
-        exerciseVertex2.property("exerciseType", "write-translated-sentence-exercise");
-        exerciseVertex2.property("targetLanguage", "Danish");
+        var exerciseVertex2 = ExerciseVertex.create(traversalSource);
+        exerciseVertex2.setId("2");
+        exerciseVertex2.setType("write-translated-sentence-exercise");
+        exerciseVertex2.setTargetLanguage("Danish");
 
-        Vertex wordVertex2 = graph.addVertex("text");
-        wordVertex2.property("id", "2");
-        wordVertex2.property("value", "This is an example sentence");
+        var wordVertex2 = TextContentVertex.create(traversalSource);
+        wordVertex2.setId("2");
+        wordVertex2.setValue("This is an example sentence");
 
-        exerciseVertex2.addEdge("hasContent", wordVertex2);
+        exerciseVertex2.setContent(wordVertex2);
 
         // Exercise 3 - Multiple choice text exercise
-        Vertex exerciseVertex3 = graph.addVertex("exercise");
-        exerciseVertex3.property("id", "3");
-        exerciseVertex3.property("exerciseType", "multiple-choice-text-exercise");
+        var exerciseVertex3 = ExerciseVertex.create(traversalSource);
+        exerciseVertex3.setId("3");
+        exerciseVertex3.setType("multiple-choice-text-exercise");
 
-        Vertex wordVertex3 = graph.addVertex("text");
-        wordVertex3.property("id", "3");
-        wordVertex3.property("value", "Random option 1");
+        var wordVertex3 = TextContentVertex.create(traversalSource);
+        wordVertex3.setId("3");
+        wordVertex3.setValue("Random option 1");
 
-        Vertex wordVertex4 = graph.addVertex("text");
-        wordVertex4.property("id", "4");
-        wordVertex4.property("value", "Random option 2");
+        var wordVertex4 = TextContentVertex.create(traversalSource);
+        wordVertex4.setId("4");
+        wordVertex4.setValue("Random option 2");
 
-        Vertex wordVertex5 = graph.addVertex("text");
-        wordVertex5.property("id", "5");
-        wordVertex5.property("value", "Random option 3");
+        var wordVertex5 = TextContentVertex.create(traversalSource);
+        wordVertex5.setId("5");
+        wordVertex5.setValue("Random option 3");
 
-        Vertex wordVertex6 = graph.addVertex("text");
-        wordVertex6.property("id", "6");
-        wordVertex6.property("value", "Correct option");
+        var wordVertex6 = TextContentVertex.create(traversalSource);
+        wordVertex6.setId("6");
+        wordVertex6.setValue("Correct option");
 
-        exerciseVertex3.addEdge("hasOption", wordVertex3);
-        exerciseVertex3.addEdge("hasOption", wordVertex4);
-        exerciseVertex3.addEdge("hasOption", wordVertex5);
-        exerciseVertex3.addEdge("hasOption", wordVertex6);
-        exerciseVertex3.addEdge("hasCorrectOption", wordVertex6);
+        exerciseVertex3.addOption(wordVertex3);
+        exerciseVertex3.addOption(wordVertex4);
+        exerciseVertex3.addOption(wordVertex5);
+        exerciseVertex3.addOption(wordVertex6);
+        exerciseVertex3.setCorrectOption(wordVertex6);
     }
 
     public void addInitialFlashcardAndFlashcardExerciseData() {
-        Vertex langVertex1 = graph.addVertex("language");
-        langVertex1.property("id", "langVertex1");
-        langVertex1.property("abbreviation", "DA");
-        langVertex1.property("name", "Danish");
+        var langVertex1 = LanguageVertex.create(traversalSource);
+        langVertex1.setId("langVertex1");
+        langVertex1.setAbbreviation("DA");
+        langVertex1.setName("Danish");
 
-        Vertex langVertex2 = graph.addVertex("language");
-        langVertex2.property("id", "langVertex2");
-        langVertex2.property("abbreviation", "EN");
-        langVertex2.property("name", "English");
+        var langVertex2 = LanguageVertex.create(traversalSource);
+        langVertex2.setId("langVertex2");
+        langVertex2.setAbbreviation("EN");
+        langVertex2.setName("English");
 
-        Vertex textVertex1 = graph.addVertex("textContent");
-        textVertex1.property("id", "textVertex1");
-        textVertex1.property("value", "Hej verden");
-        textVertex1.addEdge("hasLanguage", langVertex1);
+        var textVertex1 = TextContentVertex.create(traversalSource);
+        textVertex1.setId("textVertex1");
+        textVertex1.setValue("Hej verden");
+        textVertex1.setLanguage(langVertex1);
 
-        Vertex textVertex2 = graph.addVertex("textContent");
-        textVertex2.property("id", "textVertex2");
-        textVertex2.property("value", "Hello world");
-        textVertex2.addEdge("hasLanguage", langVertex2);
+        var textVertex2 = TextContentVertex.create(traversalSource);
+        textVertex2.setId("textVertex2");
+        textVertex2.setValue("Hello world");
+        textVertex2.setLanguage(langVertex2);
 
-        Vertex textVertex3 = graph.addVertex("textContent");
-        textVertex3.property("id", "textVertex3");
-        textVertex3.property("value", "Hej John");
-        textVertex3.addEdge("hasLanguage", langVertex1);
+        var textVertex3 = TextContentVertex.create(traversalSource);
+        textVertex3.setId("textVertex3");
+        textVertex3.setValue("Hej John");
+        textVertex3.setLanguage(langVertex1);
 
-        Vertex textVertex4 = graph.addVertex("textContent");
-        textVertex4.property("id", "textVertex4");
-        textVertex4.property("value", "Hey John");
-        textVertex4.addEdge("hasLanguage", langVertex2);
+        var textVertex4 = TextContentVertex.create(traversalSource);
+        textVertex4.setId("textVertex4");
+        textVertex4.setValue("Hey John");
+        textVertex4.setLanguage(langVertex2);
 
-        Vertex flashcardVertex1 = graph.addVertex("flashcard");
-        flashcardVertex1.property("id", "flashcardVertex1");
-        flashcardVertex1.addEdge("hasLeftContent", textVertex1);
-        flashcardVertex1.addEdge("hasRightContent", textVertex2);
+        var flashcardVertex1 = FlashcardVertex.create(traversalSource);
+        flashcardVertex1.setId("flashcardVertex1");
+        flashcardVertex1.setLeftContent(textVertex1);
+        flashcardVertex1.setRightContent(textVertex2);
 
-        Vertex flashcardVertex2 = graph.addVertex("flashcard");
-        flashcardVertex2.property("id", "flashcardVertex2");
-        flashcardVertex2.addEdge("hasLeftContent", textVertex3);
-        flashcardVertex2.addEdge("hasRightContent", textVertex4);
+        var flashcardVertex2 = FlashcardVertex.create(traversalSource);
+        flashcardVertex2.setId("flashcardVertex2");
+        flashcardVertex2.setLeftContent(textVertex3);
+        flashcardVertex2.setRightContent(textVertex4);
 
-        Vertex flashcardDeckVertex1 = graph.addVertex("flashcardDeck");
-        flashcardDeckVertex1.property("id", "flashcardDeckVertex1");
-        flashcardDeckVertex1.property("name", "First ever flashcard deck");
-        flashcardDeckVertex1.addEdge("hasFlashcard", flashcardVertex1);
+        var flashcardDeckVertex1 = FlashcardDeckVertex.create(traversalSource);
+        flashcardDeckVertex1.setId("flashcardDeckVertex1");
+        flashcardDeckVertex1.setName("First ever flashcard deck");
+        flashcardDeckVertex1.addFlashcard(flashcardVertex1);
 
-        Vertex flashcardDeckVertex2 = graph.addVertex("flashcardDeck");
-        flashcardDeckVertex2.property("id", "flashcardDeckVertex2");
-        flashcardDeckVertex2.property("name", "Second ever flashcard deck");
-        flashcardDeckVertex2.addEdge("hasFlashcard", flashcardVertex2);
+        var flashcardDeckVertex2 = FlashcardDeckVertex.create(traversalSource);
+        flashcardDeckVertex2.setId("flashcardDeckVertex2");
+        flashcardDeckVertex2.setName("Second ever flashcard deck");
+        flashcardDeckVertex2.addFlashcard(flashcardVertex2);
 
         // Exercise 4 - Flashcard exercise
-        Vertex exerciseVertex1 = graph.addVertex("exercise");
-        exerciseVertex1.property("id", "4");
-        exerciseVertex1.property("exerciseType", "review-flashcard-content-exercise");
-        exerciseVertex1.addEdge("hasContent", flashcardVertex1);
+        var exerciseVertex1 = ExerciseVertex.create(traversalSource);
+        exerciseVertex1.setId("4");
+        exerciseVertex1.setType("review-flashcard-content-exercise");
+        exerciseVertex1.setContent(flashcardVertex1);
     }
 }

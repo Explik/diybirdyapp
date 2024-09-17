@@ -1,57 +1,65 @@
 package com.explik.diybirdyapp.graph;
 
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 
 public class GraphHelper {
     public static final String DefaultValue = "PLACEHOLDER";
 
-    public static Vertex addLanguage(TinkerGraph graph, String id) {
-        Vertex vertex = graph.addVertex("language");
-        vertex.property("id", id);
-        vertex.property("abbreviation", DefaultValue);
-        vertex.property("name", DefaultValue);
+    public static Vertex addLanguage(GraphTraversalSource traversalSource, String id) {
+        return traversalSource.addV("language")
+                .property("id", id)
+                .property("abbreviation", DefaultValue)
+                .property("name", DefaultValue)
+                .next();
+    }
+
+    public static Vertex addTextContentWithLanguage(GraphTraversalSource traversalSource, String id, String languageId) {
+        var languageVertex = traversalSource.V("language", "id", languageId).next();
+       return addTextContentWithLanguage(traversalSource, id, languageVertex);
+    }
+
+    public static Vertex addTextContentWithLanguage(GraphTraversalSource traversalSource, String id, Vertex languageVertex) {
+        var vertex = traversalSource.addV("textContent")
+                .property("id", id)
+                .property("value", DefaultValue).next();
+
+        traversalSource.V(vertex)
+                .addE("hasLanguage").to(languageVertex)
+                .next();
 
         return vertex;
     }
 
-    public static Vertex addTextContentWithLanguage(TinkerGraph graph, String id, String languageId) {
-       var languageVertex = graph.traversal().V("language", "id", languageId).next();
-       return addTextContentWithLanguage(graph, id, languageVertex);
+    public static Vertex addFlashcardWithTextContent(GraphTraversalSource traversalSource, String id, String contentId1, String contentId2) {
+        var contentVertex1 = traversalSource.V("textContent", "id", contentId1).next();
+        var contentVertex2 = traversalSource.V("textContent", "id", contentId2).next();
+
+        return addFlashcardWithTextContent(traversalSource, id, contentVertex1, contentVertex2);
     }
 
-    public static Vertex addTextContentWithLanguage(TinkerGraph graph, String id, Vertex languageVertex) {
-        var vertex = graph.addVertex("textContent");
-        vertex.property("id", id);
-        vertex.property("value", DefaultValue);
-        vertex.addEdge("hasLanguage", languageVertex);
+    public static Vertex addFlashcardWithTextContent(GraphTraversalSource traversalSource, String id, Vertex contentVertex1, Vertex contentVertex2) {
+        var vertex = traversalSource.addV("flashcard")
+                .property("id", id)
+                .next();
+
+        traversalSource.V(vertex).as("flashcard")
+                .addE("hasLeftContent").from("flashcard").to(contentVertex1)
+                .addE("hasRightContent").from("flashcard").to(contentVertex2)
+                .next();
 
         return vertex;
     }
 
-    public static Vertex addFlashcardWithTextContent(TinkerGraph graph, String id, String contentId1, String contentId2) {
-        var contentVertex1 = graph.traversal().V("textContent", "id", contentId1).next();
-        var contentVertex2 = graph.traversal().V("textContent", "id", contentId2).next();
+    public static Vertex addFlashcardDeckWithFlashcards(GraphTraversalSource traversalSource, String id, Vertex... flashcardVertices) {
+        var vertex = traversalSource.addV("flashcardDeck")
+                .property("id", id)
+                .property("name", DefaultValue)
+                .next();
 
-        return addFlashcardWithTextContent(graph, id, contentVertex1, contentVertex2);
-    }
-
-    public static Vertex addFlashcardWithTextContent(TinkerGraph graph, String id, Vertex contentVertex1, Vertex contentVertex2) {
-        var vertex = graph.addVertex("flashcard");
-        vertex.property("id", id);
-        vertex.addEdge("hasLeftContent", contentVertex1);
-        vertex.addEdge("hasRightContent", contentVertex2);
-
-        return vertex;
-    }
-
-    public static Vertex addFlashcardDeckWithFlashcards(TinkerGraph graph, String id, Vertex... flashcardVertices) {
-        var vertex = graph.addVertex("flashcardDeck");
-        vertex.property("id", id);
-
-        for(var flashcardVertex : flashcardVertices) {
+        for(var flashcardVertex : flashcardVertices)
             vertex.addEdge("hasFlashcard", flashcardVertex);
-        }
+
         return vertex;
     }
 }

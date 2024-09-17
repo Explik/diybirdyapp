@@ -2,7 +2,6 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.graph.model.ExerciseModel;
 import com.explik.diybirdyapp.graph.repository.ExerciseRepository;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
