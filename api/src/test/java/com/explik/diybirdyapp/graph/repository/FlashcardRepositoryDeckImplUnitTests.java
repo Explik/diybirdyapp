@@ -1,8 +1,10 @@
 package com.explik.diybirdyapp.graph.repository;
 
-import com.explik.diybirdyapp.graph.GraphHelper;
 import com.explik.diybirdyapp.graph.model.FlashcardDeckModel;
-import org.apache.tinkerpop.gremlin.process.traversal.TraversalSource;
+import com.explik.diybirdyapp.graph.vertex.factory.FlashcardDeckVertexFactory;
+import com.explik.diybirdyapp.graph.vertex.factory.FlashcardVertexFactory;
+import com.explik.diybirdyapp.graph.vertex.factory.LanguageVertexFactory;
+import com.explik.diybirdyapp.graph.vertex.factory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,25 +70,37 @@ public class FlashcardRepositoryDeckImplUnitTests {
 
     @TestConfiguration
     static class Configuration {
+        @Autowired
+        FlashcardVertexFactory flashcardVertexFactory;
+
+        @Autowired
+        FlashcardDeckVertexFactory flashcardDeckVertexFactory;
+
+        @Autowired
+        LanguageVertexFactory languageVertexFactory;
+
+        @Autowired
+        TextContentVertexFactory textContentVertexFactory;
+
         @Bean
         public GraphTraversalSource traversalSource() {
             var graph = TinkerGraph.open();
             var traversal = graph.traversal();
 
-            var lang1 = GraphHelper.addLanguage(traversal, "lang1");
-            var lang2 = GraphHelper.addLanguage(traversal, "lang2");
-            var lang3 = GraphHelper.addLanguage(traversal, "lang3");
+            var lang1 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang1", "", ""));
+            var lang2 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang2", "", ""));
+            var lang3 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang3", "", ""));
 
-            var content1 = GraphHelper.addTextContentWithLanguage(traversal, "content1", lang1);
-            var content2 = GraphHelper.addTextContentWithLanguage(traversal, "content2", lang2);
-            var content3 = GraphHelper.addTextContentWithLanguage(traversal, "content3", lang3);
+            var content1 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content1", "", lang1));
+            var content2 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content2", "", lang2));
+            var content3 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content3", "", lang3));
 
-            var flashcard1 = GraphHelper.addFlashcardWithTextContent(traversal, "flashcard1", content1, content2);
-            var flashcard2 = GraphHelper.addFlashcardWithTextContent(traversal, "flashcard2", content2, content3);
+            var flashcard1 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard1", content1, content2));
+            var flashcard2 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard2", content2, content3));
 
-            GraphHelper.addFlashcardDeckWithFlashcards(traversal, "pre-existent-id", flashcard1, flashcard2);
-            GraphHelper.addFlashcardDeckWithFlashcards(traversal, "flashcardDeck1");
-            GraphHelper.addFlashcardDeckWithFlashcards(traversal, "flashcardDeck2", flashcard1);
+            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options("pre-existent-id", "", List.of(flashcard1, flashcard2)));
+            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options("flashcardDeck1", "", List.of()));
+            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options("flashcardDeck2", "", List.of(flashcard1)));
 
             return traversal;
         }

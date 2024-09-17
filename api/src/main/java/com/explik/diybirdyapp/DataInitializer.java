@@ -1,11 +1,13 @@
 package com.explik.diybirdyapp;
 
 import com.explik.diybirdyapp.graph.vertex.*;
+import com.explik.diybirdyapp.graph.vertex.factory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -13,73 +15,49 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private GraphTraversalSource traversalSource;
 
+    @Autowired
+    private ExerciseMultipleChoiceTextVertexFactory exerciseMultipleChoiceTextVertexFactory;
+
+    @Autowired
+    private ExerciseWriteSentenceUsingWordVertexFactory exerciseWriteSentenceUsingWordVertexFactory;
+
+    @Autowired
+    private ExerciseWriteTranslatedSentenceVertexFactory exerciseWriteTranslatedSentenceVertexFactory;
+
+    @Autowired
+    private FlashcardVertexFactory flashcardVertexFactory;
+
+    @Autowired
+    private FlashcardDeckVertexFactory flashcardDeckVertexFactory;
+
+    @Autowired
+    private LanguageVertexFactory languageVertexFactory;
+
+    @Autowired
+    private TextContentVertexFactory textContentVertexFactory;
+
     @Override
     public void run(String... args) throws Exception {
+        traversalSource.V().drop().iterate();
+
+        addInitialLanguageData();
+        addInitialFlashcardData();
         addInitialExerciseData();
-        addInitialFlashcardAndFlashcardExerciseData();
     }
 
-    public void addInitialExerciseData() {
-        var exerciseVertex1 = ExerciseVertex.create(traversalSource);
-        exerciseVertex1.setId("1");
-        exerciseVertex1.setType("write-sentence-using-word-exercise");
+    public void addInitialLanguageData() {
+        languageVertexFactory.create(
+                traversalSource,
+                new LanguageVertexFactory.Options("langVertex1", "Danish", "DA"));
 
-        var wordVertex1 = TextContentVertex.create(traversalSource);
-        wordVertex1.setId("1");
-        wordVertex1.setValue("example");
-
-        exerciseVertex1.setContent(wordVertex1);
-
-        // Exercise 2 - Translate sentence to Danish
-        var exerciseVertex2 = ExerciseVertex.create(traversalSource);
-        exerciseVertex2.setId("2");
-        exerciseVertex2.setType("write-translated-sentence-exercise");
-        exerciseVertex2.setTargetLanguage("Danish");
-
-        var wordVertex2 = TextContentVertex.create(traversalSource);
-        wordVertex2.setId("2");
-        wordVertex2.setValue("This is an example sentence");
-
-        exerciseVertex2.setContent(wordVertex2);
-
-        // Exercise 3 - Multiple choice text exercise
-        var exerciseVertex3 = ExerciseVertex.create(traversalSource);
-        exerciseVertex3.setId("3");
-        exerciseVertex3.setType("multiple-choice-text-exercise");
-
-        var wordVertex3 = TextContentVertex.create(traversalSource);
-        wordVertex3.setId("3");
-        wordVertex3.setValue("Random option 1");
-
-        var wordVertex4 = TextContentVertex.create(traversalSource);
-        wordVertex4.setId("4");
-        wordVertex4.setValue("Random option 2");
-
-        var wordVertex5 = TextContentVertex.create(traversalSource);
-        wordVertex5.setId("5");
-        wordVertex5.setValue("Random option 3");
-
-        var wordVertex6 = TextContentVertex.create(traversalSource);
-        wordVertex6.setId("6");
-        wordVertex6.setValue("Correct option");
-
-        exerciseVertex3.addOption(wordVertex3);
-        exerciseVertex3.addOption(wordVertex4);
-        exerciseVertex3.addOption(wordVertex5);
-        exerciseVertex3.addOption(wordVertex6);
-        exerciseVertex3.setCorrectOption(wordVertex6);
+        languageVertexFactory.create(
+                traversalSource,
+                new LanguageVertexFactory.Options("langVertex2", "English", "EN"));
     }
 
-    public void addInitialFlashcardAndFlashcardExerciseData() {
-        var langVertex1 = LanguageVertex.create(traversalSource);
-        langVertex1.setId("langVertex1");
-        langVertex1.setAbbreviation("DA");
-        langVertex1.setName("Danish");
-
-        var langVertex2 = LanguageVertex.create(traversalSource);
-        langVertex2.setId("langVertex2");
-        langVertex2.setAbbreviation("EN");
-        langVertex2.setName("English");
+    public void addInitialFlashcardData() {
+        var langVertex1 = LanguageVertex.findByAbbreviation(traversalSource, "DA");
+        var langVertex2 = LanguageVertex.findByAbbreviation(traversalSource, "EN");
 
         var textVertex1 = TextContentVertex.create(traversalSource);
         textVertex1.setId("textVertex1");
@@ -120,8 +98,55 @@ public class DataInitializer implements CommandLineRunner {
         flashcardDeckVertex2.setId("flashcardDeckVertex2");
         flashcardDeckVertex2.setName("Second ever flashcard deck");
         flashcardDeckVertex2.addFlashcard(flashcardVertex2);
+    }
+
+    public void addInitialExerciseData() {
+        var langVertex = LanguageVertex.findByAbbreviation(traversalSource, "EN");
+
+        var wordVertex1 = textContentVertexFactory.create(
+                traversalSource,
+                new TextContentVertexFactory.Options("1", "example", langVertex));
+
+        exerciseWriteSentenceUsingWordVertexFactory.create(
+                traversalSource,
+                new ExerciseWriteSentenceUsingWordVertexFactory.Options("1", "example", wordVertex1));
+
+        // Exercise 2 - Translate sentence to Danish
+        var wordVertex2 = textContentVertexFactory.create(
+                traversalSource,
+                new TextContentVertexFactory.Options("2", "This is an example sentence", langVertex));
+
+        exerciseWriteTranslatedSentenceVertexFactory.create(
+                traversalSource,
+                new ExerciseWriteTranslatedSentenceVertexFactory.Options("2", "Danish", wordVertex2));
+
+        // Exercise 3 - Multiple choice text exercise
+        var wordVertex3 = textContentVertexFactory.create(
+                traversalSource,
+                new TextContentVertexFactory.Options("3", "Random option 1", langVertex));
+
+        var wordVertex4 = textContentVertexFactory.create(
+                traversalSource,
+                new TextContentVertexFactory.Options("4", "Random option 2", langVertex));
+
+        var wordVertex5 = textContentVertexFactory.create(
+                traversalSource,
+                new TextContentVertexFactory.Options("5", "Random option 3", langVertex));
+
+        var wordVertex6 = textContentVertexFactory.create(
+                traversalSource,
+                new TextContentVertexFactory.Options("6", "Correct option", langVertex));
+
+        exerciseMultipleChoiceTextVertexFactory.create(
+                traversalSource,
+                new ExerciseMultipleChoiceTextVertexFactory.Options(
+                        "3",
+                        List.of(wordVertex3, wordVertex4, wordVertex5, wordVertex6),
+                        wordVertex6));
 
         // Exercise 4 - Flashcard exercise
+        var flashcardVertex1 = FlashcardVertex.findById(traversalSource, "flashcardVertex1");
+
         var exerciseVertex1 = ExerciseVertex.create(traversalSource);
         exerciseVertex1.setId("4");
         exerciseVertex1.setType("review-flashcard-content-exercise");

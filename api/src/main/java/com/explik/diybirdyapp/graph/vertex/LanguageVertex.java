@@ -59,6 +59,11 @@ public class LanguageVertex extends AbstractVertex {
         return new LanguageVertex(traversalSource, vertex);
     }
 
+    public static LanguageVertex findByAbbreviation(GraphTraversalSource traversalSource, String abbreviation) {
+        var vertex = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ABBREVIATION, abbreviation).next();
+        return new LanguageVertex(traversalSource, vertex);
+    }
+
     public static List<LanguageVertex> findAll(GraphTraversalSource traversalSource) {
         var vertices = traversalSource.V().hasLabel(LABEL).toList();
 
