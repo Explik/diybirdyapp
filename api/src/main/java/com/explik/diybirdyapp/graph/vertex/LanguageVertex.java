@@ -54,14 +54,25 @@ public class LanguageVertex extends AbstractVertex {
         return new LanguageVertex(traversalSource, vertex);
     }
 
-    public static LanguageVertex findById(GraphTraversalSource traversalSource) {
-        var vertex = traversalSource.V().hasLabel(LABEL).next();
-        return new LanguageVertex(traversalSource, vertex);
+    public static LanguageVertex findById(GraphTraversalSource traversalSource, String id) {
+        var vertexQuery = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ID, id);
+        if (!vertexQuery.hasNext())
+            return null;
+        return new LanguageVertex(traversalSource, vertexQuery.next());
+    }
+
+    public static LanguageVertex findByName(GraphTraversalSource traversalSource, String name) {
+        var vertexQuery = traversalSource.V().hasLabel(LABEL).has(PROPERTY_NAME, name);
+        if (!vertexQuery.hasNext())
+            return null;
+        return new LanguageVertex(traversalSource, vertexQuery.next());
     }
 
     public static LanguageVertex findByAbbreviation(GraphTraversalSource traversalSource, String abbreviation) {
-        var vertex = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ABBREVIATION, abbreviation).next();
-        return new LanguageVertex(traversalSource, vertex);
+        var vertexQuery = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ABBREVIATION, abbreviation);
+        if(!vertexQuery.hasNext())
+            return null;
+        return new LanguageVertex(traversalSource, vertexQuery.next());
     }
 
     public static List<LanguageVertex> findAll(GraphTraversalSource traversalSource) {

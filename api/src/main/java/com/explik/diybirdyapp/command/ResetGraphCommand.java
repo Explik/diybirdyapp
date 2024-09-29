@@ -1,17 +1,16 @@
-package com.explik.diybirdyapp;
+package com.explik.diybirdyapp.command;
 
 import com.explik.diybirdyapp.graph.vertex.*;
 import com.explik.diybirdyapp.graph.vertex.factory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
+import picocli.CommandLine;
 import java.util.List;
 
 @Component
-public class DataInitializer implements CommandLineRunner {
-
+@CommandLine.Command(name = "reset-graph", description = "Clears graph and inserts dummy data")
+public class ResetGraphCommand implements Runnable{
     @Autowired
     private GraphTraversalSource traversalSource;
 
@@ -37,7 +36,7 @@ public class DataInitializer implements CommandLineRunner {
     private TextContentVertexFactory textContentVertexFactory;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run() {
         traversalSource.V().drop().iterate();
 
         addInitialLanguageData();

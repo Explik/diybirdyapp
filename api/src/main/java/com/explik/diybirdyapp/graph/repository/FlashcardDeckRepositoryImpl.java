@@ -21,8 +21,10 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
     @Override
     public FlashcardDeckModel add(FlashcardDeckModel model) {
         var flashcardDeckVertex = FlashcardDeckVertex.create(traversalSource);
-        flashcardDeckVertex.setId(UUID.randomUUID().toString());
-        flashcardDeckVertex.setName("");
+        var flashcardDeckId = model.getId() != null ? model.getId() : UUID.randomUUID().toString();
+        var flashcardDeckName = model.getName() != null ? model.getName() : "";
+        flashcardDeckVertex.setId(flashcardDeckId);
+        flashcardDeckVertex.setName(flashcardDeckName);
 
         return create(flashcardDeckVertex);
     }

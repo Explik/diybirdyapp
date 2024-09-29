@@ -56,6 +56,21 @@ public class FlashcardRepositoryDeckImplUnitTests {
     }
 
     @Test
+    void givenNewlyCreatedFlashcardDeck_whenGetAll_thenReturnListContainingDeck() {
+        var flashcardDeck = new FlashcardDeckModel();
+        flashcardDeck.setId("new-id");
+
+        repository.add(flashcardDeck);
+        var savedFlashcardDeck = repository.getAll()
+                .stream()
+                .filter(deck -> deck.getId().equals(flashcardDeck.getId()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(savedFlashcardDeck);
+    }
+
+    @Test
     void givenNewName_whenUpdate_thenReturnFlashcard() {
         var flashcardDeckId = "flashcardDeck1";
         var flashcardDeckChanges = new FlashcardDeckModel();
