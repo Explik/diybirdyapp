@@ -2,11 +2,8 @@ package com.explik.diybirdyapp.graph.repository;
 
 import com.explik.diybirdyapp.graph.model.FlashcardDeckModel;
 import com.explik.diybirdyapp.graph.vertex.FlashcardDeckVertex;
-import com.explik.diybirdyapp.graph.vertex.FlashcardVertex;
-import com.syncleus.ferma.DelegatingFramedGraph;
-import com.syncleus.ferma.FramedGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,44 +12,40 @@ import java.util.UUID;
 
 @Component
 public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
-    private final FramedGraph framedGraph;
+    private final GraphTraversalSource traversalSource;
 
-    public FlashcardDeckRepositoryImpl(@Autowired TinkerGraph graph) {
-        var vertexTypes = List.of(
-            FlashcardVertex.class,
-            FlashcardDeckVertex.class);
-        framedGraph = new DelegatingFramedGraph<>(graph, vertexTypes);
+    public FlashcardDeckRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
+        this.traversalSource = traversalSource;
     }
 
     @Override
     public FlashcardDeckModel add(FlashcardDeckModel model) {
-        var flashcardDeckVertex = framedGraph.addFramedVertex(FlashcardDeckVertex.class, T.label, "flashcardDeck");
-        flashcardDeckVertex.setId(UUID.randomUUID().toString());
-        flashcardDeckVertex.setName("");
+        var flashcardDeckVertex = FlashcardDeckVertex.create(traversalSource);
+        var flashcardDeckId = model.getId() != null ? model.getId() : UUID.randomUUID().toString();
+        var flashcardDeckName = model.getName() != null ? model.getName() : "";
+        flashcardDeckVertex.setId(flashcardDeckId);
+        flashcardDeckVertex.setName(flashcardDeckName);
 
         return create(flashcardDeckVertex);
     }
 
     @Override
     public FlashcardDeckModel get(String id) {
-        var vertex = framedGraph
-            .traverse(g -> g.V().has("flashcardDeck", "id", id))
-            .nextOrDefaultExplicit(FlashcardDeckVertex.class, null);
+        var query = traversalSource.V().has(FlashcardDeckVertex.LABEL, FlashcardDeckVertex.PROPERTY_ID, id);
 
-        if (vertex == null)
+        if (!query.hasNext())
             throw new IllegalArgumentException("Flashcard with id " + id + " not found");
 
-        return create(vertex);
+        return create(new FlashcardDeckVertex(traversalSource, query.next()));
     }
 
     @Override
     public List<FlashcardDeckModel> getAll() {
-        var vertices = framedGraph
-            .traverse(g -> g.V().hasLabel("flashcardDeck"))
-            .toListExplicit(FlashcardDeckVertex.class);
+        var vertices = traversalSource.V().hasLabel(FlashcardDeckVertex.LABEL).toList();
 
         return vertices
             .stream()
+            .map(v -> new FlashcardDeckVertex(traversalSource, v))
             .map(FlashcardDeckRepositoryImpl::create)
             .toList();
     }
@@ -62,13 +55,11 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
         if (flashcardDeckModel.getId() == null)
             throw new IllegalArgumentException("FlashcardDeck is missing id");
 
-        var vertex = framedGraph
-            .traverse(g -> g.V().has("flashcardDeck", "id", flashcardDeckModel.getId()))
-            .nextOrDefaultExplicit(FlashcardDeckVertex.class, null);
-
-        if (vertex == null)
+        var query = traversalSource.V().has("flashcardDeck", "id", flashcardDeckModel.getId());
+        if (!query.hasNext())
             throw new IllegalArgumentException("FlashcardDeck with id " + flashcardDeckModel.getId() + " not found");
 
+        var vertex = new FlashcardDeckVertex(traversalSource, query.next());
         if (flashcardDeckModel.getName() != null) {
             vertex.setName(flashcardDeckModel.getName());
         }

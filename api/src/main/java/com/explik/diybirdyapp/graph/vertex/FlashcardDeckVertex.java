@@ -1,34 +1,61 @@
 package com.explik.diybirdyapp.graph.vertex;
 
-import com.syncleus.ferma.AbstractVertexFrame;
-import com.syncleus.ferma.annotations.Property;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 
-public abstract class FlashcardDeckVertex extends AbstractVertexFrame {
-    @Property("id")
-    public abstract String getId();
+public class FlashcardDeckVertex extends AbstractVertex {
+    public FlashcardDeckVertex(GraphTraversalSource traversalSource, Vertex vertex) {
+        super(traversalSource, vertex);
+    }
 
-    @Property("id")
-    public abstract void setId(String id);
+    public static final String LABEL = "flashcardDeck";
 
-    @Property("name")
-    public abstract String getName();
+    public static final String EDGE_FLASHCARD = "hasFlashcard";
 
-    @Property("name")
-    public abstract void setName(String name);
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_DESCRIPTION = "description";
 
-    @Property("description")
-    public abstract String getDescription();
+    public String getId() {
+        return getPropertyAsString(PROPERTY_ID);
+    }
 
-    @Property("description")
-    public abstract void setDescription(String description);
+    public void setId(String id) {
+        setProperty(PROPERTY_ID, id);
+    }
+
+    public String getName() {
+        return getPropertyAsString(PROPERTY_NAME);
+    }
+
+    public void setName(String name) {
+        setProperty(PROPERTY_NAME, name);
+    }
+
+    public String getDescription() {
+        return getPropertyAsString(PROPERTY_DESCRIPTION);
+    }
+
+    public void setDescription(String description) {
+        setProperty(PROPERTY_DESCRIPTION, description);
+    }
 
     public void addFlashcard(FlashcardVertex flashcardVertex) {
-        addFramedEdgeExplicit("hasFlashcard", flashcardVertex);
+        addEdgeOneToMany(EDGE_FLASHCARD, flashcardVertex);
     }
 
     public List<? extends FlashcardVertex> getFlashcards() {
-        return traverse(g -> g.outE("hasFlashcard").order().by("order").inV()).toListExplicit(FlashcardVertex.class);
+        var flashcardVertices = traversalSource.V(vertex).out(EDGE_FLASHCARD).toList();
+
+        return flashcardVertices.stream()
+                .map(v -> new FlashcardVertex(traversalSource, v))
+                .toList();
+    }
+
+    public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {
+        var vertex = traversalSource.addV(LABEL).next();
+        return new FlashcardDeckVertex(traversalSource, vertex);
     }
 }

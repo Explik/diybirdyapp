@@ -3,15 +3,21 @@ package com.explik.diybirdyapp.graph.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.explik.diybirdyapp.graph.GraphHelper;
 import com.explik.diybirdyapp.graph.model.FlashcardModel;
 import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.graph.vertex.factory.FlashcardDeckVertexFactory;
+import com.explik.diybirdyapp.graph.vertex.factory.FlashcardVertexFactory;
+import com.explik.diybirdyapp.graph.vertex.factory.LanguageVertexFactory;
+import com.explik.diybirdyapp.graph.vertex.factory.TextContentVertexFactory;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
+import java.util.List;
 
 @SpringBootTest
 public class FlashcardRepositoryImplUnitTest {
@@ -95,26 +101,39 @@ public class FlashcardRepositoryImplUnitTest {
 
     @TestConfiguration
     static class Configuration {
+        @Autowired
+        FlashcardVertexFactory flashcardVertexFactory;
+
+        @Autowired
+        FlashcardDeckVertexFactory flashcardDeckVertexFactory;
+
+        @Autowired
+        LanguageVertexFactory languageVertexFactory;
+
+        @Autowired
+        TextContentVertexFactory textContentVertexFactory;
+
         @Bean
-        public TinkerGraph graph() {
+        public GraphTraversalSource traversalSource() {
+
             var graph = TinkerGraph.open();
             var traversal = graph.traversal();
 
-            var lang1 = GraphHelper.addLanguage(graph, "lang1");
-            var lang2 = GraphHelper.addLanguage(graph, "lang2");
-            var lang3 = GraphHelper.addLanguage(graph, "lang3");
+            var lang1 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang1", "", ""));
+            var lang2 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang2", "", ""));
+            var lang3 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang3", "", ""));
 
-            var content1 = GraphHelper.addTextContentWithLanguage(graph, "content1", lang1);
-            var content2 = GraphHelper.addTextContentWithLanguage(graph, "content2", lang2);
-            var content3 = GraphHelper.addTextContentWithLanguage(graph, "content3", lang3);
+            var content1 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content1", "", lang1));
+            var content2 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content2", "", lang2));
+            var content3 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content3", "", lang3));
 
-            var flashcard0 = GraphHelper.addFlashcardWithTextContent(graph, "pre-existent-id", content1, content2);
-            var flashcard1 = GraphHelper.addFlashcardWithTextContent(graph, "flashcard1", content1, content2);
-            var flashcard2 = GraphHelper.addFlashcardWithTextContent(graph, "flashcard2", content2, content3);
+            var flashard0 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("pre-existent-id", content1, content2));
+            var flashcard1 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard1", content1, content2));
+            var flashcard2 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard2", content2, content3));
 
-            GraphHelper.addFlashcardDeckWithFlashcards(graph, "flashcardDeck1", flashcard0, flashcard1, flashcard2);
+            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options("flashcardDeck1", "", List.of(flashard0, flashcard1, flashcard2)));
 
-            return graph;
+            return traversal;
         }
     }
 }

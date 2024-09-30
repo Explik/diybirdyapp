@@ -2,44 +2,53 @@ package com.explik.diybirdyapp.graph.vertex;
 
 import com.explik.diybirdyapp.graph.model.ExerciseContentFlashcardModel;
 import com.explik.diybirdyapp.graph.model.FlashcardModel;
-import com.syncleus.ferma.AbstractVertexFrame;
-import com.syncleus.ferma.annotations.Property;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-public abstract class FlashcardVertex extends AbstractVertexFrame {
-    @Property("id")
-    public abstract String getId();
+import java.util.List;
+import java.util.stream.Collectors;
 
-    @Property("id")
-    public abstract void setId(String id);
+public class FlashcardVertex extends AbstractVertex {
+    public FlashcardVertex(GraphTraversalSource traversalSource, Vertex vertex) {
+        super(traversalSource, vertex);
+    }
+
+    public final static String LABEL = "flashcard";
+
+    public final static String EDGE_LEFT_CONTENT = "hasLeftContent";
+    public final static String EDGE_RIGHT_CONTENT = "hasRightContent";
+
+    public final static String PROPERTY_ID = "id";
+
+    public String getId() {
+        return getPropertyAsString(PROPERTY_ID);
+    }
+
+    public void setId(String id) {
+        setProperty(PROPERTY_ID, id);
+    }
 
     public FlashcardDeckVertex getDeck() {
-        return traverse(g -> g.in("hasFlashcard")).nextOrDefaultExplicit(FlashcardDeckVertex.class, null);
+        var deckVertex = traversalSource.V(vertex).in(FlashcardDeckVertex.EDGE_FLASHCARD).next();
+        return new FlashcardDeckVertex(traversalSource, deckVertex);
     }
 
-    public TextVertex getLeftContent() {
-        return traverse(g -> g.out("hasLeftContent")).nextOrDefaultExplicit(TextVertex.class, null);
+    public TextContentVertex getLeftContent() {
+        var leftContentVertex = traversalSource.V(vertex).out(EDGE_LEFT_CONTENT).next();
+        return new TextContentVertex(traversalSource, leftContentVertex);
     }
 
-    public void setLeftContent(TextVertex vertex) {
-        var existingContent = getLeftContent();
-
-        if (existingContent != null)
-            existingContent.remove();
-
-        addFramedEdgeExplicit("hasLeftContent", vertex);
+    public void setLeftContent(TextContentVertex vertex) {
+        addEdgeOneToOne(EDGE_LEFT_CONTENT, vertex);
     }
 
-    public TextVertex getRightContent() {
-        return traverse(g -> g.out("hasRightContent")).nextOrDefaultExplicit(TextVertex.class, null);
+    public TextContentVertex getRightContent() {
+        var rightContentVertex = traversalSource.V(vertex).out(EDGE_RIGHT_CONTENT).next();
+        return new TextContentVertex(traversalSource, rightContentVertex);
     }
 
-    public void setRightContent(TextVertex vertex) {
-        var existingContent = getRightContent();
-
-        if (existingContent != null)
-            existingContent.remove();
-
-        addFramedEdgeExplicit("hasRightContent", vertex);
+    public void setRightContent(TextContentVertex vertex) {
+        addEdgeOneToOne(EDGE_RIGHT_CONTENT, vertex);
     }
 
     public FlashcardModel toFlashcardModel() {
@@ -62,5 +71,37 @@ public abstract class FlashcardVertex extends AbstractVertexFrame {
         model.setBack(getRightContent().toExerciseContentTextModel());
         model.setFront(getLeftContent().toExerciseContentTextModel());
         return model;
+    }
+
+    public static FlashcardVertex create(GraphTraversalSource traversalSource) {
+        var vertex = traversalSource.addV(LABEL).next();
+        return new FlashcardVertex(traversalSource, vertex);
+    }
+
+    public static List<FlashcardVertex> findAll(GraphTraversalSource traversalSource) {
+        var vertices = traversalSource.V().hasLabel(LABEL).toList();
+
+        return vertices.stream()
+                .map(v -> new FlashcardVertex(traversalSource, v))
+                .collect(Collectors.toList());
+    }
+
+    public static FlashcardVertex findById(GraphTraversalSource traversalSource, String id) {
+        var query = traversalSource.V().has(LABEL, PROPERTY_ID, id);
+
+        if (!query.hasNext())
+            throw new IllegalArgumentException("Flashcard with id " + id + " not found");
+
+        return new FlashcardVertex(traversalSource, query.next());
+    }
+
+    public static List<FlashcardVertex> findByDeckId(GraphTraversalSource traversalSource, String deckId) {
+        var vertices = traversalSource.V()
+                .has(FlashcardDeckVertex.LABEL, FlashcardDeckVertex.PROPERTY_ID, deckId).out(FlashcardDeckVertex.EDGE_FLASHCARD)
+                .toList();
+
+        return vertices.stream()
+                .map(v -> new FlashcardVertex(traversalSource, v))
+                .collect(Collectors.toList());
     }
 }

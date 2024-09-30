@@ -1,10 +1,9 @@
 package com.explik.diybirdyapp.graph.repository;
 
 import com.explik.diybirdyapp.graph.model.ExerciseModel;
+import com.explik.diybirdyapp.graph.vertex.AbstractVertex;
 import com.explik.diybirdyapp.graph.vertex.ExerciseVertex;
-import com.syncleus.ferma.DelegatingFramedGraph;
-import com.syncleus.ferma.FramedGraph;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,32 +15,25 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     @Autowired
     private ExerciseFactory exerciseFactory;
 
-    private final FramedGraph framedGraph;
+    private final GraphTraversalSource traversalSource;
 
-    public ExerciseRepositoryImpl(@Autowired TinkerGraph graph) {
-        var vertexTypes = List.of(
-            ExerciseVertex.class);
-        framedGraph = new DelegatingFramedGraph<>(graph, vertexTypes);
+    public ExerciseRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
+        this.traversalSource = traversalSource;
     }
 
     @Override
     public ExerciseModel get(String id) {
-        var vertex = framedGraph
-            .traverse(g -> g.V().has("exercise", "id", id))
-            .next(ExerciseVertex.class);
-
+        var vertex = ExerciseVertex.getById(traversalSource, id);
         return exerciseFactory.create(vertex);
     }
 
     @Override
     public List<ExerciseModel> getAll() {
-        var vertices = framedGraph
-            .traverse(g -> g.V().hasLabel("exercise"))
-            .toListExplicit(ExerciseVertex.class);
+        var vertices = ExerciseVertex.getAll(traversalSource);
 
         return vertices
                 .stream()
-                .map(exerciseFactory::createLimited)
+                .map(exerciseFactory::create)
                 .toList();
     }
 }

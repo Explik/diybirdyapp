@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.controller.dto.ExerciseContentTextDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseInputMultipleChoiceTextDto;
 import com.explik.diybirdyapp.graph.model.ExerciseContentFlashcardModel;
 import com.explik.diybirdyapp.graph.model.ExerciseContentTextModel;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,15 @@ public class ExerciseControllerIntegrationTests {
         var textContent2 = (ExerciseContentTextDto)flashcardContent.getBack();
         assertNotNull(textContent1);
         assertNotNull(textContent2);
+    }
+
+    @TestConfiguration
+    static class Configuration {
+        @Bean
+        public GraphTraversalSource traversalSource() {
+            var graph = TinkerGraph.open();
+            return graph.traversal();
+        }
     }
 
     // TODO Replace indirect dependency on DataInitializer with test configuration
