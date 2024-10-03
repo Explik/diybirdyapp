@@ -4,15 +4,13 @@ import { Exercise, ExerciseAnswer, GenericExercise, GenericExerciseContent, Gene
 import { TextContent } from '../../../shared/models/content.interface';
 import { ExerciseService } from './exercise.service';
 import { TextInput } from '../../../shared/models/input.interface';
-import { ExerciseDefaultContentService } from './exerciseDefaultContent.service';
+import { DefaultContentService } from './defaultContent.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExerciseContentService {
-  constructor(
-    private service: ExerciseService,
-    private defaultContentService: ExerciseDefaultContentService) { }
+  constructor(private service: ExerciseService) { }
 
   getProperty(name: string): Observable<string> {
     return this.service
@@ -20,18 +18,16 @@ export class ExerciseContentService {
       .pipe(map(data => (data?.properties as any)[name] ?? name));
   }
 
-  getContent<T>(identifier: string): Observable<T> {
+  getContent<T>(): Observable<T|undefined> {
       return this.service
         .getExercise()
         .pipe(map(data => <T>data?.content))
   }
 
-  getInput<T>(identifier: string): Observable<T> {
+  getInput<T>(): Observable<T | undefined> {
     return this.service
       .getExercise()
-      .pipe(switchMap(
-        data => data?.input ? of(data.input as T) : this.defaultContentService.getInput<T>(identifier)
-      ));
+      .pipe(map(data => data?.input as T));
   }
 
   getInputFeedback<T>(identifier: string): Observable<T|undefined> {

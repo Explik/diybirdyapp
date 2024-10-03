@@ -1,0 +1,16 @@
+<!-- Header -->
+<div header class="flex items-center">
+    <app-exit-icon-button class="pl-2 pr-0 flex-none"></app-exit-icon-button>
+    <app-progress-bar [progress]="40" class="flex-grow"></app-progress-bar>
+    </div>
+
+<!-- Content -->
+<div content class="px-12 py-6 max-w-lg mx-auto">
+    <ng-container *ngComponentOutlet="exerciseComponent" />
+</div>
+
+<!-- Footer -->
+<p footer class="px-12 mx-auto max-w-xl">
+    <app-text-button state="secondary" label="Skip" class="fixed bottom-16 left"></app-text-button>
+    <app-text-button state="primary" label="Check Answer" class="fixed bottom-16 right-16"></app-text-button>
+</p>

@@ -18,6 +18,6 @@ export class ExerciseReviewFlashcardContentContainerComponent implements OnInit 
   constructor(private service: ExerciseContentService) { }
 
   ngOnInit(): void {
-    this.service.getContent<FlashcardContent>("flashcard-content").subscribe(data => this.content = data);
+    this.service.getContent<FlashcardContent>().subscribe(data => this.content = data);
   }
 }

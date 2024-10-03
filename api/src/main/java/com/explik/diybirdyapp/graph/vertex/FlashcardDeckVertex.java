@@ -58,4 +58,11 @@ public class FlashcardDeckVertex extends AbstractVertex {
         var vertex = traversalSource.addV(LABEL).next();
         return new FlashcardDeckVertex(traversalSource, vertex);
     }
+
+    public static FlashcardDeckVertex findById(GraphTraversalSource traversalSource, String id) {
+        var vertexQuery = traversalSource.V().has(LABEL, PROPERTY_ID, id);
+        if (!vertexQuery.hasNext())
+            return null;
+        return new FlashcardDeckVertex(traversalSource, vertexQuery.next());
+    }
 }

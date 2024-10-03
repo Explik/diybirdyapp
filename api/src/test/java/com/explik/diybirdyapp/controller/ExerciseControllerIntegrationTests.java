@@ -1,10 +1,12 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentFlashcardDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentTextDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseInputMultipleChoiceTextDto;
 import com.explik.diybirdyapp.graph.model.ExerciseContentFlashcardModel;
 import com.explik.diybirdyapp.graph.model.ExerciseContentTextModel;
+import com.explik.diybirdyapp.graph.model.ExerciseSessionModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
@@ -28,7 +30,7 @@ public class ExerciseControllerIntegrationTests {
         var actual = controller.get("1");
 
         assertEquals("1", actual.getId());
-        assertEquals("write-sentence-using-word-exercise", actual.getType());
+        assertEquals(ExerciseTypes.WRITE_SENTENCE_USING_WORD, actual.getType());
         assertEquals("example", actual.getProperties().get("word"));
     }
 
@@ -38,7 +40,7 @@ public class ExerciseControllerIntegrationTests {
         var actual = controller.get("2");
 
         assertEquals("2", actual.getId());
-        assertEquals("write-translated-sentence-exercise", actual.getType());
+        assertEquals(ExerciseTypes.WRITE_TRANSLATED_SENTENCE, actual.getType());
         assertEquals("Danish", actual.getProperties().get("targetLanguage"));
 
         var content = (ExerciseContentTextDto)actual.getContent();
@@ -51,7 +53,7 @@ public class ExerciseControllerIntegrationTests {
         var actual = controller.get("3");
 
         assertEquals("3", actual.getId());
-        assertEquals("multiple-choice-text-exercise", actual.getType());
+        assertEquals(ExerciseTypes.MULTIPLE_CHOICE_TEXT, actual.getType());
 
         var input = (ExerciseInputMultipleChoiceTextDto)actual.getInput();
         var options = input.getOptions().stream().sorted(Comparator.comparing(ExerciseInputMultipleChoiceTextDto.Option::getId)).toList();
@@ -67,7 +69,7 @@ public class ExerciseControllerIntegrationTests {
         var actual = controller.get("4");
 
         assertEquals("4", actual.getId());
-        assertEquals("review-flashcard-content-exercise", actual.getType());
+        assertEquals(ExerciseTypes.REVIEW_FLASHCARD, actual.getType());
 
         var flashcardContent = (ExerciseContentFlashcardDto)actual.getContent();
         var textContent1 = (ExerciseContentTextDto)flashcardContent.getFront();

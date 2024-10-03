@@ -4,7 +4,7 @@ import { Flashcard, FlashcardLanguage } from '../../models/flashcard.model';
 import { ImportService } from '../../services/import.service';
 import { zip } from 'rxjs';
 import { RecursivePartial } from '../../../../shared/models/util.model';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-flashcard-deck-page',
@@ -23,6 +23,7 @@ export class FlashcardDeckPageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute, 
+    private router: Router,
     private service: ImportService) {}
 
   ngOnInit(): void {
@@ -85,6 +86,12 @@ export class FlashcardDeckPageComponent implements OnInit {
     zip(...buffer).subscribe(data => {
       this.originalName = this.name;
       this.originalFlashcards = JSON.parse(JSON.stringify(this.flashcards));
+    });
+  }
+
+  reviewFlashcards() {
+    this.service.reviewFlashcardDeck(this.flashcardDeckId!).subscribe(data => {
+      this.router.navigate(['/session/' + data.id]);
     });
   }
 }

@@ -1,7 +1,10 @@
 package com.explik.diybirdyapp.command;
 
+import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.graph.model.ExerciseSessionModel;
 import com.explik.diybirdyapp.graph.vertex.*;
 import com.explik.diybirdyapp.graph.vertex.factory.*;
+import com.explik.diybirdyapp.graph.vertex.manager.ExerciseSessionFlashcardReviewVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,9 @@ public class ResetGraphCommand implements Runnable{
 
     @Autowired
     private ExerciseWriteTranslatedSentenceVertexFactory exerciseWriteTranslatedSentenceVertexFactory;
+
+    @Autowired
+    private ExerciseSessionFlashcardReviewVertexFactory exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
     private FlashcardVertexFactory flashcardVertexFactory;
@@ -144,11 +150,13 @@ public class ResetGraphCommand implements Runnable{
                         wordVertex6));
 
         // Exercise 4 - Flashcard exercise
-        var flashcardVertex1 = FlashcardVertex.findById(traversalSource, "flashcardVertex1");
+        var sessionModel = new ExerciseSessionModel();
+        sessionModel.setId("4");
+        sessionModel.setType("flashcard-review");
+        sessionModel.setFlashcardDeckId("flashcardDeckVertex1");
 
-        var exerciseVertex1 = ExerciseVertex.create(traversalSource);
-        exerciseVertex1.setId("4");
-        exerciseVertex1.setType("review-flashcard-content-exercise");
-        exerciseVertex1.setContent(flashcardVertex1);
+        exerciseSessionFlashcardReviewVertexFactory.init(
+                traversalSource,
+                sessionModel);
     }
 }

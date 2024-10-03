@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.graph.repository;
 
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.graph.model.ExerciseInputMultipleChoiceTextModel;
 import com.explik.diybirdyapp.graph.model.ExerciseModel;
 import com.explik.diybirdyapp.graph.vertex.ExerciseVertex;
@@ -14,17 +15,16 @@ public class ExerciseFactoryImpl implements ExerciseFactory {
 
         var vertexType = vertex.getType();
         switch (vertexType) {
-            case "write-sentence-using-word-exercise" -> {
+            case ExerciseTypes.WRITE_SENTENCE_USING_WORD -> {
                 instance.setProperty("word", vertex.getTextContent().getValue());
                 return instance;
             }
-            case "write-translated-sentence-exercise" -> {
-
+            case ExerciseTypes.WRITE_TRANSLATED_SENTENCE -> {
                 instance.setProperty("targetLanguage", vertex.getTargetLanguage());
                 instance.setContent(vertex.getTextContent().toExerciseContentTextModel());
                 return instance;
             }
-            case "multiple-choice-text-exercise" -> {
+            case ExerciseTypes.MULTIPLE_CHOICE_TEXT -> {
                 var input = new ExerciseInputMultipleChoiceTextModel();
                 input.setType("multiple-choice-text-input");
                 vertex.getOptions()
@@ -36,7 +36,7 @@ public class ExerciseFactoryImpl implements ExerciseFactory {
                 instance.setInput(input);
                 return instance;
             }
-            case "review-flashcard-content-exercise" -> {
+            case ExerciseTypes.REVIEW_FLASHCARD -> {
                 instance.setContent(vertex.getFlashcardContent().toExerciseContentFlashcardModel());
                 return instance;
             }

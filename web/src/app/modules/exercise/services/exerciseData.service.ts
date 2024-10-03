@@ -14,6 +14,16 @@ export class ExerciseDataService {
         return this.http.get<ExerciseDto>(`${environment.apiUrl}/exercise/${id}`);
     }
 
+    getExerciseSession(id: string): Observable<ExerciseSessionDto> {
+        // TODO Add error handling
+        return this.http.get<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${id}`);
+    }
+
+    getNextExercise(sessionId: string): Observable<ExerciseDto> {
+        // TODO Add error handling
+        return this.http.post<ExerciseDto>(`${environment.apiUrl}/exercise-session/${sessionId}/next`, {});
+    }
+
     getExercises(): Observable<ExerciseDto[]> {
         // TODO Add error handling
         return this.http.get<ExerciseDto[]>(`${environment.apiUrl}/exercise`);

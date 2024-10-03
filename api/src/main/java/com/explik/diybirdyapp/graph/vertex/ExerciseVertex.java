@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.graph.vertex;
 
 import com.explik.diybirdyapp.graph.model.ExerciseModel;
+import com.explik.diybirdyapp.graph.model.ExerciseSessionModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -14,6 +15,7 @@ public class ExerciseVertex extends AbstractVertex {
     public final static String LABEL = "exercise";
 
     public final static String EDGE_CONTENT = "hasContent";
+    public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_OPTION = "hasOption";
     public final static String EDGE_CORRECT_OPTION = "hasCorrectOption";
 
@@ -78,6 +80,17 @@ public class ExerciseVertex extends AbstractVertex {
 
     public void setCorrectOption(AbstractVertex option) {
         addEdgeOneToOne(EDGE_CORRECT_OPTION, option);
+    }
+
+    public ExerciseSessionVertex getSession() {
+        var vertexQuery = traversalSource.V(vertex).out(EDGE_SESSION);
+        if (!vertexQuery.hasNext())
+            return null;
+        return new ExerciseSessionVertex(traversalSource, vertexQuery.next());
+    }
+
+    public void setSession(AbstractVertex session) {
+        addEdgeOneToMany(EDGE_SESSION, session);
     }
 
     public static ExerciseVertex create(GraphTraversalSource traversalSource) {

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.dto.*;
+import com.explik.diybirdyapp.controller.mapper.GenericMapper;
 import com.explik.diybirdyapp.graph.model.*;
 import com.explik.diybirdyapp.service.ExerciseService;
 import org.modelmapper.AbstractConverter;
@@ -16,16 +17,11 @@ import org.modelmapper.spi.*;
 
 @RestController
 public class ExerciseController {
-    private final ModelMapper modelMapper;
-
     @Autowired
     ExerciseService exerciseService;
 
-    ExerciseController() {
-        modelMapper = new ModelMapper();
-        modelMapper.addConverter(exerciseContentConverter);
-        modelMapper.addConverter(exerciseInputConverter);
-    }
+    @Autowired
+    GenericMapper<ExerciseModel, ExerciseDto> exerciseMapper;
 
 //    @PostMapping("/exercise")
 //    public Exercise create(@RequestBody String json)  {
@@ -38,15 +34,14 @@ public class ExerciseController {
         var models = exerciseService.getExercises();
 
         return models.stream()
-                .map(s -> modelMapper.map(s, ExerciseDto.class))
+                .map(exerciseMapper::map)
                 .toList();
     }
 
     @GetMapping("/exercise/{id}")
     public ExerciseDto get(@PathVariable String id) {
         var model = exerciseService.getExercise(id);
-
-        return modelMapper.map(model, ExerciseDto.class);
+        return exerciseMapper.map(model);
     }
 
 //    @PostMapping("/exercise/{id}/answer")
@@ -56,25 +51,4 @@ public class ExerciseController {
 //
 //        return exerciseService.createExerciseAnswer(exercise);
 //    }
-
-    Converter<ExerciseContentModel, ExerciseContentDto> exerciseContentConverter = new AbstractConverter<ExerciseContentModel, ExerciseContentDto>() {
-        protected ExerciseContentDto convert(ExerciseContentModel source) {
-            if (source instanceof ExerciseContentTextModel)
-                return modelMapper.map(source, ExerciseContentTextDto.class);
-            if (source instanceof ExerciseContentFlashcardModel)
-                return modelMapper.map(source, ExerciseContentFlashcardDto.class);
-            return null;
-        }
-    };
-
-    Converter<ExerciseInputModel, ExerciseInputDto> exerciseInputConverter = new AbstractConverter<ExerciseInputModel, ExerciseInputDto>() {
-        @Override
-        protected ExerciseInputDto convert(ExerciseInputModel source) {
-            if (source instanceof ExerciseInputTextModel)
-                return modelMapper.map(source, ExerciseInputTextDto.class);
-            if (source instanceof ExerciseInputMultipleChoiceTextModel)
-                return modelMapper.map(source, ExerciseInputMultipleChoiceTextDto.class);
-            return null;
-        }
-    };
 }

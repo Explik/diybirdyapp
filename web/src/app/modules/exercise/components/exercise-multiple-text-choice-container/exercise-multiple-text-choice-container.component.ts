@@ -20,7 +20,7 @@ export class ExerciseMultipleTextChoiceContainerComponent implements OnInit {
   constructor(private service: ExerciseContentService) { }
 
   ngOnInit(): void {
-    this.service.getInput<MultipleChoiceTextInput>("multiple-choice-text-input").subscribe(data => this.input = data);
+    this.service.getInput<MultipleChoiceTextInput>().subscribe(data => this.input = data);
   }
 
   handleCheckAnswer() {

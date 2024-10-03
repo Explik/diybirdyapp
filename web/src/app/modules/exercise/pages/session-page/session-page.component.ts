@@ -14,16 +14,18 @@ import { ExerciseDataService } from '../../services/exerciseData.service';
 import { ExerciseWriteSentenceUsingWordContainerComponent } from '../../components/exercise-write-sentence-using-word-container/exercise-write-sentence-using-word-container.component';
 import { ExerciseWriteTranslatedSentenceContainerComponent } from '../../components/exercise-write-translated-sentence-container/exercise-write-translated-sentence-container.component';
 import { ExerciseService } from '../../services/exercise.service';
+import { ExerciseMultipleTextChoiceContainerComponent } from '../../components/exercise-multiple-text-choice-container/exercise-multiple-text-choice-container.component';
+import { ExerciseReviewFlashcardContentContainerComponent } from '../../components/exercise-review-flashcard-content-container/exercise-review-flashcard-content-container.component';
 import { ExerciseComponentService } from '../../services/exerciseComponent.service';
 
 @Component({
-    selector: 'app-exercise-page',
+    selector: 'app-session-page',
     standalone: true,
-    templateUrl: './exercise-page.component.html',
-    styleUrl: './exercise-page.component.css',
+    templateUrl: './session-page.component.html',
+    styleUrl: './session-page.component.css',
     imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent]
 })
-export class ExercisePageComponent {
+export class SessionPageComponent {
     sessionId: string | undefined = undefined;
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
@@ -33,21 +35,24 @@ export class ExercisePageComponent {
         private route: ActivatedRoute,
         private exerciseService: ExerciseService,
         private exerciseComponentService: ExerciseComponentService,
-        private exerciseDataService: ExerciseDataService) { }
+        private exerciseDataService: ExerciseDataService) {}
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
-            const id = params.get('id') ?? "1";
+          this.sessionId = params.get('id') ?? "1";
+          this.loadNextExercise(this.sessionId);
+        });
+    }
 
-            this.exerciseDataService.getExercise(id).subscribe(data => {
-                if (!data)
-                    return;
+    loadNextExercise(sessionId: string) {
+        this.exerciseDataService.getNextExercise(sessionId).subscribe(data => {
+            if (!data)
+                return;
 
-                this.exerciseId = data.id;
-                this.exerciseType = data.type;
-                this.exerciseService.setExercise(data);
-                this.exerciseComponent = this.exerciseComponentService.getComponent(data.type);
-            });
+            this.exerciseId = data.id;
+            this.exerciseType = data.type;
+            this.exerciseService.setExercise(data);
+            this.exerciseComponent = this.exerciseComponentService.getComponent(data.type);
         });
     }
 }

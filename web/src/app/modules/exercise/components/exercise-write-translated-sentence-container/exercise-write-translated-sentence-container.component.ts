@@ -6,6 +6,7 @@ import { CorrectableTextFieldComponent } from "../../../../shared/components/cor
 import { TextContent } from '../../../../shared/models/content.interface';
 import { TextInput, TextInputFeedback } from '../../../../shared/models/input.interface';
 import { CommonModule } from '@angular/common';
+import { DefaultContentService } from '../../services/defaultContent.service';
 
 @Component({
   selector: 'app-exercise-write-translated-sentence-container',
@@ -20,17 +21,19 @@ export class ExerciseWriteTranslatedSentenceContainerComponent implements OnInit
   input?: TextInput;
   inputFeedback?: TextInputFeedback;
 
-  constructor(private service: ExerciseContentService) { }
+  constructor(
+    private contentService: ExerciseContentService,
+    private defaultContentService: DefaultContentService) { }
 
   ngOnInit(): void {
-    this.service.getProperty("targetLanguage").subscribe(data => this.targetLanguage = data);
-    this.service.getContent<TextContent>("text-content").subscribe(data => this.content = data);
-    this.service.getInput<TextInput>("text-input").subscribe(data => this.input = data);
-    this.service.getInputFeedback<TextInputFeedback>("text-input-feedback").subscribe(data => this.inputFeedback = data);
+    this.contentService.getProperty("targetLanguage").subscribe(data => this.targetLanguage = data);
+    this.contentService.getContent<TextContent>().subscribe(data => this.content = data);
+    this.contentService.getInput<TextInput>().subscribe(data => this.input = data ?? this.defaultContentService.getTextInput());
+    this.contentService.getInputFeedback<TextInputFeedback>("text-input-feedback").subscribe(data => this.inputFeedback = data);
   }
 
   handleCheckAnswer() {
-    return this.service.submitAnswer({
+    return this.contentService.submitAnswer({
       id: '',
       exerciseId: ''
     });
