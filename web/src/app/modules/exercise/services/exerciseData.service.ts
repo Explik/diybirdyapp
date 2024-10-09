@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ExerciseAnswer } from '../models/exercise.interface';
+import { TextInputFeedback } from '../../../shared/models/input.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -27,5 +29,10 @@ export class ExerciseDataService {
     getExercises(): Observable<ExerciseDto[]> {
         // TODO Add error handling
         return this.http.get<ExerciseDto[]>(`${environment.apiUrl}/exercise`);
+    }
+
+    submitExerciseAnswer(exerciseId: string, answer: ExerciseAnswer): Observable<TextInputFeedback> {
+        // TODO Add error handling
+        return this.http.post<TextInputFeedback>(`${environment.apiUrl}/exercise/${exerciseId}/answer`, answer);
     }
 }

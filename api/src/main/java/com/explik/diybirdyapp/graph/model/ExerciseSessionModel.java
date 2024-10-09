@@ -4,6 +4,7 @@ public class ExerciseSessionModel {
     private String id;
     private String type;
     private String flashcardDeckId;
+    private ExerciseModel exercise;
 
     public String getId() {
         return id;
@@ -27,5 +28,13 @@ public class ExerciseSessionModel {
 
     public void setFlashcardDeckId(String flashcardDeckId) {
         this.flashcardDeckId = flashcardDeckId;
+    }
+
+    public ExerciseModel getExercise() {
+        return exercise;
+    }
+
+    public void setExercise(ExerciseModel exercise) {
+        this.exercise = exercise;
     }
 }

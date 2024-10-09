@@ -11,5 +11,5 @@
         <span>{{content!.back.text}}</span>
     </ng-container>
 </app-generic-flashcard>
-      
-<button>Check answer</button>
+
+<app-recognizability-rating (ratingSelected)="onRatingSelected($event)"></app-recognizability-rating>

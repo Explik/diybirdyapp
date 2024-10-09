@@ -1,14 +1,15 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.ExerciseAnswerTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentFlashcardDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentTextDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseInputMultipleChoiceTextDto;
-import com.explik.diybirdyapp.graph.model.ExerciseContentFlashcardModel;
-import com.explik.diybirdyapp.graph.model.ExerciseContentTextModel;
-import com.explik.diybirdyapp.graph.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.graph.model.ExerciseAnswerModel;
+import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +23,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class ExerciseControllerIntegrationTests {
     @Autowired
+    DataInitializerService dataInitializer;
+
+    @Autowired
     ExerciseController controller;
+
+    // Runs before each test
+    @BeforeEach
+    void setUp() {
+        dataInitializer.resetInitialData();
+    }
 
     @Test
     void givenExistingWriteSentenceUsingWordExercise_whenGetById_thenReturnExercise() {
@@ -76,6 +86,18 @@ public class ExerciseControllerIntegrationTests {
         var textContent2 = (ExerciseContentTextDto)flashcardContent.getBack();
         assertNotNull(textContent1);
         assertNotNull(textContent2);
+    }
+
+    @Test
+    void givenExistingExercise_whenSubmitAnswer_thenReturnFeedback() {
+        // IMPORTANT: Relies on data from DataInitializer.addInitialFlashcardAndFlashcardExerciseData()
+        var answer = new ExerciseAnswerModel();
+        answer.setType(ExerciseAnswerTypes.RECOGNIZABILITY_RATING);
+        answer.setRating("easy");
+
+        var actual = controller.submitAnswer("4", answer);
+
+        assertNotNull(actual);
     }
 
     @TestConfiguration

@@ -9,6 +9,7 @@ import { RecursivePartial } from "../../../shared/models/util.model";
     providedIn: 'root'
   })
   export class ImportService {
+    private exerciseSessionBaseUrl = `${environment.apiUrl}/exercise-session`;
     private flashcardBaseUrl = `${environment.apiUrl}/flashcard`;
     private flashcardDeckBaseUrl = `${environment.apiUrl}/flashcard-deck`;
     private languageBaseUrl = `${environment.apiUrl}/language`;
@@ -54,7 +55,10 @@ import { RecursivePartial } from "../../../shared/models/util.model";
     }
 
     reviewFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
-      return this.http.post<ExerciseSessionDto>(this.flashcardDeckBaseUrl + "/" + deckId + "/review-exercise", {});
+      return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, { 
+        type: "review-flashcard-session", 
+        flashcardDeckId: deckId 
+      });
     }
 
     mapDtoToModel(x: FlashcardDto): Flashcard {

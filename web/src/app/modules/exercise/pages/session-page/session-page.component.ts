@@ -30,6 +30,7 @@ export class SessionPageComponent {
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
     exerciseComponent: Type<any> | null = null;
+    exerciseFeedback: string | undefined = undefined;
 
     constructor(
         private route: ActivatedRoute,
@@ -40,8 +41,29 @@ export class SessionPageComponent {
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
           this.sessionId = params.get('id') ?? "1";
-          this.loadNextExercise(this.sessionId);
+          this.loadCurrentExercise(this.sessionId);
         });
+        
+        this.exerciseService.getExerciseFeedback().subscribe(data => {
+            if (data?.type !== "general")
+                return; 
+
+            this.exerciseFeedback = data.message;
+        });
+    }
+
+    loadCurrentExercise(sessionId: string) { 
+        this.exerciseDataService.getExerciseSession(sessionId).subscribe(data => {
+            if (!data)
+                return;
+            if (!data.exercise)
+                return;
+
+            this.exerciseId = data.exercise.id;
+            this.exerciseType = data.exercise.type;
+            this.exerciseService.setExercise(data.exercise);
+            this.exerciseComponent = this.exerciseComponentService.getComponent(data.exercise.type);
+        })
     }
 
     loadNextExercise(sessionId: string) {
@@ -53,6 +75,6 @@ export class SessionPageComponent {
             this.exerciseType = data.type;
             this.exerciseService.setExercise(data);
             this.exerciseComponent = this.exerciseComponentService.getComponent(data.type);
-        });
+        })
     }
 }

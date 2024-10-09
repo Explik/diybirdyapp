@@ -4,6 +4,7 @@ public class ExerciseSessionDto {
     private String id;
     private String type;
     private String flashcardDeckId;
+    private ExerciseDto exercise;
 
     public String getId() {
         return id;
@@ -27,5 +28,13 @@ public class ExerciseSessionDto {
 
     public void setFlashcardDeckId(String flashcardDeckId) {
         this.flashcardDeckId = flashcardDeckId;
+    }
+
+    public ExerciseDto getExercise() {
+        return exercise;
+    }
+
+    public void setExercise(ExerciseDto exercise) {
+        this.exercise = exercise;
     }
 }

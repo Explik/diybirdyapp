@@ -5,6 +5,7 @@ import { TextContent } from '../../../shared/models/content.interface';
 import { ExerciseService } from './exercise.service';
 import { TextInput } from '../../../shared/models/input.interface';
 import { DefaultContentService } from './defaultContent.service';
+import { ExerciseDataService } from './exerciseData.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,10 +32,10 @@ export class ExerciseContentService {
   }
 
   getInputFeedback<T>(identifier: string): Observable<T|undefined> {
-    return of(undefined);
+    return this.service.getExerciseFeedback().pipe(map(data => data?.type !== "general" ? data as T : undefined));
   }
 
   submitAnswer(answer: ExerciseAnswer) {
-
+    this.service.submitAnswer(answer);
   }
 }

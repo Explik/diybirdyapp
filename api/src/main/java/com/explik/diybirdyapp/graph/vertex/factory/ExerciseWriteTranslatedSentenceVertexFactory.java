@@ -1,11 +1,13 @@
 package com.explik.diybirdyapp.graph.vertex.factory;
 
+import com.explik.diybirdyapp.ComponentTypes;
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.graph.vertex.AbstractVertex;
 import com.explik.diybirdyapp.graph.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component(ExerciseTypes.WRITE_TRANSLATED_SENTENCE + ComponentTypes.VERTEX_FACTORY)
 public class ExerciseWriteTranslatedSentenceVertexFactory implements VertexFactory<ExerciseVertex, ExerciseWriteTranslatedSentenceVertexFactory.Options> {
     @Override
     public ExerciseVertex create(GraphTraversalSource traversalSource, Options options) {

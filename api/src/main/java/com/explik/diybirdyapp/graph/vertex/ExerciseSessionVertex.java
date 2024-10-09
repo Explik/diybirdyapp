@@ -12,7 +12,6 @@ public class ExerciseSessionVertex extends AbstractVertex {
 
     public final static String LABEL = "exerciseSession";
 
-    public final static String EDGE_EXERCISE = "hasExercise";
     public final static String EDGE_FLASHCARD_DECK = "hasFlashcardDeck";
 
     public final static String PROPERTY_ID = "id";
@@ -34,12 +33,15 @@ public class ExerciseSessionVertex extends AbstractVertex {
         setProperty(PROPERTY_TYPE, type);
     }
 
-    public void addExercise(ExerciseVertex exerciseVertex) {
-        addEdgeOneToOne(EDGE_EXERCISE, exerciseVertex);
+    public ExerciseVertex getCurrentExercise() {
+        var vertexQuery = traversalSource.V(vertex).in(ExerciseVertex.EDGE_SESSION);
+        if (!vertexQuery.hasNext())
+            return null;
+        return new ExerciseVertex(traversalSource, vertexQuery.next());
     }
 
     public List<ExerciseVertex> getExercises() {
-        var exerciseVertices = traversalSource.V(vertex).out(EDGE_EXERCISE).toList();
+        var exerciseVertices = traversalSource.V(vertex).in(ExerciseVertex.EDGE_SESSION).toList();
         return exerciseVertices.stream()
                 .map(v -> new ExerciseVertex(traversalSource, v))
                 .toList();

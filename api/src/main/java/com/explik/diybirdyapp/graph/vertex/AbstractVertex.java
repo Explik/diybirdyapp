@@ -20,15 +20,19 @@ public abstract class AbstractVertex {
         return this.vertex;
     }
 
+    public void reload() {
+        this.vertex = this.traversalSource.V(this.vertex).next();
+    }
+
     protected void addEdgeOneToOne(String edgeLabel, AbstractVertex toVertex) {
         this.traversalSource.V(this.vertex).outE(edgeLabel).drop().iterate();
         this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).next();
-        this.vertex = this.traversalSource.V(vertex).next(); // Reload vertex after update
+        reload();
     }
 
     protected void addEdgeOneToMany(String edgeLabel, AbstractVertex toVertex) {
         this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).next();
-        this.vertex = this.traversalSource.V(this.vertex).next(); // Reload vertex after update
+        reload();
     }
 
     protected <T> T getProperty(String propertyKey) {
@@ -41,6 +45,6 @@ public abstract class AbstractVertex {
 
     protected <T> void setProperty(String propertyKey, T propertyValue) {
         this.traversalSource.V(this.vertex).property(propertyKey, propertyValue).iterate();
-        this.vertex = this.traversalSource.V(this.vertex).next(); // Reload vertex after update
+        reload();
     }
 }

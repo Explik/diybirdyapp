@@ -5,7 +5,9 @@ export interface TextInput {
 }
 
 export interface TextInputFeedback {
-    state: resultState
+    type: string,
+    state: resultState,
+    message: string|undefined
 }
 
 export interface MultipleChoiceTextInput {

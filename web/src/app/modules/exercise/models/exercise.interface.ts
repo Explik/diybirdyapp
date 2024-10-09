@@ -57,6 +57,7 @@ export interface Exercise {
 }
 
 export interface ExerciseAnswer {
-    id: string;
-    exerciseId: string;
+    //id: string;
+    //exerciseId: string;
+    [key: string]: any;
 }

@@ -1,11 +1,12 @@
 package com.explik.diybirdyapp.graph.repository;
 
+import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.graph.model.ExerciseModel;
 import com.explik.diybirdyapp.graph.model.ExerciseSessionModel;
 import com.explik.diybirdyapp.graph.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.graph.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.graph.vertex.factory.VertexFactory;
 import com.explik.diybirdyapp.graph.vertex.manager.ExerciseSessionManager;
+import com.explik.diybirdyapp.graph.vertex.modelFactory.ExerciseSessionModelFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,10 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     private final GraphTraversalSource traversalSource;
 
     @Autowired
-    Map<String, ExerciseSessionManager> factories;
+    ExerciseSessionModelFactory sessionModelFactory;
+
+    @Autowired
+    Map<String, ExerciseSessionManager> sessionManagers;
 
     public ExerciseSessionRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
@@ -25,12 +29,21 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
 
     @Override
     public ExerciseSessionModel add(ExerciseSessionModel model) {
-        if (!factories.containsKey(model.getType()))
-            throw new IllegalArgumentException("No factory for type " + model.getType());
+        var sessionType = model.getType();
+        var sessionManager = sessionManagers.getOrDefault(model.getType() + ComponentTypes.MANAGER, null);
+        if (sessionManager == null)
+            throw new IllegalArgumentException("No factory for type " + sessionType);
 
-        var factory = factories.get(model.getType());
-        var vertex = factory.init(traversalSource, model);
-        return create(vertex);
+        return sessionManager.init(traversalSource, model);
+    }
+
+    @Override
+    public ExerciseSessionModel get(String id) {
+        var vertex = ExerciseSessionVertex.findById(traversalSource, id);
+        if (vertex == null)
+            throw new RuntimeException("No session with id " + id);
+
+        return sessionModelFactory.create(vertex);
     }
 
     public ExerciseModel nextExercise(String modelId) {
@@ -39,26 +52,10 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             throw new IllegalArgumentException("No session with id " + modelId);
 
         var sessionType = sessionVertex.getType();
-        if (!factories.containsKey(sessionType))
+        var sessionManager = sessionManagers.getOrDefault(sessionType + ComponentTypes.MANAGER, null);
+        if (sessionManager == null)
             throw new IllegalArgumentException("No factory for type " + sessionType);
 
-        var factory = factories.get(sessionType);
-        var vertex = factory.next(traversalSource, modelId);
-        return (vertex != null) ? create(vertex) : null;
-    }
-
-    private ExerciseModel create(ExerciseVertex vertex) {
-        var model = new ExerciseModel();
-        model.setId(vertex.getId());
-        model.setType(vertex.getType());
-        return model;
-    }
-
-    private ExerciseSessionModel create(ExerciseSessionVertex vertex) {
-        var model = new ExerciseSessionModel();
-        model.setId(vertex.getId());
-        model.setType(vertex.getType());
-        model.setFlashcardDeckId(vertex.getFlashcardDeck().getId());
-        return model;
+        return sessionManager.next(traversalSource, modelId);
     }
 }

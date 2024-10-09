@@ -90,6 +90,8 @@ public class ExerciseVertex extends AbstractVertex {
     }
 
     public void setSession(AbstractVertex session) {
+        if (session == null)
+            return;
         addEdgeOneToMany(EDGE_SESSION, session);
     }
 

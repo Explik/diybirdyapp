@@ -19,6 +19,10 @@ public class ExerciseSessionService {
         return sessionRepository.add(model);
     }
 
+    public ExerciseSessionModel get(String id) {
+        return sessionRepository.get(id);
+    }
+
     public ExerciseModel nextExercise(String modelId) {
         var limitedExercise = sessionRepository.nextExercise(modelId);
         return (limitedExercise != null) ? exerciseRepository.get(limitedExercise.getId()) : null;

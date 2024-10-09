@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.controller.dto.ExerciseSessionDto;
 import com.explik.diybirdyapp.graph.vertex.factory.FlashcardDeckVertexFactory;
 import com.explik.diybirdyapp.graph.vertex.factory.FlashcardVertexFactory;
@@ -29,12 +30,13 @@ public class ExerciseSessionControllerIntegrationTests {
     void givenNothing_whenCreate_thenReturnExerciseSession() {
         var session = new ExerciseSessionDto();
         session.setId("new-id");
-        session.setType("flashcard-review");
+        session.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
         session.setFlashcardDeckId(FLASHCARD_DECK_ID);
 
         var savedSession = controller.create(session);
 
         assertNotNull(savedSession);
+        assertNotNull(savedSession.getExercise());
         assertEquals(session.getId(), savedSession.getId());
         assertEquals(session.getType(), savedSession.getType());
     }
@@ -43,7 +45,7 @@ public class ExerciseSessionControllerIntegrationTests {
     void givenNewlyCreatedSession_whenNext_thenReturnExercise() {
         var session = new ExerciseSessionDto();
         session.setId("new-id");
-        session.setType("flashcard-review");
+        session.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
         session.setFlashcardDeckId(FLASHCARD_DECK_ID);
 
         controller.create(session);
@@ -51,6 +53,20 @@ public class ExerciseSessionControllerIntegrationTests {
 
         assertNotNull(nextExercise);
     }
+
+     @Test
+     void givenNewlyCreatedSession_whenGet_thenReturnExerciseSession() {
+         var session = new ExerciseSessionDto();
+         session.setId("new-id");
+         session.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
+         session.setFlashcardDeckId(FLASHCARD_DECK_ID);
+
+         controller.create(session);
+         var savedSession = controller.get(session.getId());
+
+         assertNotNull(savedSession);
+         assertNotNull(savedSession.getExercise());
+     }
 
     @TestConfiguration
     public static class InMemoryGraphTestConfiguration {
