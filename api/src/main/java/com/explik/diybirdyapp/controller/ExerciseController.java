@@ -2,7 +2,9 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.dto.*;
 import com.explik.diybirdyapp.controller.mapper.GenericMapper;
-import com.explik.diybirdyapp.graph.model.*;
+import com.explik.diybirdyapp.model.ExerciseAnswerModel;
+import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.service.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

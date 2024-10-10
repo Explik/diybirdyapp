@@ -1,12 +1,12 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.graph.model.ExerciseSessionModel;
-import com.explik.diybirdyapp.graph.vertex.FlashcardDeckVertex;
-import com.explik.diybirdyapp.graph.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.graph.vertex.LanguageVertex;
-import com.explik.diybirdyapp.graph.vertex.TextContentVertex;
-import com.explik.diybirdyapp.graph.vertex.factory.*;
-import com.explik.diybirdyapp.graph.vertex.manager.ExerciseSessionManagerFlashcardReview;
+import com.explik.diybirdyapp.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
+import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
+import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsFlashcardReview;
+import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class DataInitializerService {
     ExerciseReviewFlashcardVertexFactory exerciseReviewFlashcardVertexFactory;
 
     @Autowired
-    private ExerciseSessionManagerFlashcardReview exerciseSessionFlashcardReviewVertexFactory;
+    private ExerciseSessionOperationsFlashcardReview exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
     private FlashcardVertexFactory flashcardVertexFactory;

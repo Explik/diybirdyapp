@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.controller.dto;
 
-import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.FlashcardLanguageModel;
 
 public class FlashcardDto {
     private String id;

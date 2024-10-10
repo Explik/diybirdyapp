@@ -1,10 +1,7 @@
 package com.explik.diybirdyapp.controller.mapper;
 
 import com.explik.diybirdyapp.controller.dto.*;
-import com.explik.diybirdyapp.graph.model.*;
-import org.modelmapper.AbstractConverter;
-import org.modelmapper.Converter;
-import org.modelmapper.ModelMapper;
+import com.explik.diybirdyapp.model.ExerciseModel;
 import org.springframework.stereotype.Component;
 
 @Component

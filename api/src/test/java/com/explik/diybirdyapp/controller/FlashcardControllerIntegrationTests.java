@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.FlashcardLanguageModel;
 import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;

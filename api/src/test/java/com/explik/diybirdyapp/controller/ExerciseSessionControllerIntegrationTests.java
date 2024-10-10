@@ -2,10 +2,10 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.controller.dto.ExerciseSessionDto;
-import com.explik.diybirdyapp.graph.vertex.factory.FlashcardDeckVertexFactory;
-import com.explik.diybirdyapp.graph.vertex.factory.FlashcardVertexFactory;
-import com.explik.diybirdyapp.graph.vertex.factory.LanguageVertexFactory;
-import com.explik.diybirdyapp.graph.vertex.factory.TextContentVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;

@@ -5,7 +5,7 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentFlashcardDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentTextDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseInputMultipleChoiceTextDto;
-import com.explik.diybirdyapp.graph.model.ExerciseAnswerModel;
+import com.explik.diybirdyapp.model.ExerciseAnswerModel;
 import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;

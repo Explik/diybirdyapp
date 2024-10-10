@@ -3,13 +3,11 @@ package com.explik.diybirdyapp.controller;
 import com.explik.diybirdyapp.controller.dto.ExerciseDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseSessionDto;
 import com.explik.diybirdyapp.controller.mapper.GenericMapper;
-import com.explik.diybirdyapp.graph.model.ExerciseModel;
-import com.explik.diybirdyapp.graph.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.model.ExerciseSessionModel;
 import com.explik.diybirdyapp.service.ExerciseSessionService;
-import jakarta.websocket.server.PathParam;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

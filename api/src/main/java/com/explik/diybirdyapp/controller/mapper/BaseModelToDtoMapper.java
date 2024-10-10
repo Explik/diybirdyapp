@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.controller.mapper;
 
 import com.explik.diybirdyapp.controller.dto.*;
-import com.explik.diybirdyapp.graph.model.*;
+import com.explik.diybirdyapp.model.*;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;

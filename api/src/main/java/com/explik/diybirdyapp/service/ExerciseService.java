@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.graph.model.ExerciseAnswerModel;
-import com.explik.diybirdyapp.graph.model.ExerciseFeedbackModel;
-import com.explik.diybirdyapp.graph.model.ExerciseModel;
-import com.explik.diybirdyapp.graph.repository.ExerciseRepository;
+import com.explik.diybirdyapp.model.ExerciseAnswerModel;
+import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.persistence.repository.ExerciseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
