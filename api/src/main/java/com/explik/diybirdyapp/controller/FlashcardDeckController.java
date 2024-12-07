@@ -2,7 +2,7 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.dto.FlashcardDeckDto;
 import com.explik.diybirdyapp.model.FlashcardDeckModel;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsFlashcardReview;
+import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.service.FlashcardDeckService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.modelmapper.ModelMapper;
@@ -20,7 +20,7 @@ public class FlashcardDeckController {
     @Autowired
     private GraphTraversalSource traversalSource;
     @Autowired
-    private ExerciseSessionOperationsFlashcardReview exerciseSessionFlashcardReviewVertexFactory;
+    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
     FlashcardDeckService service;

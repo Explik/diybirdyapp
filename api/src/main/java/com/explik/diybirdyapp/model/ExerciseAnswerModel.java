@@ -4,6 +4,7 @@ public class ExerciseAnswerModel {
     private String id;
     private String type;
     private String rating;
+    private String textInput;
 
     public String getId() {
         return id;
@@ -28,4 +29,8 @@ public class ExerciseAnswerModel {
     public void setRating(String rating) {
         this.rating = rating;
     }
+
+    public String getTextInput() { return textInput; }
+
+    public void setTextInput(String textInput) { this.textInput = textInput; }
 }

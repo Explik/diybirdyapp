@@ -64,7 +64,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, id);
         var exerciseType = exerciseVertex.getType();
 
-        var manager = exerciseManagers.getOrDefault(exerciseType + ComponentTypes.MANAGER, null);
+        var manager = exerciseManagers.getOrDefault(exerciseType + ComponentTypes.OPERATIONS, null);
         if (manager == null)
             throw new RuntimeException("Unsupported exercise type: " + exerciseType);
 

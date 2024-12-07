@@ -20,6 +20,7 @@ public class ExerciseVertex extends AbstractVertex {
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TARGET_LANGUAGE = "targetLanguage";
+    public final static String PROPERTY_FLASHCARD_SIDE = "flashcardSide";
     public final static String PROPERTY_TYPE = "exerciseType";
 
     public String getId() {
@@ -59,6 +60,10 @@ public class ExerciseVertex extends AbstractVertex {
     public void setTargetLanguage(String targetLanguage) {
         setProperty(PROPERTY_TARGET_LANGUAGE, targetLanguage);
     }
+
+    public String getFlashcardSide() { return getPropertyAsString(PROPERTY_FLASHCARD_SIDE); }
+
+    public void setFlashcardSide(String flashcardSide) { setProperty(PROPERTY_FLASHCARD_SIDE, flashcardSide); }
 
     public void addOption(AbstractVertex option) {
         addEdgeOneToMany(EDGE_OPTION, option);

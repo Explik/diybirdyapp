@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.persistence.vertex;
 import com.explik.diybirdyapp.model.ExerciseContentFlashcardModel;
 import com.explik.diybirdyapp.model.FlashcardModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
@@ -66,10 +67,18 @@ public class FlashcardVertex extends AbstractVertex {
     }
 
     public ExerciseContentFlashcardModel toExerciseContentFlashcardModel() {
+        return toExerciseContentFlashcardModel(true, true);
+    }
+
+    public ExerciseContentFlashcardModel toExerciseContentFlashcardModel(boolean includeFront, boolean includeBack) {
         var model = new ExerciseContentFlashcardModel();
         model.setId(getId());
-        model.setBack(getRightContent().toExerciseContentTextModel());
-        model.setFront(getLeftContent().toExerciseContentTextModel());
+
+        if (includeFront)
+            model.setFront(getLeftContent().toExerciseContentTextModel());
+        if (includeBack)
+            model.setBack(getRightContent().toExerciseContentTextModel());
+
         return model;
     }
 
@@ -103,5 +112,21 @@ public class FlashcardVertex extends AbstractVertex {
         return vertices.stream()
                 .map(v -> new FlashcardVertex(traversalSource, v))
                 .collect(Collectors.toList());
+    }
+
+    public static FlashcardVertex findFirstNonExercised(GraphTraversalSource traversalSource, String sessionId, String exerciseType) {
+        var query = traversalSource.V()
+                .has(ExerciseSessionVertex.LABEL, ExerciseSessionVertex.PROPERTY_ID, sessionId)
+                .out(ExerciseSessionVertex.EDGE_FLASHCARD_DECK)
+                .out(FlashcardDeckVertex.EDGE_FLASHCARD)
+                .not(__.in(ExerciseVertex.EDGE_CONTENT)
+                        .has(ExerciseVertex.PROPERTY_TYPE, exerciseType)
+                        .out(ExerciseVertex.EDGE_SESSION)
+                        .has(ExerciseSessionVertex.LABEL, ExerciseSessionVertex.PROPERTY_ID, sessionId));
+
+        if (!query.hasNext())
+            return null;
+
+        return new FlashcardVertex(traversalSource, query.next());
     }
 }

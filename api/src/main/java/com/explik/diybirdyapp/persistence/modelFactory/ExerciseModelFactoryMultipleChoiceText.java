@@ -8,7 +8,7 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.springframework.stereotype.Component;
 
 @Component(ExerciseTypes.MULTIPLE_CHOICE_TEXT + ComponentTypes.MODEL_FACTORY)
-public class ExerciseMultipleChoiceTextModelFactory implements ExerciseModelFactory {
+public class ExerciseModelFactoryMultipleChoiceText implements ExerciseModelFactory {
     @Override
     public ExerciseModel create(ExerciseVertex vertex) {
         if (vertex == null)

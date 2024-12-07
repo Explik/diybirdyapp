@@ -29,7 +29,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     @Override
     public ExerciseSessionModel add(ExerciseSessionModel model) {
         var sessionType = model.getType();
-        var sessionManager = sessionManagers.getOrDefault(model.getType() + ComponentTypes.MANAGER, null);
+        var sessionManager = sessionManagers.getOrDefault(model.getType() + ComponentTypes.OPERATIONS, null);
         if (sessionManager == null)
             throw new IllegalArgumentException("No factory for type " + sessionType);
 
@@ -51,7 +51,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             throw new IllegalArgumentException("No session with id " + modelId);
 
         var sessionType = sessionVertex.getType();
-        var sessionManager = sessionManagers.getOrDefault(sessionType + ComponentTypes.MANAGER, null);
+        var sessionManager = sessionManagers.getOrDefault(sessionType + ComponentTypes.OPERATIONS, null);
         if (sessionManager == null)
             throw new IllegalArgumentException("No factory for type " + sessionType);
 

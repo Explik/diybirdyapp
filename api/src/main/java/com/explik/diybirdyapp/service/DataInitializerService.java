@@ -5,7 +5,7 @@ import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsFlashcardReview;
+import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class DataInitializerService {
     ExerciseReviewFlashcardVertexFactory exerciseReviewFlashcardVertexFactory;
 
     @Autowired
-    private ExerciseSessionOperationsFlashcardReview exerciseSessionFlashcardReviewVertexFactory;
+    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
     private FlashcardVertexFactory flashcardVertexFactory;

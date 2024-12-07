@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertex.manager;
 
 import com.explik.diybirdyapp.model.ExerciseSessionModel;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsFlashcardReview;
+import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
@@ -24,7 +24,7 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
     GraphTraversalSource traversalSource;
 
     @Autowired
-    ExerciseSessionOperationsFlashcardReview factory;
+    ExerciseSessionOperationsReviewFlashcardDeck factory;
 
     @Test
     public void givenEmptyFlashcardDeck_whenInit_thenThrowsException() {
