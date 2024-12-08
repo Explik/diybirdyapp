@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-generic-flashcard',
+  selector: 'app-flashcard-edit',
   standalone: true,
   imports: [],
-  templateUrl: './generic-flashcard.component.html',
-  styleUrl: './generic-flashcard.component.css'
+  templateUrl: './flashcard-edit.component.html',
+  styleUrl: './flashcard-edit.component.css'
 })
-export class GenericFlashcardComponent {
+export class FlashcardEditComponent {
   @Output() switchSides = new EventEmitter<void>();
 
   handleSwitchSides() {

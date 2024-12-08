@@ -12,9 +12,25 @@
     Learn flashcards
 </button>
 
-<app-flashcard-container 
+<app-flashcard-review *ngIf="flashcards.length > 0">
+
+    <ng-container left>
+        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].leftValue}}</span>
+        <br>
+        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].leftLanguage.abbreviation}}</span>
+    </ng-container>
+
+    <ng-container right>
+        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].rightValue}}</span>
+        <br>
+        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].rightLanguage.abbreviation}}</span>
+    </ng-container>
+
+</app-flashcard-review>
+
+<app-flashcard-edit-container 
     [(name)]="name"
     [flashcards]="flashcards"
     [flashcardLanguages]="flashcardLanguages"
     (addFlashcard)="addFlashcard()"
-    (saveFlashcards)="saveFlashcards()"></app-flashcard-container>
+    (saveFlashcards)="saveFlashcards()"></app-flashcard-edit-container>

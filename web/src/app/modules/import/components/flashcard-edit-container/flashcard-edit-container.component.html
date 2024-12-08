@@ -20,7 +20,7 @@
     </div>
 
     @for(flashcard of flashcards; track flashcard) {
-      <app-generic-flashcard class="block mb-4" (switchSides)="handleSwitchFlashcardSides(flashcard)">
+      <app-flashcard-edit class="block mb-4" (switchSides)="handleSwitchFlashcardSides(flashcard)">
         <ng-container left>
           <span class="text-gray-500 text-sm mb-1">{{flashcard.leftLanguage.abbreviation}}</span>
           <app-text-field [(ngModel)]="flashcard.leftValue" (rows)="1"></app-text-field>
@@ -30,7 +30,7 @@
           <span class="text-gray-500 text-sm mb-1">{{flashcard.rightLanguage.abbreviation}}</span>
           <app-text-field [(ngModel)]="flashcard.rightValue" (rows)="1"></app-text-field>
         </ng-container>
-      </app-generic-flashcard>
+      </app-flashcard-edit>
     }
 
     <div>

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FlashcardContent } from '../../../../shared/models/content.interface';
 import { ExerciseContentService } from '../../services/exerciseContent.service';
 import { InstructionComponent } from "../instruction/instruction.component";
-import { GenericFlashcardComponent } from "../../../import/components/generic-flashcard/generic-flashcard.component";
+import { FlashcardEditComponent } from "../../../import/components/flashcard-edit/flashcard-edit.component";
 import { CommonModule } from '@angular/common';
 import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
 

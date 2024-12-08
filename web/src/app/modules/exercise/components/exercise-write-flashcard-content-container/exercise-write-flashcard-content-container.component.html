@@ -2,7 +2,7 @@
     title="Do you still know this?"
     instruction='How well do you recognize this?'></app-instruction>
 
-<app-generic-flashcard *ngIf="content" class="block mb-4">
+<app-flashcard-edit *ngIf="content" class="block mb-4">
     <ng-container left>
         <span>{{content!.front.text}}</span>
     </ng-container>
@@ -10,6 +10,6 @@
     <ng-container right>
         <span>{{content!.back.text}}</span>
     </ng-container>
-</app-generic-flashcard>
+</app-flashcard-edit>
 
 <app-recognizability-rating (ratingSelected)="onRatingSelected($event)"></app-recognizability-rating>

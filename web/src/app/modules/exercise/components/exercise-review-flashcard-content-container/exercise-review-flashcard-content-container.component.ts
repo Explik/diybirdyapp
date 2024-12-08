@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FlashcardContent } from '../../../../shared/models/content.interface';
 import { ExerciseContentService } from '../../services/exerciseContent.service';
 import { InstructionComponent } from "../instruction/instruction.component";
-import { GenericFlashcardComponent } from "../../../import/components/generic-flashcard/generic-flashcard.component";
 import { CommonModule } from '@angular/common';
 import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
+import { FlashcardReviewComponent } from '../../../import/components/flashcard-review/flashcard-review.component';
 
 @Component({
   selector: 'app-exercise-review-flashcard-content-container',
   standalone: true,
-  imports: [CommonModule, InstructionComponent, GenericFlashcardComponent, RecognizabilityRatingComponent],
+  imports: [CommonModule, InstructionComponent, FlashcardReviewComponent, RecognizabilityRatingComponent],
   templateUrl: './exercise-review-flashcard-content-container.component.html',
   styleUrl: './exercise-review-flashcard-content-container.component.css'
 })

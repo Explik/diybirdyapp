@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { FlashcardContainerComponent } from "../flashcard-container/flashcard-container.component";
+import { FlashcardEditContainerComponent } from "../flashcard-edit-container/flashcard-edit-container.component";
 import { Flashcard, FlashcardLanguage } from '../../models/flashcard.model';
 import { ImportService } from '../../services/import.service';
 import { zip } from 'rxjs';
 import { RecursivePartial } from '../../../../shared/models/util.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FlashcardReviewComponent } from "../flashcard-review/flashcard-review.component";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-flashcard-deck-page',
   standalone: true,
-  imports: [RouterModule, FlashcardContainerComponent],
+  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent, FlashcardReviewComponent],
   templateUrl: './flashcard-deck-page.component.html',
   styleUrl: './flashcard-deck-page.component.css'
 })

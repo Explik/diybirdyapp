@@ -2,18 +2,18 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FlashcardLanguage, Flashcard } from '../../models/flashcard.model';
 import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
 import { CommonModule } from '@angular/common';
-import { GenericFlashcardComponent } from "../generic-flashcard/generic-flashcard.component";
+import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.component";
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-flashcard-container',
+    selector: 'app-flashcard-edit-container',
     standalone: true,
-    templateUrl: './flashcard-container.component.html',
-    styleUrl: './flashcard-container.component.css',
-    imports: [TextButtonComponent, CommonModule, FormsModule, GenericFlashcardComponent, TextFieldComponent]
+    templateUrl: './flashcard-edit-container.component.html',
+    styleUrl: './flashcard-edit-container.component.css',
+    imports: [TextButtonComponent, CommonModule, FormsModule, FlashcardEditComponent, TextFieldComponent]
 })
-export class FlashcardContainerComponent {
+export class FlashcardEditContainerComponent {
   _name: string | undefined = undefined;
 
   @Input()
