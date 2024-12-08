@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { TextFieldComponent } from '../../../shared/components/text-field/text-field.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FlashcardEditContainerComponent } from "../../import/components/flashcard-edit-container/flashcard-edit-container.component";
-import { FlashcardDeckPageComponent } from "../../import/components/flashcard-deck-page/flashcard-deck-page.component";
-import { Flashcard, FlashcardLanguage } from '../../import/models/flashcard.model';
-import { FlashcardEditComponent } from "../../import/components/flashcard-edit/flashcard-edit.component";
+import { FlashcardEditContainerComponent } from "../../flashcard/components/flashcard-edit-container/flashcard-edit-container.component";
+import { FlashcardDeckPageComponent } from "../../flashcard/components/flashcard-deck-page/flashcard-deck-page.component";
+import { Flashcard, FlashcardLanguage } from '../../flashcard/models/flashcard.model';
+import { FlashcardEditComponent } from "../../flashcard/components/flashcard-edit/flashcard-edit.component";
 
 @Component({
     selector: 'app-import-module-page',

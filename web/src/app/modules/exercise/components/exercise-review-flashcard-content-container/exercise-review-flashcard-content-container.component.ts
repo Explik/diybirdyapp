@@ -4,7 +4,7 @@ import { ExerciseContentService } from '../../services/exerciseContent.service';
 import { InstructionComponent } from "../instruction/instruction.component";
 import { CommonModule } from '@angular/common';
 import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
-import { FlashcardReviewComponent } from '../../../import/components/flashcard-review/flashcard-review.component';
+import { FlashcardReviewComponent } from '../../../flashcard/components/flashcard-review/flashcard-review.component';
 
 @Component({
   selector: 'app-exercise-review-flashcard-content-container',
