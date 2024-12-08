@@ -1,10 +1,15 @@
-<p>flashcard-sets-page works!</p>
-
+<p class="text-lg font-semibold mb-2">Flashcards:</p>
 <ul>
-    <li *ngFor="let deck of flashcardDecks">
-      <a [routerLink]="['/flashcard-deck', deck.id]">Deck "{{deck.name}}"</a>
-    </li>
-    <li style="cursor: pointer;">
-      <a target="_blank" (click)="addFlashcardDeck()">Add deck</a> 
-    </li>
-  </ul>
+  <li *ngFor="let deck of flashcardDecks" [routerLink]="['/flashcard-deck', deck.id]" class="flex justify-between items-center p-2 border border-gray-300 mb-1 cursor-pointer">
+    <span class="flex-grow">Deck "{{deck.name}}"</span>
+    <a>
+      <i class="ml-2">📄</i>
+    </a>
+  </li>
+  <li (click)="addFlashcardDeck()" class="flex justify-between items-center p-2 border border-gray-300 mb-1 cursor-pointer">
+    <span class="flex-grow">Add deck</span>
+    <a target="_blank">
+      <i class="ml-2">➕</i>
+    </a>
+  </li>
+</ul>

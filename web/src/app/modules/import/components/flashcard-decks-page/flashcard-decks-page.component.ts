@@ -23,7 +23,7 @@ export class FlashcardDecksPageComponent implements OnInit {
   }
 
   addFlashcardDeck() {
-    const flashcardDeck = {};
+    const flashcardDeck = { name: 'New deck' } as FlashcardDeck;
 
     this.service.createFlashcardDeck(flashcardDeck).subscribe(data => {
       this.flashcardDecks = [...this.flashcardDecks, data];
