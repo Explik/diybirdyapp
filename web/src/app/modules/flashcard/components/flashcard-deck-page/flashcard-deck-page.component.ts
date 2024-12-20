@@ -7,11 +7,12 @@ import { RecursivePartial } from '../../../../shared/models/util.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FlashcardReviewComponent } from "../flashcard-review/flashcard-review.component";
 import { CommonModule } from '@angular/common';
+import { FlashcardReviewContainerComponent } from '../flashcard-review-container/flashcard-review-container.component';
 
 @Component({
   selector: 'app-flashcard-deck-page',
   standalone: true,
-  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent, FlashcardReviewComponent],
+  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent, FlashcardReviewContainerComponent],
   templateUrl: './flashcard-deck-page.component.html',
   styleUrl: './flashcard-deck-page.component.css'
 })

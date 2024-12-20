@@ -1,20 +1,6 @@
 <h1 class="text-xl font-bold">Flashcard Deck "{{name}}"</h1>
 
-<app-flashcard-review *ngIf="flashcards.length > 0" class="mt-8 mb-4">
-
-    <ng-container left>
-        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].leftValue}}</span>
-        <br>
-        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].leftLanguage.abbreviation}}</span>
-    </ng-container>
-
-    <ng-container right>
-        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].rightValue}}</span>
-        <br>
-        <span class="text-gray-500 text-sm mb-1">{{flashcards[0].rightLanguage.abbreviation}}</span>
-    </ng-container>
-
-</app-flashcard-review>
+<app-flashcard-review-container *ngIf="flashcards.length > 0" [flashcards]="flashcards" class="mt-8 mb-4"></app-flashcard-review-container>
 
 <button
     (click)="reviewFlashcards()" 
