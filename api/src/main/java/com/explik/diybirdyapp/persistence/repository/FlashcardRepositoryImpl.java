@@ -102,7 +102,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var languageVertex = getLanguageVertex(traversalSource, languageId);
         var textContentVertex = TextContentVertex.create(traversalSource);
         textContentVertex.setLanguage(languageVertex);
-        textContentVertex.setValue(value);
+        textContentVertex.setValue(value != null ? value : "");
 
         return textContentVertex;
     }
