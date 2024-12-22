@@ -1,10 +1,13 @@
 package com.explik.diybirdyapp.controller.dto;
 
+import com.explik.diybirdyapp.model.ExerciseSessionProgressModel;
+
 public class ExerciseSessionDto {
     private String id;
     private String type;
     private String flashcardDeckId;
     private ExerciseDto exercise;
+    private ExerciseSessionProgressModel progress;
 
     public String getId() {
         return id;
@@ -36,5 +39,13 @@ public class ExerciseSessionDto {
 
     public void setExercise(ExerciseDto exercise) {
         this.exercise = exercise;
+    }
+
+    public ExerciseSessionProgressModel getProgress() {
+        return progress;
+    }
+
+    public void setProgress(ExerciseSessionProgressModel progress) {
+        this.progress = progress;
     }
 }

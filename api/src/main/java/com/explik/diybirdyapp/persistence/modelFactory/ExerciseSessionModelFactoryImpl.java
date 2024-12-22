@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.persistence.modelFactory;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.ExerciseSessionProgressModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,9 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         ExerciseModel exerciseModel = createExercise(vertex);
         model.setExercise(exerciseModel);
 
+        ExerciseSessionProgressModel progressModel = createProgress(vertex);
+        model.setProgress(progressModel);
+
         return model;
     }
 
@@ -38,5 +42,12 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
             throw new RuntimeException("Unsupported exercise type " + exerciseType);
 
         return exerciseModelFactory.create(exerciseVertex);
+    }
+
+    private ExerciseSessionProgressModel createProgress(ExerciseSessionVertex vertex) {
+        ExerciseSessionProgressModel progressModel = new ExerciseSessionProgressModel();
+        progressModel.setType("percentage");
+        progressModel.setPercentage(90);
+        return progressModel;
     }
 }

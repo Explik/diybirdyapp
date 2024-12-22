@@ -27,6 +27,7 @@ import { ExerciseComponentService } from '../../services/exerciseComponent.servi
 })
 export class SessionPageComponent {
     sessionId: string | undefined = undefined;
+    sessionProgress: number = 0;
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
     exerciseComponent: Type<any> | null = null;
@@ -57,14 +58,24 @@ export class SessionPageComponent {
         this.exerciseDataService.getExerciseSession(sessionId).subscribe(data => {
             if (!data)
                 return;
-            if (!data.exercise)
-                return;
 
-            this.exerciseId = data.exercise.id;
-            this.exerciseType = data.exercise.type;
-            this.exerciseService.setExercise(data.exercise);
-            this.exerciseComponent = this.exerciseComponentService.getComponent(data.exercise.type);
-            this.exerciseNavigationComponent = this.exerciseComponentService.getNavigationComponent(data.exercise.type);
+            if (data.progress) {
+                switch (data.progress.type) {
+                    case "percentage":
+                        this.sessionProgress = data.progress.percentage;
+                        break;
+                    default:
+                        throw new Error("Unsupported progress type: " + data.progress.type);
+                }
+            }
+
+            if(data.exercise) {
+                this.exerciseId = data.exercise.id;
+                this.exerciseType = data.exercise.type;
+                this.exerciseService.setExercise(data.exercise);
+                this.exerciseComponent = this.exerciseComponentService.getComponent(data.exercise.type);
+                this.exerciseNavigationComponent = this.exerciseComponentService.getNavigationComponent(data.exercise.type);
+            }
         })
     }
 
