@@ -10,9 +10,8 @@
 </div>
 
 <!-- Footer -->
-<p footer class="px-12 mx-auto max-w-xl">
-    <app-text-button state="secondary" label="Skip" class="fixed bottom-16 left"></app-text-button>
-    <app-text-button state="primary" label="Check Answer" class="fixed bottom-16 right-16"></app-text-button>
+<p *ngIf="exerciseNavigationComponent" footer class="px-12 mx-auto max-w-xl">
+    <ng-container *ngComponentOutlet="exerciseNavigationComponent" />
 </p>
 
 <div *ngIf="exerciseFeedback" id="feedback-banner" class="fixed bottom-0 left-0 w-full bg-yellow-500 text-white p-4 flex justify-between items-center">

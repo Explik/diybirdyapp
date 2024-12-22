@@ -3,6 +3,7 @@ import { ExerciseWriteSentenceUsingWordContainerComponent } from "../components/
 import { ExerciseWriteTranslatedSentenceContainerComponent } from "../components/exercise-write-translated-sentence-container/exercise-write-translated-sentence-container.component";
 import { ExerciseMultipleTextChoiceContainerComponent } from "../components/exercise-multiple-text-choice-container/exercise-multiple-text-choice-container.component";
 import { ExerciseReviewFlashcardContentContainerComponent } from "../components/exercise-review-flashcard-content-container/exercise-review-flashcard-content-container.component";
+import { ExerciseNavigationCheckAnswerContainerComponent } from "../components/exercise-navigation-check-answer-container/exercise-navigation-check-answer-container.component";
 
 @Injectable({
     providedIn: 'root'
@@ -20,6 +21,16 @@ export class ExerciseComponentService {
                 return ExerciseReviewFlashcardContentContainerComponent;
             default: 
                 throw new Error("Unknown exercise type " + exerciseType);
+        }
+    }
+
+    getNavigationComponent(exerciseType: string): Type<any>|undefined {
+        switch(exerciseType) {
+            case "write-sentence-using-word-exercise":
+            case "write-translated-sentence-exercise":
+                return ExerciseNavigationCheckAnswerContainerComponent; 
+            default: 
+                return undefined; 
         }
     }
 }

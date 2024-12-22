@@ -30,6 +30,7 @@ export class SessionPageComponent {
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
     exerciseComponent: Type<any> | null = null;
+    exerciseNavigationComponent: Type<any> | undefined = undefined;
     exerciseFeedback: string | undefined = undefined;
 
     constructor(
@@ -63,6 +64,7 @@ export class SessionPageComponent {
             this.exerciseType = data.exercise.type;
             this.exerciseService.setExercise(data.exercise);
             this.exerciseComponent = this.exerciseComponentService.getComponent(data.exercise.type);
+            this.exerciseNavigationComponent = this.exerciseComponentService.getNavigationComponent(data.exercise.type);
         })
     }
 
@@ -75,6 +77,7 @@ export class SessionPageComponent {
             this.exerciseType = data.type;
             this.exerciseService.setExercise(data);
             this.exerciseComponent = this.exerciseComponentService.getComponent(data.type);
+            this.exerciseNavigationComponent = this.exerciseComponentService.getNavigationComponent(data.type);
         })
     }
 }
