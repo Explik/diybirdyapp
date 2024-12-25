@@ -23,4 +23,8 @@ public class ExerciseSessionService {
     public ExerciseSessionModel nextExercise(String modelId) {
         return sessionRepository.nextExercise(modelId);
     }
+
+    public ExerciseSessionModel skipExercise(String modelId) {
+        return sessionRepository.nextExercise(modelId);
+    }
 }

@@ -39,4 +39,10 @@ public class ExerciseSessionController {
         var nextExercise = service.nextExercise(id);
         return exerciseSessionMapper.map(nextExercise);
     }
+
+    @PostMapping("/exercise-session/{id}/skip-exercise")
+    public ExerciseSessionDto skipExercise(@PathVariable String id) {
+        var skippedExercise = service.skipExercise(id);
+        return exerciseSessionMapper.map(skippedExercise);
+    }
 }
