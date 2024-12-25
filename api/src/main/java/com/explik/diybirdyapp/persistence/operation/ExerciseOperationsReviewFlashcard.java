@@ -29,12 +29,10 @@ public class ExerciseOperationsReviewFlashcard implements ExerciseOperations {
         answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
-        var feedback = new ExerciseFeedbackModel();
-        feedback.setType("general");
-        feedback.setState("indecisive");
+        var exerciseFeedback = ExerciseFeedbackModel.createIndecisiveFeedback();
 
         var exercise = new ExerciseModel();
-        exercise.setFeedback(feedback);
+        exercise.setFeedback(exerciseFeedback);
 
         return exercise;
     }

@@ -4,7 +4,6 @@ import { BehaviorSubject, map, Observable, of, skipUntil } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Exercise, ExerciseAnswer } from '../models/exercise.interface';
 import { ExerciseSessionDataService } from './exerciseSessionData.service';
-import { TextInputFeedback } from '../../../shared/models/input.interface';
 import { ExerciseService } from './exercise.service';
 import { Router } from '@angular/router';
 

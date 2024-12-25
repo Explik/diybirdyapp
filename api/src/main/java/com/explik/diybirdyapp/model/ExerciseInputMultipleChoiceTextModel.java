@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseInputMultipleChoiceTextModel extends ExerciseInputModel {
+    private Feedback feedback;
     private List<Option> options = new ArrayList<>();
+
+    public Feedback getFeedback() { return feedback; }
+
+    public void setFeedback(Feedback feedback) { this.feedback = feedback; }
 
     public List<Option> getOptions() { return options; }
 
     public void addOption(Option option) { options.add(option); }
 
     public void setOptions(List<Option> options) { this.options = options; }
-
-    //public record Option(String id, String text) { }
 
     public static class Option {
         private String id;
@@ -34,5 +37,18 @@ public class ExerciseInputMultipleChoiceTextModel extends ExerciseInputModel {
         public String getText() { return text; }
 
         public void setText(String text) { this.text = text; }
+    }
+
+    public static class Feedback {
+        private List<String> correctOptionIds;
+        private List<String> incorrectOptionIds;
+
+        public List<String> getCorrectOptionIds() { return correctOptionIds; }
+
+        public void setCorrectOptionIds(List<String> correctOptionIds) { this.correctOptionIds = correctOptionIds; }
+
+        public List<String> getIncorrectOptionIds() { return incorrectOptionIds; }
+
+        public void setIncorrectOptionIds(List<String> incorrectOptionIds) { this.incorrectOptionIds = incorrectOptionIds; }
     }
 }

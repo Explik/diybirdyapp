@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
 import { FlashcardReviewComponent } from "../../../flashcard/components/flashcard-review/flashcard-review.component";
 import { CorrectableTextFieldComponent } from '../../../../shared/components/correctable-text-field/correctable-text-field.component';
-import { TextInput } from '../../../../shared/models/input.interface';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
 
@@ -18,7 +17,7 @@ import { ExerciseService } from '../../services/exercise.service';
 })
 export class ExerciseContentWriteFlashcardContentContainerComponent implements OnInit {
   content?: FlashcardContent;
-  input?: TextInput;
+  input?: ExerciseInputTextDto;
 
   constructor(
     private contentService: ExerciseService,
@@ -29,7 +28,7 @@ export class ExerciseContentWriteFlashcardContentContainerComponent implements O
     this.contentService.getContent<FlashcardContent>().subscribe(data => this.content = data);
     
     this.contentService.setDefaultInput(this.defaultContentService.getTextInput());
-    this.contentService.getInput<TextInput>().subscribe(data => { 
+    this.contentService.getInput<ExerciseInputTextDto>().subscribe(data => { 
       this.input = data; 
     });
   }

@@ -78,6 +78,10 @@ export class ExerciseService {
             throw new Error("No exercise loaded");
 
         const exerciseWithFeedback = await this.service.submitExerciseAnswer(currentExercise.id, answer).toPromise();
+        
+        if (exerciseWithFeedback?.input)
+            this.exersiceInput$.next(exerciseWithFeedback.input);
+        
         this.exerciseFeedback$.next(exerciseWithFeedback?.feedback);
     }
 

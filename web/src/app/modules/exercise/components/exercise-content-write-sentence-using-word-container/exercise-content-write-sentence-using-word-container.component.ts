@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { InstructionComponent } from "../instruction/instruction.component";
 import { CommonModule } from '@angular/common';
 import { CorrectableTextFieldComponent } from "../../../../shared/components/correctable-text-field/correctable-text-field.component";
-import { GenericExercise } from '../../models/exercise.interface';
-import { TextInput } from '../../../../shared/models/input.interface';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
 
@@ -15,7 +13,7 @@ import { ExerciseService } from '../../services/exercise.service';
 })
 export class ExerciseContentWriteSentenceUsingWordContainerComponent implements OnInit {
   word?: string;
-  input?: TextInput;
+  input?: ExerciseInputTextDto;
 
   constructor(
     private exerciseService: ExerciseService,
@@ -26,8 +24,7 @@ export class ExerciseContentWriteSentenceUsingWordContainerComponent implements 
       this.word = data 
     });
     
-    this.exerciseService.getInput<TextInput>().subscribe(data => { 
-      this.input = data ?? this.defaultContentService.getTextInput()
-    });
+    this.exerciseService.setDefaultInput(this.defaultContentService.getTextInput());
+    this.exerciseService.getInput<ExerciseInputTextDto>().subscribe(data => this.input = data);
   }
 }

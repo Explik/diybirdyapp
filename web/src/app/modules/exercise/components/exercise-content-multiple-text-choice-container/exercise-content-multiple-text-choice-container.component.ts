@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { GenericExercise } from '../../models/exercise.interface';
 import { InstructionComponent } from "../instruction/instruction.component";
 import { CorrectableMultipleChoiceTextFieldComponent } from "../../../../shared/components/correctable-multiple-choice-text-field/correctable-multiple-choice-text-field.component";
-import { MultipleChoiceTextInput } from '../../../../shared/models/input.interface';
 import { CommonModule } from '@angular/common';
 import { ExerciseService } from '../../services/exercise.service';
 //import { CorrectableMultipleChoiceTextInput } from '../../../../shared/models/input.interface';
@@ -14,11 +12,11 @@ import { ExerciseService } from '../../services/exercise.service';
   templateUrl: './exercise-content-multiple-text-choice-container.component.html'
 })
 export class ExerciseContentMultipleTextChoiceContainerComponent implements OnInit {
-  input?: MultipleChoiceTextInput;
+  input?: ExerciseInputMultipleChoiceTextDto;
 
   constructor(private service: ExerciseService) { }
 
   ngOnInit(): void {
-    this.service.getInput<MultipleChoiceTextInput>().subscribe(data => this.input = data);
+    this.service.getInput<ExerciseInputMultipleChoiceTextDto>().subscribe(data => this.input = data);
   }
 }

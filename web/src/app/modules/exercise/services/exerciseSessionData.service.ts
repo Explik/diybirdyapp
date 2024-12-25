@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ExerciseAnswer } from '../models/exercise.interface';
-import { TextInputFeedback } from '../../../shared/models/input.interface';
 
 @Injectable({
     providedIn: 'root'

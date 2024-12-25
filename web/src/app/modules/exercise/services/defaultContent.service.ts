@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { TextInput } from "../../../shared/models/input.interface";
 
 /**
  * Service to provide default content for exercises as most exercises have fixed content
@@ -11,8 +10,9 @@ import { TextInput } from "../../../shared/models/input.interface";
 export class DefaultContentService {
     constructor() {}
 
-    getTextInput(): TextInput {
-        const textInput: TextInput = {
+    getTextInput(): ExerciseInputTextDto {
+        const textInput: ExerciseInputTextDto = {
+            id: "default",
             type: "text",
             text: ""
         }
