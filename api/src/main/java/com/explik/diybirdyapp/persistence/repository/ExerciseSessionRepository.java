@@ -6,5 +6,5 @@ import com.explik.diybirdyapp.model.ExerciseSessionModel;
 public interface ExerciseSessionRepository {
     ExerciseSessionModel add(ExerciseSessionModel model);
     ExerciseSessionModel get(String id);
-    ExerciseModel nextExercise(String modelId);
+    ExerciseSessionModel nextExercise(String modelId);
 }

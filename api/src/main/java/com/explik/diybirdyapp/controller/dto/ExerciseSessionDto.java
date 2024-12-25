@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.model.ExerciseSessionProgressModel;
 public class ExerciseSessionDto {
     private String id;
     private String type;
+    private boolean completed;
     private String flashcardDeckId;
     private ExerciseDto exercise;
     private ExerciseSessionProgressModel progress;
@@ -23,6 +24,14 @@ public class ExerciseSessionDto {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     public String getFlashcardDeckId() {

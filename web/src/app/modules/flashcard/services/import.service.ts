@@ -61,6 +61,13 @@ import { RecursivePartial } from "../../../shared/models/util.model";
       });
     }
 
+    writeFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
+      return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, { 
+        type: "write-flashcard-session", 
+        flashcardDeckId: deckId
+      });
+    }
+
     learnFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
       return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, { 
         type: "learn-flashcard-session", 

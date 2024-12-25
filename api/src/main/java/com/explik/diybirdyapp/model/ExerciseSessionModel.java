@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.model;
 public class ExerciseSessionModel {
     private String id;
     private String type;
+    private boolean completed;
     private String flashcardDeckId;
     private ExerciseModel exercise;
     private ExerciseSessionProgressModel progress;
@@ -21,6 +22,14 @@ public class ExerciseSessionModel {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     public String getFlashcardDeckId() {

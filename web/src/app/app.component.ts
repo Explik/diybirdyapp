@@ -2,8 +2,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { GenericExercise, MultipleChoiceOption } from './modules/exercise/models/exercise.interface';
-import { ExerciseContentService } from './modules/exercise/services/exerciseContent.service';
 import { CommonModule } from '@angular/common';
+import { ExerciseService } from './modules/exercise/services/exercise.service';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +17,7 @@ export class AppComponent {
   exercises: GenericExercise[] | undefined = undefined;
 
   constructor(
-    private exerciseService: ExerciseContentService,
+    private exerciseService: ExerciseService,
   ) {}
 
   ngOnInit(): void {

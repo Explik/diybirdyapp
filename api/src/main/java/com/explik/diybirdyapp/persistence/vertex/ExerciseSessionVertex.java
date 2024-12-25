@@ -16,6 +16,7 @@ public class ExerciseSessionVertex extends AbstractVertex {
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TYPE = "type";
+    public final static String PROPERTY_COMPLETED = "completed";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -31,6 +32,14 @@ public class ExerciseSessionVertex extends AbstractVertex {
 
     public void setType(String type) {
         setProperty(PROPERTY_TYPE, type);
+    }
+
+    public boolean getCompleted() {
+        return getProperty(PROPERTY_COMPLETED, false);
+    }
+
+    public void setCompleted(boolean completed) {
+        setProperty(PROPERTY_COMPLETED, completed);
     }
 
     public ExerciseVertex getCurrentExercise() {

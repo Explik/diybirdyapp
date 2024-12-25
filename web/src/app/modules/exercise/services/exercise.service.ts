@@ -1,40 +1,73 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, skipUntil } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { Exercise, ExerciseAnswer } from '../models/exercise.interface';
-import { ExerciseDataService } from './exerciseData.service';
-import { TextInputFeedback } from '../../../shared/models/input.interface';
+import { Injectable } from "@angular/core";
+import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom } from 'rxjs';
+import { ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
+import { ExerciseSessionDataService } from "./exerciseSessionData.service";
+import { TextInputFeedback } from "../../../shared/models/input.interface";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ExerciseService {
-    private exercise$: BehaviorSubject<ExerciseDto|undefined> = new BehaviorSubject<ExerciseDto|undefined>(undefined);
-    private exerciseFeedback$: BehaviorSubject<TextInputFeedback|undefined> = new BehaviorSubject<TextInputFeedback|undefined>(undefined);
+    private exercise$: BehaviorSubject<ExerciseDto | undefined> = new BehaviorSubject<ExerciseDto | undefined>(undefined);
+    private exerciseAnswer$: BehaviorSubject<ExerciseAnswer | undefined> = new BehaviorSubject<ExerciseAnswer | undefined>(undefined);
+    private exerciseFeedback$: BehaviorSubject<TextInputFeedback | undefined> = new BehaviorSubject<TextInputFeedback | undefined>(undefined);
 
-    constructor(private exerciseDataService: ExerciseDataService) { }
+    constructor(private service: ExerciseSessionDataService) { }
 
-    getExercise(): Observable<ExerciseDto|undefined> {
+    // State functions 
+    getExercise(): Observable<ExerciseDto | undefined> {
         return this.exercise$.asObservable();
     }
 
     setExercise(exercise: ExerciseDto) {
         this.exercise$.next(exercise);
+        this.exerciseAnswer$.next(undefined);
     }
 
-    getExerciseFeedback(): Observable<TextInputFeedback|undefined> {
-        return this.exerciseFeedback$.asObservable();
+    // Read functions
+    getState(): Observable<ExerciseStates> {
+        return this.exerciseAnswer$.pipe(
+            map(answer => answer ? ExerciseStates.Answered : ExerciseStates.Unanswered)
+        );
     }
 
-    submitAnswer(answer: ExerciseAnswer) {
-        const currentExercise = this.exercise$.getValue(); 
-        
-        if (!currentExercise) 
+    getProperty(name: string): Observable<string> {
+        return this.getExercise()
+            .pipe(map(data => (data?.properties as any)[name] ?? name));
+    }
+
+    getContent<T>(): Observable<T | undefined> {
+        return this.getExercise()
+            .pipe(map(data => <T>data?.content))
+    }
+
+    getInput<T>(): Observable<T | undefined> {
+        return this.getExercise()
+            .pipe(map(data => data?.input as T));
+    }
+
+    getInputFeedback<T>(identifier: string): Observable<T | undefined> {
+        return of(undefined);
+        //return this.service.getExerciseFeedback().pipe(map(data => data?.type !== "general" ? data as T : undefined));
+    }
+
+    // Actions
+    async checkAnswerAsync() {
+        const currentInput = await lastValueFrom(this.getInput());
+        await this.submitAnswerAsync(currentInput as ExerciseAnswer);
+    }
+
+    async submitAnswerAsync(answer: ExerciseAnswer) {
+        // Save the answer locally
+        this.exerciseAnswer$.next(answer);
+
+        // Save the answer to server
+        const currentExercise = this.exercise$.getValue();
+
+        if (!currentExercise)
             throw new Error("No exercise loaded");
-        
-        this.exerciseDataService
-            .submitExerciseAnswer(currentExercise.id, answer)
-            .subscribe(x => this.exerciseFeedback$.next(x));
+
+        const feedback = await this.service.submitExerciseAnswer(currentExercise.id, answer).toPromise();
+        this.exerciseFeedback$.next(feedback);
     }
 }

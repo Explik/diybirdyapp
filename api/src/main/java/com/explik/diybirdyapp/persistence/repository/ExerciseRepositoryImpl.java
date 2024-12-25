@@ -61,13 +61,14 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
 
     @Override
     public ExerciseFeedbackModel submitAnswer(String id, ExerciseAnswerModel answer) {
+        answer.setExerciseId(id);
+
         var exerciseVertex = ExerciseVertex.getById(traversalSource, id);
         var exerciseType = exerciseVertex.getType();
-
         var manager = exerciseManagers.getOrDefault(exerciseType + ComponentTypes.OPERATIONS, null);
         if (manager == null)
             throw new RuntimeException("Unsupported exercise type: " + exerciseType);
 
-        return manager.evaluate(traversalSource, id, answer);
+        return manager.evaluate(traversalSource, answer);
     }
 }

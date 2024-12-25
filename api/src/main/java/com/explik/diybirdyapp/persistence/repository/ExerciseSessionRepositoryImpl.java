@@ -45,7 +45,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         return sessionModelFactory.create(vertex);
     }
 
-    public ExerciseModel nextExercise(String modelId) {
+    public ExerciseSessionModel nextExercise(String modelId) {
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
         if (sessionVertex == null)
             throw new IllegalArgumentException("No session with id " + modelId);
@@ -55,6 +55,6 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         if (sessionManager == null)
             throw new IllegalArgumentException("No factory for type " + sessionType);
 
-        return sessionManager.next(traversalSource, modelId);
+        return sessionManager.nextExercise(traversalSource, modelId);
     }
 }

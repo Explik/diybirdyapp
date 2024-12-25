@@ -10,6 +10,5 @@ export const routes: Routes = [
   { path: 'flashcard-deck/:id', component: FlashcardDeckPageComponent },
   { path: 'session/:id', component: SessionPageComponent },
   { path: 'exercise/:id', component: ExercisePageComponent },
-  { path: '', redirectTo: '/exercise/1', pathMatch: 'full' },
   { path: 'library/import', component: ImportModulePageComponent }
 ];

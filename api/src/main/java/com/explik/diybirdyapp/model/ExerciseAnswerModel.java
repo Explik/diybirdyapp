@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.model;
 
 public class ExerciseAnswerModel {
     private String id;
+    private String exerciseId;
     private String type;
     private String rating;
     private String textInput;
@@ -12,6 +13,14 @@ public class ExerciseAnswerModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getExerciseId() {
+        return exerciseId;
+    }
+
+    public void setExerciseId(String exerciseId) {
+        this.exerciseId = exerciseId;
     }
 
     public String getType() {

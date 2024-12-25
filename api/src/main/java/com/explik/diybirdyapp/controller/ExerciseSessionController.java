@@ -18,9 +18,6 @@ public class ExerciseSessionController {
     ExerciseSessionService service;
 
     @Autowired
-    GenericMapper<ExerciseModel, ExerciseDto> exerciseMapper;
-
-    @Autowired
     GenericMapper<ExerciseSessionModel, ExerciseSessionDto> exerciseSessionMapper;
 
     @PostMapping("/exercise-session")
@@ -37,9 +34,9 @@ public class ExerciseSessionController {
         return exerciseSessionMapper.map(model);
     }
 
-    @PostMapping("/exercise-session/{id}/next")
-    public ExerciseDto nextExercise(@PathVariable String id) {
+    @PostMapping("/exercise-session/{id}/next-exercise")
+    public ExerciseSessionDto nextExercise(@PathVariable String id) {
         var nextExercise = service.nextExercise(id);
-        return exerciseMapper.map(nextExercise);
+        return exerciseSessionMapper.map(nextExercise);
     }
 }

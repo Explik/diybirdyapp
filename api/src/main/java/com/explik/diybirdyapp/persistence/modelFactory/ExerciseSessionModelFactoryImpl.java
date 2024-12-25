@@ -17,13 +17,18 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
 
     @Override
     public ExerciseSessionModel create(ExerciseSessionVertex vertex) {
+        boolean isCompleted = vertex.getCompleted();
+
         // Fetch session data
         ExerciseSessionModel model = new ExerciseSessionModel();
         model.setId(vertex.getId());
         model.setType(vertex.getType());
+        model.setCompleted(isCompleted);
 
-        ExerciseModel exerciseModel = createExercise(vertex);
-        model.setExercise(exerciseModel);
+        if (!isCompleted) {
+            ExerciseModel exerciseModel = createExercise(vertex);
+            model.setExercise(exerciseModel);
+        }
 
         ExerciseSessionProgressModel progressModel = createProgress(vertex);
         model.setProgress(progressModel);

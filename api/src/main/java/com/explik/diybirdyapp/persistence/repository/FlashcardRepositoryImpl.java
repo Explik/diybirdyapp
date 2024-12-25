@@ -101,6 +101,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     private static TextContentVertex createTextContent(GraphTraversalSource traversalSource, String languageId, String value) {
         var languageVertex = getLanguageVertex(traversalSource, languageId);
         var textContentVertex = TextContentVertex.create(traversalSource);
+        textContentVertex.setId(UUID.randomUUID().toString());
         textContentVertex.setLanguage(languageVertex);
         textContentVertex.setValue(value != null ? value : "");
 

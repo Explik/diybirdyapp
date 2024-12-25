@@ -39,6 +39,10 @@ public abstract class AbstractVertex {
         return (T)this.vertex.property(propertyKey).value();
     }
 
+    protected <T> T getProperty(String propertyKey, T defaultValue) {
+        return this.vertex.property(propertyKey).isPresent() ? (T)this.vertex.property(propertyKey).value() : defaultValue;
+    }
+
     protected String getPropertyAsString(String propertyKey) {
         return this.vertex.property(propertyKey).value().toString();
     }

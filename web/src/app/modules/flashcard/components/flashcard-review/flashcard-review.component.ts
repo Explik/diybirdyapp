@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Input, Component } from '@angular/core';
 
 @Component({
   selector: 'app-flashcard-review',
@@ -8,9 +8,12 @@ import { Component } from '@angular/core';
   styleUrl: './flashcard-review.component.css'
 })
 export class FlashcardReviewComponent {
+  @Input() flippable = true;
   isFlipped = false;
 
   flipCard() {
-    this.isFlipped = !this.isFlipped;
+    if (this.flippable) {
+      this.isFlipped = !this.isFlipped;
+    }
   }
 }

@@ -61,3 +61,8 @@ export interface ExerciseAnswer {
     //exerciseId: string;
     [key: string]: any;
 }
+
+export enum ExerciseStates {
+    Unanswered, 
+    Answered
+}

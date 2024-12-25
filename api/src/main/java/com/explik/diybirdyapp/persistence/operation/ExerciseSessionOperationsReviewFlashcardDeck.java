@@ -47,27 +47,30 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
         vertex.setFlashcardDeck(flashcardDeckVertex);
 
         // Generate first exercise
-        next(traversalSource, sessionId);
+        nextExercise(traversalSource, sessionId);
         vertex.reload();
 
         return sessionModelFactory.create(vertex);
     }
 
     @Override
-    public ExerciseModel next(GraphTraversalSource traversalSource, String modelId) {
+    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, String modelId) {
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
         if (sessionVertex == null)
             throw new RuntimeException("Session with " + modelId +" not found");
 
         // Finds first flashcard (in deck) not connected to review exercise (in session)
         var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, modelId, ExerciseTypes.REVIEW_FLASHCARD);
-        if (flashcardVertex == null)
-            return null; // No more flashcards to review
 
-        var exerciseVertex = vertexFactory.create(
-                traversalSource,
-                new ExerciseReviewFlashcardVertexFactory.Options(UUID.randomUUID().toString(), sessionVertex, flashcardVertex));
-
-        return exerciseModelFactory.create(exerciseVertex);
+        if (flashcardVertex != null) {
+            vertexFactory.create(
+                    traversalSource,
+                    new ExerciseReviewFlashcardVertexFactory.Options(UUID.randomUUID().toString(), sessionVertex, flashcardVertex));
+            sessionVertex.reload();
+        } else {
+            // If no flashcards are found, the session is complete
+            sessionVertex.setCompleted(true);
+        }
+        return sessionModelFactory.create(sessionVertex);
     }
 }

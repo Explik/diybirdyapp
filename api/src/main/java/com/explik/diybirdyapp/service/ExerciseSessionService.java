@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExerciseSessionService {
     @Autowired
-    ExerciseRepository exerciseRepository;
-
-    @Autowired
     ExerciseSessionRepository sessionRepository;
 
     public ExerciseSessionModel add(ExerciseSessionModel model) {
@@ -23,8 +20,7 @@ public class ExerciseSessionService {
         return sessionRepository.get(id);
     }
 
-    public ExerciseModel nextExercise(String modelId) {
-        var limitedExercise = sessionRepository.nextExercise(modelId);
-        return (limitedExercise != null) ? exerciseRepository.get(limitedExercise.getId()) : null;
+    public ExerciseSessionModel nextExercise(String modelId) {
+        return sessionRepository.nextExercise(modelId);
     }
 }

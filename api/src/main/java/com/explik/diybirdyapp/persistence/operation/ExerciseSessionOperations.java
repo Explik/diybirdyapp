@@ -7,5 +7,5 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 public interface ExerciseSessionOperations {
     ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseSessionModel model);
 
-    ExerciseModel next(GraphTraversalSource traversalSource, String modelId);
+    ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, String modelId);
 }

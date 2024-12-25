@@ -12,4 +12,10 @@ export class TextButtonComponent {
   @Input() label: string = 'Check Answer';
   @Input() state: 'primary' | 'secondary' = 'primary';
   @Input() disabled: boolean = false;
+
+  @Output() click = new EventEmitter<void>();
+
+  handleClick() {
+    this.click.emit();
+  }
 }

@@ -5,5 +5,5 @@ import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
 public interface ExerciseOperations {
-    ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, String exerciseId, ExerciseAnswerModel answerModel);
+    ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel);
 }

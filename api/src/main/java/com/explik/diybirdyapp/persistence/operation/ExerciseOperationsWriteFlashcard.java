@@ -16,10 +16,7 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
     private ExerciseAnswerVertexFactoryTextInput answerVertexFactory;
 
     @Override
-    public ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, String exerciseId, ExerciseAnswerModel answerModel) {
-        // TODO Handle exercise not found
-        var exerciseVertex = ExerciseVertex.getById(traversalSource, exerciseId);
-
+    public ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
         if (answerModel == null)
             throw new RuntimeException("Answer model is null");
         if (!answerModel.getType().equals(ExerciseTypes.WRITE_FLASHCARD))
@@ -28,6 +25,7 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
+        var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var flashcardContent = exerciseVertex.getFlashcardContent();
         var flashcardSide = exerciseVertex.getFlashcardSide().equals("front") ? flashcardContent.getLeftContent() : flashcardContent.getRightContent();
         var isAnswerCorrect = flashcardSide.getValue().equalsIgnoreCase(answerModel.getTextInput());

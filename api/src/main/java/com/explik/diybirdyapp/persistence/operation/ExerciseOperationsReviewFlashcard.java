@@ -17,16 +17,14 @@ public class ExerciseOperationsReviewFlashcard implements ExerciseOperations {
     private ExerciseAnswerVertexFactoryRecognizabilityRating answerVertexFactory;
 
     @Override
-    public ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, String exerciseId, ExerciseAnswerModel answerModel) {
-        // TODO Handle exercise not found
-        var vertex = ExerciseVertex.getById(traversalSource, exerciseId);
-
-        // Save answer to graph
+    public ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
         if (answerModel == null)
             throw new RuntimeException("Answer model is null");
+
         if (!answerModel.getType().equals(ExerciseAnswerTypes.RECOGNIZABILITY_RATING))
             throw new RuntimeException("Answer model type is not recognizability rating");
 
+        // Save answer to graph
         answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
