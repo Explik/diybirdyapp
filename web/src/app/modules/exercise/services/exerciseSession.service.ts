@@ -65,9 +65,4 @@ export class ExerciseSessionService {
         if (newSession?.exercise)
             this.exerciseService.setExercise(newSession.exercise);
     }
-    
-    async exitSessionAsync() {
-        throw new Error("Not implemented");
-    }
-
 }

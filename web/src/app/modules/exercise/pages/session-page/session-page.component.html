@@ -1,6 +1,6 @@
 <!-- Header -->
 <div header class="flex items-center">
-  <app-exit-icon-button class="pl-2 pr-0 flex-none"></app-exit-icon-button>
+  <app-exit-icon-button class="pl-2 pr-0 flex-none" (click)="handleExit()"></app-exit-icon-button>
   <app-progress-bar [progress]="(sessionProgress$ | async) || 0" class="flex-grow"></app-progress-bar>
 </div>
 

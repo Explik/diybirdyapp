@@ -66,4 +66,8 @@ export class SessionPageComponent {
             }
         });
     }
+
+    handleExit() {
+        this.router.navigate(['/']);
+    }
 }
