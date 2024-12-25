@@ -28,6 +28,5 @@ export class ExerciseContentWriteTranslatedSentenceContainerComponent implements
     this.exerciseService.getProperty("targetLanguage").subscribe(data => this.targetLanguage = data);
     this.exerciseService.getContent<TextContent>().subscribe(data => this.content = data);
     this.exerciseService.getInput<TextInput>().subscribe(data => this.input = data ?? this.defaultContentService.getTextInput());
-    this.exerciseService.getInputFeedback<TextInputFeedback>("text-input-feedback").subscribe(data => this.inputFeedback = data);
   }
 }

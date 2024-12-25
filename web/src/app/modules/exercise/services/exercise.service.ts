@@ -2,15 +2,17 @@ import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom } from 'rxjs';
 import { ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
-import { TextInputFeedback } from "../../../shared/models/input.interface";
 
 @Injectable({
     providedIn: 'root'
 })
 export class ExerciseService {
+    private defaultInput: unknown | undefined = undefined;
+
     private exercise$: BehaviorSubject<ExerciseDto | undefined> = new BehaviorSubject<ExerciseDto | undefined>(undefined);
+    private exersiceInput$: BehaviorSubject<unknown | undefined> = new BehaviorSubject<unknown | undefined>(undefined);
     private exerciseAnswer$: BehaviorSubject<ExerciseAnswer | undefined> = new BehaviorSubject<ExerciseAnswer | undefined>(undefined);
-    private exerciseFeedback$: BehaviorSubject<TextInputFeedback | undefined> = new BehaviorSubject<TextInputFeedback | undefined>(undefined);
+    private exerciseFeedback$: BehaviorSubject<ExerciseFeedbackDto | undefined> = new BehaviorSubject<ExerciseFeedbackDto | undefined>(undefined);
 
     constructor(private service: ExerciseSessionDataService) { }
 
@@ -21,7 +23,9 @@ export class ExerciseService {
 
     setExercise(exercise: ExerciseDto) {
         this.exercise$.next(exercise);
+        this.exersiceInput$.next(exercise.input || this.clone(this.defaultInput));
         this.exerciseAnswer$.next(undefined);
+        this.exerciseFeedback$.next(undefined);
     }
 
     // Read functions
@@ -41,19 +45,25 @@ export class ExerciseService {
             .pipe(map(data => <T>data?.content))
     }
 
-    getInput<T>(): Observable<T | undefined> {
-        return this.getExercise()
-            .pipe(map(data => data?.input as T));
+    setDefaultInput<T>(input: T) {
+        const currentInput = this.exersiceInput$.getValue();
+        if (!currentInput)
+            this.exersiceInput$.next(this.clone(input));
+
+        this.defaultInput = this.clone(input);
     }
 
-    getInputFeedback<T>(identifier: string): Observable<T | undefined> {
-        return of(undefined);
-        //return this.service.getExerciseFeedback().pipe(map(data => data?.type !== "general" ? data as T : undefined));
+    getInput<T>(): Observable<T | undefined> {
+        return this.exersiceInput$.asObservable().pipe(map(data => data as T));
+    }
+
+    getFeedbackMessage(): Observable<string | undefined> {
+        return this.exerciseFeedback$.pipe(map(data => data?.message));
     }
 
     // Actions
     async checkAnswerAsync() {
-        const currentInput = await lastValueFrom(this.getInput());
+        const currentInput = this.exersiceInput$.getValue();
         await this.submitAnswerAsync(currentInput as ExerciseAnswer);
     }
 
@@ -67,7 +77,11 @@ export class ExerciseService {
         if (!currentExercise)
             throw new Error("No exercise loaded");
 
-        const feedback = await this.service.submitExerciseAnswer(currentExercise.id, answer).toPromise();
-        this.exerciseFeedback$.next(feedback);
+        const exerciseWithFeedback = await this.service.submitExerciseAnswer(currentExercise.id, answer).toPromise();
+        this.exerciseFeedback$.next(exerciseWithFeedback?.feedback);
+    }
+
+    private clone(obj: any): any {
+        return JSON.parse(JSON.stringify(obj));
     }
 }

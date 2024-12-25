@@ -8,6 +8,7 @@ public class ExerciseModel {
     private String type;
     private ExerciseContentModel content;
     private ExerciseInputModel input;
+    private ExerciseFeedbackModel feedback;
     private Dictionary<String, Object> properties = new Hashtable<>();
 
     public String getId() { return id; }
@@ -40,6 +41,14 @@ public class ExerciseModel {
 
     public Dictionary<String, Object> getProperties() {
         return properties;
+    }
+
+    public ExerciseFeedbackModel getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(ExerciseFeedbackModel feedback) {
+        this.feedback = feedback;
     }
 
     public void setProperty(String key, Object value) {

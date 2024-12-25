@@ -13,6 +13,7 @@ export class DefaultContentService {
 
     getTextInput(): TextInput {
         const textInput: TextInput = {
+            type: "text",
             text: ""
         }
         return textInput;

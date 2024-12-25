@@ -60,7 +60,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
-    public ExerciseFeedbackModel submitAnswer(String id, ExerciseAnswerModel answer) {
+    public ExerciseModel submitAnswer(String id, ExerciseAnswerModel answer) {
         answer.setExerciseId(id);
 
         var exerciseVertex = ExerciseVertex.getById(traversalSource, id);

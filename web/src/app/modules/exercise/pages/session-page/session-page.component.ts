@@ -38,6 +38,7 @@ export class SessionPageComponent {
         private route: ActivatedRoute,
         private router: Router,
         private sessionService: ExerciseSessionService,
+        private exerciseService: ExerciseService,
         private exerciseComponentService: ExerciseComponentService,
         ) {
             this.sessionProgress$ = this.sessionService.getProgress().pipe(map(progress => progress || 0));
@@ -52,7 +53,12 @@ export class SessionPageComponent {
           this.sessionService.loadExerciseSession(this.sessionId);
         });   
 
-        // Attach session complete listener
+        // Attach exercise listernes 
+        this.exerciseService.getFeedbackMessage().subscribe(message => {
+            this.exerciseFeedback = message;
+        });
+
+        // Attach session listeners
         this.sessionService.getExerciseSession().subscribe(session => {
             if (session?.completed) {
                 this.sessionService.setExerciseSession(undefined);

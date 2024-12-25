@@ -27,9 +27,10 @@ export class ExerciseContentWriteFlashcardContentContainerComponent implements O
 
   ngOnInit(): void {
     this.contentService.getContent<FlashcardContent>().subscribe(data => this.content = data);
-
+    
+    this.contentService.setDefaultInput(this.defaultContentService.getTextInput());
     this.contentService.getInput<TextInput>().subscribe(data => { 
-      this.input = data ?? this.defaultContentService.getTextInput()
+      this.input = data; 
     });
   }
 }

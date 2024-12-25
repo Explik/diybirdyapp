@@ -35,7 +35,8 @@ public class ExerciseController {
     }
 
     @PostMapping("/exercise/{id}/answer")
-    public ExerciseFeedbackModel submitAnswer(@PathVariable String id, @RequestBody ExerciseAnswerModel model) {
-        return exerciseService.submitExerciseAnswer(id, model);
+    public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseAnswerModel model) {
+        var newModel = exerciseService.submitExerciseAnswer(id, model);
+        return exerciseMapper.map(newModel);
     }
 }

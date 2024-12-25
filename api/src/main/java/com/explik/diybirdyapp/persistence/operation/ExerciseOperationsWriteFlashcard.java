@@ -1,9 +1,11 @@
 package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
+import com.explik.diybirdyapp.ExerciseAnswerTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.ExerciseAnswerModel;
 import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryTextInput;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -16,10 +18,10 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
     private ExerciseAnswerVertexFactoryTextInput answerVertexFactory;
 
     @Override
-    public ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
+    public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
         if (answerModel == null)
             throw new RuntimeException("Answer model is null");
-        if (!answerModel.getType().equals(ExerciseTypes.WRITE_FLASHCARD))
+        if (!answerModel.getType().equals(ExerciseAnswerTypes.TEXT))
             throw new RuntimeException("Answer model type is not write flashcard");
 
         answerVertexFactory.create(traversalSource, answerModel);
@@ -34,6 +36,9 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         feedback.setType("general");
         feedback.setState(isAnswerCorrect ? "success" : "failure");
         feedback.setMessage("Answer submitted successfully");
-        return feedback;
+
+        var exercise = new ExerciseModel();
+        exercise.setFeedback(feedback);
+        return exercise;
     }
 }

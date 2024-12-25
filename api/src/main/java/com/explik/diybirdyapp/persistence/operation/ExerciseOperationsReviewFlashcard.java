@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.ExerciseAnswerTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.ExerciseAnswerModel;
 import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryRecognizabilityRating;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -17,7 +18,7 @@ public class ExerciseOperationsReviewFlashcard implements ExerciseOperations {
     private ExerciseAnswerVertexFactoryRecognizabilityRating answerVertexFactory;
 
     @Override
-    public ExerciseFeedbackModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
+    public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
         if (answerModel == null)
             throw new RuntimeException("Answer model is null");
 
@@ -31,7 +32,10 @@ public class ExerciseOperationsReviewFlashcard implements ExerciseOperations {
         var feedback = new ExerciseFeedbackModel();
         feedback.setType("general");
         feedback.setState("indecisive");
-        feedback.setMessage("Answer submitted successfully");
-        return feedback;
+
+        var exercise = new ExerciseModel();
+        exercise.setFeedback(feedback);
+
+        return exercise;
     }
 }

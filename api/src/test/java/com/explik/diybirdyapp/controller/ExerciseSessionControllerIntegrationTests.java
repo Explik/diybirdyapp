@@ -49,9 +49,10 @@ public class ExerciseSessionControllerIntegrationTests {
         session.setFlashcardDeckId(FLASHCARD_DECK_ID);
 
         controller.create(session);
-        var nextExercise = controller.nextExercise(session.getId());
+        var newSession = controller.nextExercise(session.getId());
 
-        assertNotNull(nextExercise);
+        assertNotNull(newSession);
+        assertNotNull(newSession.getExercise());
     }
 
      @Test

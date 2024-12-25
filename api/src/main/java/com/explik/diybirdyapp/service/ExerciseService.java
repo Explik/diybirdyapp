@@ -18,7 +18,7 @@ public class ExerciseService {
         return repository.get(id);
     }
 
-    public ExerciseFeedbackModel submitExerciseAnswer(String id, ExerciseAnswerModel answer) {
+    public ExerciseModel submitExerciseAnswer(String id, ExerciseAnswerModel answer) {
         return repository.submitAnswer(id, answer);
     }
 

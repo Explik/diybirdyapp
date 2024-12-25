@@ -1,6 +1,7 @@
 type resultState = "success" | "failure" | "indecisive";
 
 export interface TextInput {
+    type: string,
     text: string
 }
 
@@ -16,6 +17,7 @@ export interface MultipleChoiceTextInput {
 
 export class DefaultInput {
     static TEXT_INPUT: TextInput = {
+        type: "text",
         text: ""
     }
 }

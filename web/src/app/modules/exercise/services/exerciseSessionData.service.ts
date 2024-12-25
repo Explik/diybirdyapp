@@ -23,9 +23,9 @@ export class ExerciseSessionDataService {
     }
 
     // === ExerciseAnswer ===
-    submitExerciseAnswer(exerciseId: string, answer: ExerciseAnswer): Observable<TextInputFeedback> {
+    submitExerciseAnswer(exerciseId: string, answer: ExerciseAnswer): Observable<ExerciseDto> {
         // TODO Add error handling
-        return this.http.post<TextInputFeedback>(`${environment.apiUrl}/exercise/${exerciseId}/answer`, answer);
+        return this.http.post<ExerciseDto>(`${environment.apiUrl}/exercise/${exerciseId}/answer`, answer);
     }
 
     // === ExerciseSession ===
