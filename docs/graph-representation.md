@@ -32,6 +32,7 @@ graph TB
 V1(Flashcard)
 V2(TextContent)
 V3(TextContent)
+
 V1--hasLeftContent-->V2
 V1--hasRightContent-->V3
 ```
@@ -66,9 +67,22 @@ V1--hasSession-->V2
 V3--hasExercise-->V1
 ```
 
-properties:
+Properties:
 - id: string
 - type: string
+
+### Flashcard select exercise
+```mermaid
+graph BT
+V1(Exercise)
+V2(Flashcard)
+V3(ExerciseAnswer Multiple Choice Text)
+
+V1--hasContent-->V2
+V3--hasExercise-->V1
+```
+
+Additional properties: none
 
 ### Flashcard review exercise
 ```mermaid
@@ -81,8 +95,7 @@ V1--hasContent-->V2
 V3--hasExercise-->V1
 ```
 
-properties:
-- [General exercise properties]
+Additional properties: none
 
 ### Flashcard write exercise 
 ```mermaid
@@ -95,11 +108,58 @@ V1--hasContent-->V2
 V3--hasExercise-->V1
 ```
 
-properties:
-- [General exercise properties]
+Additional properties: none
+
+### Write sentence using word 
+```mermaid
+graph BT
+V1(Exercise)
+V2(TextContent)
+V3(ExerciseAnswer Text)
+
+V1--hasContent-->V2
+V3--hasExercise-->V1
+```
+
+Additional properties: 
+- targetLanguage: string
+
+### Write translated sentence 
+```mermaid
+graph BT
+V1(Exercise)
+V2(TextContent)
+V3(ExerciseAnswer Text)
+
+V1--hasContent-->V2
+V3--hasExercise-->V1
+```
+
+Additional properties:
+- targetLanguage: string
 
 ## Exercise answer
+### General exercise answer
+```mermaid
+graph RL
+V1(ExerciseAnswer)
+V2(Exercise)
 
+V1--hasExercise-->V2
+```
+
+Properties:
+- id: string
+- type: string
+
+### Text exercise answer
+Additional properties: none
+
+### Multiple choice text exercise answer
+Additional properties: none
+
+### Recognizability rating exercise answer
+Additional properties: none
 
 ### General exercise answer
 
