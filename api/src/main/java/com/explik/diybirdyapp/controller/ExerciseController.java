@@ -2,8 +2,7 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.dto.*;
 import com.explik.diybirdyapp.controller.mapper.GenericMapper;
-import com.explik.diybirdyapp.model.ExerciseAnswerModel;
-import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.ExerciseInputModel;
 import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.service.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,9 @@ public class ExerciseController {
 
     @Autowired
     GenericMapper<ExerciseModel, ExerciseDto> exerciseMapper;
+
+    @Autowired
+    GenericMapper<ExerciseInputDto, ExerciseInputModel> exerciseInputMapper;
 
     @GetMapping("/exercise")
     public List<ExerciseDto> get() {
@@ -35,7 +37,8 @@ public class ExerciseController {
     }
 
     @PostMapping("/exercise/{id}/answer")
-    public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseAnswerModel model) {
+    public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseInputDto dto) {
+        var model = exerciseInputMapper.map(dto);
         var newModel = exerciseService.submitExerciseAnswer(id, model);
         return exerciseMapper.map(newModel);
     }

@@ -19,16 +19,16 @@ public class DataInitializerService {
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private ExerciseMultipleChoiceTextVertexFactory exerciseMultipleChoiceTextVertexFactory;
-
-    @Autowired
     private ExerciseWriteSentenceUsingWordVertexFactory exerciseWriteSentenceUsingWordVertexFactory;
 
     @Autowired
     private ExerciseWriteTranslatedSentenceVertexFactory exerciseWriteTranslatedSentenceVertexFactory;
 
     @Autowired
-    ExerciseReviewFlashcardVertexFactory exerciseReviewFlashcardVertexFactory;
+    private ExerciseSelectFlashcardVertexFactory exerciseSelectFlashcardVertexFactory;
+
+    @Autowired
+    private ExerciseReviewFlashcardVertexFactory exerciseReviewFlashcardVertexFactory;
 
     @Autowired
     private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
@@ -148,11 +148,12 @@ public class DataInitializerService {
                 traversalSource,
                 new TextContentVertexFactory.Options("6", "Correct option", langVertex));
 
-        exerciseMultipleChoiceTextVertexFactory.create(
+        exerciseSelectFlashcardVertexFactory.create(
                 traversalSource,
-                new ExerciseMultipleChoiceTextVertexFactory.Options(
+                new ExerciseSelectFlashcardVertexFactory.Options(
                         "3",
-                        List.of(wordVertex3, wordVertex4, wordVertex5, wordVertex6),
+                        null,
+                        //List.of(wordVertex3, wordVertex4, wordVertex5, wordVertex6),
                         wordVertex6));
 
         // Exercise session 4

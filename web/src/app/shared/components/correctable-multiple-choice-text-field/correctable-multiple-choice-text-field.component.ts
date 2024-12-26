@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -10,5 +10,10 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './correctable-multiple-choice-text-field.component.css'
 })
 export class CorrectableMultipleChoiceTextFieldComponent {
-  @Input() input: ExerciseInputMultipleChoiceTextDto | undefined = undefined; 
+  @Input() input: ExerciseInputMultipleChoiceTextDto | undefined = undefined;
+  @Output()  optionSelected: EventEmitter<string> = new EventEmitter<string>();
+
+  handleOptionSelected(optionId: string): void {
+    this.optionSelected.emit(optionId);
+  }
 }

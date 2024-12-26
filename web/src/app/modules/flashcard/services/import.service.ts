@@ -54,6 +54,13 @@ import { RecursivePartial } from "../../../shared/models/util.model";
       return this.http.put<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(this.mapSetDtoToModel));
     }
 
+    selectFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
+      return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, {
+        type: "select-flashcard-session",
+        flashcardDeckId: deckId
+      });
+    }
+
     reviewFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
       return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, { 
         type: "review-flashcard-session", 

@@ -92,6 +92,12 @@ export class FlashcardDeckPageComponent implements OnInit {
     });
   }
 
+  selectFlashcards() {
+    this.service.selectFlashcardDeck(this.flashcardDeckId!).subscribe(data => {
+      this.router.navigate(['/session/' + data.id]);
+    });
+  }
+
   reviewFlashcards() {
     this.service.reviewFlashcardDeck(this.flashcardDeckId!).subscribe(data => {
       this.router.navigate(['/session/' + data.id]);

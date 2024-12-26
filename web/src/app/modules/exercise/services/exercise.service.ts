@@ -79,13 +79,20 @@ export class ExerciseService {
 
         const exerciseWithFeedback = await this.service.submitExerciseAnswer(currentExercise.id, answer).toPromise();
         
-        if (exerciseWithFeedback?.input)
-            this.exersiceInput$.next(exerciseWithFeedback.input);
+        // Update input feedback
+        if ((exerciseWithFeedback?.input as any)?.feedback) {
+            const currentInput = this.exersiceInput$.getValue() as any;
+            this.exersiceInput$.next({ ...currentInput, feedback: (exerciseWithFeedback!.input as any).feedback });
+        }
         
+        // Update general feedback
         this.exerciseFeedback$.next(exerciseWithFeedback?.feedback);
     }
 
     private clone(obj: any): any {
+        if (!obj)
+            return obj; 
+
         return JSON.parse(JSON.stringify(obj));
     }
 }

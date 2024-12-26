@@ -5,6 +5,7 @@ import java.util.List;
 public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
     private ExerciseInputFeedbackMultipleChoiceTextFeedbackDto feedback;
     private List<Option> options;
+    private String value;
 
     public static String TYPE = "multiple-choice-text-input";
 
@@ -22,6 +23,14 @@ public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
 
     public void setOptions(List<Option> options) {
         this.options = options;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public static class Option {

@@ -3,12 +3,12 @@ package com.explik.diybirdyapp.model;
 import java.util.List;
 
 public class ExerciseInputTextModel extends ExerciseInputModel {
-    private String value;
+    private String text;
     private Feedback feedback;
 
-    public String getValue() { return value; }
+    public String getText() { return text; }
 
-    public void setValue(String text) { this.value = text; }
+    public void setText(String text) { this.text = text; }
 
     public Feedback getFeedback() { return feedback; }
 

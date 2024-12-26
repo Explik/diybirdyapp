@@ -1,12 +1,12 @@
 package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.ExerciseAnswerTypes;
+import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.ExerciseAnswerModel;
 import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.ExerciseInputModel;
+import com.explik.diybirdyapp.model.ExerciseInputRecognizabilityRatingModel;
 import com.explik.diybirdyapp.model.ExerciseModel;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryRecognizabilityRating;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,13 @@ public class ExerciseOperationsReviewFlashcard implements ExerciseOperations {
     private ExerciseAnswerVertexFactoryRecognizabilityRating answerVertexFactory;
 
     @Override
-    public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
-        if (answerModel == null)
+    public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseInputModel genericAnswerModel) {
+        if (genericAnswerModel == null)
             throw new RuntimeException("Answer model is null");
-
-        if (!answerModel.getType().equals(ExerciseAnswerTypes.RECOGNIZABILITY_RATING))
+        if (!(genericAnswerModel instanceof ExerciseInputRecognizabilityRatingModel))
             throw new RuntimeException("Answer model type is not recognizability rating");
+
+        var answerModel = (ExerciseInputRecognizabilityRatingModel)genericAnswerModel;
 
         // Save answer to graph
         answerVertexFactory.create(traversalSource, answerModel);

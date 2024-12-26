@@ -2,20 +2,22 @@
     <div class="grid grid-cols-2 gap-4">
         <button
             *ngFor="let option of input!.options"
+            (click)="handleOptionSelected(option.id)"
             class="option-btn bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:bg-purple-100 hover:border-purple-500 focus:ring-2 focus:ring-purple-500 flex items-center">
-            <div *ngIf="true" class="w-6 h-6">
-                <!-- Place holder element -->
-            </div>
-            <svg *ngIf="false" class="w-6 h-6 text-green-500 mr-3" fill="none"
+            
+            <svg *ngIf="input?.feedback?.correctOptionIds?.includes(option.id) ||  false" class="w-6 h-6 text-green-500 mr-3" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <!-- Success element -->
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
-            <svg *ngIf="false" class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor"
+            <svg *ngIf="input?.feedback?.incorrectOptionIds?.includes(option.id) ||  false" class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <!-- Failure element -->
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
+            <div *ngIf="input?.feedback?.correctOptionIds?.includes(option.id) !== true && input?.feedback?.incorrectOptionIds?.includes(option.id) !== true" class="w-6 h-6">
+                <!-- Place holder element -->
+            </div>
             {{option.text}}
         </button>
     </div>

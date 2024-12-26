@@ -1,8 +1,7 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.model.ExerciseAnswerModel;
-import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.ExerciseInputModel;
 import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -29,7 +28,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     private Map<String, ExerciseOperations> exerciseManagers;
 
     @Autowired
-    private Map<String, VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel>> exerciseAnswerVertexFactories;
+    private Map<String, VertexFactory<ExerciseAnswerVertex, ExerciseInputModel>> exerciseAnswerVertexFactories;
 
     private final GraphTraversalSource traversalSource;
 
@@ -60,7 +59,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
-    public ExerciseModel submitAnswer(String id, ExerciseAnswerModel answer) {
+    public ExerciseModel submitAnswer(String id, ExerciseInputModel answer) {
         answer.setExerciseId(id);
 
         var exerciseVertex = ExerciseVertex.getById(traversalSource, id);

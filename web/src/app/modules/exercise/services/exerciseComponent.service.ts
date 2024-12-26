@@ -8,6 +8,7 @@ import { ExerciseContentWriteFlashcardContentContainerComponent } from "../compo
 import { map, Observable } from "rxjs";
 import { ExerciseService } from "./exercise.service";
 import { ExerciseContentLoadingComponent } from "../components/exercise-content-loading/exercise-content-loading.component";
+import { ExerciseContentSelectFlashcardContainerComponent } from "../components/exercise-content-select-flashcard-container/exercise-content-select-flashcard-container.component";
 
 @Injectable({
     providedIn: 'root'
@@ -34,6 +35,8 @@ export class ExerciseComponentService {
                 return ExerciseContentWriteFlashcardContentContainerComponent;
             case "multiple-choice-text-exercise":
                 return ExerciseContentMultipleTextChoiceContainerComponent;
+            case "select-flashcard-exercise":
+                return ExerciseContentSelectFlashcardContainerComponent;
             case "review-flashcard-exercise":
                 return ExerciseContentReviewFlashcardContainerComponent;
             default: 
@@ -52,6 +55,7 @@ export class ExerciseComponentService {
             case "write-sentence-using-word-exercise":
             case "write-translated-sentence-exercise":
             case "write-flashcard-exercise":
+            case "select-flashcard-exercise":
                 return ExerciseNavigationCheckAnswerContainerComponent; 
             default: 
                 return null; 

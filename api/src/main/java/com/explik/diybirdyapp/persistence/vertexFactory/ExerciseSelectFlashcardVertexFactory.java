@@ -7,25 +7,20 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-@Component(ExerciseTypes.MULTIPLE_CHOICE_TEXT + ComponentTypes.VERTEX_FACTORY)
-public class ExerciseMultipleChoiceTextVertexFactory implements VertexFactory<ExerciseVertex, ExerciseMultipleChoiceTextVertexFactory.Options> {
-
+@Component(ExerciseTypes.SELECT_FLASHCARD + ComponentTypes.VERTEX_FACTORY)
+public class ExerciseSelectFlashcardVertexFactory implements VertexFactory<ExerciseVertex, ExerciseSelectFlashcardVertexFactory.Options> {
     @Override
     public ExerciseVertex create(GraphTraversalSource traversalSource, Options options) {
         var graphVertex = traversalSource.addV(ExerciseVertex.LABEL).next();
         var vertex = new ExerciseVertex(traversalSource, graphVertex);
         vertex.setId(options.id);
-        vertex.setType("multiple-choice-text-exercise");
-
-        for(var option : options.options) {
-            vertex.addOption(option);
-        }
-        vertex.setCorrectOption(options.correctOption);
+        vertex.setType(ExerciseTypes.SELECT_FLASHCARD);
+        vertex.setContent(options.flashcardVertex);
+        vertex.setSession(options.sessionVertex);
+        vertex.setFlashcardSide("front");
 
         return vertex;
     }
 
-    public record Options (String id, List<AbstractVertex> options, AbstractVertex correctOption) {}
+    public record Options (String id, AbstractVertex sessionVertex, AbstractVertex flashcardVertex) { }
 }

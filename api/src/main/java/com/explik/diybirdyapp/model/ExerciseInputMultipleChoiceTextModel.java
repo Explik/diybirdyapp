@@ -6,6 +6,7 @@ import java.util.List;
 public class ExerciseInputMultipleChoiceTextModel extends ExerciseInputModel {
     private Feedback feedback;
     private List<Option> options = new ArrayList<>();
+    private String value;
 
     public Feedback getFeedback() { return feedback; }
 
@@ -16,6 +17,10 @@ public class ExerciseInputMultipleChoiceTextModel extends ExerciseInputModel {
     public void addOption(Option option) { options.add(option); }
 
     public void setOptions(List<Option> options) { this.options = options; }
+
+    public String getValue() { return value; }
+
+    public void setValue(String value) { this.value = value; }
 
     public static class Option {
         private String id;
