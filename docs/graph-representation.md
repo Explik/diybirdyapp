@@ -108,11 +108,21 @@ Additional exercise properties:
 graph TB
 Exercise(Exercise)
 Flashcard(Flashcard)
-TextContent(TextContent)
+TextContent1(TextContent)
+TextContent2A(TextContent)
+TextContent2B(TextContent)
+Language1(Language)
+Language2(Language)
 
 Exercise--hasContent-->Flashcard
-Exercise--hasAnswer-->TextContent
-``` 
+Flashcard--hasLeftContent-->TextContent2A
+Flashcard--hasRightContent-->TextContent2B
+TextContent2A--hasLanguage-->Language1
+TextContent2B--hasLanguage-->Language2
+Exercise--hasAnswer-->TextContent1
+TextContent1--hasLanguage-->Language1
+```
+Note, the answer will either have the same language as either side of the flashcard's content. 
 
 Additional exercise properties: 
 - flashcardSide: string
