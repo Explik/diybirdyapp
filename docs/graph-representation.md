@@ -3,7 +3,7 @@ This document describes the data representation used for the Tinkerpop graph.
 
 ## Metadata
 ### Language
-```Mermaid
+```mermaid
 graph TB
 V1(Language)
 ```
@@ -15,7 +15,7 @@ Properties:
 
 ## Content 
 ### Text content
-```Mermaid 
+```mermaid 
 graph TB
 V1(TextContent)
 V2(Language)
@@ -27,7 +27,7 @@ Properties:
 - text: string
 
 ### Flashcard (with text content)
-```Mermaid
+```mermaid
 graph TB
 V1(Flashcard)
 V2(TextContent)
@@ -40,7 +40,7 @@ Properties:
 - id: string
 
 ### Flashcard deck 
-```Mermaid
+```mermaid
 graph BT
 V1(FlashcardDeck)
 V2(Flashcard)
@@ -56,7 +56,7 @@ Properties:
 
 ## Exercise
 ### General exercise 
-```Mermaid
+```mermaid
 graph BT
 V1(Exercise)
 V2(ExerciseSession) 
@@ -71,7 +71,7 @@ properties:
 - type: string
 
 ### Flashcard review exercise
-```Mermaid
+```mermaid
 graph BT
 V1(Exercise)
 V2(Flashcard)
@@ -85,7 +85,7 @@ properties:
 - [General exercise properties]
 
 ### Flashcard write exercise 
-```Mermaid
+```mermaid
 graph BT
 V1(Exercise)
 V2(Flashcard)
