@@ -14,6 +14,7 @@ export class CorrectableMultipleChoiceTextFieldComponent {
   @Output()  optionSelected: EventEmitter<string> = new EventEmitter<string>();
 
   handleOptionSelected(optionId: string): void {
-    this.optionSelected.emit(optionId);
+    if (this.input && !this.input.feedback)
+      this.optionSelected.emit(optionId);
   }
 }
