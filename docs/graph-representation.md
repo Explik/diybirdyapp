@@ -160,9 +160,3 @@ Additional properties: none
 
 ### Recognizability rating exercise answer
 Additional properties: none
-
-### General exercise answer
-
-### Text exercise answer 
-
-
