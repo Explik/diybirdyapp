@@ -67,9 +67,12 @@ Exercise--hasSession-->ExerciseSession
 Exercise--hasAnswer-->ExerciseAnswer
 ```
 
-Properties:
+Exercise properties:
 - id: string
 - type: string
+
+All exercise may have none or multiple answers. 
+All writing exercises will have TextContent answers. All TextContent answers will have a Language defined by the exercise type. 
 
 ### Flashcard select exercise
 ```mermaid
