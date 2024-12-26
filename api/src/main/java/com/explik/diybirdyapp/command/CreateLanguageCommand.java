@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.command;
 
-import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
-import com.explik.diybirdyapp.graph.repository.LanguageRepository;
+import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;

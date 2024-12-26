@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.graph.model.FlashcardDeckModel;
-import com.explik.diybirdyapp.graph.repository.FlashcardDeckRepository;
+import com.explik.diybirdyapp.model.FlashcardDeckModel;
+import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

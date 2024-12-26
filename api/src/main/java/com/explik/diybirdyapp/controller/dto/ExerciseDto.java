@@ -7,6 +7,7 @@ public class ExerciseDto {
     private String type;
     private ExerciseContentDto content;
     private ExerciseInputDto input;
+    private ExerciseFeedbackDto feedback;
     private Dictionary<String, Object> properties;
 
     public String getId() { return id; }
@@ -24,6 +25,10 @@ public class ExerciseDto {
     public ExerciseInputDto getInput() { return input; }
 
     public void setInput(ExerciseInputDto input) { this.input = input; }
+
+    public ExerciseFeedbackDto getFeedback() { return feedback; }
+
+    public void setFeedback(ExerciseFeedbackDto feedback) { this.feedback = feedback; }
 
     public Dictionary<String, Object> getProperties() {
         return properties;

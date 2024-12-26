@@ -1,8 +1,10 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +17,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class FlashcardControllerIntegrationTests {
     @Autowired
+    DataInitializerService dataInitializer;
+
+    @Autowired
     FlashcardController controller;
+
+    @BeforeEach
+    void setUp() {
+        dataInitializer.resetInitialData();
+    }
 
     @Test
     void givenNothing_whenCreate_thenReturnFlashcard() {

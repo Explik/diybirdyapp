@@ -1,0 +1,31 @@
+<!-- Header -->
+<div header class="flex items-center">
+  <app-exit-icon-button class="pl-2 pr-0 flex-none" (click)="handleExit()"></app-exit-icon-button>
+  <app-progress-bar [progress]="(sessionProgress$ | async) || 0" class="flex-grow"></app-progress-bar>
+</div>
+
+<!-- Content -->
+<div content *ngIf="exerciseComponent$ | async" class="px-12 py-6 max-w-lg mx-auto">
+  <ng-container *ngComponentOutlet="exerciseComponent$ | async" />
+</div>
+
+<!-- Footer -->
+<p *ngIf="exerciseNavigationComponent$ | async" footer class="px-12 mx-auto max-w-xl">
+  <ng-container *ngComponentOutlet="exerciseNavigationComponent$ | async" />
+</p>
+
+<div *ngIf="exerciseFeedback" id="feedback-banner"
+  class="fixed bottom-0 left-0 w-full bg-yellow-500 text-white p-4 flex justify-between items-center">
+  <!-- Feedback message -->
+  <span class="text-sm">
+    {{ exerciseFeedback }}
+  </span>
+
+  <!-- Close button -->
+  <button class="text-white hover:text-gray-200 focus:outline-none"
+    onclick="document.getElementById('feedback-banner').style.display='none'">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</div>

@@ -1,8 +1,10 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.dto.FlashcardDeckDto;
-import com.explik.diybirdyapp.graph.model.FlashcardDeckModel;
+import com.explik.diybirdyapp.model.FlashcardDeckModel;
+import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.service.FlashcardDeckService;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,12 @@ import java.util.stream.Collectors;
 @RestController
 public class FlashcardDeckController {
     private final ModelMapper modelMapper = new ModelMapper();
+
+    // TODO remove test dependencies
+    @Autowired
+    private GraphTraversalSource traversalSource;
+    @Autowired
+    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
     FlashcardDeckService service;

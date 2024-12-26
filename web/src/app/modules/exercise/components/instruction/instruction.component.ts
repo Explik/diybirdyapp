@@ -4,8 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-instruction',
   standalone: true,
   imports: [],
-  templateUrl: './instruction.component.html',
-  styleUrl: './instruction.component.css'
+  templateUrl: './instruction.component.html'
 })
 export class InstructionComponent {
   @Input() title: string = 'Translate the sentence';

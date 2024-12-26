@@ -1,0 +1,9 @@
+
+<app-text-button state="secondary" label="Skip" class="fixed bottom-16 left" (click)="handleSkipExercise()"></app-text-button>
+
+@if(showCheckAnswer) {
+    <app-text-button state="primary" label="Check Answer" class="fixed bottom-16 right-16" (click)="handleCheckAnswer()"></app-text-button>
+}
+@else {
+    <app-text-button state="primary" label="Next" class="fixed bottom-16 right-16" (click)="handleNextExercise()"></app-text-button>
+}

@@ -1,0 +1,12 @@
+<app-instruction 
+    *ngIf="targetLanguage" 
+    title="Translate the sentence"
+    [instruction]="'Translate the sentence below into ' + targetLanguage!" />
+
+<app-text-quote 
+    *ngIf="content" 
+    [content]="content!" />
+
+<app-correctable-text-field 
+    *ngIf="input" 
+    [input]="input!" />

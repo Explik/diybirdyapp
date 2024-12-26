@@ -1,14 +1,13 @@
 package com.explik.diybirdyapp.command;
 
 import com.explik.diybirdyapp.command.dto.ImportFlashcardDeckDTO;
-import com.explik.diybirdyapp.graph.model.FlashcardDeckModel;
-import com.explik.diybirdyapp.graph.model.FlashcardLanguageModel;
-import com.explik.diybirdyapp.graph.model.FlashcardModel;
-import com.explik.diybirdyapp.graph.repository.FlashcardDeckRepository;
-import com.explik.diybirdyapp.graph.repository.FlashcardRepository;
-import com.explik.diybirdyapp.graph.repository.LanguageRepository;
+import com.explik.diybirdyapp.model.FlashcardDeckModel;
+import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.FlashcardModel;
+import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
+import com.explik.diybirdyapp.persistence.repository.FlashcardRepository;
+import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.checkerframework.checker.units.qual.A;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

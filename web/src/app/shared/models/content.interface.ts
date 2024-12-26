@@ -3,7 +3,6 @@ export interface TextContent {
 }
 
 export interface FlashcardContent {
-    front: TextContent
-    back: TextContent
+    front: TextContent | undefined
+    back: TextContent | undefined
 }
-

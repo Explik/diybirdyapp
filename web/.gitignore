@@ -43,3 +43,6 @@ Thumbs.db
 
 # Generated files 
 *.d.ts
+
+# Python files 
+.venv/

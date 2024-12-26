@@ -1,0 +1,29 @@
+<div class="flex flex-col space-y-2 w-full">
+    <!-- Again Button -->
+    <button class="bg-red-500 text-white px-4 py-2 rounded flex justify-between hover:bg-red-600"
+      (click)="selectRating('again')">
+      <span>Again</span>
+      <span class="ml-auto">&lt; 10 min</span>
+    </button>
+    
+    <!-- Hard Button -->
+    <button class="bg-yellow-500 text-white px-4 py-2 rounded flex justify-between hover:bg-yellow-600"
+      (click)="selectRating('hard')">
+      <span>Hard</span>
+      <span class="ml-auto">2 days</span>
+    </button>
+    
+    <!-- Good Button -->
+    <button class="bg-green-500 text-white px-4 py-2 rounded flex justify-between hover:bg-green-600"
+      (click)="selectRating('good')">
+      <span>Good</span>
+      <span class="ml-auto">4 months</span>
+    </button>
+    
+    <!-- Easy Button -->
+    <button class="bg-blue-500 text-white px-4 py-2 rounded flex justify-between hover:bg-blue-600"
+      (click)="selectRating('easy')">
+      <span>Easy</span>
+      <span class="ml-auto">6 months</span>
+    </button>
+</div>

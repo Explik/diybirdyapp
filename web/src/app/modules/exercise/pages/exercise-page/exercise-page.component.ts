@@ -7,62 +7,47 @@ import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { TextQuoteComponent } from "../../../../shared/components/text-quote/text-quote.component";
-import { ExerciseContentService } from '../../services/exerciseContent.service';
 import { ActivatedRoute } from '@angular/router';
 import { InfoBoxComponent } from '../../components/info-box/info-box.component';
-import { ExerciseDataService } from '../../services/exerciseData.service';
-import { ExerciseWriteSentenceUsingWordContainerComponent } from '../../components/exercise-write-sentence-using-word-container/exercise-write-sentence-using-word-container.component';
-import { ExerciseWriteTranslatedSentenceContainerComponent } from '../../components/exercise-write-translated-sentence-container/exercise-write-translated-sentence-container.component';
+import { ExerciseSessionDataService } from '../../services/exerciseSessionData.service';
+import { ExerciseContentWriteSentenceUsingWordContainerComponent } from '../../components/exercise-content-write-sentence-using-word-container/exercise-content-write-sentence-using-word-container.component';
+import { ExerciseContentWriteTranslatedSentenceContainerComponent } from '../../components/exercise-content-write-translated-sentence-container/exercise-content-write-translated-sentence-container.component';
+import { ExerciseSessionService } from '../../services/exerciseSession.service';
+import { ExerciseComponentService } from '../../services/exerciseComponent.service';
 import { ExerciseService } from '../../services/exercise.service';
-import { ExerciseMultipleTextChoiceContainerComponent } from '../../components/exercise-multiple-text-choice-container/exercise-multiple-text-choice-container.component';
-import { ExerciseReviewFlashcardContentContainerComponent } from '../../components/exercise-review-flashcard-content-container/exercise-review-flashcard-content-container.component';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-exercise-page',
     standalone: true,
     templateUrl: './exercise-page.component.html',
-    styleUrl: './exercise-page.component.css',
     imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent]
 })
 export class ExercisePageComponent {
+    sessionId: string | undefined = undefined;
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
-    exerciseComponent: Type<any> | null = null;
+    exerciseComponent$: Observable<Type<any>> | null = null;
 
     constructor(
         private route: ActivatedRoute,
         private exerciseService: ExerciseService,
-        private exerciseDataService: ExerciseDataService) {}
+        private exerciseComponentService: ExerciseComponentService,
+        private exerciseDataService: ExerciseSessionDataService) { }
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
-          const id = params.get('id') ?? "1";
-          
-          this.exerciseDataService.getExercise(id).subscribe(data => {
-            if (!data)
-                return;
+            const id = params.get('id') ?? "1";
 
-            this.exerciseId = data.id;
-            this.exerciseType = data.type;
-            this.exerciseService.setExercise(data);
+            this.exerciseDataService.getExercise(id).subscribe(data => {
+                if (!data)
+                    return;
 
-            switch(this.exerciseType) {
-                case "write-sentence-using-word-exercise": 
-                    this.exerciseComponent = ExerciseWriteSentenceUsingWordContainerComponent;
-                    break;
-                case "write-translated-sentence-exercise": 
-                    this.exerciseComponent = ExerciseWriteTranslatedSentenceContainerComponent;
-                    break;
-                case "multiple-choice-text-exercise":
-                    this.exerciseComponent = ExerciseMultipleTextChoiceContainerComponent;
-                    break;
-                case "review-flashcard-content-exercise":
-                    this.exerciseComponent = ExerciseReviewFlashcardContentContainerComponent;
-                    break;
-                default: 
-                    throw new Error("Unknown exercise type " + this.exerciseType);
-            }
-          });
+                this.exerciseId = data.id;
+                this.exerciseType = data.type;
+                this.exerciseService.setExercise(data);
+                this.exerciseComponent$ = this.exerciseComponentService.getComponent();
+            });
         });
     }
 }
