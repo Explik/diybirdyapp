@@ -21,19 +21,27 @@ public class ExerciseModelFactorySelectFlashcard implements ExerciseModelFactory
         instance.setType(vertex.getType());
 
         // Add content
-        if(vertex.getFlashcardSide().equals("front"))
-            instance.setContent(vertex.getFlashcardContent().toExerciseContentFlashcardModel(true, false));
-        else
-            instance.setContent(vertex.getFlashcardContent().toExerciseContentFlashcardModel(false, true));
+        var flashcardVertex = vertex.getFlashcardContent();
+        var isFront = vertex.getFlashcardSide().equals("front");
+        instance.setContent(flashcardVertex.toExerciseContentFlashcardModel(isFront, !isFront));
 
         // Add input
-        var input = new ExerciseInputMultipleChoiceTextModel();
-        input.addOption(new ExerciseInputMultipleChoiceTextModel.Option("id1", "Option 1"));
-        input.addOption(new ExerciseInputMultipleChoiceTextModel.Option("id2", "Option 2"));
-        input.addOption(new ExerciseInputMultipleChoiceTextModel.Option("id3", "Option 3"));
-        input.addOption(new ExerciseInputMultipleChoiceTextModel.Option("id4", "Option 4"));
+        var inputModel = new ExerciseInputMultipleChoiceTextModel();
 
-        instance.setInput(input);
+        var correctOption = !vertex.getFlashcardSide().equals("front") ? flashcardVertex.getLeftContent() : flashcardVertex.getRightContent();
+        inputModel.addOption(new ExerciseInputMultipleChoiceTextModel.Option(
+                flashcardVertex.getId(),
+                correctOption.getValue()));
+
+        for(var incorrectOption : vertex.getFlashcardOptions()) {
+            var optionSideVertex = !vertex.getFlashcardSide().equals("front") ? incorrectOption.getLeftContent() : incorrectOption.getRightContent();
+
+            inputModel.addOption(
+                    new ExerciseInputMultipleChoiceTextModel.Option(
+                            incorrectOption.getId(),
+                            optionSideVertex.getValue()));
+        }
+        instance.setInput(inputModel);
 
         return instance;
     }

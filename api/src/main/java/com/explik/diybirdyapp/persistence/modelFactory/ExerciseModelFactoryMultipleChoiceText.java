@@ -22,7 +22,7 @@ public class ExerciseModelFactoryMultipleChoiceText implements ExerciseModelFact
 
         var input = new ExerciseInputMultipleChoiceTextModel();
         input.setType("multiple-choice-text-input");
-        vertex.getOptions()
+        vertex.getTextContentOptions()
                 .forEach(v -> {
                     input.addOption(
                             new ExerciseInputMultipleChoiceTextModel.Option(v.getId(), v.getValue()));

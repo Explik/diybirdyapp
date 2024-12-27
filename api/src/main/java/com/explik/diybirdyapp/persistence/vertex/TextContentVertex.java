@@ -4,7 +4,7 @@ import com.explik.diybirdyapp.model.ExerciseContentTextModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-public class TextContentVertex extends AbstractVertex {
+public class TextContentVertex extends AbstractVertex implements IdentifiableVertex {
     public TextContentVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }

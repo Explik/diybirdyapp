@@ -7,6 +7,8 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component(ExerciseTypes.SELECT_FLASHCARD + ComponentTypes.VERTEX_FACTORY)
 public class ExerciseSelectFlashcardVertexFactory implements VertexFactory<ExerciseVertex, ExerciseSelectFlashcardVertexFactory.Options> {
     @Override
@@ -17,10 +19,12 @@ public class ExerciseSelectFlashcardVertexFactory implements VertexFactory<Exerc
         vertex.setType(ExerciseTypes.SELECT_FLASHCARD);
         vertex.setContent(options.flashcardVertex);
         vertex.setSession(options.sessionVertex);
-        vertex.setFlashcardSide("front");
+        vertex.setFlashcardSide(options.flashcardSide);
+        for(var alternativeFlashcard : options.alternativeFlashcards)
+            vertex.addOption(alternativeFlashcard);
 
         return vertex;
     }
 
-    public record Options (String id, AbstractVertex sessionVertex, AbstractVertex flashcardVertex) { }
+    public record Options (String id, AbstractVertex sessionVertex, AbstractVertex flashcardVertex, List<? extends AbstractVertex> alternativeFlashcards, String flashcardSide) { }
 }

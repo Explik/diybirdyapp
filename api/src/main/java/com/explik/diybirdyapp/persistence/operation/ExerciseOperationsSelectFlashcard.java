@@ -1,24 +1,23 @@
 package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
 import com.explik.diybirdyapp.model.ExerciseInputModel;
 import com.explik.diybirdyapp.model.ExerciseInputMultipleChoiceTextModel;
 import com.explik.diybirdyapp.model.ExerciseModel;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryMultipleChoiceText;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import com.explik.diybirdyapp.persistence.vertex.IdentifiableVertex;
+import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component(ExerciseTypes.SELECT_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
-    @Autowired
-    ExerciseAnswerVertexFactoryMultipleChoiceText answerVertexFactory;
-
     @Override
     public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseInputModel genericAnswerModel) {
         if (genericAnswerModel == null)
@@ -28,17 +27,35 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
 
         var answerModel = (ExerciseInputMultipleChoiceTextModel)genericAnswerModel;
 
-        // Save answer to graph
-        answerVertexFactory.create(traversalSource, answerModel);
+        // Evaluate exercise
+        var exerciseVertex = ExerciseVertex.getById(traversalSource, genericAnswerModel.getExerciseId());
+        var correctOptionVertex = exerciseVertex.getContent();
+        var incorrectOptionVertices = exerciseVertex.getTextContentOptions();
+        var options = Stream.concat(Stream.of(correctOptionVertex), incorrectOptionVertices.stream()).collect(Collectors.toList());
+
+        for(var option : options) {
+            var optionId = ((IdentifiableVertex)option).getId();
+            if (optionId.equals(answerModel.getValue())) {
+                exerciseVertex.setAnswer(option);
+                break;
+            }
+        }
 
         // Generate feedback
-        // TODO Implement correct/incorrect feedback
-        var exerciseFeedback = ExerciseFeedbackModel.createIndecisiveFeedback();
+        return createExerciseWithFeedback((IdentifiableVertex) correctOptionVertex, incorrectOptionVertices, answerModel);
+    }
+
+    private static ExerciseModel createExerciseWithFeedback(IdentifiableVertex correctOptionVertex, List<? extends TextContentVertex> incorrectOptionVertices, ExerciseInputMultipleChoiceTextModel answerModel) {
+        var correctOptionId = correctOptionVertex.getId();
+        var incorrectOptionIds = incorrectOptionVertices.stream().map(IdentifiableVertex::getId).toList();
+        var isCorrect = answerModel.getValue().equals(correctOptionId);
+
+        var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isCorrect);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
         var inputFeedback = new ExerciseInputMultipleChoiceTextModel.Feedback();
-        inputFeedback.setCorrectOptionIds(List.of("id1"));
-        inputFeedback.setIncorrectOptionIds(List.of("id2", "id3", "id4"));
+        inputFeedback.setCorrectOptionIds(List.of(correctOptionId));
+        inputFeedback.setIncorrectOptionIds(incorrectOptionIds);
 
         var exerciseInput = new ExerciseInputMultipleChoiceTextModel();
         exerciseInput.setFeedback(inputFeedback);
@@ -46,7 +63,6 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
         var exercise = new ExerciseModel();
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(exerciseInput);
-
         return exercise;
     }
 }

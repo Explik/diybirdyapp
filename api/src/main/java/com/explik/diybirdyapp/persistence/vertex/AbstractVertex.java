@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.persistence.vertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-public abstract class AbstractVertex {
+public class AbstractVertex {
     protected final GraphTraversalSource traversalSource;
     protected Vertex vertex;
 

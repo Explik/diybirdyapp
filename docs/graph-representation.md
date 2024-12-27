@@ -59,12 +59,12 @@ Properties:
 ### General exercise 
 ```mermaid
 graph BT
-V1(Exercise)
-V2(ExerciseSession) 
-V3(ExerciseAnswer)
+Exercise(Exercise)
+ExerciseSession(ExerciseSession) 
+ExerciseAnswer(?????)
 
-V1--hasSession-->V2
-V3--hasExercise-->V1
+Exercise--hasSession-->ExerciseSession
+Exercise--hasAnswer-->ExerciseAnswer
 ```
 
 Properties:
