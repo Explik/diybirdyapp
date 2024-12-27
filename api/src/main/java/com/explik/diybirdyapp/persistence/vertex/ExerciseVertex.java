@@ -13,10 +13,10 @@ public class ExerciseVertex extends AbstractVertex {
 
     public final static String LABEL = "exercise";
 
+    public final static String EDGE_ANSWER = "hasAnswer";
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_OPTION = "hasOption";
-    public final static String EDGE_CORRECT_OPTION = "hasCorrectOption";
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TARGET_LANGUAGE = "targetLanguage";
@@ -37,6 +37,30 @@ public class ExerciseVertex extends AbstractVertex {
 
     public void setType(String type) {
         setProperty(PROPERTY_TYPE, type);
+    }
+
+    public AbstractVertex getContent() {
+        var contentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
+        if (contentVertex.label().equals(TextContentVertex.LABEL))
+            return new TextContentVertex(traversalSource, contentVertex);
+        else if(contentVertex.label().equals(FlashcardVertex.LABEL))
+            return new FlashcardVertex(traversalSource, contentVertex);
+
+        throw new RuntimeException("Unknown content type: " + contentVertex.label());
+    }
+
+    public FlashcardVertex getFlashcardAnswer() {
+        var answerVertex = traversalSource.V(vertex).out(EDGE_ANSWER).next();
+        return new FlashcardVertex(traversalSource, answerVertex);
+    }
+
+    public TextContentVertex getTextContentAnswer() {
+        var answerVertex = traversalSource.V(vertex).out(EDGE_ANSWER).next();
+        return new TextContentVertex(traversalSource, answerVertex);
+    }
+
+    public void setAnswer(AbstractVertex answer) {
+        addEdgeOneToOne(EDGE_ANSWER, answer);
     }
 
     public TextContentVertex getTextContent() {
@@ -69,21 +93,18 @@ public class ExerciseVertex extends AbstractVertex {
         addEdgeOneToMany(EDGE_OPTION, option);
     }
 
-    public List<? extends TextContentVertex> getOptions() {
+    public List<? extends TextContentVertex> getTextContentOptions() {
         var choiceVertices = traversalSource.V(vertex).out(EDGE_OPTION).toList();
-
         return choiceVertices.stream()
                 .map(v -> new TextContentVertex(traversalSource, v))
                 .toList();
     }
 
-    public TextContentVertex getCorrectOption() {
-        var correctChoiceVertex = traversalSource.V(vertex).out(EDGE_CORRECT_OPTION).next();
-        return new TextContentVertex(traversalSource, correctChoiceVertex);
-    }
-
-    public void setCorrectOption(AbstractVertex option) {
-        addEdgeOneToOne(EDGE_CORRECT_OPTION, option);
+    public List<? extends FlashcardVertex> getFlashcardOptions() {
+        var choiceVertices = traversalSource.V(vertex).out(EDGE_OPTION).toList();
+        return choiceVertices.stream()
+                .map(v -> new FlashcardVertex(traversalSource, v))
+                .toList();
     }
 
     public ExerciseSessionVertex getSession() {

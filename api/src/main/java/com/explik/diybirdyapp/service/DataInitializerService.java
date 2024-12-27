@@ -153,8 +153,9 @@ public class DataInitializerService {
                 new ExerciseSelectFlashcardVertexFactory.Options(
                         "3",
                         null,
-                        //List.of(wordVertex3, wordVertex4, wordVertex5, wordVertex6),
-                        wordVertex6));
+                        wordVertex6,
+                        List.of(wordVertex3, wordVertex4, wordVertex5),
+                        "front"));
 
         // Exercise session 4
         var flashcardVertex = FlashcardVertex.findById(traversalSource, "flashcardVertex1");

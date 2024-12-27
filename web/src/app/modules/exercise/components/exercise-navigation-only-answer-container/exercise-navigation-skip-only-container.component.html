@@ -1,9 +1,7 @@
 <div class="fixed bottom-16 max-w-lg mx-auto w-full">
-    <div class="relative float-left max-w-lg mx-auto w-full">
+    <div class="float-left max-w-lg mx-auto w-full">
+    @if(showSkipExercise) {
         <app-text-button state="secondary" label="Skip" class="float-left" (click)="handleSkipExercise()"></app-text-button>
-
-    @if(showCheckAnswer) {
-        <app-text-button state="primary" label="Check Answer" class="float-right" (click)="handleCheckAnswer()"></app-text-button>
     }
     @else {
         <app-text-button state="primary" label="Next" class="float-right" (click)="handleNextExercise()"></app-text-button>

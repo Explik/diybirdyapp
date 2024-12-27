@@ -9,7 +9,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FlashcardVertex extends AbstractVertex {
+public class FlashcardVertex extends AbstractVertex implements IdentifiableVertex {
     public FlashcardVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }

@@ -27,9 +27,6 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     @Autowired
     private Map<String, ExerciseOperations> exerciseManagers;
 
-    @Autowired
-    private Map<String, VertexFactory<ExerciseAnswerVertex, ExerciseInputModel>> exerciseAnswerVertexFactories;
-
     private final GraphTraversalSource traversalSource;
 
     public ExerciseRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {

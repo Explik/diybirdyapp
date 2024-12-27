@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 public class TextContentVertexFactory implements VertexFactory<TextContentVertex, TextContentVertexFactory.Options> {
     @Override
     public TextContentVertex create(GraphTraversalSource traversalSource, Options options) {
-        var graphVertex = traversalSource.addV(TextContentVertex.LABEL).next();
-        var vertex = new TextContentVertex(traversalSource, graphVertex);
+        var vertex = TextContentVertex.create(traversalSource);
         vertex.setId(options.id);
         vertex.setValue(options.value);
         vertex.setLanguage(options.language);

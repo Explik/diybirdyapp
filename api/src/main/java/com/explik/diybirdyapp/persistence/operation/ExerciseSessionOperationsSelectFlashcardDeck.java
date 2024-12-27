@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component(ExerciseSessionTypes.SELECT_FLASHCARD_DECK + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSessionOperations {
@@ -54,18 +55,29 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
     }
 
     @Override
-    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, String modelId) {
-        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
+    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, String sessionId) {
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
         if (sessionVertex == null)
-            throw new RuntimeException("Session with " + modelId +" not found");
+            throw new RuntimeException("Session with " + sessionId +" not found");
 
         // Finds first flashcard (in deck) not connected to review exercise (in session)
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, modelId, ExerciseTypes.SELECT_FLASHCARD);
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionId, ExerciseTypes.SELECT_FLASHCARD);
 
         if (flashcardVertex != null) {
+            var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
+            var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
+                    .filter(flashcard -> !flashcard.getId().equals(flashcardVertex.getId()))
+                    .limit(3)
+                    .collect(Collectors.toList());
+
             vertexFactory.create(
                     traversalSource,
-                    new ExerciseSelectFlashcardVertexFactory.Options(UUID.randomUUID().toString(), sessionVertex, flashcardVertex));
+                    new ExerciseSelectFlashcardVertexFactory.Options(
+                            UUID.randomUUID().toString(),
+                            sessionVertex,
+                            flashcardVertex,
+                            alternativeFlashcardVertices,
+                            "front"));
             sessionVertex.reload();
         } else {
             // If no flashcards are found, the session is complete

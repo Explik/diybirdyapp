@@ -4,7 +4,7 @@ This document describes the data representation used for the Tinkerpop graph.
 ## Metadata
 ### Language
 ```mermaid
-graph TB
+graph LR
 V1(Language)
 ```
 
@@ -16,7 +16,7 @@ Properties:
 ## Content 
 ### Text content
 ```mermaid 
-graph TB
+graph LR
 V1(TextContent)
 V2(Language)
 V1--hasLanguage-->V2
@@ -28,10 +28,11 @@ Properties:
 
 ### Flashcard (with text content)
 ```mermaid
-graph TB
+graph LR
 V1(Flashcard)
 V2(TextContent)
 V3(TextContent)
+
 V1--hasLeftContent-->V2
 V1--hasRightContent-->V3
 ```
@@ -41,7 +42,7 @@ Properties:
 
 ### Flashcard deck 
 ```mermaid
-graph BT
+graph LR
 V1(FlashcardDeck)
 V2(Flashcard)
 V3(Flashcard)
@@ -57,52 +58,108 @@ Properties:
 ## Exercise
 ### General exercise 
 ```mermaid
-graph BT
-V1(Exercise)
-V2(ExerciseSession) 
-V3(ExerciseAnswer)
+graph TB
+ExerciseSession(ExerciseSession) 
+Exercise(Exercise)
+ExerciseAnswer("[Any]")
 
-V1--hasSession-->V2
-V3--hasExercise-->V1
+Exercise--hasSession-->ExerciseSession
+Exercise--hasAnswer-->ExerciseAnswer
 ```
 
-properties:
+Exercise properties:
 - id: string
 - type: string
 
+All exercise may have none or multiple answers. 
+All writing exercises will have TextContent answers. All TextContent answers will have a Language defined by the exercise type. 
+
+### Flashcard select exercise
+```mermaid
+graph TB
+Exercise(Exercise)
+Flashcard1(Flashcard)
+Flashcard2(Flashcard)
+Flashcard3(Flashcard)
+
+Exercise--hasContent-->Flashcard1
+Exercise--hasAnswer-->Flashcard2
+Exercise--hasOption-->Flashcard2
+Exercise--hasOption-->Flashcard3
+```
+Note, the content is also an option, the correct option. 
+
+Additional exercise properties: 
+- flashcardSide: string
+
 ### Flashcard review exercise
 ```mermaid
-graph BT
-V1(Exercise)
-V2(Flashcard)
-V3(ExerciseAnswer Regonizability Rating)
+graph TB
+Exercise(Exercise)
+Flashcard(Flashcard)
+RecognizabilityRating(RecognizabilityRating)
 
-V1--hasContent-->V2
-V3--hasExercise-->V1
+Exercise--hasContent-->Flashcard
+Exercise--hasAnswer-->RecognizabilityRating
 ```
 
-properties:
-- [General exercise properties]
+Additional exercise properties: 
+- flashcardSide: string
 
 ### Flashcard write exercise 
 ```mermaid
-graph BT
-V1(Exercise)
-V2(Flashcard)
-V3(ExerciseAnswer Text)
+graph TB
+Exercise(Exercise)
+Flashcard(Flashcard)
+TextContent1(TextContent)
+TextContent2A(TextContent)
+TextContent2B(TextContent)
+Language1(Language)
+Language2(Language)
 
-V1--hasContent-->V2
-V3--hasExercise-->V1
+Exercise--hasContent-->Flashcard
+Flashcard--hasLeftContent-->TextContent2A
+Flashcard--hasRightContent-->TextContent2B
+TextContent2A--hasLanguage-->Language1
+TextContent2B--hasLanguage-->Language2
+Exercise--hasAnswer-->TextContent1
+TextContent1--hasLanguage-->Language1
+```
+Note, the answer will either have the same language as either side of the flashcard's content. 
+
+Additional exercise properties: 
+- flashcardSide: string
+
+### Write sentence using word 
+```mermaid
+graph TB
+Exercise(Exercise)
+TextContent1(TextContent)
+TextContent2(TextContent)
+Language(Language)
+
+Exercise--hasContent-->TextContent1
+Exercise--hasAnswer-->TextContent2
+TextContent1--hasLanguage-->Language
+TextContent2--hasLanguage-->Language
 ```
 
-properties:
-- [General exercise properties]
+Additional exercise properties: none
 
-## Exercise answer
+### Write translated sentence 
+```mermaid
+graph TB
+Exercise(Exercise)
+TextContent1(TextContent)
+TextContent2(TextContent)
+Language1(Language)
+Language2(Language)
 
+Exercise--hasContent-->TextContent1
+TextContent1--hasLanguage-->Language1
+Exercise--hasAnswer-->TextContent2
+TextContent2--hasLanguage-->Language2
+Exercise--hasTargetLanguage-->Language2
+```
 
-### General exercise answer
-
-### Text exercise answer 
-
-
+Additional exercise properties: none

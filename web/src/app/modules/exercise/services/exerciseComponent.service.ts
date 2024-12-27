@@ -9,6 +9,7 @@ import { map, Observable } from "rxjs";
 import { ExerciseService } from "./exercise.service";
 import { ExerciseContentLoadingComponent } from "../components/exercise-content-loading/exercise-content-loading.component";
 import { ExerciseContentSelectFlashcardContainerComponent } from "../components/exercise-content-select-flashcard-container/exercise-content-select-flashcard-container.component";
+import { ExerciseNavigationSkipOnlyContainerComponent } from "../components/exercise-navigation-only-answer-container/exercise-navigation-skip-only-container.component";
 
 @Injectable({
     providedIn: 'root'
@@ -55,8 +56,9 @@ export class ExerciseComponentService {
             case "write-sentence-using-word-exercise":
             case "write-translated-sentence-exercise":
             case "write-flashcard-exercise":
-            case "select-flashcard-exercise":
                 return ExerciseNavigationCheckAnswerContainerComponent; 
+            case "select-flashcard-exercise":
+                return ExerciseNavigationSkipOnlyContainerComponent;
             default: 
                 return null; 
         }

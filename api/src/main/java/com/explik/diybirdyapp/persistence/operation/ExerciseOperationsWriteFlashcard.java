@@ -1,24 +1,25 @@
 package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
 import com.explik.diybirdyapp.model.ExerciseInputModel;
 import com.explik.diybirdyapp.model.ExerciseInputTextModel;
 import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryTextInput;
+import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component(ExerciseTypes.WRITE_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
     @Autowired
-    private ExerciseAnswerVertexFactoryTextInput answerVertexFactory;
+    private TextContentVertexFactory textContentVertexFactory;
 
     @Override
     public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseInputModel genericAnswerModel) {
@@ -27,16 +28,26 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         if (!(genericAnswerModel instanceof ExerciseInputTextModel))
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
 
+        // Evaluate answer
         ExerciseInputTextModel answerModel = (ExerciseInputTextModel)genericAnswerModel;
-
-        answerVertexFactory.create(traversalSource, answerModel);
-
-        // Generate feedback
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var flashcardContent = exerciseVertex.getFlashcardContent();
         var flashcardSide = !exerciseVertex.getFlashcardSide().equals("front") ? flashcardContent.getLeftContent() : flashcardContent.getRightContent();
-        var isAnswerCorrect = flashcardSide.getValue().equalsIgnoreCase(answerModel.getText());
 
+        // Save answer
+        var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();
+        var answerVertex = textContentVertexFactory.create(
+                traversalSource,
+                new TextContentVertexFactory.Options(answerId, answerModel.getText(), flashcardSide.getLanguage()));
+        exerciseVertex.setAnswer(answerVertex);
+
+        // Generate feedback
+        return createExerciseWithFeedback(flashcardSide, answerModel);
+    }
+
+    private static ExerciseModel createExerciseWithFeedback(TextContentVertex flashcardSide, ExerciseInputTextModel answerModel) {
+
+        var isAnswerCorrect = flashcardSide.getValue().equalsIgnoreCase(answerModel.getText());
         var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isAnswerCorrect);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
@@ -50,7 +61,6 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         var exercise = new ExerciseModel();
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(input);
-
         return exercise;
     }
 }
