@@ -8,7 +8,7 @@ import { RecursivePartial } from "../../../shared/models/util.model";
 @Injectable({
     providedIn: 'root'
   })
-  export class ImportService {
+  export class FlashcardService {
     private exerciseSessionBaseUrl = `${environment.apiUrl}/exercise-session`;
     private flashcardBaseUrl = `${environment.apiUrl}/flashcard`;
     private flashcardDeckBaseUrl = `${environment.apiUrl}/flashcard-deck`;

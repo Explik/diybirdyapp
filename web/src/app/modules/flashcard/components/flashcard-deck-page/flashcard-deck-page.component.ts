@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FlashcardEditContainerComponent } from "../flashcard-edit-container/flashcard-edit-container.component";
 import { Flashcard, FlashcardLanguage } from '../../models/flashcard.model';
-import { ImportService } from '../../services/import.service';
+import { FlashcardService } from '../../services/flashcard.service';
 import { zip } from 'rxjs';
 import { RecursivePartial } from '../../../../shared/models/util.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -27,7 +27,7 @@ export class FlashcardDeckPageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute, 
     private router: Router,
-    private service: ImportService) {}
+    private service: FlashcardService) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {

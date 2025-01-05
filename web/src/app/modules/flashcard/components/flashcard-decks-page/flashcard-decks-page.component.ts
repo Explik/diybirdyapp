@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FlashcardDeck } from '../../models/flashcard.model';
-import { ImportService } from '../../services/import.service';
+import { FlashcardService } from '../../services/flashcard.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router';
 export class FlashcardDecksPageComponent implements OnInit {
   flashcardDecks: FlashcardDeck[] = [];
 
-  constructor(private service: ImportService) {}
+  constructor(private service: FlashcardService) {}
 
   ngOnInit(): void {
     this.service.getFlashcardDecks().subscribe(data => {
