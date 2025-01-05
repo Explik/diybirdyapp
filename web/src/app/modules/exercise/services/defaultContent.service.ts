@@ -10,11 +10,12 @@ import { Observable, of } from "rxjs";
 export class DefaultContentService {
     constructor() {}
 
-    getTextInput(): ExerciseInputTextDto {
-        const textInput: ExerciseInputTextDto = {
+    getTextInput(): Partial<ExerciseInputTextDto> {
+        const textInput: Partial<ExerciseInputTextDto> = {
             id: "default",
             type: "text",
-            text: ""
+            text: "",
+            feedback: undefined,
         }
         return textInput;
     }
