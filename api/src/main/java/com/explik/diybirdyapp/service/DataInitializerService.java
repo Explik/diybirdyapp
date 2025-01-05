@@ -1,10 +1,7 @@
 package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.ExerciseSessionModel;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -52,7 +49,7 @@ public class DataInitializerService {
 
     public void appendInitialData() {
         addInitialLanguageData();
-        addInitialFlashcardData();
+        addInitialContentAndConcepts();
         addInitialExerciseData();
     }
 
@@ -66,9 +63,15 @@ public class DataInitializerService {
                 new LanguageVertexFactory.Options("langVertex2", "English", "EN"));
     }
 
-    public void addInitialFlashcardData() {
+    public void addInitialContentAndConcepts() {
         var langVertex1 = LanguageVertex.findByAbbreviation(traversalSource, "DA");
         var langVertex2 = LanguageVertex.findByAbbreviation(traversalSource, "EN");
+
+        // Text content
+        var textVertex0 = TextContentVertex.create(traversalSource);
+        textVertex0.setId("textVertex0");
+        textVertex0.setValue("Bereshit");
+        textVertex0.setLanguage(langVertex1);
 
         var textVertex1 = TextContentVertex.create(traversalSource);
         textVertex1.setId("textVertex1");
@@ -90,6 +93,7 @@ public class DataInitializerService {
         textVertex4.setValue("Hey John");
         textVertex4.setLanguage(langVertex2);
 
+        // Flashcard content
         var flashcardVertex1 = FlashcardVertex.create(traversalSource);
         flashcardVertex1.setId("flashcardVertex1");
         flashcardVertex1.setLeftContent(textVertex1);
@@ -109,6 +113,14 @@ public class DataInitializerService {
         flashcardDeckVertex2.setId("flashcardDeckVertex2");
         flashcardDeckVertex2.setName("Second ever flashcard deck");
         flashcardDeckVertex2.addFlashcard(flashcardVertex2);
+
+        // Word concepts
+        var wordVertex1 = WordVertex.create(traversalSource);
+        wordVertex1.setId("wordVertex1");
+        wordVertex1.setValue(textVertex0.getValue());
+        wordVertex1.setLanguage(textVertex0.getLanguage());
+        wordVertex1.addExample(textVertex0);
+        wordVertex1.setMainExample(textVertex0);
     }
 
     public void addInitialExerciseData() {

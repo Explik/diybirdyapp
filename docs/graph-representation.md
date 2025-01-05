@@ -55,6 +55,25 @@ Properties:
 - name: string
 - description: string
 
+## Concepts
+
+### Word
+```mermaid
+graph LR
+V1(Word)
+V2(TextContent)
+V3(TextContent)
+V4(Language)
+V1--hasExample-->V2
+V1--hasExample-->V3
+V1--hasMainExample-->V3
+V1--hasLanguage-->V4
+```
+
+Properties:
+- id: string
+- value: string
+
 ## Exercise
 ### General exercise 
 ```mermaid
