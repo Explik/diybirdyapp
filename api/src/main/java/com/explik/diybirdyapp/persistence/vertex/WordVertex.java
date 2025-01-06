@@ -1,9 +1,12 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
+
+import static org.apache.tinkerpop.gremlin.process.traversal.P.*;
 
 public class WordVertex extends AbstractVertex implements IdentifiableVertex {
     public WordVertex(GraphTraversalSource traversalSource, Vertex vertex) {
@@ -74,6 +77,27 @@ public class WordVertex extends AbstractVertex implements IdentifiableVertex {
         if (!vertexQuery.hasNext())
             return null;
         return new WordVertex(traversalSource, vertexQuery.next());
+    }
+
+    public static WordVertex findByValue(GraphTraversalSource traversalSource, String value) {
+        var vertexQuery = traversalSource.V().hasLabel(LABEL).has(PROPERTY_VALUE, value);
+        if (!vertexQuery.hasNext())
+            return null;
+        return new WordVertex(traversalSource, vertexQuery.next());
+    }
+
+    public static List<WordVertex> findByValues(GraphTraversalSource traversalSource, List<String> values) {
+        var vertices = traversalSource.V().hasLabel(LABEL).has(PROPERTY_VALUE, within(values)).toList();
+        return vertices.stream()
+            .map(v -> new WordVertex(traversalSource, v))
+            .toList();
+    }
+
+    public static void removeWordsFromTextContent(GraphTraversalSource traversalSource, TextContentVertex textContent) {
+        var wordVertices = traversalSource.V().hasLabel(LABEL).out(EDGE_EXAMPLE).hasId(textContent.getId()).toList();
+        for (var wordVertex : wordVertices) {
+            traversalSource.V(wordVertex).outE(EDGE_EXAMPLE).hasId(textContent.getId()).drop().iterate();
+        }
     }
 
     public static List<WordVertex> getAll(GraphTraversalSource traversalSource) {

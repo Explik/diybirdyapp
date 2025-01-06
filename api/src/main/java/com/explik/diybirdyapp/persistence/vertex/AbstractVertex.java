@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 public class AbstractVertex {
@@ -32,6 +33,16 @@ public class AbstractVertex {
 
     protected void addEdgeOneToMany(String edgeLabel, AbstractVertex toVertex) {
         this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).next();
+        reload();
+    }
+
+    protected void removeEdges(String edgeLabel) {
+        this.traversalSource.V(this.vertex).outE(edgeLabel).drop().iterate();
+        reload();
+    }
+
+    protected void removeEdge(String edgeLabel, AbstractVertex toVertex) {
+        this.traversalSource.V(this.vertex).outE(edgeLabel).where(__.inV().is(toVertex.vertex)).drop().iterate();
         reload();
     }
 
