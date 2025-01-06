@@ -1,9 +1,12 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.dto.FlashcardDto;
+import com.explik.diybirdyapp.event.FlashcardAddedEvent;
+import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import com.explik.diybirdyapp.model.FlashcardModel;
 import com.explik.diybirdyapp.service.FlashcardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 import org.modelmapper.*;
 
@@ -17,10 +20,15 @@ public class FlashcardController {
     @Autowired
     FlashcardService service;
 
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
+
     @PostMapping("/flashcard")
     public FlashcardDto create(@RequestBody FlashcardDto dto)  {
         var model = modelMapper.map(dto, FlashcardModel.class);
         var newModel = service.add(model);
+
+        eventPublisher.publishEvent(new FlashcardAddedEvent(this, newModel.getId()));
 
         return modelMapper.map(newModel, FlashcardDto.class);
     }
@@ -29,6 +37,8 @@ public class FlashcardController {
     public FlashcardDto update(@RequestBody FlashcardDto dto)  {
         var model = modelMapper.map(dto, FlashcardModel.class);
         var newModel = service.update(model);
+
+        eventPublisher.publishEvent(new FlashcardUpdatedEvent(this, newModel.getId()));
 
         return modelMapper.map(newModel, FlashcardDto.class);
     }

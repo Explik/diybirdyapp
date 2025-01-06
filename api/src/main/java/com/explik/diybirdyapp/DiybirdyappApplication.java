@@ -7,10 +7,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import picocli.CommandLine;
 
 import java.util.Map;
 
+@EnableAsync
 @SpringBootApplication
 public class DiybirdyappApplication {
 	private static final Logger logger = LoggerFactory.getLogger(DiybirdyappApplication.class);
