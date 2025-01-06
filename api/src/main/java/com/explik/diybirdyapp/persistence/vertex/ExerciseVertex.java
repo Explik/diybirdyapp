@@ -39,7 +39,7 @@ public class ExerciseVertex extends AbstractVertex {
         setProperty(PROPERTY_TYPE, type);
     }
 
-    public AbstractVertex getContent() {
+    public ContentVertex getContent() {
         var contentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
         if (contentVertex.label().equals(TextContentVertex.LABEL))
             return new TextContentVertex(traversalSource, contentVertex);

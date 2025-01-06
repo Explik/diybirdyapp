@@ -58,6 +58,14 @@ public class AbstractVertex {
         return this.vertex.property(propertyKey).value().toString();
     }
 
+    protected boolean getPropertyAsBoolean(String propertyKey) {
+        return (boolean)getProperty(propertyKey);
+    }
+
+    protected boolean getPropertyAsBoolean(String propertyKey, boolean defaultValue) {
+        return (boolean)getProperty(propertyKey, defaultValue);
+    }
+
     protected <T> void setProperty(String propertyKey, T propertyValue) {
         this.traversalSource.V(this.vertex).property(propertyKey, propertyValue).iterate();
         reload();

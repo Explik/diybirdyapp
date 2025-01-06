@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.apache.tinkerpop.gremlin.process.traversal.P.*;
 
-public class WordVertex extends AbstractVertex implements IdentifiableVertex {
+public class WordVertex extends AbstractVertex {
     public WordVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }

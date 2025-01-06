@@ -5,7 +5,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 
-public class FlashcardDeckVertex extends AbstractVertex {
+public class FlashcardDeckVertex extends ContentVertex {
     public FlashcardDeckVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }

@@ -4,7 +4,7 @@ import com.explik.diybirdyapp.model.ExerciseContentTextModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-public class TextContentVertex extends AbstractVertex implements IdentifiableVertex {
+public class TextContentVertex extends ContentVertex {
     public TextContentVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }
@@ -15,14 +15,6 @@ public class TextContentVertex extends AbstractVertex implements IdentifiableVer
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_VALUE = "value";
-
-    public String getId() {
-        return getPropertyAsString(PROPERTY_ID);
-    }
-
-    public void setId(String id) {
-        setProperty(PROPERTY_ID, id);
-    }
 
     public String getValue() {
         return getPropertyAsString(PROPERTY_VALUE);
