@@ -24,9 +24,9 @@ The model factories are responsible for creating models from the graph represent
 All data in the system is store as a graph nodes and connections.
 
 There are currently 3 different kinds of data: 
-1. Concepts - Concepts contains metadata like language and grammatical terms
-2. Content - Content contains displayable content in the UI
-3. Exercises - Exercises contains 
+1. Concepts - Concepts contains metadata like language and grammatical terms. These are generally not shown in the UI. 
+2. Content - Content contains displayable content in the UI.
+3. Exercises - Exercises contains displayable composition of content in the UI.
 
 The exact layout of the graph is described in graph-representation.md 
 
