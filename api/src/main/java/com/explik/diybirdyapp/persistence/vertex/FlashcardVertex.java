@@ -29,6 +29,14 @@ public class FlashcardVertex extends ContentVertex {
         setProperty(PROPERTY_ID, id);
     }
 
+    @Override
+    public void makeStatic() {
+        super.makeStatic();
+
+        getLeftContent().makeStatic();
+        getRightContent().makeStatic();
+    }
+
     public FlashcardDeckVertex getDeck() {
         var deckVertex = traversalSource.V(vertex).in(FlashcardDeckVertex.EDGE_FLASHCARD).next();
         return new FlashcardDeckVertex(traversalSource, deckVertex);

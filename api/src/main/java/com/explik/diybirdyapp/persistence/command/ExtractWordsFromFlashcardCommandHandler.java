@@ -36,9 +36,6 @@ public class ExtractWordsFromFlashcardCommandHandler implements CommandHandler<E
                 .distinct()
                 .toList();
 
-        // Remove old word connections
-        WordVertex.removeWordsFromTextContent(traversalSource, textContent);
-
         // Add new word connections
         for (var wordValue : wordValues) {
             var word = WordVertex.findByValue(traversalSource, wordValue);

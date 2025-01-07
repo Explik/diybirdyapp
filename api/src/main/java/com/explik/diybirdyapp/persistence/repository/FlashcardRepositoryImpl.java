@@ -5,6 +5,8 @@ import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,12 @@ import java.util.UUID;
 @Component
 public class FlashcardRepositoryImpl implements FlashcardRepository {
     private final GraphTraversalSource traversalSource;
+
+    @Autowired
+    TextContentVertexFactory textContentVertexFactory;
+
+    @Autowired
+    FlashcardVertexFactory flashcardVertexFactory;
 
     public FlashcardRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
@@ -76,23 +84,39 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
             throw new IllegalArgumentException("Flashcard is missing id");
 
         var flashcardVertex = FlashcardVertex.findById(traversalSource, flashcardModel.getId());
+        var leftContentVertex = flashcardVertex.getLeftContent();
+        var rightContentVertex = flashcardVertex.getRightContent();
 
+        // Copy content if static
+        if (flashcardVertex.isStatic() || leftContentVertex.isStatic()) {
+            leftContentVertex = textContentVertexFactory.copy(leftContentVertex);
+            flashcardVertex.setLeftContent(leftContentVertex);
+        }
+        if (flashcardVertex.isStatic() || rightContentVertex.isStatic()) {
+            rightContentVertex = textContentVertexFactory.copy(rightContentVertex);
+            flashcardVertex.setRightContent(rightContentVertex);
+        }
+        if (flashcardVertex.isStatic()) {
+            flashcardVertex = flashcardVertexFactory.copy(flashcardVertex);
+        }
+
+        // Update content
         if (flashcardModel.getLeftLanguage() != null) {
             var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getLeftLanguage().getId());
-            flashcardVertex.getLeftContent().setLanguage(languageVertex);
+            leftContentVertex.setLanguage(languageVertex);
         }
 
         if (flashcardModel.getRightLanguage() != null) {
             var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getRightLanguage().getId());
-            flashcardVertex.getRightContent().setLanguage(languageVertex);
+            rightContentVertex.setLanguage(languageVertex);
         }
 
         if (flashcardModel.getLeftValue() != null) {
-            flashcardVertex.getLeftContent().setValue(flashcardModel.getLeftValue());
+            leftContentVertex.setValue(flashcardModel.getLeftValue());
         }
 
         if (flashcardModel.getRightValue() != null) {
-            flashcardVertex.getRightContent().setValue(flashcardModel.getRightValue());
+            rightContentVertex.setValue(flashcardModel.getRightValue());
         }
 
         return flashcardVertex.toFlashcardModel();

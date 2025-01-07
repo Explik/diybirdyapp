@@ -67,14 +67,12 @@ public class ExerciseControllerIntegrationTests {
         var actual = controller.get("3");
 
         assertEquals("3", actual.getId());
-        assertEquals(ExerciseTypes.MULTIPLE_CHOICE_TEXT, actual.getType());
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, actual.getType());
 
         var input = (ExerciseInputMultipleChoiceTextDto)actual.getInput();
         var options = input.getOptions().stream().sorted(Comparator.comparing(ExerciseInputMultipleChoiceTextDto.Option::getId)).toList();
-        assertEquals("Random option 1", options.get(0).getText());
-        assertEquals("Random option 2", options.get(1).getText());
-        assertEquals("Random option 3", options.get(2).getText());
-        assertEquals("Correct option", options.get(3).getText());
+        assertEquals("Correct option", options.get(0).getText());
+        assertEquals("Random option 1", options.get(1).getText());
     }
 
     @Test

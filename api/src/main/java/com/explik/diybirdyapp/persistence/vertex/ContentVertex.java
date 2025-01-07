@@ -26,6 +26,9 @@ public class ContentVertex extends AbstractVertex {
     // Irreversible operation, once content is static it stays static
     // TIP: call this method last as it will hinder any further updates
     public void makeStatic() {
+        if (isStatic())
+            return;
+
         setProperty(PROPERTY_STATIC, true);
     }
 

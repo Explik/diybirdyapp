@@ -20,9 +20,6 @@ public class VocabularyRepositoryImpl implements VocabularyRepository {
     public List<VocabularyTextContentModel> getAllWords() {
         var wordVertices = WordVertex.getAll(traversalSource);
 
-
-
-
         return wordVertices
             .stream()
             .map(VocabularyRepositoryImpl::createFromMainExample)

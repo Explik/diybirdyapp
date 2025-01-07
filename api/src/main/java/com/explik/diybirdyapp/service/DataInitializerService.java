@@ -160,13 +160,21 @@ public class DataInitializerService {
                 traversalSource,
                 new TextContentVertexFactory.Options("6", "Correct option", langVertex));
 
+        var flashcardVertex1 = flashcardVertexFactory.create(
+                traversalSource,
+                new FlashcardVertexFactory.Options("flashcardVertex1", wordVertex6, wordVertex6));
+
+        var flashcardVertex2 = flashcardVertexFactory.create(
+                traversalSource,
+                new FlashcardVertexFactory.Options("flashcardVertex2", wordVertex3, wordVertex3));
+
         exerciseSelectFlashcardVertexFactory.create(
                 traversalSource,
                 new ExerciseSelectFlashcardVertexFactory.Options(
                         "3",
                         null,
-                        wordVertex6,
-                        List.of(wordVertex3, wordVertex4, wordVertex5),
+                        flashcardVertex1,
+                        List.of(flashcardVertex2),
                         "front"));
 
         // Exercise session 4

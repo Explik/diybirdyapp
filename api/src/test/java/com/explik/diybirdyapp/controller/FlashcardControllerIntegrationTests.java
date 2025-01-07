@@ -4,6 +4,9 @@ import com.explik.diybirdyapp.TestEventListener;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.persistence.command.CommandHandler;
+import com.explik.diybirdyapp.persistence.command.LockFlashcardContentCommand;
+import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -23,6 +26,9 @@ public class FlashcardControllerIntegrationTests {
 
     @Autowired
     DataInitializerService dataInitializer;
+
+    @Autowired
+    CommandHandler<LockFlashcardContentCommand> lockContentCommandHandler;
 
     @Autowired
     FlashcardController controller;
@@ -75,6 +81,20 @@ public class FlashcardControllerIntegrationTests {
         assertNotNull(updated);
         assertEquals("new-left-value", updated.getLeftValue());
         assertEquals("new-right-value", updated.getRightValue());
+    }
+
+    @Test
+    void givenStaticFlashcard_whenUpdateContent_thenReturnFlashcard() {
+        var flashcard = createFlashcard();
+        var created = controller.create(flashcard);
+        created.setLeftValue("new-left-value");
+
+        lockContentCommandHandler.handle(
+                new LockFlashcardContentCommand(created.getId()));
+
+        var updated = controller.update(created);
+
+        assertNotEquals(created.getId(), updated.getId());
     }
 
     @Test

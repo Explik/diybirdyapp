@@ -18,6 +18,9 @@ public class WordVertexFactory implements VertexFactory<WordVertex, WordVertexFa
         vertex.setMainExample(options.mainExample);
         vertex.setLanguage(options.languageVertex);
 
+        // Make the main example vertex static so it can't be changed later
+        options.mainExample.makeStatic();
+
         return vertex;
     }
 

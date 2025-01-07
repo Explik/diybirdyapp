@@ -46,6 +46,10 @@ public class FlashcardDeckVertex extends ContentVertex {
         addEdgeOneToMany(EDGE_FLASHCARD, flashcardVertex);
     }
 
+    public void removeFlashcard(FlashcardVertex flashcardVertex) {
+        removeEdge(EDGE_FLASHCARD, flashcardVertex);
+    }
+
     public List<? extends FlashcardVertex> getFlashcards() {
         var flashcardVertices = traversalSource.V(vertex).out(EDGE_FLASHCARD).toList();
 
