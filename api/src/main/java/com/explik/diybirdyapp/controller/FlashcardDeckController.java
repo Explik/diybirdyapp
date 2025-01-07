@@ -16,12 +16,6 @@ import java.util.stream.Collectors;
 public class FlashcardDeckController {
     private final ModelMapper modelMapper = new ModelMapper();
 
-    // TODO remove test dependencies
-    @Autowired
-    private GraphTraversalSource traversalSource;
-    @Autowired
-    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
-
     @Autowired
     FlashcardDeckService service;
 
