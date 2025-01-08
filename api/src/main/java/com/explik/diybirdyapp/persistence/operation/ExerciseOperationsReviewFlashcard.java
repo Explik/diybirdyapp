@@ -38,6 +38,8 @@ public class ExerciseOperationsReviewFlashcard implements ExerciseOperations {
         var exerciseFeedback = ExerciseFeedbackModel.createIndecisiveFeedback();
 
         var exercise = new ExerciseModel();
+        exercise.setId(exerciseVertex.getId());
+        exercise.setType(exerciseVertex.getType());
         exercise.setFeedback(exerciseFeedback);
 
         return exercise;

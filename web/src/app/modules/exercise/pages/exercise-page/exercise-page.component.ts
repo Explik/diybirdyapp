@@ -28,6 +28,7 @@ export class ExercisePageComponent {
     exerciseId: string | undefined = undefined;
     exerciseType: string | undefined = undefined;
     exerciseComponent$: Observable<Type<any>> | null = null;
+    exerciseNavigationComponent$: Observable<Type<any>|null> | null = null;
 
     constructor(
         private route: ActivatedRoute,
@@ -47,6 +48,7 @@ export class ExercisePageComponent {
                 this.exerciseType = data.type;
                 this.exerciseService.setExercise(data);
                 this.exerciseComponent$ = this.exerciseComponentService.getComponent();
+                this.exerciseNavigationComponent$ = this.exerciseComponentService.getNavigationComponent();
             });
         });
     }

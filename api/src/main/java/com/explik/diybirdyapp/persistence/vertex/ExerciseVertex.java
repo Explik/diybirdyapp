@@ -73,6 +73,16 @@ public class ExerciseVertex extends AbstractVertex {
         return new FlashcardVertex(traversalSource, flashcardContentVertex);
     }
 
+    public TextContentVertex getFlashcardQuestionSideContent() {
+        var flashcardVertex = getFlashcardContent();
+        return getFlashcardSide().equals("front") ? flashcardVertex.getLeftContent() : flashcardVertex.getRightContent();
+    }
+
+    public TextContentVertex getFlashcardAnswerSideContent() {
+        var flashcardVertex = getFlashcardContent();
+        return getFlashcardSide().equals("front") ? flashcardVertex.getRightContent() : flashcardVertex.getLeftContent();
+    }
+
     public void setContent(AbstractVertex outVertex) {
         addEdgeOneToOne(EDGE_CONTENT, outVertex);
     }

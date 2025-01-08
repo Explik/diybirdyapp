@@ -5,6 +5,7 @@ import java.util.Hashtable;
 
 public class ExerciseModel {
     private String id;
+    private String answerId;
     private String type;
     private ExerciseContentModel content;
     private ExerciseInputModel input;
@@ -14,6 +15,10 @@ public class ExerciseModel {
     public String getId() { return id; }
 
     public void setId(String id) { this.id = id; }
+
+    public String getAnswerId() { return answerId; }
+
+    public void setAnswerId(String answerId) { this.answerId = answerId; }
 
     public String getType() {
         return type;

@@ -12,7 +12,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ExerciseInputTextDto.class, name = ExerciseInputTypes.TEXT),
         @JsonSubTypes.Type(value = ExerciseInputMultipleChoiceTextDto.class, name = ExerciseInputTypes.MULTIPLE_CHOICE),
-        @JsonSubTypes.Type(value = ExerciseInputRecognizabilityRatingDto.class, name = ExerciseInputTypes.RECOGNIZABILITY_RATING)
+        @JsonSubTypes.Type(value = ExerciseInputRecognizabilityRatingDto.class, name = ExerciseInputTypes.RECOGNIZABILITY_RATING),
+        @JsonSubTypes.Type(value = ExerciseInputAudioDto.class, name = ExerciseInputTypes.AUDIO)
 })
 public class ExerciseInputDto {
     private String id;

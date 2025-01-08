@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.persistence.vertex;
 import com.explik.diybirdyapp.model.ExerciseContentTextModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import java.util.List;
 
 public class TextContentVertex extends ContentVertex {
     public TextContentVertex(GraphTraversalSource traversalSource, Vertex vertex) {
@@ -12,6 +13,8 @@ public class TextContentVertex extends ContentVertex {
     public static final String LABEL = "textContent";
 
     public static final String EDGE_LANGUAGE = "hasLanguage";
+    public static final String EDGE_PRONUNCIATION = "hasPronunciation";
+    public static final String EDGE_MAIN_PRONUNCIATION = "hasMainPronunciation";
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_VALUE = "value";
@@ -31,6 +34,32 @@ public class TextContentVertex extends ContentVertex {
 
     public void setLanguage(AbstractVertex languageVertex) {
         addEdgeOneToOne(EDGE_LANGUAGE, languageVertex);
+    }
+
+    public List<PronunciationVertex> getPronunciations() {
+        var vertices = traversalSource.V(vertex).out(EDGE_PRONUNCIATION).toList();
+        return vertices.stream().map(v -> new PronunciationVertex(traversalSource, v)).toList();
+    }
+
+    public void addPronunciation(AbstractVertex pronunciationVertex) {
+        addEdgeOneToMany(EDGE_PRONUNCIATION, pronunciationVertex);
+    }
+
+    public void removePronunciation(AbstractVertex pronunciationVertex) {
+        removeEdge(EDGE_PRONUNCIATION, pronunciationVertex);
+    }
+
+    public boolean hasMainPronunciation() {
+        return traversalSource.V(vertex).out(EDGE_MAIN_PRONUNCIATION).hasNext();
+    }
+
+    public PronunciationVertex getMainPronunciation() {
+        var pronunciationVertex = traversalSource.V(vertex).out(EDGE_MAIN_PRONUNCIATION).next();
+        return new PronunciationVertex(traversalSource, pronunciationVertex);
+    }
+
+    public void setMainPronunciation(AbstractVertex pronunciationVertex) {
+        addEdgeOneToOne(EDGE_MAIN_PRONUNCIATION, pronunciationVertex);
     }
 
     public ExerciseContentTextModel toExerciseContentTextModel() {

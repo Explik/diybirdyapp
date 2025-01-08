@@ -10,6 +10,7 @@ import { ExerciseService } from "./exercise.service";
 import { ExerciseContentLoadingComponent } from "../components/exercise-content-loading/exercise-content-loading.component";
 import { ExerciseContentSelectFlashcardContainerComponent } from "../components/exercise-content-select-flashcard-container/exercise-content-select-flashcard-container.component";
 import { ExerciseNavigationSkipOnlyContainerComponent } from "../components/exercise-navigation-only-answer-container/exercise-navigation-skip-only-container.component";
+import { ExerciseContentPronounceFlashcardContainerComponent } from "../components/exercise-content-pronounce-flashcard-container/exercise-content-pronounce-flashcard-container.component";
 
 @Injectable({
     providedIn: 'root'
@@ -40,6 +41,8 @@ export class ExerciseComponentService {
                 return ExerciseContentSelectFlashcardContainerComponent;
             case "review-flashcard-exercise":
                 return ExerciseContentReviewFlashcardContainerComponent;
+            case "pronounce-flashcard-exercise":
+                return ExerciseContentPronounceFlashcardContainerComponent;
             default: 
                 throw new Error("Unknown exercise type " + exerciseType);
         }
@@ -56,6 +59,7 @@ export class ExerciseComponentService {
             case "write-sentence-using-word-exercise":
             case "write-translated-sentence-exercise":
             case "write-flashcard-exercise":
+            case "pronounce-flashcard-exercise":
                 return ExerciseNavigationCheckAnswerContainerComponent; 
             case "select-flashcard-exercise":
                 return ExerciseNavigationSkipOnlyContainerComponent;

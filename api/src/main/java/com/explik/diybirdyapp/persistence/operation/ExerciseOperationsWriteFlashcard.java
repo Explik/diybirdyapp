@@ -42,10 +42,10 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         exerciseVertex.setAnswer(answerVertex);
 
         // Generate feedback
-        return createExerciseWithFeedback(flashcardSide, answerModel);
+        return createExerciseWithFeedback(exerciseVertex, flashcardSide, answerModel);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(TextContentVertex flashcardSide, ExerciseInputTextModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, TextContentVertex flashcardSide, ExerciseInputTextModel answerModel) {
 
         var isAnswerCorrect = flashcardSide.getValue().equalsIgnoreCase(answerModel.getText());
         var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isAnswerCorrect);
@@ -59,6 +59,8 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         input.setFeedback(inputFeedback);
 
         var exercise = new ExerciseModel();
+        exercise.setId(exerciseVertex.getId());
+        exercise.setType(exerciseVertex.getType());
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(input);
         return exercise;

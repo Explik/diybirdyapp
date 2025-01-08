@@ -23,6 +23,8 @@ public abstract class BaseDtoToModelMapper {
                 return modelMapper.map(source, ExerciseInputMultipleChoiceTextModel.class);
             if (source instanceof ExerciseInputRecognizabilityRatingDto)
                 return modelMapper.map(source, ExerciseInputRecognizabilityRatingModel.class);
+            if (source instanceof ExerciseInputAudioDto)
+                return modelMapper.map(source, ExerciseInputAudioModel.class);
             return null;
         }
     };

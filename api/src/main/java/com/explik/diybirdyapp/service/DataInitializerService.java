@@ -25,6 +25,9 @@ public class DataInitializerService {
     private ExerciseSelectFlashcardVertexFactory exerciseSelectFlashcardVertexFactory;
 
     @Autowired
+    private ExercisePronounceFlashcardVertexFactory exercisePronounceFlashcardVertexFactory;
+
+    @Autowired
     private ExerciseReviewFlashcardVertexFactory exerciseReviewFlashcardVertexFactory;
 
     @Autowired
@@ -192,5 +195,14 @@ public class DataInitializerService {
         exerciseSessionFlashcardReviewVertexFactory.init(
                 traversalSource,
                 sessionModel);
+
+        // Exercise session 5 - Flashcard pronounce exercise
+        var flashcardVertex3 = flashcardVertexFactory.create(
+                traversalSource,
+                new FlashcardVertexFactory.Options("flashcardVertex3", wordVertex1, wordVertex1));
+
+        exercisePronounceFlashcardVertexFactory.create(
+                traversalSource,
+                new ExercisePronounceFlashcardVertexFactory.Options("5", null, flashcardVertex3, "front"));
     }
 }

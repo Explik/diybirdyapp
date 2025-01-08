@@ -30,7 +30,35 @@ Properties:
 - id: string
 - value: string
 
+### Pronunciation
+```mermaid
+graph LR
+TextContent(TextContent)
+Pronunciation1(Pronunciation)
+Pronunciation2(Pronunciation)
+AudioContent1(AudioContent)
+AudioContent2(AudioContent)
+TextContent--hasPronunciation-->Pronunciation1
+TextContent--hasPronunciation-->Pronunciation2
+TextContent--hasMainPronunciation-->Pronunciation2
+Pronunciation1--hasAudioContent-->AudioContent1
+Pronunciation2--hasAudioContent-->AudioContent2
+```
+
+Properties:
+- id: string
+
 ## Content 
+### Audio content
+```mermaid
+graph LR
+V1(AudioContent)
+```
+
+Properties:
+- id: string
+- url: string
+
 ### Text content
 ```mermaid 
 graph LR

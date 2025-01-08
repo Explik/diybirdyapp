@@ -19,4 +19,13 @@ export class DefaultContentService {
         }
         return textInput;
     }
+
+    getAudioInput(): Partial<ExerciseInputAudioDto> {
+        const audioInput: Partial<ExerciseInputAudioDto> = {
+            id: "default",
+            type: "audio",
+            url: ""
+        }
+        return audioInput;
+    }
 }

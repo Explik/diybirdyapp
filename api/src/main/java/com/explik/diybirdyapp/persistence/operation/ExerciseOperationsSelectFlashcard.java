@@ -61,6 +61,8 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
         exerciseInput.setFeedback(inputFeedback);
 
         var exercise = new ExerciseModel();
+        exercise.setId(correctOptionVertex.getId());
+        exercise.setType(ExerciseTypes.SELECT_FLASHCARD);
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(exerciseInput);
         return exercise;
