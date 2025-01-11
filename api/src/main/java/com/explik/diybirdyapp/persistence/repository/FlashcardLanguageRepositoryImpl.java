@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class LanguageRepositoryImpl implements LanguageRepository {
+public class FlashcardLanguageRepositoryImpl implements FlashcardLanguageRepository {
     private final GraphTraversalSource traversalSource;
 
-    public LanguageRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
+    public FlashcardLanguageRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
     }
 
@@ -41,7 +41,7 @@ public class LanguageRepositoryImpl implements LanguageRepository {
 
         return vertices
             .stream()
-            .map(LanguageRepositoryImpl::create)
+            .map(FlashcardLanguageRepositoryImpl::create)
             .toList();
     }
 

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
@@ -45,6 +46,9 @@ public class DataInitializerService {
     @Autowired
     private TextContentVertexFactory textContentVertexFactory;
 
+    @Autowired
+    private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
+
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
         appendInitialData();
@@ -57,13 +61,22 @@ public class DataInitializerService {
     }
 
     public void addInitialLanguageData() {
-        languageVertexFactory.create(
+        var danish = languageVertexFactory.create(
                 traversalSource,
                 new LanguageVertexFactory.Options("langVertex1", "Danish", "DA"));
 
-        languageVertexFactory.create(
+        var english = languageVertexFactory.create(
                 traversalSource,
                 new LanguageVertexFactory.Options("langVertex2", "English", "EN"));
+
+        // Adding Google Text-to-Speech config for languages
+        var danishTextToSpeechConfig = textToSpeechConfigVertexFactory.create(
+                traversalSource,
+                new TextToSpeechConfigVertexFactory.Options("danishTextToSpeechConfig", "da-DK", "da-DK-Wavenet-A", danish));
+
+        var englishTextToSpeechConfig = textToSpeechConfigVertexFactory.create(
+                traversalSource,
+                new TextToSpeechConfigVertexFactory.Options("englishTextToSpeechConfig", "en-US", "en-US-Wavenet-A", english));
     }
 
     public void addInitialContentAndConcepts() {
@@ -165,11 +178,11 @@ public class DataInitializerService {
 
         var flashcardVertex1 = flashcardVertexFactory.create(
                 traversalSource,
-                new FlashcardVertexFactory.Options("flashcardVertex1", wordVertex6, wordVertex6));
+                new FlashcardVertexFactory.Options("flashcardVertex6", wordVertex6, wordVertex6));
 
         var flashcardVertex2 = flashcardVertexFactory.create(
                 traversalSource,
-                new FlashcardVertexFactory.Options("flashcardVertex2", wordVertex3, wordVertex3));
+                new FlashcardVertexFactory.Options("flashcardVertex7", wordVertex3, wordVertex3));
 
         exerciseSelectFlashcardVertexFactory.create(
                 traversalSource,
