@@ -70,6 +70,8 @@ Properties:
 ```mermaid
 graph LR
 V1(AudioContent)
+V2(Language)
+V1--hasLanguage-->V2
 ```
 
 Properties:
