@@ -13,6 +13,22 @@ Properties:
 - name: string
 - abbreviation: string
 
+### TextToSpeechConfig
+```mermaid
+graph LR
+Language(Language)
+TextToSpeechConfig(TextToSpeechConfig)
+
+TextToSpeechConfig--hasLanguage-->Language
+```
+
+Properties:
+- id: string
+- languageCode: string
+- voiceName: string
+
+Represents the configuration for Google Text-to-Speech API.
+
 ### Word
 ```mermaid
 graph LR
@@ -47,6 +63,7 @@ Pronunciation2--hasAudioContent-->AudioContent2
 
 Properties:
 - id: string
+
 
 ## Content 
 ### Audio content
