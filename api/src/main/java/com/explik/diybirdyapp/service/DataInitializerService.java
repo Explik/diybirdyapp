@@ -49,6 +49,15 @@ public class DataInitializerService {
     @Autowired
     private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
 
+    @Autowired
+    private WordVertexFactory wordVertexFactory;
+
+    @Autowired
+    private PronunciationVertexFactory pronunciationVertexFactory;
+
+    @Autowired
+    private AudioContentVertexFactory audioContentVertexFactory;
+
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
         appendInitialData();
@@ -137,6 +146,14 @@ public class DataInitializerService {
         wordVertex1.setLanguage(textVertex0.getLanguage());
         wordVertex1.addExample(textVertex0);
         wordVertex1.setMainExample(textVertex0);
+
+        // Pronunciation concept
+        var audioContentVertex1 = audioContentVertexFactory.create(
+                traversalSource,
+                new AudioContentVertexFactory.Options("audioContentVertex1", "https://example.com/audio1.mp3", langVertex1));
+        var pronunciationVertex1 = pronunciationVertexFactory.create(
+                traversalSource,
+                new PronunciationVertexFactory.Options("pronunciationVertex1", textVertex0, audioContentVertex1));
     }
 
     public void addInitialExerciseData() {

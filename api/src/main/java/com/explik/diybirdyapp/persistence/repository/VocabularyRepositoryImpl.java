@@ -27,8 +27,12 @@ public class VocabularyRepositoryImpl implements VocabularyRepository {
     }
 
     private static VocabularyTextContentModel createFromMainExample(WordVertex v) {
-        var mainExample = v.getMainExample();
+        var buffer = new VocabularyTextContentModel();
+        buffer.setText(v.getMainExample().getValue());
 
-        return new VocabularyTextContentModel(mainExample.getValue());
+        if (v.getMainExample().getMainPronunciation() != null) {
+            buffer.setPronunciationUrl(v.getMainExample().getMainPronunciation().getAudioContent().getUrl());
+        }
+        return buffer;
     }
 }

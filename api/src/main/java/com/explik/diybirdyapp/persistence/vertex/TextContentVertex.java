@@ -54,8 +54,8 @@ public class TextContentVertex extends ContentVertex {
     }
 
     public PronunciationVertex getMainPronunciation() {
-        var pronunciationVertex = traversalSource.V(vertex).out(EDGE_MAIN_PRONUNCIATION).next();
-        return new PronunciationVertex(traversalSource, pronunciationVertex);
+        var query = traversalSource.V(vertex).out(EDGE_MAIN_PRONUNCIATION);
+        return query.hasNext() ? new PronunciationVertex(traversalSource, query.next()) : null;
     }
 
     public void setMainPronunciation(AbstractVertex pronunciationVertex) {
