@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.cloud.texttospeech.v1.*;
@@ -10,6 +11,9 @@ import java.io.IOException;
 
 @Service
 public class TextToSpeechService {
+    @Autowired
+    BinaryStorageService storageService;
+
     public void generateAudioFile(Text textObject, String outputPath) throws IOException {
         try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
             // Build the input text
@@ -35,18 +39,7 @@ public class TextToSpeechService {
             ByteString audioContents = response.getAudioContent();
 
             // Write the audio content to the output file
-            var audioFile = new java.io.File(outputPath);
-            if (!audioFile.getParentFile().exists()) {
-                audioFile.getParentFile().mkdirs();
-            }
-            if (!audioFile.exists()) {
-                audioFile.createNewFile();
-            }
-
-            try (FileOutputStream out = new FileOutputStream(outputPath)) {
-                out.write(audioContents.toByteArray());
-                System.out.println("Audio content written to file: " + outputPath);
-            }
+            storageService.set(outputPath, audioContents.toByteArray());
         }
     }
 

@@ -15,20 +15,21 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.File;
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class TextToSpeechServiceIntegrationTest {
-    final String filePath = "src/test/resources/test.wav";
+    final String filePath = "test.wav";
+
+    @Autowired
+    BinaryStorageService storageService;
 
     @BeforeEach
     @AfterEach
     public void setupAndTearDown() {
-        File file = new File(filePath);
-
-        if (file.exists()) {
-            file.delete();
-        }
+        if (storageService.get(filePath) != null)
+            storageService.delete(filePath);
     }
 
     @Autowired
@@ -45,8 +46,7 @@ public class TextToSpeechServiceIntegrationTest {
         textToSpeechService.generateAudioFile(textObject, filePath);
 
         // Check the output file
-        File file = new File(filePath);
-        assertTrue(file.exists());
+        assertNotNull(storageService.get(filePath));
     }
 
     @TestConfiguration

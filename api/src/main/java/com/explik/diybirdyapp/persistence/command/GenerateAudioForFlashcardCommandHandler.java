@@ -53,7 +53,7 @@ public class GenerateAudioForFlashcardCommandHandler implements CommandHandler<G
                 "LINEAR16"
         );
 
-        var filePath = "uploads/" + textContentVertex.getId() + ".wav";
+        var filePath = textContentVertex.getId() + ".wav";
         try {
             textToSpeechService.generateAudioFile(textObject, filePath);
         }
