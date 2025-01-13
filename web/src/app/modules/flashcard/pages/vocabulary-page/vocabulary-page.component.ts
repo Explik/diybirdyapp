@@ -18,4 +18,9 @@ export class VocabularyPageComponent {
       this.vocabulary = vocabulary;
     });
   }
+
+  playAudio(url: string) {
+    const audio = new Audio(url);
+    audio.play();
+  }
 }

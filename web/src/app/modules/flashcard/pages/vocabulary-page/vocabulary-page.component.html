@@ -4,6 +4,9 @@
     <ul>
       <li *ngFor="let word of vocabulary?.words" class="mb-2 p-2 border border-gray-300 rounded">
         {{ word.text }}
+        <button (click)="playAudio(word.pronunciationUrl)" class="ml-2 p-1 border border-gray-300 rounded">
+            Play audio
+        </button>
       </li>
     </ul>
   </div>
