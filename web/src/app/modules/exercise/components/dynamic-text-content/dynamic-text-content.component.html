@@ -1,1 +1,5 @@
-<p *ngIf="data">{{data.text}}</p>
+<ng-content *ngIf="data">
+    <app-icon *ngIf="data?.pronunciationUrl" icon="mdi-volume-high" class="mr-2" tabindex="0"></app-icon>
+    <span>{{data.text}}</span>
+</ng-content>
+

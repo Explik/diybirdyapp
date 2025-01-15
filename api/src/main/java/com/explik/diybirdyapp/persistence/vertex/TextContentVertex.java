@@ -66,6 +66,8 @@ public class TextContentVertex extends ContentVertex {
         var model = new ExerciseContentTextModel();
         model.setId(getId());
         model.setText(getValue());
+        if (hasMainPronunciation())
+            model.setPronunciationUrl(getMainPronunciation().getAudioContent().getUrl());
         return model;
     }
 
