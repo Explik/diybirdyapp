@@ -6,9 +6,12 @@ import { environment } from "../../../environments/environment";
 })
 export class AudioPlayService {
     private baseUrl = environment.apiUrl + "/file/";
+
     private audio?: HTMLAudioElement;
+    private audioUrl?: string;
 
     play(audioUrl: string) {
+        this.audioUrl = audioUrl;
         this.audio = new Audio(this.baseUrl + audioUrl);
         this.audio.play();
     }
@@ -19,7 +22,10 @@ export class AudioPlayService {
     }
     
     toggle(audioUrl: string) {
-        if (!this.audio || this.audio.ended) {
+        if (this.audioUrl !== audioUrl) {
+            this.play(audioUrl);
+        }
+        else if (!this.audio || this.audio.ended) {
             this.play(audioUrl);
         } else if (this.audio.paused) {
             this.audio.play();

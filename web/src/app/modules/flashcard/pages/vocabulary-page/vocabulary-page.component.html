@@ -2,11 +2,9 @@
     <h1 class="text-2xl font-bold mb-4">Your vocabulary</h1>
     <h2 class="text-xl font-semibold mb-2">Your words</h2>
     <ul>
-      <li *ngFor="let word of vocabulary?.words" class="mb-2 p-2 border border-gray-300 rounded">
+      <li *ngFor="let word of vocabulary?.words" class="mb-2 p-2 border border-gray-300 rounded" (click)="playAudio(word.pronunciationUrl)">
+        <app-icon icon="mdi-volume-high" *ngIf="word.pronunciationUrl" class="mr-2" />
         {{ word.text }}
-        <button (click)="playAudio(word.pronunciationUrl)" class="ml-2 p-1 border border-gray-300 rounded">
-            Play audio
-        </button>
       </li>
     </ul>
   </div>
