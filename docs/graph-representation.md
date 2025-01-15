@@ -78,6 +78,16 @@ Properties:
 - id: string
 - url: string
 
+## Image content
+```mermaid
+graph LR
+V1(ImageContent)
+```
+
+Properties:
+- id: string
+- url: string
+
 ### Text content
 ```mermaid 
 graph LR
@@ -95,7 +105,7 @@ Properties:
 graph LR
 V1(Flashcard)
 V2(TextContent)
-V3(TextContent)
+V3(ImageContent)
 
 V1--hasLeftContent-->V2
 V1--hasRightContent-->V3

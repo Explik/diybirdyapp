@@ -26,9 +26,8 @@ export class FlashcardEditContainerComponent {
   }
   @Output() nameChange = new EventEmitter<string>();
 
-  @Input() flashcards: Flashcard[] = [];
+  @Input() flashcards: Partial<Flashcard>[] = [];
   @Input() flashcardLanguages: FlashcardLanguage[] = [];
-
   
   @Output() addFlashcard = new EventEmitter<void>();
   @Output() saveFlashcards = new EventEmitter<void>();
@@ -59,7 +58,7 @@ export class FlashcardEditContainerComponent {
     }
   }
 
-  handleSwitchFlashcardSides(flashcard: Flashcard): void {
+  handleSwitchFlashcardSides(flashcard: Partial<Flashcard>): void {
     var temp = flashcard.leftValue;
     flashcard.leftValue = flashcard.rightValue;
     flashcard.rightValue = temp;

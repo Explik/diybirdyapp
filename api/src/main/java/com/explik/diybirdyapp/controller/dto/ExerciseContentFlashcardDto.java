@@ -4,6 +4,10 @@ public class ExerciseContentFlashcardDto extends ExerciseContentDto {
     private ExerciseContentDto front; // Left in flashcard editing
     private ExerciseContentDto back; // Right in flashcard editing
 
+    public ExerciseContentFlashcardDto() {
+        super(TYPE);
+    }
+
     public static String TYPE = "flashcard-content";
 
     public ExerciseContentDto getFront() { return front; }

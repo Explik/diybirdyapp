@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FlashcardVertex extends ContentVertex {
+    public FlashcardVertex(AbstractVertex vertex) {
+        super(vertex.getUnderlyingSource(), vertex.getUnderlyingVertex());
+    }
+
     public FlashcardVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }
@@ -42,57 +46,36 @@ public class FlashcardVertex extends ContentVertex {
         return new FlashcardDeckVertex(traversalSource, deckVertex);
     }
 
-    public TextContentVertex getLeftContent() {
+    public ContentVertex getLeftContent() {
         var leftContentVertex = traversalSource.V(vertex).out(EDGE_LEFT_CONTENT).next();
-        return new TextContentVertex(traversalSource, leftContentVertex);
+        return createContent(traversalSource, leftContentVertex);
     }
 
-    public void setLeftContent(TextContentVertex vertex) {
+    public void setLeftContent(ContentVertex vertex) {
         addEdgeOneToOne(EDGE_LEFT_CONTENT, vertex);
     }
 
-    public TextContentVertex getRightContent() {
+    public ContentVertex getRightContent() {
         var rightContentVertex = traversalSource.V(vertex).out(EDGE_RIGHT_CONTENT).next();
-        return new TextContentVertex(traversalSource, rightContentVertex);
+        return createContent(traversalSource, rightContentVertex);
     }
 
-    public void setRightContent(TextContentVertex vertex) {
+    public void setRightContent(ContentVertex vertex) {
         addEdgeOneToOne(EDGE_RIGHT_CONTENT, vertex);
-    }
-
-    public FlashcardModel toFlashcardModel() {
-        var leftContent = getLeftContent();
-        var rightContent = getRightContent();
-
-        var model = new FlashcardModel();
-        model.setId(getId());
-        model.setDeckId(getDeck().getId());
-        model.setLeftValue(leftContent.getValue());
-        model.setLeftLanguage(leftContent.getLanguage().toFlashcardLanguageModel());
-        model.setRightValue(rightContent.getValue());
-        model.setRightLanguage(rightContent.getLanguage().toFlashcardLanguageModel());
-        return model;
-    }
-
-    public ExerciseContentFlashcardModel toExerciseContentFlashcardModel() {
-        return toExerciseContentFlashcardModel(true, true);
-    }
-
-    public ExerciseContentFlashcardModel toExerciseContentFlashcardModel(boolean includeFront, boolean includeBack) {
-        var model = new ExerciseContentFlashcardModel();
-        model.setId(getId());
-
-        if (includeFront)
-            model.setFront(getLeftContent().toExerciseContentTextModel());
-        if (includeBack)
-            model.setBack(getRightContent().toExerciseContentTextModel());
-
-        return model;
     }
 
     public static FlashcardVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new FlashcardVertex(traversalSource, vertex);
+    }
+
+    protected static ContentVertex createContent(GraphTraversalSource traversalSource, Vertex vertex) {
+        if (vertex.label().equals(TextContentVertex.LABEL))
+            return new TextContentVertex(traversalSource, vertex);
+        else if(vertex.label().equals(ImageContentVertex.LABEL))
+            return new ImageContentVertex(traversalSource, vertex);
+
+        throw new RuntimeException("Unknown content type: " + vertex.label());
     }
 
     public static List<FlashcardVertex> findAll(GraphTraversalSource traversalSource) {

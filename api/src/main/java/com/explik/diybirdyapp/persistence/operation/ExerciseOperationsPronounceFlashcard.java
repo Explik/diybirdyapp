@@ -7,6 +7,7 @@ import com.explik.diybirdyapp.model.ExerciseInputAudioModel;
 import com.explik.diybirdyapp.model.ExerciseInputModel;
 import com.explik.diybirdyapp.model.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class ExerciseOperationsPronounceFlashcard implements ExerciseOperations 
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var flashcardContent = exerciseVertex.getFlashcardContent();
         var flashcardSide = !exerciseVertex.getFlashcardSide().equals("front") ? flashcardContent.getLeftContent() : flashcardContent.getRightContent();
-        var language = flashcardSide.getLanguage();
+        var language = ((TextContentVertex)flashcardSide).getLanguage();
 
         // Save answer
         var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();

@@ -25,6 +25,10 @@ public class AbstractVertex {
         this.vertex = this.traversalSource.V(this.vertex).next();
     }
 
+    public String getLabel() {
+        return this.vertex.label();
+    }
+
     protected void addEdgeOneToOne(String edgeLabel, AbstractVertex toVertex) {
         this.traversalSource.V(this.vertex).outE(edgeLabel).drop().iterate();
         this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).next();

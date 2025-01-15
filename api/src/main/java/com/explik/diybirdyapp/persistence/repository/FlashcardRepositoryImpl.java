@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.FlashcardModel;
+import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
@@ -23,6 +24,9 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
     @Autowired
     FlashcardVertexFactory flashcardVertexFactory;
+
+    @Autowired
+    FlashcardModelFactory flashcardCardModelFactory;
 
     public FlashcardRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
@@ -52,13 +56,13 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
         flashcardDeckVertex.addFlashcard(flashcardVertex);
 
-        return flashcardVertex.toFlashcardModel();
+        return flashcardCardModelFactory.create(flashcardVertex);
     }
 
     @Override
     public FlashcardModel get(String id) {
         var vertex = FlashcardVertex.findById(traversalSource, id);
-        return vertex.toFlashcardModel();
+        return flashcardCardModelFactory.create(vertex);
     }
 
     @Override
@@ -74,7 +78,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
         return vertices
             .stream()
-            .map(FlashcardVertex::toFlashcardModel)
+            .map(v -> flashcardCardModelFactory.create(v))
             .toList();
     }
 
@@ -84,8 +88,8 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
             throw new IllegalArgumentException("Flashcard is missing id");
 
         var flashcardVertex = FlashcardVertex.findById(traversalSource, flashcardModel.getId());
-        var leftContentVertex = flashcardVertex.getLeftContent();
-        var rightContentVertex = flashcardVertex.getRightContent();
+        var leftContentVertex = new TextContentVertex(flashcardVertex.getLeftContent());
+        var rightContentVertex = new TextContentVertex(flashcardVertex.getRightContent());
 
         // Copy content if static
         if (flashcardVertex.isStatic() || leftContentVertex.isStatic()) {
@@ -119,7 +123,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
             rightContentVertex.setValue(flashcardModel.getRightValue());
         }
 
-        return flashcardVertex.toFlashcardModel();
+        return flashcardCardModelFactory.create(flashcardVertex);
     }
 
     private static TextContentVertex createTextContent(GraphTraversalSource traversalSource, String languageId, String value) {

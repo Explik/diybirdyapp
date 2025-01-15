@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
+import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.VertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -24,7 +25,7 @@ public class HandleFlashcardPronunciationExerciseAnswerCommandHandler implements
         if (!exerciseVertex.getType().equals(ExerciseTypes.PRONOUNCE_FLASHCARD))
             throw new RuntimeException("Exercise is not a pronunciation exercise");
 
-        var textContentVertex = exerciseVertex.getFlashcardQuestionSideContent();
+        var textContentVertex = (TextContentVertex)(exerciseVertex.getFlashcardSide().equals("front") ? exerciseVertex.getFlashcardContent().getLeftContent() : exerciseVertex.getFlashcardContent().getRightContent());
         var audioContent = AudioContentVertex.getById(traversalSource, command.getAnswerId());
 
         pronunciationVertexFactory.create(

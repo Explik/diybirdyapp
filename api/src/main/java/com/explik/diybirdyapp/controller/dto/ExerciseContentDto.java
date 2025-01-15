@@ -1,6 +1,10 @@
 package com.explik.diybirdyapp.controller.dto;
 
 public abstract class ExerciseContentDto {
+    public ExerciseContentDto(String type) {
+        this.type = type;
+    }
+
     private String id;
 
     private String type;

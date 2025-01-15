@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.command;
 
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
+import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -38,8 +39,11 @@ public class GenerateAudioForFlashcardCommandHandlerIntegrationTest {
         handler.handle(command);
 
         // Assertions
-        var leftPronunciationVertex = FlashcardVertex.findById(traversalSource, "flashcardVertex1").getLeftContent().getPronunciations().getFirst();
-        var rightPronunciationVertex = FlashcardVertex.findById(traversalSource, "flashcardVertex1").getRightContent().getPronunciations().getFirst();
+        var leftContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, "flashcardVertex1").getLeftContent();
+        var rightContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, "flashcardVertex1").getRightContent();
+
+        var leftPronunciationVertex = leftContent.getPronunciations().getFirst();
+        var rightPronunciationVertex = rightContent.getPronunciations().getFirst();
         assertNotNull(leftPronunciationVertex);
         assertNotNull(rightPronunciationVertex);
         assertNotNull(leftPronunciationVertex.getAudioContent());

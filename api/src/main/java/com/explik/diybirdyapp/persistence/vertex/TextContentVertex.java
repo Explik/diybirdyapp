@@ -6,6 +6,10 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import java.util.List;
 
 public class TextContentVertex extends ContentVertex {
+    public TextContentVertex(AbstractVertex vertex) {
+        super(vertex.getUnderlyingSource(), vertex.getUnderlyingVertex());
+    }
+
     public TextContentVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }
@@ -60,15 +64,6 @@ public class TextContentVertex extends ContentVertex {
 
     public void setMainPronunciation(AbstractVertex pronunciationVertex) {
         addEdgeOneToOne(EDGE_MAIN_PRONUNCIATION, pronunciationVertex);
-    }
-
-    public ExerciseContentTextModel toExerciseContentTextModel() {
-        var model = new ExerciseContentTextModel();
-        model.setId(getId());
-        model.setText(getValue());
-        if (hasMainPronunciation())
-            model.setPronunciationUrl(getMainPronunciation().getAudioContent().getUrl());
-        return model;
     }
 
     public static TextContentVertex create(GraphTraversalSource traversalSource) {

@@ -41,14 +41,6 @@ public class LanguageVertex extends AbstractVertex {
         setProperty(PROPERTY_NAME, name);
     }
 
-    public FlashcardLanguageModel toFlashcardLanguageModel() {
-        var model = new FlashcardLanguageModel();
-        model.setId(getId());
-        model.setAbbreviation(getAbbreviation());
-        model.setName(getName());
-        return model;
-    }
-
     public static LanguageVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new LanguageVertex(traversalSource, vertex);

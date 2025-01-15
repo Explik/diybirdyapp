@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlashcardComponent } from "../../../../shared/components/flashcard/flashcard.component";
+import { Flashcard } from '../../models/flashcard.model';
 
 @Component({
   selector: 'app-flashcard-review-container',
@@ -13,7 +14,7 @@ export class FlashcardReviewContainerComponent {
   @Input() flashcards: any[] = [];
   currentIndex: number = 0;
   
-  get currentFlashcard() {
+  get currentFlashcard(): Partial<Flashcard> {
     return this.flashcards.length > 0 ? this.flashcards[this.currentIndex] : undefined;
   }
 

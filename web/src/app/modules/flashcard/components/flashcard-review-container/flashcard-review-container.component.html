@@ -1,14 +1,14 @@
 <div *ngIf="currentFlashcard">
     <div class="flex justify-center">
-        <app-flashcard>
+        <app-flashcard class="text-gray-500 text-sm">
             <ng-container front>
-                <span class="text-gray-500 text-sm mb-1">{{currentFlashcard.leftValue }}
-                    ({{currentFlashcard.leftLanguage.abbreviation}})</span>
+                <span class="mr-1">{{currentFlashcard.leftValue }}</span>
+                <span *ngIf="currentFlashcard.leftLanguage">({{currentFlashcard.leftLanguage.abbreviation}})</span>
             </ng-container>
 
             <ng-container back>
-                <span class="text-gray-500 text-sm mb-1">{{currentFlashcard.rightValue }}
-                    ({{currentFlashcard.rightLanguage.abbreviation}})</span>
+                <span class="text-gray-500 text-sm mr-1">{{currentFlashcard.rightValue }}</span>
+                <span *ngIf="currentFlashcard.rightLanguage">({{currentFlashcard.rightLanguage.abbreviation}})</span>
             </ng-container>
         </app-flashcard>
     </div>

@@ -118,6 +118,15 @@ public class DataInitializerService {
         textVertex4.setValue("Hey John");
         textVertex4.setLanguage(langVertex2);
 
+        var textVertex5 = TextContentVertex.create(traversalSource);
+        textVertex5.setId("textVertex5");
+        textVertex5.setValue("Hej billede");
+        textVertex5.setLanguage(langVertex1);
+
+        var imageVertex1 = ImageContentVertex.create(traversalSource);
+        imageVertex1.setId("imageVertex1");
+        imageVertex1.setUrl("https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY");
+
         // Flashcard content
         var flashcardVertex1 = FlashcardVertex.create(traversalSource);
         flashcardVertex1.setId("flashcardVertex1");
@@ -129,6 +138,11 @@ public class DataInitializerService {
         flashcardVertex2.setLeftContent(textVertex3);
         flashcardVertex2.setRightContent(textVertex4);
 
+        var flashcardVertex3 = FlashcardVertex.create(traversalSource);
+        flashcardVertex3.setId("flashcardVertex3");
+        flashcardVertex3.setLeftContent(textVertex5);
+        flashcardVertex3.setRightContent(imageVertex1);
+
         var flashcardDeckVertex1 = FlashcardDeckVertex.create(traversalSource);
         flashcardDeckVertex1.setId("flashcardDeckVertex1");
         flashcardDeckVertex1.setName("First ever flashcard deck");
@@ -138,6 +152,7 @@ public class DataInitializerService {
         flashcardDeckVertex2.setId("flashcardDeckVertex2");
         flashcardDeckVertex2.setName("Second ever flashcard deck");
         flashcardDeckVertex2.addFlashcard(flashcardVertex2);
+        flashcardDeckVertex2.addFlashcard(flashcardVertex3);
 
         // Word concepts
         var wordVertex1 = WordVertex.create(traversalSource);
@@ -150,7 +165,7 @@ public class DataInitializerService {
         // Pronunciation concept
         var audioContentVertex1 = audioContentVertexFactory.create(
                 traversalSource,
-                new AudioContentVertexFactory.Options("audioContentVertex1", "https://example.com/audio1.mp3", langVertex1));
+                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex1));
         var pronunciationVertex1 = pronunciationVertexFactory.create(
                 traversalSource,
                 new PronunciationVertexFactory.Options("pronunciationVertex1", textVertex0, audioContentVertex1));
