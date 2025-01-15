@@ -2,11 +2,7 @@
     title="Do you still know this?"
     instruction='How well do you recognize this?'></app-instruction>
 
-<app-flashcard-review *ngIf="content" class="block mb-4" [flippable]="false">
-    <ng-container left>
-        <span>{{content!.front!.text}}</span>
-    </ng-container>
-</app-flashcard-review>
+<app-dynamic-flashcard-content *ngIf="content" [data]="content"/>
 
 <app-correctable-multiple-choice-text-field
     *ngIf="input"

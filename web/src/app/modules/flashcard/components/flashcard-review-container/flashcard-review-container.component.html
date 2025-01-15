@@ -1,26 +1,26 @@
-<div *ngIf="flashcards.length > 0">
-    <app-flashcard-review>
-        <ng-container left>
-            <span class="text-gray-500 text-sm mb-1">{{flashcards[currentIndex].leftValue}}</span>
-            <br>
-            <span class="text-gray-500 text-sm mb-1">{{flashcards[currentIndex].leftLanguage.abbreviation}}</span>
-        </ng-container>
+<div *ngIf="currentFlashcard">
+    <div class="flex justify-center">
+        <app-flashcard>
+            <ng-container front>
+                <span class="text-gray-500 text-sm mb-1">{{currentFlashcard.leftValue }}
+                    ({{currentFlashcard.leftLanguage.abbreviation}})</span>
+            </ng-container>
 
-        <ng-container right>
-            <span class="text-gray-500 text-sm mb-1">{{flashcards[currentIndex].rightValue}}</span>
-            <br>
-            <span class="text-gray-500 text-sm mb-1">{{flashcards[currentIndex].rightLanguage.abbreviation}}</span>
-        </ng-container>
-    </app-flashcard-review>
+            <ng-container back>
+                <span class="text-gray-500 text-sm mb-1">{{currentFlashcard.rightValue }}
+                    ({{currentFlashcard.rightLanguage.abbreviation}})</span>
+            </ng-container>
+        </app-flashcard>
+    </div>
 
     <div class="flex justify-center mt-4">
-        <button (click)="previousFlashcard()" [disabled]="currentIndex === 0" 
-            [ngClass]="{'bg-gray-300': currentIndex === 0, 'bg-blue-500': currentIndex !== 0}" 
+        <button (click)="previousFlashcard()" [disabled]="currentIndex === 0"
+            [ngClass]="{'bg-gray-300': currentIndex === 0, 'bg-blue-500': currentIndex !== 0}"
             class="rounded-full p-2 text-white mx-2 w-10 h-10 flex items-center justify-center">
             &#8592; <!-- Left arrow -->
         </button>
-        <button (click)="nextFlashcard()" [disabled]="currentIndex === flashcards.length - 1" 
-            [ngClass]="{'bg-gray-300': currentIndex === flashcards.length - 1, 'bg-blue-500': currentIndex !== flashcards.length - 1}" 
+        <button (click)="nextFlashcard()" [disabled]="currentIndex === flashcards.length - 1"
+            [ngClass]="{'bg-gray-300': currentIndex === flashcards.length - 1, 'bg-blue-500': currentIndex !== flashcards.length - 1}"
             class="rounded-full p-2 text-white w-10 h-10 flex items-center justify-center">
             &#8594; <!-- Right arrow -->
         </button>

@@ -1,0 +1,4 @@
+<app-flashcard *ngIf="data">
+    <app-dynamic-text-content front [data]="castToText(data.front)"></app-dynamic-text-content>
+    <app-dynamic-text-content back [data]="castToText(data.back)"></app-dynamic-text-content>
+</app-flashcard>
