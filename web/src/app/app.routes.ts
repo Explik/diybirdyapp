@@ -5,6 +5,7 @@ import { FlashcardDeckPageComponent } from './modules/flashcard/components/flash
 import { FlashcardDecksPageComponent } from './modules/flashcard/components/flashcard-decks-page/flashcard-decks-page.component';
 import { SessionPageComponent } from './modules/exercise/pages/session-page/session-page.component';
 import { VocabularyPageComponent } from './modules/flashcard/pages/vocabulary-page/vocabulary-page.component';
+import { SharedComponentsPageComponent } from './shared/pages/shared-components-page/shared-components-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/flashcard-deck', pathMatch: 'full' },
@@ -14,4 +15,5 @@ export const routes: Routes = [
   { path: 'exercise/:id', component: ExercisePageComponent },
   { path: 'library/import', component: ImportModulePageComponent },
   { path: 'vocabulary', component: VocabularyPageComponent },
+  { path: 'docs/shared-components', component: SharedComponentsPageComponent }
 ];

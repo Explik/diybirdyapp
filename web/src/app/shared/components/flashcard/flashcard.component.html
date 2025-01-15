@@ -1,0 +1,16 @@
+<div class="flashcard relative w-96 h-64 perspective cursor-pointer" tabindex="0">
+    <div class="flashcard-inner absolute w-full h-full transition-transform duration-500"
+        [ngClass]="{ 'rotate-y-180': side === 'back' }">
+        <!-- Front Side -->
+        <div
+            class="flashcard-front absolute w-full h-full bg-white shadow-md flex items-center justify-center backface-hidden rounded-lg">
+            <ng-content select="[front]"></ng-content>
+        </div>
+
+        <!-- Back Side -->
+        <div
+            class="flashcard-back absolute w-full h-full bg-gray-100 shadow-md flex items-center justify-center backface-hidden rotate-y-180 rounded-lg">
+            <ng-content select="[back]"></ng-content>
+        </div>
+    </div>
+</div>
