@@ -76,6 +76,8 @@ public class FlashcardVertex extends ContentVertex {
             return new TextContentVertex(traversalSource, vertex);
         if(vertex.label().equals(ImageContentVertex.LABEL))
             return new ImageContentVertex(traversalSource, vertex);
+        if (vertex.label().equals(VideoContentVertex.LABEL))
+            return new VideoContentVertex(traversalSource, vertex);
 
         throw new RuntimeException("Unknown content type: " + vertex.label());
     }

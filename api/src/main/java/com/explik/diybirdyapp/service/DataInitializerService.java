@@ -58,6 +58,12 @@ public class DataInitializerService {
     @Autowired
     private AudioContentVertexFactory audioContentVertexFactory;
 
+    @Autowired
+    private ImageContentVertexFactory imageContentVertexFactory;
+
+    @Autowired
+    private VideoContentVertexFactory videoImageContentVertexFactory;
+
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
         appendInitialData();
@@ -123,9 +129,9 @@ public class DataInitializerService {
         textVertex5.setValue("Hej billede");
         textVertex5.setLanguage(langVertex1);
 
-        var imageVertex1 = ImageContentVertex.create(traversalSource);
-        imageVertex1.setId("imageVertex1");
-        imageVertex1.setUrl("https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY");
+        var imageVertex1 = imageContentVertexFactory.create(
+                traversalSource,
+                new ImageContentVertexFactory.Options("imageVertex1", "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"));
 
         var textVertex6 = TextContentVertex.create(traversalSource);
         textVertex6.setId("textVertex6");
@@ -135,6 +141,15 @@ public class DataInitializerService {
         var audioContentVertex1 = audioContentVertexFactory.create(
                 traversalSource,
                 new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex1));
+
+        var textVertex7 = TextContentVertex.create(traversalSource);
+        textVertex7.setId("textVertex7");
+        textVertex7.setValue("Hej video");
+        textVertex7.setLanguage(langVertex1);
+
+        var videoContentVertex1 = videoImageContentVertexFactory.create(
+                traversalSource,
+                new VideoContentVertexFactory.Options("videoContentVertex1", "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", langVertex2));
 
         // Flashcard content
         var flashcardVertex1 = FlashcardVertex.create(traversalSource);
@@ -157,6 +172,11 @@ public class DataInitializerService {
         flashcardVertex4.setLeftContent(textVertex6);
         flashcardVertex4.setRightContent(audioContentVertex1);
 
+        var flashcardVertex5 = FlashcardVertex.create(traversalSource);
+        flashcardVertex5.setId("flashcardVertex5");
+        flashcardVertex5.setLeftContent(textVertex7);
+        flashcardVertex5.setRightContent(videoContentVertex1);
+
         var flashcardDeckVertex1 = FlashcardDeckVertex.create(traversalSource);
         flashcardDeckVertex1.setId("flashcardDeckVertex1");
         flashcardDeckVertex1.setName("First ever flashcard deck");
@@ -168,6 +188,7 @@ public class DataInitializerService {
         flashcardDeckVertex2.addFlashcard(flashcardVertex2);
         flashcardDeckVertex2.addFlashcard(flashcardVertex3);
         flashcardDeckVertex2.addFlashcard(flashcardVertex4);
+        flashcardDeckVertex2.addFlashcard(flashcardVertex5);
 
         // Word concepts
         var wordVertex1 = WordVertex.create(traversalSource);

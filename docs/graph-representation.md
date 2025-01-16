@@ -100,7 +100,19 @@ Properties:
 - id: string
 - text: string
 
-### Flashcard (with text content)
+### Video content
+```mermaid
+graph LR
+V1(VideoContent)
+V2(Language)
+V1--hasLanguage-->V2
+```
+
+Properties:
+- id: string
+- url: string
+
+### Flashcard
 ```mermaid
 graph LR
 V1(Flashcard)

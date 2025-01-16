@@ -23,6 +23,8 @@ public abstract class BaseModelToDtoMapper {
                 return modelMapper.map(source, ExerciseContentTextDto.class);
             if (source instanceof ExerciseContentImageModel)
                 return modelMapper.map(source, ExerciseContentImageDto.class);
+            if (source instanceof ExerciseContentVideoModel)
+                return modelMapper.map(source, ExerciseContentVideoDto.class);
             if (source instanceof ExerciseContentFlashcardModel)
                 return modelMapper.map(source, ExerciseContentFlashcardDto.class);
             return null;

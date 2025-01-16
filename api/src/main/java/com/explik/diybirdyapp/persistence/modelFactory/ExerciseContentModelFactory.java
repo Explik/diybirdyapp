@@ -14,6 +14,8 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseContent
             return createTextModel(new TextContentVertex(vertex));
         if (vertex.getLabel().equals(ImageContentVertex.LABEL))
             return createImageModel(new ImageContentVertex(vertex));
+        if (vertex.getLabel().equals(VideoContentVertex.LABEL))
+            return createVideoModel(new VideoContentVertex(vertex));
         if (vertex.getLabel().equals(FlashcardVertex.LABEL))
             return createFlashcardModel((FlashcardVertex) vertex);
 
@@ -43,6 +45,14 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseContent
         ExerciseContentImageModel model = new ExerciseContentImageModel();
         model.setId(vertex.getId());
         model.setImageUrl(vertex.getUrl());
+
+        return model;
+    }
+
+    public ExerciseContentVideoModel createVideoModel(VideoContentVertex vertex) {
+        ExerciseContentVideoModel model = new ExerciseContentVideoModel();
+        model.setId(vertex.getId());
+        model.setVideoUrl(vertex.getUrl());
 
         return model;
     }

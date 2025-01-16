@@ -4,9 +4,11 @@ import com.explik.diybirdyapp.persistence.vertex.AbstractVertex;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ImageContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class ImageContentVertexFactory implements ContentVertexFactory<ImageContentVertex, ImageContentVertexFactory.Options> {
     @Override
     public ImageContentVertex create(GraphTraversalSource traversalSource, Options options) {
