@@ -17,6 +17,8 @@ public abstract class BaseModelToDtoMapper {
 
     Converter<ExerciseContentModel, ExerciseContentDto> exerciseContentConverter = new AbstractConverter<ExerciseContentModel, ExerciseContentDto>() {
         protected ExerciseContentDto convert(ExerciseContentModel source) {
+            if (source instanceof ExerciseContentAudioModel)
+                return modelMapper.map(source, ExerciseContentAudioDto.class);
             if (source instanceof ExerciseContentTextModel)
                 return modelMapper.map(source, ExerciseContentTextDto.class);
             if (source instanceof ExerciseContentImageModel)

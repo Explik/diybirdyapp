@@ -4,6 +4,10 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 public class AudioContentVertex extends ContentVertex {
+    public AudioContentVertex(AbstractVertex vertex) {
+        super(vertex.getUnderlyingSource(), vertex.getUnderlyingVertex());
+    }
+
     public AudioContentVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }

@@ -1,19 +1,15 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
-import com.explik.diybirdyapp.model.ExerciseContentFlashcardModel;
-import com.explik.diybirdyapp.model.ExerciseContentImageModel;
-import com.explik.diybirdyapp.model.ExerciseContentModel;
-import com.explik.diybirdyapp.model.ExerciseContentTextModel;
-import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertex.ImageContentVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.model.*;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ExerciseContentModelFactory implements ModelFactory<ExerciseContentModel, ContentVertex> {
     @Override
     public ExerciseContentModel create(ContentVertex vertex) {
+        if (vertex.getLabel().equals(AudioContentVertex.LABEL))
+            return createAudioModel(new AudioContentVertex(vertex));
         if (vertex.getLabel().equals(TextContentVertex.LABEL))
             return createTextModel(new TextContentVertex(vertex));
         if (vertex.getLabel().equals(ImageContentVertex.LABEL))
@@ -22,6 +18,14 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseContent
             return createFlashcardModel((FlashcardVertex) vertex);
 
         throw new RuntimeException("Unknown content type " + vertex.getClass().getName());
+    }
+
+    public ExerciseContentAudioModel createAudioModel(AudioContentVertex vertex) {
+        ExerciseContentAudioModel model = new ExerciseContentAudioModel();
+        model.setId(vertex.getId());
+        model.setAudioUrl(vertex.getUrl());
+
+        return model;
     }
 
     public ExerciseContentTextModel createTextModel(TextContentVertex vertex) {

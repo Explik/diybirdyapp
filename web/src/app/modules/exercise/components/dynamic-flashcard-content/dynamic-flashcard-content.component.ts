@@ -3,21 +3,16 @@ import { FlashcardComponent } from "../../../../shared/components/flashcard/flas
 import { DynamicTextContentComponent } from "../dynamic-text-content/dynamic-text-content.component";
 import { CommonModule } from '@angular/common';
 import { DynamicImageContentComponent } from '../dynamic-image-content/dynamic-image-content.component';
+import { DynamicContentComponent } from '../dynamic-content/dynamic-content.component';
 
 @Component({
   selector: 'app-dynamic-flashcard-content',
   standalone: true,
-  imports: [CommonModule, FlashcardComponent, DynamicTextContentComponent, DynamicImageContentComponent],
+  imports: [CommonModule, FlashcardComponent, DynamicContentComponent],
   templateUrl: './dynamic-flashcard-content.component.html'
 })
 export class DynamicFlashcardContentComponent {
-  @Input() data?: ExerciseContentFlashcardDto;
+  @Input() data?: ExerciseContentFlashcardDto; 
 
-  castToText(data: ExerciseContentDto): ExerciseContentTextDto {
-    return data as ExerciseContentTextDto;
-  }
-
-  castToImage(data: ExerciseContentDto): ExerciseContentImageDto {
-    return data as ExerciseContentImageDto;
-  }
+  constructor() {}
 }

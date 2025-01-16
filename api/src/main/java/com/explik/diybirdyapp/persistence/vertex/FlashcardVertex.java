@@ -70,9 +70,11 @@ public class FlashcardVertex extends ContentVertex {
     }
 
     protected static ContentVertex createContent(GraphTraversalSource traversalSource, Vertex vertex) {
+        if (vertex.label().equals(AudioContentVertex.LABEL))
+            return new AudioContentVertex(traversalSource, vertex);
         if (vertex.label().equals(TextContentVertex.LABEL))
             return new TextContentVertex(traversalSource, vertex);
-        else if(vertex.label().equals(ImageContentVertex.LABEL))
+        if(vertex.label().equals(ImageContentVertex.LABEL))
             return new ImageContentVertex(traversalSource, vertex);
 
         throw new RuntimeException("Unknown content type: " + vertex.label());

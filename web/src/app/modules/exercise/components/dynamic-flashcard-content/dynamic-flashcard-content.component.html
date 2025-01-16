@@ -1,7 +1,4 @@
 <app-flashcard *ngIf="data">
-    <app-dynamic-text-content *ngIf="data.front.type === 'text-content'" front [data]="castToText(data.front)"></app-dynamic-text-content>
-    <app-dynamic-image-content *ngIf="data.front.type === 'image-content'" front [data]="castToImage(data.front)"></app-dynamic-image-content>
-
-    <app-dynamic-text-content *ngIf="data.back.type === 'text-content'" back [data]="castToText(data.back)"></app-dynamic-text-content>
-    <app-dynamic-image-content *ngIf="data.back.type === 'image-content'" back [data]="castToImage(data.back)"></app-dynamic-image-content>
+    <app-dynamic-content front *ngIf="data.front" [data]="data.front" />
+    <app-dynamic-content back *ngIf="data.back" [data]="data.back" />
 </app-flashcard>
