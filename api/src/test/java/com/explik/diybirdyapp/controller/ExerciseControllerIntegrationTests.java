@@ -71,8 +71,8 @@ public class ExerciseControllerIntegrationTests {
 
         var input = (ExerciseInputMultipleChoiceTextDto)actual.getInput();
         var options = input.getOptions().stream().sorted(Comparator.comparing(ExerciseInputMultipleChoiceTextDto.Option::getId)).toList();
-        assertEquals("Correct option", options.get(0).getText());
-        assertEquals("Random option 1", options.get(1).getText());
+        assertEquals("Correct option", options.get(1).getText());
+        assertEquals("Random option 1", options.get(0).getText());
     }
 
     @Test

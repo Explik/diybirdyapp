@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.vertexFactory;
 
+import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -36,5 +37,5 @@ public class FlashcardVertexFactory implements ContentVertexFactory<FlashcardVer
         return vertex;
     }
 
-    public record Options (String id, TextContentVertex leftContent, TextContentVertex rightContent) {}
+    public record Options (String id, ContentVertex leftContent, ContentVertex rightContent) {}
 }

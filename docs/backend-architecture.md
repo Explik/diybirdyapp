@@ -8,6 +8,7 @@ The backend consists of the following layers:
 - Repository operations
 - Commands / Command Handlers
 - VertexFactories
+- VertexBuilders
 - Vertices
 - ModelFactories
 
@@ -17,6 +18,7 @@ The repositories are responsible for handling persistance in the graph.
 The repository operations are responsible for handling the graph operations per data subtype.
 The commands/command handlers are responsible for handling one-off operations on the graph.
 The vertex factories are responsible for creating vertices per data subtype.
+The vertex builders are responsible for creating cluters of associated vertices.
 The vertices are responsible for handling the graph representation of the data per data subtype.
 The model factories are responsible for creating models from the graph representation of the data.
 
@@ -29,6 +31,11 @@ There are currently 3 different kinds of data:
 3. Exercises - Exercises contains displayable composition of content in the UI.
 
 The exact layout of the graph is described in graph-representation.md 
+
+### Initialization (first-use)
+The system uses the command "reset-graph" to initialize the graph with the initial content. The command should be run once when the system is started for the first time.
+
+The command internally uses builders to create the initial content.
 
 ### Dynamic vs. static content 
 The system operates with two types of content:
