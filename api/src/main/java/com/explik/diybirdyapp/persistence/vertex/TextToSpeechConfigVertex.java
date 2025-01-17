@@ -46,8 +46,7 @@ public class TextToSpeechConfigVertex extends AbstractVertex {
     }
 
     public LanguageVertex getLanguage() {
-        var languageVertex = traversalSource.V(vertex).out(EDGE_LANGUAGE).next();
-        return new LanguageVertex(traversalSource, languageVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_LANGUAGE, LanguageVertex::new);
     }
 
     public static TextToSpeechConfigVertex create(GraphTraversalSource traversalSource) {

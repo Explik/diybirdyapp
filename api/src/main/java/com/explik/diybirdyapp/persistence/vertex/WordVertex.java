@@ -39,8 +39,7 @@ public class WordVertex extends AbstractVertex {
     }
 
     public LanguageVertex getLanguage() {
-        var languageVertex = traversalSource.V(vertex).out(EDGE_LANGUAGE).next();
-        return new LanguageVertex(traversalSource, languageVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_LANGUAGE, LanguageVertex::new);
     }
 
     public void setLanguage(AbstractVertex languageVertex) {
@@ -52,10 +51,7 @@ public class WordVertex extends AbstractVertex {
     }
 
     public List<? extends TextContentVertex> getExamples() {
-        var exampleVertices = traversalSource.V(vertex).out(EDGE_EXAMPLE).toList();
-        return exampleVertices.stream()
-                .map(v -> new TextContentVertex(traversalSource, v))
-                .toList();
+        return VertexHelper.getOutgoingModels(this, EDGE_EXAMPLE, TextContentVertex::new);
     }
 
     public void setMainExample(AbstractVertex exampleVertex) {
@@ -63,8 +59,7 @@ public class WordVertex extends AbstractVertex {
     }
 
     public TextContentVertex getMainExample() {
-        var exampleVertex = traversalSource.V(vertex).out(EDGE_MAIN_EXAMPLE).next();
-        return new TextContentVertex(traversalSource, exampleVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_MAIN_EXAMPLE, TextContentVertex::new);
     }
 
     public static WordVertex create(GraphTraversalSource traversalSource) {

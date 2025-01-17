@@ -21,8 +21,7 @@ public class PronunciationVertex extends AbstractVertex {
     }
 
     public AudioContentVertex getAudioContent() {
-        var audioContentVertex = traversalSource.V(vertex).out(EDGE_AUDIO_CONTENT).next();
-        return new AudioContentVertex(traversalSource, audioContentVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_AUDIO_CONTENT, AudioContentVertex::new);
     }
 
     public void setAudioContent(AbstractVertex audioContentVertex) {

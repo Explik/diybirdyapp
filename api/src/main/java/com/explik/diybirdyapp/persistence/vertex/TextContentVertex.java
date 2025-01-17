@@ -32,8 +32,7 @@ public class TextContentVertex extends ContentVertex {
     }
 
     public LanguageVertex getLanguage() {
-        var languageVertex = traversalSource.V(vertex).out(EDGE_LANGUAGE).next();
-        return new LanguageVertex(traversalSource, languageVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_LANGUAGE, LanguageVertex::new);
     }
 
     public void setLanguage(AbstractVertex languageVertex) {
@@ -41,8 +40,7 @@ public class TextContentVertex extends ContentVertex {
     }
 
     public List<PronunciationVertex> getPronunciations() {
-        var vertices = traversalSource.V(vertex).out(EDGE_PRONUNCIATION).toList();
-        return vertices.stream().map(v -> new PronunciationVertex(traversalSource, v)).toList();
+        return VertexHelper.getOutgoingModels(this, EDGE_PRONUNCIATION, PronunciationVertex::new);
     }
 
     public void addPronunciation(AbstractVertex pronunciationVertex) {
@@ -58,8 +56,7 @@ public class TextContentVertex extends ContentVertex {
     }
 
     public PronunciationVertex getMainPronunciation() {
-        var query = traversalSource.V(vertex).out(EDGE_MAIN_PRONUNCIATION);
-        return query.hasNext() ? new PronunciationVertex(traversalSource, query.next()) : null;
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_MAIN_PRONUNCIATION, PronunciationVertex::new);
     }
 
     public void setMainPronunciation(AbstractVertex pronunciationVertex) {

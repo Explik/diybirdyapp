@@ -42,13 +42,11 @@ public class FlashcardVertex extends ContentVertex {
     }
 
     public FlashcardDeckVertex getDeck() {
-        var deckVertex = traversalSource.V(vertex).in(FlashcardDeckVertex.EDGE_FLASHCARD).next();
-        return new FlashcardDeckVertex(traversalSource, deckVertex);
+        return VertexHelper.getIngoingModel(this, FlashcardDeckVertex.EDGE_FLASHCARD, FlashcardDeckVertex::new);
     }
 
     public ContentVertex getLeftContent() {
-        var leftContentVertex = traversalSource.V(vertex).out(EDGE_LEFT_CONTENT).next();
-        return createContent(traversalSource, leftContentVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_LEFT_CONTENT, VertexHelper::createContent);
     }
 
     public void setLeftContent(ContentVertex vertex) {
@@ -56,8 +54,7 @@ public class FlashcardVertex extends ContentVertex {
     }
 
     public ContentVertex getRightContent() {
-        var rightContentVertex = traversalSource.V(vertex).out(EDGE_RIGHT_CONTENT).next();
-        return createContent(traversalSource, rightContentVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_RIGHT_CONTENT, VertexHelper::createContent);
     }
 
     public void setRightContent(ContentVertex vertex) {
@@ -67,19 +64,6 @@ public class FlashcardVertex extends ContentVertex {
     public static FlashcardVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new FlashcardVertex(traversalSource, vertex);
-    }
-
-    protected static ContentVertex createContent(GraphTraversalSource traversalSource, Vertex vertex) {
-        if (vertex.label().equals(AudioContentVertex.LABEL))
-            return new AudioContentVertex(traversalSource, vertex);
-        if (vertex.label().equals(TextContentVertex.LABEL))
-            return new TextContentVertex(traversalSource, vertex);
-        if(vertex.label().equals(ImageContentVertex.LABEL))
-            return new ImageContentVertex(traversalSource, vertex);
-        if (vertex.label().equals(VideoContentVertex.LABEL))
-            return new VideoContentVertex(traversalSource, vertex);
-
-        throw new RuntimeException("Unknown content type: " + vertex.label());
     }
 
     public static List<FlashcardVertex> findAll(GraphTraversalSource traversalSource) {

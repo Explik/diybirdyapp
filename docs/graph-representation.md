@@ -141,6 +141,8 @@ Properties:
 - name: string
 - description: string
 
+Notes, hasFlashcard has a property called "order" which is an integer, which is used to sort the flashcards in the deck.
+
 ## Exercise
 ### General exercise 
 ```mermaid

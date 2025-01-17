@@ -32,8 +32,7 @@ public class ExerciseFeedbackVertex extends AbstractVertex {
     }
 
     public ExerciseAnswerVertex getAnswer() {
-        var answerVertex = traversalSource.V(vertex).out(EDGE_EXERCISE_ANSWER).next();
-        return new ExerciseAnswerVertex(traversalSource, answerVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_EXERCISE_ANSWER, ExerciseAnswerVertex::new);
     }
 
     public void setAnswer(ExerciseAnswerVertex answerVertex) {
