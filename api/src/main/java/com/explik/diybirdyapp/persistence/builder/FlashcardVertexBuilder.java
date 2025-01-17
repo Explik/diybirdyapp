@@ -64,6 +64,22 @@ public class FlashcardVertexBuilder extends VertexBuilderBase<FlashcardVertex> i
         return this;
     }
 
+    public FlashcardVertexBuilder withDefaultFrontLanguage(LanguageVertex languageVertex) {
+        this.defaultFrontLanguage = languageVertex;
+        return this;
+    }
+
+    public FlashcardVertexBuilder withDefaultBackLanguage(LanguageVertex languageVertex) {
+        this.defaultBackLanguage = languageVertex;
+        return this;
+    }
+
+    public FlashcardVertexBuilder withDefaultLanguages(LanguageVertex frontLanguage, LanguageVertex backLanguage) {
+        withDefaultFrontLanguage(frontLanguage);
+        withDefaultBackLanguage(backLanguage);
+        return this;
+    }
+
     @Override
     public void injectDefaultFrontLanguage(LanguageVertex languageVertex) {
         this.defaultFrontLanguage = languageVertex;

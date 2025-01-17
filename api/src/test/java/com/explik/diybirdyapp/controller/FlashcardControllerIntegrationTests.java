@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.TestEventListener;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
@@ -20,18 +21,18 @@ import org.springframework.context.annotation.Bean;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static com.explik.diybirdyapp.TestDataConstants.*;
 
 @SpringBootTest
 public class FlashcardControllerIntegrationTests {
-
-    @Autowired
-    DataInitializerService dataInitializer;
-
     @Autowired
     CommandHandler<LockFlashcardContentCommand> lockContentCommandHandler;
 
     @Autowired
     FlashcardController controller;
+
+    @Autowired
+    TestDataProvider dataProvider;
 
     @Autowired
     TestEventListener<FlashcardAddedEvent> flashcardAddedEventListener;
@@ -41,8 +42,7 @@ public class FlashcardControllerIntegrationTests {
 
     @BeforeEach
     void setUp() {
-        dataInitializer.resetInitialData();
-
+        dataProvider.resetData();
         flashcardAddedEventListener.reset();
         flashcardUpdatedEventTestEventListener.reset();
     }
@@ -114,11 +114,11 @@ public class FlashcardControllerIntegrationTests {
         // IMPORTANT: Relies on data from DataInitializer.addInitialFlashcardData()
         var flashcard = new FlashcardDto();
         flashcard.setId("id");
-        flashcard.setDeckId("flashcardDeckVertex1");
+        flashcard.setDeckId(FlashcardDeck.Id);
         flashcard.setLeftValue("left-value");
-        flashcard.setLeftLanguage(new FlashcardLanguageModel("langVertex1"));
+        flashcard.setLeftLanguage(new FlashcardLanguageModel(Languages.Danish.Id));
         flashcard.setRightValue("right-value");
-        flashcard.setRightLanguage(new FlashcardLanguageModel("langVertex2"));
+        flashcard.setRightLanguage(new FlashcardLanguageModel(Languages.English.Id));
         return flashcard;
     }
 

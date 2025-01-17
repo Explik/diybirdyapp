@@ -21,6 +21,12 @@ public class VertexBuilderFactory {
     @Autowired
     private FlashcardDeckVertexFactory flashcardDeckVertexFactory;
 
+    @Autowired
+    private LanguageVertexFactory languageVertexFactory;
+
+    @Autowired
+    private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
+
     public TextContentVertexBuilder createTextContentVertexBuilder() {
         return injectFactories(new TextContentVertexBuilder());
     }
@@ -33,6 +39,10 @@ public class VertexBuilderFactory {
         return injectFactories(new FlashcardDeckVertexBuilder());
     }
 
+    public LanguageVertexBuilder createLanguageVertexBuilder() {
+        return injectFactories(new LanguageVertexBuilder());
+    }
+
     private <T extends VertexBuilderBase<?>> T injectFactories(T builder) {
         var factories = new VertexBuilderFactories();
         factories.textContentVertexFactory = textContentVertexFactory;
@@ -40,6 +50,8 @@ public class VertexBuilderFactory {
         factories.pronunciationVertexFactory = pronunciationVertexFactory;
         factories.flashcardVertexFactory = flashcardVertexFactory;
         factories.flashcardDeckVertexFactory = flashcardDeckVertexFactory;
+        factories.languageVertexFactory = languageVertexFactory;
+        factories.textToSpeechConfigVertexFactory = textToSpeechConfigVertexFactory;
 
         builder.injectFactories(factories);
 

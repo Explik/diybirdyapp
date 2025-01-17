@@ -1,5 +1,7 @@
 package com.explik.diybirdyapp.persistence.command;
 
+import com.explik.diybirdyapp.TestDataConstants;
+import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.service.DataInitializerService;
@@ -20,12 +22,12 @@ public class GenerateAudioForFlashcardCommandHandlerIntegrationTest {
     GraphTraversalSource traversalSource;
 
     @Autowired
-    DataInitializerService dataInitializer;
+    TestDataProvider dataProvider;
 
     // Runs before each test
     @BeforeEach
     void setUp() {
-        dataInitializer.resetInitialData();
+        dataProvider.resetData();
     }
 
     @Autowired
@@ -33,14 +35,16 @@ public class GenerateAudioForFlashcardCommandHandlerIntegrationTest {
 
     @Test
     void givenFlashcard_whenHandle_thenAttachPronunciations() {
-        var command = new GenerateAudioForFlashcardCommand("flashcardVertex1");
+        var flashcardId = TestDataConstants.Flashcard.Id;
+
+        var command = new GenerateAudioForFlashcardCommand(flashcardId);
         command.setFailOnMissingVoice(true);
 
         handler.handle(command);
 
         // Assertions
-        var leftContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, "flashcardVertex1").getLeftContent();
-        var rightContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, "flashcardVertex1").getRightContent();
+        var leftContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, flashcardId).getLeftContent();
+        var rightContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, flashcardId).getRightContent();
 
         var leftPronunciationVertex = leftContent.getPronunciations().getFirst();
         var rightPronunciationVertex = rightContent.getPronunciations().getFirst();

@@ -73,9 +73,9 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
 
         factory.init(traversalSource, model); // Initializes session and reviews 1/2 cards
         factory.nextExercise(traversalSource, model.getId()); // Reviews 2/2 cards
-        var nextExercise = factory.nextExercise(traversalSource, model.getId()); // No more cards to review
+        var newSessionState = factory.nextExercise(traversalSource, model.getId()); // No more cards to review
 
-        assertNull(nextExercise);
+        assertTrue(newSessionState.getCompleted());
     }
 
     @Test

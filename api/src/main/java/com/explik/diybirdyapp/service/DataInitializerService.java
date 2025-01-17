@@ -71,22 +71,19 @@ public class DataInitializerService {
     }
 
     public void addInitialLanguageData() {
-        var danish = languageVertexFactory.create(
-                traversalSource,
-                new LanguageVertexFactory.Options("langVertex1", "Danish", "DA"));
+        builderFactory.createLanguageVertexBuilder()
+                .withId("langVertex1")
+                .withName("Danish")
+                .withAbbreviation("DA")
+                .withGoogleTextToSpeech("da-DK", "da-DK-Wavenet-A")
+                .build(traversalSource);
 
-        var english = languageVertexFactory.create(
-                traversalSource,
-                new LanguageVertexFactory.Options("langVertex2", "English", "EN"));
-
-        // Adding Google Text-to-Speech config for languages
-        var danishTextToSpeechConfig = textToSpeechConfigVertexFactory.create(
-                traversalSource,
-                new TextToSpeechConfigVertexFactory.Options("danishTextToSpeechConfig", "da-DK", "da-DK-Wavenet-A", danish));
-
-        var englishTextToSpeechConfig = textToSpeechConfigVertexFactory.create(
-                traversalSource,
-                new TextToSpeechConfigVertexFactory.Options("englishTextToSpeechConfig", "en-US", "en-US-Wavenet-A", english));
+        builderFactory.createLanguageVertexBuilder()
+                .withId("langVertex2")
+                .withName("English")
+                .withAbbreviation("EN")
+                .withGoogleTextToSpeech("en-US", "en-US-Wavenet-A")
+                .build(traversalSource);
     }
 
     public void addInitialContentAndConcepts() {

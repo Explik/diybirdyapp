@@ -7,6 +7,8 @@ public class VertexBuilderFactories {
     public AudioContentVertexFactory audioContentVertexFactory;
     public FlashcardVertexFactory flashcardVertexFactory;
     public FlashcardDeckVertexFactory flashcardDeckVertexFactory;
+    public LanguageVertexFactory languageVertexFactory;
     public PronunciationVertexFactory pronunciationVertexFactory;
     public TextContentVertexFactory textContentVertexFactory;
+    public TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
 }

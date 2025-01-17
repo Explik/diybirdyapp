@@ -1,12 +1,14 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.FlashcardDeckModel;
+import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +22,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class FlashcardRepositoryDeckImplUnitTests {
     @Autowired
+    GraphTraversalSource traversalSource;
+
+    @Autowired
+    VertexBuilderFactory builderFactory;
+
+    @Autowired
     FlashcardDeckRepository repository;
+
+    @BeforeEach
+    void setUp() {
+        traversalSource.V().drop().iterate();
+    }
 
     @Test
     void givenNewlyCreatedFlashcardDeck_whenAdd_thenReturnFlashcardDeck() {
@@ -41,8 +54,14 @@ public class FlashcardRepositoryDeckImplUnitTests {
 
     @Test
     void givenPreExistentFlashcardDeck_whenGetById_thenReturnFlashcard() {
-        var actual = repository.get("pre-existent-id");
-        assertEquals("pre-existent-id", actual.getId());
+        var flashcardDeckId = "pre-existent-id";
+        builderFactory.createFlashcardDeckVertexBuilder()
+                .withId(flashcardDeckId)
+                .build(traversalSource);
+
+        var actual = repository.get(flashcardDeckId);
+
+        assertEquals(flashcardDeckId, actual.getId());
     }
 
     @Test
@@ -73,6 +92,11 @@ public class FlashcardRepositoryDeckImplUnitTests {
     @Test
     void givenNewName_whenUpdate_thenReturnFlashcard() {
         var flashcardDeckId = "flashcardDeck1";
+        builderFactory.createFlashcardDeckVertexBuilder()
+                .withId(flashcardDeckId)
+                .withName("old-value")
+                .build(traversalSource);
+
         var flashcardDeckChanges = new FlashcardDeckModel();
         flashcardDeckChanges.setId(flashcardDeckId);
         flashcardDeckChanges.setName("new-value");
@@ -85,39 +109,9 @@ public class FlashcardRepositoryDeckImplUnitTests {
 
     @TestConfiguration
     static class Configuration {
-        @Autowired
-        FlashcardVertexFactory flashcardVertexFactory;
-
-        @Autowired
-        FlashcardDeckVertexFactory flashcardDeckVertexFactory;
-
-        @Autowired
-        LanguageVertexFactory languageVertexFactory;
-
-        @Autowired
-        TextContentVertexFactory textContentVertexFactory;
-
         @Bean
         public GraphTraversalSource traversalSource() {
-            var graph = TinkerGraph.open();
-            var traversal = graph.traversal();
-
-            var lang1 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang1", "", ""));
-            var lang2 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang2", "", ""));
-            var lang3 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang3", "", ""));
-
-            var content1 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content1", "", lang1));
-            var content2 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content2", "", lang2));
-            var content3 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content3", "", lang3));
-
-            var flashcard1 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard1", content1, content2));
-            var flashcard2 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard2", content2, content3));
-
-            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options("pre-existent-id", "", List.of(flashcard1, flashcard2)));
-            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options("flashcardDeck1", "", List.of()));
-            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options("flashcardDeck2", "", List.of(flashcard1)));
-
-            return traversal;
+            return TinkerGraph.open().traversal();
         }
     }
 }

@@ -35,14 +35,25 @@ public class TextContentVertexBuilder extends VertexBuilderBase<TextContentVerte
     }
 
     public TextContentVertex build(GraphTraversalSource traversalSource) {
-        var textId = this.id != null ? this.id : UUID.randomUUID().toString();
-        var language = (this.languageVertex != null) ? this.languageVertex : this.defaultLanguageVertex;
-
-        if (language == null)
-            throw new RuntimeException("Language was not provided");
+        var id = (this.id != null) ? this.id : UUID.randomUUID().toString();
+        var language = getOrCreateLanguage(traversalSource);
 
         return this.factories.textContentVertexFactory.create(
                 traversalSource,
-                new TextContentVertexFactory.Options(textId, this.value, language));
+                new TextContentVertexFactory.Options(id, this.value, language));
+    }
+
+    private LanguageVertex getOrCreateLanguage(GraphTraversalSource traversalSource) {
+        if (this.languageVertex != null) {
+            return this.languageVertex;
+        }
+        else if (this.defaultLanguageVertex != null) {
+            return this.defaultLanguageVertex;
+        }
+        else {
+            var languageBuilder = new LanguageVertexBuilder();
+            languageBuilder.injectFactories(factories);
+            return languageBuilder.build(traversalSource);
+        }
     }
 }

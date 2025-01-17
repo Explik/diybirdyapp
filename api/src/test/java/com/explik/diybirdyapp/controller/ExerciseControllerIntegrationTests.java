@@ -1,16 +1,14 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.TestEventListener;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentFlashcardDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseContentTextDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseInputMultipleChoiceTextDto;
 import com.explik.diybirdyapp.controller.dto.ExerciseInputRecognizabilityRatingDto;
-import com.explik.diybirdyapp.event.FlashcardAddedEvent;
-import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
-import com.explik.diybirdyapp.model.ExerciseInputRecognizabilityRatingModel;
-import com.explik.diybirdyapp.service.DataInitializerService;
+import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseWriteSentenceUsingWordVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,67 +18,71 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Comparator;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static com.explik.diybirdyapp.TestDataConstants.*;
 
 @SpringBootTest
 public class ExerciseControllerIntegrationTests {
     @Autowired
-    DataInitializerService dataInitializer;
-
-    @Autowired
     ExerciseController controller;
 
-    // Runs before each test
+    @Autowired
+    TestDataProvider testDataProvider;
+
     @BeforeEach
     void setUp() {
-        dataInitializer.resetInitialData();
+        testDataProvider.resetData();
     }
 
     @Test
     void givenExistingWriteSentenceUsingWordExercise_whenGetById_thenReturnExercise() {
-        // IMPORTANT: Relies on data from DataInitializer.addInitialExerciseData()
-        var actual = controller.get("1");
+        var exerciseId = WriteSentenceUsingWordExercise.Id;
 
-        assertEquals("1", actual.getId());
+        var actual = controller.get(exerciseId);
+
+        assertEquals(exerciseId, actual.getId());
         assertEquals(ExerciseTypes.WRITE_SENTENCE_USING_WORD, actual.getType());
-        assertEquals("example", actual.getProperties().get("word"));
+        assertEquals(WriteSentenceUsingWordExercise.Word, actual.getProperties().get("word"));
     }
 
     @Test
     void givenExistingWriteTranslatedSentenceExercise_whenGetById_thenReturnExercise() {
-        // IMPORTANT: Relies on data from DataInitializer.addInitialExerciseData()
-        var actual = controller.get("2");
+        var exerciseId = WriteTranslatedSentenceExercise.Id;
 
-        assertEquals("2", actual.getId());
+        var actual = controller.get(exerciseId);
+
+        assertEquals(exerciseId, actual.getId());
         assertEquals(ExerciseTypes.WRITE_TRANSLATED_SENTENCE, actual.getType());
-        assertEquals("Danish", actual.getProperties().get("targetLanguage"));
+        assertEquals(WriteTranslatedSentenceExercise.TargetLanguage, actual.getProperties().get("targetLanguage"));
 
         var content = (ExerciseContentTextDto)actual.getContent();
-        assertEquals("This is an example sentence", content.getText());
+        assertEquals(WriteTranslatedSentenceExercise.Sentence, content.getText());
     }
 
     @Test
     void givenExistingMultipleChoiceTextExercise_whenGetById_thenReturnExercise() {
-        // IMPORTANT: Relies on data from DataInitializer.addInitialExerciseData()
-        var actual = controller.get("3");
+        var exerciseId = SelectFlashcardExercise.Id;
 
-        assertEquals("3", actual.getId());
+        var actual = controller.get(exerciseId);
+
+        assertEquals(exerciseId, actual.getId());
         assertEquals(ExerciseTypes.SELECT_FLASHCARD, actual.getType());
 
         var input = (ExerciseInputMultipleChoiceTextDto)actual.getInput();
-        var options = input.getOptions().stream().sorted(Comparator.comparing(ExerciseInputMultipleChoiceTextDto.Option::getId)).toList();
-        assertEquals("Correct option", options.get(1).getText());
-        assertEquals("Random option 1", options.get(0).getText());
+        var options = input.getOptions();
+        assertEquals(SelectFlashcardExercise.FlashcardText1, options.get(0).getText());
+        assertEquals(SelectFlashcardExercise.FlashcardText2, options.get(1).getText());
+        assertEquals(SelectFlashcardExercise.FlashcardText3, options.get(2).getText());
+        assertEquals(SelectFlashcardExercise.FlashcardText4, options.get(3).getText());
     }
 
     @Test
     void givenExistingReviewFlashcardContentExercise_whenGetById_thenReturnExercise() {
-        // IMPORTANT: Relies on data from DataInitializer.addInitialFlashcardAndFlashcardExerciseData()
-        var actual = controller.get("4");
+        var exerciseId = ReviewFlashcardExercise.Id;
 
-        assertEquals("4", actual.getId());
+        var actual = controller.get(exerciseId);
+
+        assertEquals(exerciseId, actual.getId());
         assertEquals(ExerciseTypes.REVIEW_FLASHCARD, actual.getType());
 
         var flashcardContent = (ExerciseContentFlashcardDto)actual.getContent();
@@ -92,24 +94,20 @@ public class ExerciseControllerIntegrationTests {
 
     @Test
     void givenExistingExercise_whenSubmitAnswer_thenReturnFeedback() {
-        // IMPORTANT: Relies on data from DataInitializer.addInitialFlashcardAndFlashcardExerciseData()
         var answer = new ExerciseInputRecognizabilityRatingDto();
         answer.setType(ExerciseInputTypes.RECOGNIZABILITY_RATING);
         answer.setRating("easy");
 
-        var actual = controller.submitAnswer("4", answer);
+        var actual = controller.submitAnswer(ReviewFlashcardExercise.Id, answer);
 
         assertNotNull(actual);
     }
 
     @TestConfiguration
-    static class Configuration {
+    public static class Configuration {
         @Bean
         public GraphTraversalSource traversalSource() {
-            var graph = TinkerGraph.open();
-            return graph.traversal();
+            return TinkerGraph.open().traversal();
         }
     }
-
-    // TODO Replace indirect dependency on DataInitializer with test configuration
 }
