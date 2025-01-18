@@ -5,13 +5,14 @@ import { CommonModule } from '@angular/common';
 import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.component";
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
 import { FormsModule } from '@angular/forms';
+import { CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'app-flashcard-edit-container',
     standalone: true,
     templateUrl: './flashcard-edit-container.component.html',
     styleUrl: './flashcard-edit-container.component.css',
-    imports: [TextButtonComponent, CommonModule, FormsModule, FlashcardEditComponent, TextFieldComponent]
+    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent]
 })
 export class FlashcardEditContainerComponent {
   _name: string | undefined = undefined;
@@ -31,6 +32,21 @@ export class FlashcardEditContainerComponent {
   
   @Output() addFlashcard = new EventEmitter<void>();
   @Output() saveFlashcards = new EventEmitter<void>();
+
+  currentDragIndex: number | undefined = undefined;
+
+  handleDragStart(index: number): void {
+    this.currentDragIndex = index;
+  }
+
+  handleDragEnd(): void {
+    this.currentDragIndex = undefined
+  }
+
+  handleRearrangeFlashcard(event: CdkDragDrop<Partial<Flashcard>[]>): void {
+    moveItemInArray(this.flashcards, event.previousIndex, event.currentIndex);
+    // TODO persist change of order
+  }
 
   handleAddFlashcard() {
     this.addFlashcard?.emit();

@@ -19,10 +19,14 @@
         </select>
     </div>
 
+  <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list" [ngClass]="{'dragging': currentDragIndex !== undefined}">
     @for(flashcard of flashcards; track flashcard; let i = $index) {
-      <app-flashcard-edit class="block mb-4" (switchSides)="handleSwitchFlashcardSides(flashcard)">
+      <app-flashcard-edit cdkDrag 
+        (cdkDragStarted)="handleDragStart(i)"
+        (cdkDragEnded)="handleDragEnd()"
+        class="flashcard-item block mb-4" (switchSides)="handleSwitchFlashcardSides(flashcard)">
         <ng-container header>
-          <p class="font-bold">#{{i + 1}}</p>
+          <p class="flashcard-item-number font-bold">#{{i + 1}}</p>
         </ng-container>
 
         <ng-container left>
@@ -36,6 +40,7 @@
         </ng-container>
       </app-flashcard-edit>
     }
+  </div>
 
     <div>
         <app-text-button [label]="'＋ Add flashcard'" (click)="handleAddFlashcard()"></app-text-button>

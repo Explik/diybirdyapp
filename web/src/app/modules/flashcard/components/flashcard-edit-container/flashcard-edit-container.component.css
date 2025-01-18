@@ -1,0 +1,8 @@
+.flashcard-list.dragging {
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+}
+
+.flashcard-list.dragging .flashcard-item-number {
+    visibility: hidden;
+}
