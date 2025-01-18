@@ -3,7 +3,7 @@ import { TextFieldComponent } from '../../../shared/components/text-field/text-f
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FlashcardEditContainerComponent } from "../../flashcard/components/flashcard-edit-container/flashcard-edit-container.component";
-import { FlashcardDeckPageComponent } from "../../flashcard/components/flashcard-deck-page/flashcard-deck-page.component";
+import { FlashcardDeckPageComponent } from "../../flashcard/pages/flashcard-deck-page/flashcard-deck-page.component";
 import { Flashcard, FlashcardLanguage } from '../../flashcard/models/flashcard.model';
 import { FlashcardEditComponent } from "../../flashcard/components/flashcard-edit/flashcard-edit.component";
 

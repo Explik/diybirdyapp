@@ -19,8 +19,12 @@
         </select>
     </div>
 
-    @for(flashcard of flashcards; track flashcard) {
+    @for(flashcard of flashcards; track flashcard; let i = $index) {
       <app-flashcard-edit class="block mb-4" (switchSides)="handleSwitchFlashcardSides(flashcard)">
+        <ng-container header>
+          <p class="font-bold">#{{i + 1}}</p>
+        </ng-container>
+
         <ng-container left>
           <span *ngIf="flashcard.leftLanguage" class="text-gray-500 text-sm mb-1">{{flashcard.leftLanguage.abbreviation}}</span>
           <app-text-field [(ngModel)]="flashcard.leftValue" (rows)="1"></app-text-field>
