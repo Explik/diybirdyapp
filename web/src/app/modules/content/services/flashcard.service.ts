@@ -1,0 +1,126 @@
+import { Injectable } from "@angular/core";
+import { environment } from "../../../../environments/environment";
+import { HttpClient } from "@angular/common/http";
+import { map, Observable } from "rxjs";
+import { FlashcardLanguage, Flashcard, FlashcardDeck } from "../models/flashcard.model";
+import { RecursivePartial } from "../../../shared/models/util.model";
+import { FlashcardContent } from "../../../shared/models/content.interface";
+import { EditFlashcard } from "../models/editFlashcard.model";
+
+@Injectable({
+    providedIn: 'root'
+  })
+  export class FlashcardService {
+    private exerciseSessionBaseUrl = `${environment.apiUrl}/exercise-session`;
+    private flashcardBaseUrl = `${environment.apiUrl}/flashcard`;
+    private flashcardDeckBaseUrl = `${environment.apiUrl}/flashcard-deck`;
+    private languageBaseUrl = `${environment.apiUrl}/language`;
+  
+    constructor(private http: HttpClient) { }
+
+    createFlashcard(flashcard: RecursivePartial<FlashcardDto>): Observable<Flashcard> {
+        return this.http.post<FlashcardDto>(this.flashcardBaseUrl, flashcard).pipe(map(this.mapDtoToModel));;
+    }
+
+    updateFlashcard(flashcard: EditFlashcard): Observable<Flashcard> {
+      const formData: FormData = new FormData();
+      
+      const flashcardDto: RecursivePartial<FlashcardDto> = {
+        id: flashcard.id
+      }; 
+      formData.append('flashcard', new Blob([JSON.stringify(flashcardDto)], { type: 'application/json' }));
+
+      if (flashcard.leftAudioContent) {
+        formData.append('files', flashcard.leftAudioContent.generateBlob(), 'leftAudio');
+      }
+      if (flashcard.rightAudioContent) {
+        formData.append('files', flashcard.rightAudioContent.generateBlob(), 'rightAudio');
+      }
+
+      return this.http
+        .put<FlashcardDto>(this.flashcardBaseUrl + "/rich", formData)
+        .pipe(map(this.mapDtoToModel));
+    }
+
+    getFlashcards(deckId: string|null): Observable<Flashcard[]> {
+      return this.http.get<FlashcardDto[]>(this.flashcardBaseUrl + "?deckId=" + deckId)
+        .pipe(map((arr) => arr.map(this.mapDtoToModel)));
+    }
+
+    getFlashcardLanguages(): Observable<FlashcardLanguage[]> {
+      return this.http.get<FlashcardLanguageDto[]>(this.languageBaseUrl)
+        .pipe(map((arr) => arr.map(this.mapLanguageDtoToModel)));
+    }
+
+    createFlashcardDeck(flashcardDeck: RecursivePartial<FlashcardDeckDto>): Observable<FlashcardDeckDto> {
+      return this.http.post<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(this.mapSetDtoToModel));
+    }
+
+    getFlashcardDeck(id: string): Observable<FlashcardDeck> {
+      return this.http.get<FlashcardDeckDto>(this.flashcardDeckBaseUrl + "/" + id)
+        .pipe(map(this.mapSetDtoToModel));
+    }
+
+    getFlashcardDecks(): Observable<FlashcardDeck[]> {
+      return this.http.get<FlashcardDeckDto[]>(this.flashcardDeckBaseUrl)
+        .pipe(map((arr) => arr.map(this.mapSetDtoToModel)));
+    }
+
+    updateFlashcardDeck(flashcardDeck: RecursivePartial<FlashcardDeckDto>): Observable<FlashcardDeckDto> {
+      return this.http.put<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(this.mapSetDtoToModel));
+    }
+
+    selectFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
+      return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, {
+        type: "select-flashcard-session",
+        flashcardDeckId: deckId
+      });
+    }
+
+    reviewFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
+      return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, { 
+        type: "review-flashcard-session", 
+        flashcardDeckId: deckId 
+      });
+    }
+
+    writeFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
+      return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, { 
+        type: "write-flashcard-session", 
+        flashcardDeckId: deckId
+      });
+    }
+
+    learnFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
+      return this.http.post<ExerciseSessionDto>(this.exerciseSessionBaseUrl, { 
+        type: "learn-flashcard-session", 
+        flashcardDeckId: deckId 
+      });
+    }
+
+    mapDtoToModel(x: FlashcardDto): Flashcard {
+      return {
+        id: x.id,
+        deckId: x.deckId,
+        leftLanguage: x.leftLanguage,
+        leftValue: x.leftValue,
+        rightLanguage: x.rightLanguage,
+        rightValue: x.rightValue
+      };
+    }
+
+    mapLanguageDtoToModel(x: FlashcardLanguageDto): FlashcardLanguage {
+      return {
+        id: x.id,
+        abbreviation: x.abbreviation,
+        name: x.name
+      };
+    }
+
+    mapSetDtoToModel(x: FlashcardDeckDto): FlashcardDeck {
+      return {
+        id: x.id,
+        name: x.name
+      };
+    }
+  }

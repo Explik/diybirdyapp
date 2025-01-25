@@ -1,0 +1,40 @@
+<div *ngIf="currentFlashcard">
+    <div class="flex justify-center">
+        <app-flashcard class="text-gray-500 text-sm">
+            <ng-container front *ngIf="currentFlashcard.leftContentType === 'text'">
+                <span class="mr-1">{{currentFlashcard.leftTextContent!.text }}</span>
+            </ng-container>
+
+            <ng-container back *ngIf="currentFlashcard.rightContentType === 'text'">
+                <span class="mr-1">{{currentFlashcard.rightTextContent!.text }}</span>
+            </ng-container>
+
+            <ng-container back *ngIf="currentFlashcard.rightContentType === 'audio'">
+                <app-audio-preview *ngIf="currentFlashcard.rightAudioContent; else noAudio" [data]="currentFlashcard.rightAudioContent"></app-audio-preview>
+                <ng-template #noAudio>
+                    <span>Sorry, no audio available...</span>
+                </ng-template>
+            </ng-container>
+
+            <ng-container back *ngIf="currentFlashcard.rightContentType === 'image'">
+                <app-image-preview *ngIf="currentFlashcard.rightImageContent; else noImage" [data]="currentFlashcard.rightImageContent"></app-image-preview>
+                <ng-template #noImage>
+                    <span>Sorry, no image available...</span>
+                </ng-template>
+            </ng-container>
+        </app-flashcard>
+    </div>
+
+    <div class="flex justify-center mt-4">
+        <button (click)="previousFlashcard()" [disabled]="currentIndex === 0"
+            [ngClass]="{'bg-gray-300': currentIndex === 0, 'bg-blue-500': currentIndex !== 0}"
+            class="rounded-full p-2 text-white mx-2 w-10 h-10 flex items-center justify-center">
+            &#8592; <!-- Left arrow -->
+        </button>
+        <button (click)="nextFlashcard()" [disabled]="currentIndex === flashcards.length - 1"
+            [ngClass]="{'bg-gray-300': currentIndex === flashcards.length - 1, 'bg-blue-500': currentIndex !== flashcards.length - 1}"
+            class="rounded-full p-2 text-white w-10 h-10 flex items-center justify-center">
+            &#8594; <!-- Right arrow -->
+        </button>
+    </div>
+</div>

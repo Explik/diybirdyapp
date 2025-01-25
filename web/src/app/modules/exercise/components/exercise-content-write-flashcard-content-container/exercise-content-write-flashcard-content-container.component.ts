@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FlashcardContent } from '../../../../shared/models/content.interface';
 import { InstructionComponent } from "../instruction/instruction.component";
-import { FlashcardEditComponent } from "../../../flashcard/components/flashcard-edit/flashcard-edit.component";
 import { CommonModule } from '@angular/common';
-import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
 import { CorrectableTextFieldComponent } from '../../../../shared/components/correctable-text-field/correctable-text-field.component';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
