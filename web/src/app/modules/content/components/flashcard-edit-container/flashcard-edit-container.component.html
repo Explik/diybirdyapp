@@ -24,18 +24,20 @@
       <app-flashcard-edit cdkDrag 
         (cdkDragStarted)="handleDragStart(i)"
         (cdkDragEnded)="handleDragEnd()"
-        class="flashcard-item block mb-4" (switchSides)="handleSwitchFlashcardSides(flashcard)">
+        class="flashcard-item block mb-4">
         <ng-container header>
             <span class="flashcard-item-number font-bold mr-8">#{{i + 1}}</span>
             <select id="leftContentTypeSelect" [(ngModel)]="flashcard.leftContentType" class="mr-8">
               <option value="text">Text</option>
               <option value="audio">Audio</option>
               <option value="image">Image</option>
+              <option value="video">Video</option>
             </select>
             <select id="rightContentTypeSelect" [(ngModel)]="flashcard.rightContentType">
               <option value="text">Text</option>
               <option value="audio">Audio</option>
               <option value="image">Image</option>
+              <option value="video">Video</option>
             </select>
         </ng-container>
 
@@ -48,6 +50,9 @@
         <ng-content *ngIf="flashcard.leftContentType === 'image'" left>
           <app-image-input></app-image-input>
         </ng-content>
+        <ng-content *ngIf="flashcard.leftContentType === 'video'" left>
+          <app-video-input></app-video-input>
+        </ng-content>
 
         <ng-container *ngIf="flashcard.rightContentType === 'text'" right>
           <app-text-field [(ngModel)]="flashcard.rightTextContent!.text" (rows)="1"></app-text-field>
@@ -57,6 +62,9 @@
         </ng-container>
         <ng-container *ngIf="flashcard.rightContentType === 'image'" right>
           <app-image-input [(imageData)]="flashcard.rightImageContent"></app-image-input>
+        </ng-container>
+        <ng-container *ngIf="flashcard.rightContentType === 'video'" right>
+          <app-video-input [(videoData)]="flashcard.rightVideoContent"></app-video-input>
         </ng-container>
         
       </app-flashcard-edit>

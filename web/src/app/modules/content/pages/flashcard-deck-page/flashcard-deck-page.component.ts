@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FlashcardEditContainerComponent } from "../../components/flashcard-edit-container/flashcard-edit-container.component";
-import { Flashcard, FlashcardLanguage } from '../../models/flashcard.model';
 import { FlashcardService } from '../../services/flashcard.service';
 import { zip } from 'rxjs';
 import { RecursivePartial } from '../../../../shared/models/util.model';
@@ -8,7 +7,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FlashcardReviewComponent } from "../../components/flashcard-review/flashcard-review.component";
 import { CommonModule } from '@angular/common';
 import { FlashcardReviewContainerComponent } from '../../components/flashcard-review-container/flashcard-review-container.component';
-import { EditFlashcardImpl } from '../../models/editFlashcard.model';
+import { EditFlashcard, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 
 @Component({
   selector: 'app-flashcard-deck-page',
@@ -19,11 +18,11 @@ import { EditFlashcardImpl } from '../../models/editFlashcard.model';
 })
 export class FlashcardDeckPageComponent implements OnInit {
   originalName?: string = undefined;
-  originalFlashcards: Flashcard[] = []; 
+  originalFlashcards: EditFlashcard[] = []; 
   flashcardDeckId?: string = undefined;
   name?: string = undefined;
   flashcards: EditFlashcardImpl[] = [];
-  flashcardLanguages: FlashcardLanguage[] = [];
+  flashcardLanguages: EditFlashcardLanguageImpl[] = [];
 
   constructor(
     private route: ActivatedRoute, 
@@ -43,7 +42,7 @@ export class FlashcardDeckPageComponent implements OnInit {
       }
 
       this.service.getFlashcards(id).subscribe(data => {
-        this.flashcards = data.map(f => EditFlashcardImpl.createFromDto(f));
+        this.flashcards = data;
   
         // TODO Use proper deep copy
         this.originalFlashcards = JSON.parse(JSON.stringify(data));

@@ -3,13 +3,9 @@ package com.explik.diybirdyapp.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.explik.diybirdyapp.model.FlashcardModel;
-import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
@@ -17,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-
-import java.util.List;
 
 @SpringBootTest
 public class FlashcardRepositoryImplUnitTest {

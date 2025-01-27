@@ -1,7 +1,5 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
-import com.explik.diybirdyapp.model.ExerciseContentFlashcardModel;
-import com.explik.diybirdyapp.model.FlashcardModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;

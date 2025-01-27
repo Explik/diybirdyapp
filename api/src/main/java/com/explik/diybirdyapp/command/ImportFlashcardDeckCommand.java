@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.command;
 
 import com.explik.diybirdyapp.command.dto.ImportFlashcardDeckDTO;
-import com.explik.diybirdyapp.model.FlashcardDeckModel;
-import com.explik.diybirdyapp.model.FlashcardLanguageModel;
-import com.explik.diybirdyapp.model.FlashcardModel;
+import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
 import com.explik.diybirdyapp.persistence.repository.FlashcardRepository;
 import com.explik.diybirdyapp.persistence.repository.FlashcardLanguageRepository;
@@ -70,21 +70,17 @@ public class ImportFlashcardDeckCommand implements Runnable {
         var languages = languageRepository.getAll();
 
         for (var flashcard : flashcards) {
-            if (flashcard.getLeftValue() == null)
-                throw new RuntimeException("Left value not specified for flashcard");
-            if (flashcard.getRightValue() == null)
-                throw new RuntimeException("Right value not specified for flashcard");
-            if (flashcard.getLeftLanguage() == null)
-                throw new RuntimeException("Left language not specified for flashcard");
-            if (flashcard.getRightLanguage() == null)
-                throw new RuntimeException("Right language not specified for flashcard");
+            if (flashcard.getFrontContent() == null)
+                throw new RuntimeException("Front content not specified for flashcard");
+            if (flashcard.getBackContent() == null)
+                throw new RuntimeException("Back content not specified for flashcard");
 
             if (flashcard.getId() == null)
                 flashcard.setId(UUID.randomUUID().toString());
 
             flashcard.setDeckId(flashcardDeck.getId());
-            flashcard.setLeftLanguage(matchLanguage(languages, flashcard.getLeftLanguage()));
-            flashcard.setRightLanguage(matchLanguage(languages, flashcard.getRightLanguage()));
+            //flashcard.setLeftLanguage(matchLanguage(languages, flashcard.getLeftLanguage()));
+            //flashcard.setRightLanguage(matchLanguage(languages, flashcard.getRightLanguage()));
         }
     }
 

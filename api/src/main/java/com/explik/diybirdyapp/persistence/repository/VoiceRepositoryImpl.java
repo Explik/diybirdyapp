@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.VoiceModel;
+import com.explik.diybirdyapp.model.content.VoiceModel;
 import com.explik.diybirdyapp.persistence.vertex.TextToSpeechConfigVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;

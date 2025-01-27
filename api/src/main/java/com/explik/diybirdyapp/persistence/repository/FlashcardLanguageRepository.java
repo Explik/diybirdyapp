@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import java.util.List;
 
 public interface FlashcardLanguageRepository {

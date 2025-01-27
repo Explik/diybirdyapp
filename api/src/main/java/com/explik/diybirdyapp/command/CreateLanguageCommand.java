@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.command;
 
-import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.repository.FlashcardLanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

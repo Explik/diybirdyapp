@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.FlashcardDeckModel;
+import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
 
 import java.util.List;
 

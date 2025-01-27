@@ -1,8 +1,7 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.model.ExerciseModel;
-import com.explik.diybirdyapp.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;

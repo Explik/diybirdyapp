@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.FlashcardLanguageDto;
+import com.explik.diybirdyapp.controller.dto.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.service.LanguageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.ExerciseModel;
-import com.explik.diybirdyapp.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 
 public interface ExerciseSessionRepository {
     ExerciseSessionModel add(ExerciseSessionModel model);

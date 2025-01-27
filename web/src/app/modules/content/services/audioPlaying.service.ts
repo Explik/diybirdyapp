@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { AudioContent } from "../models/editAudioContent.model";
+import { EditFlashcardAudio } from "../models/editFlashcard.model";
 
 @Injectable({
     providedIn: 'root'
@@ -7,7 +7,7 @@ import { AudioContent } from "../models/editAudioContent.model";
 export class AudioPlayingService {
     private currentAudioElement: HTMLAudioElement | null = null;
 
-    startPlaying(content: AudioContent): Promise<void> {
+    startPlaying(content: EditFlashcardAudio): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.currentAudioElement) {
                 this.stopPlaying();

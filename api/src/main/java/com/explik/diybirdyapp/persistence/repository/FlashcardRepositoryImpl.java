@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.FlashcardModel;
+import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
@@ -38,25 +38,26 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         if (flashcardModel.getDeckId() == null)
             throw new IllegalArgumentException("Model is missing deckId");
 
-        // Binds flashcard to existing languages
-        if (flashcardModel.getLeftLanguage() == null || flashcardModel.getLeftLanguage().getId() == null)
-            throw new IllegalArgumentException("leftLanguage is missing");
-        if (flashcardModel.getRightLanguage() == null || flashcardModel.getRightLanguage().getId() == null)
-            throw new IllegalArgumentException("rightLanguage is missing");
+//        // Binds flashcard to existing languages
+//        if (flashcardModel.getLeftLanguage() == null || flashcardModel.getLeftLanguage().getId() == null)
+//            throw new IllegalArgumentException("leftLanguage is missing");
+//        if (flashcardModel.getRightLanguage() == null || flashcardModel.getRightLanguage().getId() == null)
+//            throw new IllegalArgumentException("rightLanguage is missing");
+//
+//        // Binds flashcard content
+//        var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
+//        var textContentVertex1 = createTextContent(traversalSource, flashcardModel.getLeftLanguage().getId(), flashcardModel.getLeftValue());
+//        var textContentVertex2 = createTextContent(traversalSource, flashcardModel.getRightLanguage().getId(), flashcardModel.getRightValue());
+//
+//        var flashcardVertex = FlashcardVertex.create(traversalSource);
+//        flashcardVertex.setId(UUID.randomUUID().toString());
+//        flashcardVertex.setLeftContent(textContentVertex1);
+//        flashcardVertex.setRightContent(textContentVertex2);
+//
+//        flashcardDeckVertex.addFlashcard(flashcardVertex);
 
-        // Binds flashcard content
-        var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
-        var textContentVertex1 = createTextContent(traversalSource, flashcardModel.getLeftLanguage().getId(), flashcardModel.getLeftValue());
-        var textContentVertex2 = createTextContent(traversalSource, flashcardModel.getRightLanguage().getId(), flashcardModel.getRightValue());
-
-        var flashcardVertex = FlashcardVertex.create(traversalSource);
-        flashcardVertex.setId(UUID.randomUUID().toString());
-        flashcardVertex.setLeftContent(textContentVertex1);
-        flashcardVertex.setRightContent(textContentVertex2);
-
-        flashcardDeckVertex.addFlashcard(flashcardVertex);
-
-        return flashcardCardModelFactory.create(flashcardVertex);
+        //return flashcardCardModelFactory.create(flashcardVertex);
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
@@ -105,23 +106,23 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         }
 
         // Update content
-        if (flashcardModel.getLeftLanguage() != null) {
-            var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getLeftLanguage().getId());
-            leftContentVertex.setLanguage(languageVertex);
-        }
-
-        if (flashcardModel.getRightLanguage() != null) {
-            var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getRightLanguage().getId());
-            rightContentVertex.setLanguage(languageVertex);
-        }
-
-        if (flashcardModel.getLeftValue() != null) {
-            leftContentVertex.setValue(flashcardModel.getLeftValue());
-        }
-
-        if (flashcardModel.getRightValue() != null) {
-            rightContentVertex.setValue(flashcardModel.getRightValue());
-        }
+//        if (flashcardModel.getLeftLanguage() != null) {
+//            var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getLeftLanguage().getId());
+//            leftContentVertex.setLanguage(languageVertex);
+//        }
+//
+//        if (flashcardModel.getRightLanguage() != null) {
+//            var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getRightLanguage().getId());
+//            rightContentVertex.setLanguage(languageVertex);
+//        }
+//
+//        if (flashcardModel.getLeftValue() != null) {
+//            leftContentVertex.setValue(flashcardModel.getLeftValue());
+//        }
+//
+//        if (flashcardModel.getRightValue() != null) {
+//            rightContentVertex.setValue(flashcardModel.getRightValue());
+//        }
 
         return flashcardCardModelFactory.create(flashcardVertex);
     }

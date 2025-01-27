@@ -1,10 +1,8 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
-import com.explik.diybirdyapp.model.FlashcardLanguageModel;
-import com.explik.diybirdyapp.model.FlashcardModel;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.controller.dto.content.FlashcardContentTextDto;
+import com.explik.diybirdyapp.model.content.*;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,28 +16,51 @@ public class FlashcardModelFactory implements ModelFactory<FlashcardModel, Flash
         model.setId(vertex.getId());
         model.setDeckId(vertex.getDeck().getId());
 
-        if (leftContent.getLabel().equals(TextContentVertex.LABEL)) {
-            var leftTextContent = new TextContentVertex(leftContent);
-            model.setLeftValue(leftTextContent.getValue());
-            model.setLeftLanguage(createLanguage(leftTextContent.getLanguage()));
+        switch (leftContent.getLabel()) {
+            case AudioContentVertex.LABEL -> model.setFrontContent(createAudioContent((AudioContentVertex) leftContent));
+            case ImageContentVertex.LABEL -> model.setFrontContent(createImageContent((ImageContentVertex)leftContent));
+            case TextContentVertex.LABEL -> model.setFrontContent(createTextContent((TextContentVertex)leftContent));
+            case VideoContentVertex.LABEL -> model.setFrontContent(createVideoContent((VideoContentVertex)leftContent));
+            default -> throw new IllegalArgumentException("Invalid content type: " + leftContent.getLabel());
         }
-        else model.setLeftValue("[None text content]");
 
-        if (rightContent.getLabel().equals(TextContentVertex.LABEL)) {
-            var rightTextContent = new TextContentVertex(rightContent);
-            model.setRightValue(rightTextContent.getValue());
-            model.setRightLanguage(createLanguage(rightTextContent.getLanguage()));
+        switch (rightContent.getLabel()) {
+            case AudioContentVertex.LABEL -> model.setBackContent(createAudioContent((AudioContentVertex) rightContent));
+            case ImageContentVertex.LABEL -> model.setBackContent(createImageContent((ImageContentVertex)rightContent));
+            case TextContentVertex.LABEL -> model.setBackContent(createTextContent((TextContentVertex)rightContent));
+            case VideoContentVertex.LABEL -> model.setBackContent(createVideoContent((VideoContentVertex)rightContent));
+            default -> throw new IllegalArgumentException("Invalid content type: " + rightContent.getLabel());
         }
-        else model.setRightValue("[None text content]");
 
         return model;
     }
 
-    public FlashcardLanguageModel createLanguage(LanguageVertex vertex) {
-        var model = new FlashcardLanguageModel();
+    public FlashcardContentAudioModel createAudioContent(AudioContentVertex vertex) {
+        var model = new FlashcardContentAudioModel();
         model.setId(vertex.getId());
-        model.setAbbreviation(vertex.getAbbreviation());
-        model.setName(vertex.getName());
+        model.setAudioUrl(vertex.getUrl());
+        return model;
+    }
+
+    public FlashcardContentImageModel createImageContent(ImageContentVertex vertex) {
+        var model = new FlashcardContentImageModel();
+        model.setId(vertex.getId());
+        model.setImageUrl(vertex.getUrl());
+        return model;
+    }
+
+    public FlashcardContentTextModel createTextContent(TextContentVertex vertex) {
+        var model = new FlashcardContentTextModel();
+        model.setId(vertex.getId());
+        model.setText(vertex.getValue());
+        model.setLanguageId(vertex.getLanguage().getId());
+        return model;
+    }
+
+    public FlashcardContentVideoModel createVideoContent(VideoContentVertex vertex) {
+        var model = new FlashcardContentVideoModel();
+        model.setId(vertex.getId());
+        model.setVideoUrl(vertex.getUrl());
         return model;
     }
 }

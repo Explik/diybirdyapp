@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.VocabularyContentTextDto;
-import com.explik.diybirdyapp.controller.dto.VocabularyDto;
-import com.explik.diybirdyapp.model.VocabularyModel;
-import com.explik.diybirdyapp.model.VocabularyTextContentModel;
+import com.explik.diybirdyapp.controller.dto.content.VocabularyContentTextDto;
+import com.explik.diybirdyapp.controller.dto.content.VocabularyDto;
+import com.explik.diybirdyapp.model.content.VocabularyModel;
+import com.explik.diybirdyapp.model.content.VocabularyTextContentModel;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;

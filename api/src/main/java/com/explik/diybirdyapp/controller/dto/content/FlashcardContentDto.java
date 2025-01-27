@@ -1,0 +1,40 @@
+package com.explik.diybirdyapp.controller.dto.content;
+
+import com.explik.diybirdyapp.ContentTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = FlashcardContentAudioDto.class, name = ContentTypes.AUDIO),
+        @JsonSubTypes.Type(value = FlashcardContentImageDto.class, name = ContentTypes.IMAGE),
+        @JsonSubTypes.Type(value = FlashcardContentTextDto.class, name = ContentTypes.TEXT),
+        @JsonSubTypes.Type(value = FlashcardContentVideoDto.class, name = ContentTypes.VIDEO)
+})
+public class FlashcardContentDto {
+    private String id;
+    private String type;
+
+    public FlashcardContentDto(String type) {
+        this.type = type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+}

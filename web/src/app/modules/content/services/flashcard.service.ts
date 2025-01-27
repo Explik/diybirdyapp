@@ -2,10 +2,9 @@ import { Injectable } from "@angular/core";
 import { environment } from "../../../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { map, Observable } from "rxjs";
-import { FlashcardLanguage, Flashcard, FlashcardDeck } from "../models/flashcard.model";
 import { RecursivePartial } from "../../../shared/models/util.model";
 import { FlashcardContent } from "../../../shared/models/content.interface";
-import { EditFlashcard } from "../models/editFlashcard.model";
+import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguageImpl } from "../models/editFlashcard.model";
 
 @Injectable({
     providedIn: 'root'
@@ -18,11 +17,11 @@ import { EditFlashcard } from "../models/editFlashcard.model";
   
     constructor(private http: HttpClient) { }
 
-    createFlashcard(flashcard: RecursivePartial<FlashcardDto>): Observable<Flashcard> {
-        return this.http.post<FlashcardDto>(this.flashcardBaseUrl, flashcard).pipe(map(this.mapDtoToModel));;
+    createFlashcard(flashcard: RecursivePartial<FlashcardDto>): Observable<EditFlashcardImpl> {
+        return this.http.post<FlashcardDto>(this.flashcardBaseUrl, flashcard).pipe(map(EditFlashcardImpl.createFromDto));;
     }
 
-    updateFlashcard(flashcard: EditFlashcard): Observable<Flashcard> {
+    updateFlashcard(flashcard: EditFlashcard): Observable<EditFlashcardImpl> {
       const formData: FormData = new FormData();
       
       const flashcardDto: RecursivePartial<FlashcardDto> = {
@@ -39,35 +38,35 @@ import { EditFlashcard } from "../models/editFlashcard.model";
 
       return this.http
         .put<FlashcardDto>(this.flashcardBaseUrl + "/rich", formData)
-        .pipe(map(this.mapDtoToModel));
+        .pipe(map(EditFlashcardImpl.createFromDto));
     }
 
-    getFlashcards(deckId: string|null): Observable<Flashcard[]> {
+    getFlashcards(deckId: string|null): Observable<EditFlashcardImpl[]> {
       return this.http.get<FlashcardDto[]>(this.flashcardBaseUrl + "?deckId=" + deckId)
-        .pipe(map((arr) => arr.map(this.mapDtoToModel)));
+        .pipe(map((arr) => arr.map(EditFlashcardImpl.createFromDto)));
     }
 
-    getFlashcardLanguages(): Observable<FlashcardLanguage[]> {
+    getFlashcardLanguages(): Observable<EditFlashcardLanguageImpl[]> {
       return this.http.get<FlashcardLanguageDto[]>(this.languageBaseUrl)
-        .pipe(map((arr) => arr.map(this.mapLanguageDtoToModel)));
+        .pipe(map((arr) => arr.map(EditFlashcardLanguageImpl.createFromDto)));
     }
 
-    createFlashcardDeck(flashcardDeck: RecursivePartial<FlashcardDeckDto>): Observable<FlashcardDeckDto> {
-      return this.http.post<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(this.mapSetDtoToModel));
+    createFlashcardDeck(flashcardDeck: RecursivePartial<FlashcardDeckDto>): Observable<EditFlashcardDeck> {
+      return this.http.post<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(EditFlashcardDeckImpl.createFromDto));
     }
 
-    getFlashcardDeck(id: string): Observable<FlashcardDeck> {
+    getFlashcardDeck(id: string): Observable<EditFlashcardDeckImpl> {
       return this.http.get<FlashcardDeckDto>(this.flashcardDeckBaseUrl + "/" + id)
-        .pipe(map(this.mapSetDtoToModel));
+        .pipe(map(EditFlashcardDeckImpl.createFromDto));
     }
 
-    getFlashcardDecks(): Observable<FlashcardDeck[]> {
+    getFlashcardDecks(): Observable<EditFlashcardDeckImpl[]> {
       return this.http.get<FlashcardDeckDto[]>(this.flashcardDeckBaseUrl)
-        .pipe(map((arr) => arr.map(this.mapSetDtoToModel)));
+        .pipe(map((arr) => arr.map(EditFlashcardDeckImpl.createFromDto)));
     }
 
     updateFlashcardDeck(flashcardDeck: RecursivePartial<FlashcardDeckDto>): Observable<FlashcardDeckDto> {
-      return this.http.put<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(this.mapSetDtoToModel));
+      return this.http.put<FlashcardDeckDto>(this.flashcardDeckBaseUrl, flashcardDeck).pipe(map(EditFlashcardDeckImpl.createFromDto));
     }
 
     selectFlashcardDeck(deckId: string): Observable<ExerciseSessionDto> {
@@ -96,31 +95,5 @@ import { EditFlashcard } from "../models/editFlashcard.model";
         type: "learn-flashcard-session", 
         flashcardDeckId: deckId 
       });
-    }
-
-    mapDtoToModel(x: FlashcardDto): Flashcard {
-      return {
-        id: x.id,
-        deckId: x.deckId,
-        leftLanguage: x.leftLanguage,
-        leftValue: x.leftValue,
-        rightLanguage: x.rightLanguage,
-        rightValue: x.rightValue
-      };
-    }
-
-    mapLanguageDtoToModel(x: FlashcardLanguageDto): FlashcardLanguage {
-      return {
-        id: x.id,
-        abbreviation: x.abbreviation,
-        name: x.name
-      };
-    }
-
-    mapSetDtoToModel(x: FlashcardDeckDto): FlashcardDeck {
-      return {
-        id: x.id,
-        name: x.name
-      };
     }
   }

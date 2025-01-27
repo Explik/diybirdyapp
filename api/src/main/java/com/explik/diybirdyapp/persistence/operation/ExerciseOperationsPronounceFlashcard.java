@@ -2,10 +2,10 @@ package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
-import com.explik.diybirdyapp.model.ExerciseInputAudioModel;
-import com.explik.diybirdyapp.model.ExerciseInputModel;
-import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;

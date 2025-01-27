@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.VocabularyTextContentModel;
+import com.explik.diybirdyapp.model.content.VocabularyTextContentModel;
 
 import java.util.List;
 

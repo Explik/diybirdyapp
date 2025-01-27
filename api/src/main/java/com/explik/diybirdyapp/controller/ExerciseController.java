@@ -1,10 +1,11 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.*;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.controller.mapper.GenericMapper;
 import com.explik.diybirdyapp.event.ExerciseAnsweredEvent;
-import com.explik.diybirdyapp.model.ExerciseInputModel;
-import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.service.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

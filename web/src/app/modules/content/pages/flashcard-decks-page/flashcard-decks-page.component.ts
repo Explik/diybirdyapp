@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FlashcardDeck } from '../../models/flashcard.model';
 import { FlashcardService } from '../../services/flashcard.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { EditFlashcardDeck, EditFlashcardDeckImpl } from '../../models/editFlashcard.model';
 
 @Component({
   selector: 'app-flashcard-decks-page',
@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
   styleUrl: './flashcard-decks-page.component.css'
 })
 export class FlashcardDecksPageComponent implements OnInit {
-  flashcardDecks: FlashcardDeck[] = [];
+  flashcardDecks: EditFlashcardDeck[] = [];
 
   constructor(private service: FlashcardService) {}
 
@@ -23,7 +23,7 @@ export class FlashcardDecksPageComponent implements OnInit {
   }
 
   addFlashcardDeck() {
-    const flashcardDeck = { name: 'New deck' } as FlashcardDeck;
+    const flashcardDeck = { name: 'New deck' } as EditFlashcardDeck;
 
     this.service.createFlashcardDeck(flashcardDeck).subscribe(data => {
       this.flashcardDecks = [...this.flashcardDecks, data];

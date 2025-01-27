@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AudioRecordingService } from '../../services/audioRecording.service';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { CommonModule } from '@angular/common';
-import { AudioContent, FileAudioContent } from '../../models/editAudioContent.model';
 import { AudioPlayingService } from '../../services/audioPlaying.service';
 import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { EditFlashcardAudio, FileAudioContent } from '../../models/editFlashcard.model';
 
 @Component({
   selector: 'app-audio-input',
@@ -13,8 +13,8 @@ import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
   imports: [CommonModule, FormsModule]
 })
 export class AudioInputComponent {
-  @Input() audioData: AudioContent | undefined;
-  @Output() audioDataChange = new EventEmitter<AudioContent | undefined>();
+  @Input() audioData: EditFlashcardAudio | undefined;
+  @Output() audioDataChange = new EventEmitter<EditFlashcardAudio | undefined>();
 
   get audioFile(): FileAudioContent | undefined {
     if (this.audioData instanceof FileAudioContent) {

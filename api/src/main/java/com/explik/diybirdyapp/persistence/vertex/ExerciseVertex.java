@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
-import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 

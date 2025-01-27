@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BlobAudioContent } from '../models/editAudioContent.model';
+import { BlobAudioContent } from '../models/editFlashcard.model';
 
 @Injectable({
   providedIn: 'root'

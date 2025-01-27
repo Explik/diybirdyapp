@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import java.util.List;
-import com.explik.diybirdyapp.model.FlashcardModel;
+import com.explik.diybirdyapp.model.content.FlashcardModel;
 
 public interface FlashcardRepository {
     FlashcardModel add(FlashcardModel flashcardModel);

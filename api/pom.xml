@@ -136,6 +136,8 @@
 					<jsonLibrary>jackson2</jsonLibrary>
 					<classPatterns>
 						<pattern>com.explik.diybirdyapp.controller.dto.*</pattern>
+						<pattern>com.explik.diybirdyapp.controller.dto.content.*</pattern>
+						<pattern>com.explik.diybirdyapp.controller.dto.exercise.*</pattern>
 					</classPatterns>
 					<outputFile>../web/src/app/shared/models/endpoints.d.ts</outputFile>
 					<outputKind>global</outputKind>
