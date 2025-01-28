@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.model.content;
 public class FlashcardContentModel {
     private String id;
 
-    public FlashcardContentModel() {}
+    public FlashcardContentModel() { }
 
     public FlashcardContentModel(String id) {
         this.id = id;

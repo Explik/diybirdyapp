@@ -9,13 +9,14 @@ import { EditFlashcard, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../
 import { AudioInputComponent } from "../audio-input/audio-input.component";
 import { ImageInputComponent } from "../image-input/image-input.component";
 import { VideoInputComponent } from "../video-input/video-input.component";
+import { TextInputComponent } from "../text-input/text-input.component";
 
 @Component({
     selector: 'app-flashcard-edit-container',
     standalone: true,
     templateUrl: './flashcard-edit-container.component.html',
     styleUrl: './flashcard-edit-container.component.css',
-    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent]
+    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent]
 })
 export class FlashcardEditContainerComponent {
   _name: string | undefined = undefined;

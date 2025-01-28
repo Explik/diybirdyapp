@@ -12,7 +12,7 @@ export class FlashcardDeckEditService {
 
     fetchFlashcardDeck(id: string) {
         this.dataService.getFlashcards(id).subscribe(flashcards => {
-            this.currentFlashcards = flashcards.map(EditFlashcardImpl.createFromDto);
+            this.currentFlashcards = flashcards;
         });
     }
 

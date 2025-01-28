@@ -4,13 +4,13 @@
   (drop)="handleDrop($event)"
 >
   <i class="mdi mdi-upload text-5xl text-gray-500"></i>
-  <p class="text-gray-600 mt-2">Drag & Drop an image here</p>
+  <p class="text-gray-600 mt-2">Drag & Drop an video here</p>
 
   <label
     class="mt-4 block bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600"
   >
-    Upload Image
-    <input type="file" accept="image/*" class="hidden" (change)="handleFileInput($event)" />
+    Upload video
+    <input type="file" accept="video/*" class="hidden" (change)="handleFileInput($event)" />
   </label>
 
   <div *ngIf="videoData" class="mt-4">

@@ -25,6 +25,10 @@ public class FlashcardDtoToModelMapper implements GenericMapper<FlashcardDto, Fl
     Converter<FlashcardContentDto, FlashcardContentModel> contentConverter = new AbstractConverter<>() {
         @Override
         protected FlashcardContentModel  convert(FlashcardContentDto source) {
+            if (source == null)
+                return null;
+
+            // Content
             if (source instanceof FlashcardContentAudioDto)
                 return modelMapper.map(source, FlashcardContentAudioModel.class);
             if (source instanceof FlashcardContentImageDto)
@@ -33,6 +37,14 @@ public class FlashcardDtoToModelMapper implements GenericMapper<FlashcardDto, Fl
                 return modelMapper.map(source, FlashcardContentTextModel.class);
             if (source instanceof FlashcardContentVideoDto)
                 return modelMapper.map(source, FlashcardContentVideoModel.class);
+
+            // Content upload
+            if (source instanceof FlashcardContentUploadAudioDto)
+                return modelMapper.map(source, FlashcardContentUploadAudioModel.class);
+            if (source instanceof FlashcardContentUploadImageDto)
+                return modelMapper.map(source, FlashcardContentUploadImageModel.class);
+            if (source instanceof FlashcardContentUploadVideoDto)
+                return modelMapper.map(source, FlashcardContentUploadVideoModel.class);
 
             throw new RuntimeException("Unsupported flashcard content model type " + source.getClass().getName());
         }

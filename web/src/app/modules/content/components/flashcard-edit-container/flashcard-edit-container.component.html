@@ -42,20 +42,20 @@
         </ng-container>
 
         <ng-container *ngIf="flashcard.leftContentType === 'text'" left>
-          <app-text-field [(ngModel)]="flashcard.leftTextContent!.text" (rows)="1"></app-text-field>
+          <app-text-input [(textData)]="flashcard.leftTextContent!" (rows)="1"></app-text-input>
         </ng-container>
         <ng-content *ngIf="flashcard.leftContentType === 'audio'" left>
-          <app-audio-input></app-audio-input>
+          <app-audio-input [(audioData)]="flashcard.leftAudioContent"></app-audio-input>
         </ng-content>
         <ng-content *ngIf="flashcard.leftContentType === 'image'" left>
-          <app-image-input></app-image-input>
+          <app-image-input [(imageData)]="flashcard.leftImageContent"></app-image-input>
         </ng-content>
         <ng-content *ngIf="flashcard.leftContentType === 'video'" left>
-          <app-video-input></app-video-input>
+          <app-video-input [(videoData)]="flashcard.leftVideoContent"></app-video-input>
         </ng-content>
 
         <ng-container *ngIf="flashcard.rightContentType === 'text'" right>
-          <app-text-field [(ngModel)]="flashcard.rightTextContent!.text" (rows)="1"></app-text-field>
+          <app-text-input [(textData)]="flashcard.rightTextContent!" (rows)="1"></app-text-input>
         </ng-container>
         <ng-container *ngIf="flashcard.rightContentType === 'audio'" right>
           <app-audio-input [(audioData)]="flashcard.rightAudioContent"></app-audio-input>

@@ -22,20 +22,17 @@ import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardI
     }
 
     updateFlashcard(flashcard: EditFlashcard): Observable<EditFlashcardImpl> {
+      let allChanges = flashcard.getAllChanges();
+
+      // Create form data
       const formData: FormData = new FormData();
+      formData.append('flashcard', new Blob([JSON.stringify(allChanges?.flashcard)], { type: 'application/json' }));
       
-      const flashcardDto: RecursivePartial<FlashcardDto> = {
-        id: flashcard.id
-      }; 
-      formData.append('flashcard', new Blob([JSON.stringify(flashcardDto)], { type: 'application/json' }));
-
-      if (flashcard.leftAudioContent) {
-        formData.append('files', flashcard.leftAudioContent.generateBlob(), 'leftAudio');
-      }
-      if (flashcard.rightAudioContent) {
-        formData.append('files', flashcard.rightAudioContent.generateBlob(), 'rightAudio');
+      for(let file of allChanges?.files ?? []) {
+        formData.append('files', file, file.name);
       }
 
+      // Send request
       return this.http
         .put<FlashcardDto>(this.flashcardBaseUrl + "/rich", formData)
         .pipe(map(EditFlashcardImpl.createFromDto));

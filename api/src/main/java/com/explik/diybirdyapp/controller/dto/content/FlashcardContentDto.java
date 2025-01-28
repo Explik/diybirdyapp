@@ -12,7 +12,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = FlashcardContentAudioDto.class, name = ContentTypes.AUDIO),
         @JsonSubTypes.Type(value = FlashcardContentImageDto.class, name = ContentTypes.IMAGE),
         @JsonSubTypes.Type(value = FlashcardContentTextDto.class, name = ContentTypes.TEXT),
-        @JsonSubTypes.Type(value = FlashcardContentVideoDto.class, name = ContentTypes.VIDEO)
+        @JsonSubTypes.Type(value = FlashcardContentVideoDto.class, name = ContentTypes.VIDEO),
+        @JsonSubTypes.Type(value = FlashcardContentUploadAudioDto.class, name = ContentTypes.AUDIO_UPLOAD),
+        @JsonSubTypes.Type(value = FlashcardContentUploadImageDto.class, name = ContentTypes.IMAGE_UPLOAD),
+        @JsonSubTypes.Type(value = FlashcardContentUploadVideoDto.class, name = ContentTypes.VIDEO_UPLOAD)
 })
 public class FlashcardContentDto {
     private String id;

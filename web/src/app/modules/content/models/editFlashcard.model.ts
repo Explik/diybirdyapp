@@ -1,18 +1,25 @@
 // =================================================================================================
 // ViewModel interfaces 
+
+import { RecursivePartial } from "../../../shared/models/util.model";
+
 // =================================================================================================
 export interface EditFlashcardDeck extends Partial<FlashcardDeckDto> {
     get name(): string;
     get flashcards(): EditFlashcard[];
+
+    getAllChanges(): Partial<FlashcardDeckDto> | undefined;
 }
 
 export interface EditFlashcardLanguage extends Partial<FlashcardLanguageDto> {
 
 }
 
+export type FlashcardContentTypes = "text" | "image" | "audio" | "video";
+
 export interface EditFlashcard extends Partial<FlashcardDto> {
-    leftContentType: "text" | "image" | "audio" | "video";
-    rightContentType: "text" | "image" | "audio" | "video";
+    leftContentType: FlashcardContentTypes;
+    rightContentType: FlashcardContentTypes;
 
     leftTextContent?: EditFlashcardText;
     rightTextContent?: EditFlashcardText;
@@ -25,46 +32,78 @@ export interface EditFlashcard extends Partial<FlashcardDto> {
 
     leftVideoContent?: EditFlashcardVideo;
     rightVideoContent?: EditFlashcardVideo;
+
+    getAllChanges(): FlashcardChanges | undefined;
 }
 
 export interface EditFlashcardText extends Partial<FlashcardContentTextDto> {
-
+    getChanges(): FlashcardContentChanges | undefined;
 }
 
 export interface EditFlashcardImage extends Partial<FlashcardContentImageDto> {
     getSrc(): string;
+    getChanges(): FlashcardContentChanges | undefined;
 }
 
 export interface EditFlashcardAudio extends Partial<FlashcardContentAudioDto> {
     generateElement(): HTMLAudioElement;
-    generateBlob(): Blob;
+    getChanges(): FlashcardContentChanges | undefined;
 }
 
 export interface EditFlashcardVideo extends Partial<FlashcardContentVideoDto> {
     getSrc(): string;
+    getChanges(): FlashcardContentChanges | undefined;
+}
+
+export interface FlashcardChanges {
+    get flashcard(): RecursivePartial<FlashcardDto>;
+    get files(): File[];
+}
+
+export interface FlashcardContentChanges {
+    get content(): Partial<FlashcardContentDto>;
+    get files(): File[];
 }
 
 // =================================================================================================
 // ViewModel implementations
 // =================================================================================================
 export class EditFlashcardDeckImpl implements EditFlashcardDeck {
-    id: string = "unknown";
-    name: string = "unknown";
-    flashcards: EditFlashcard[] = [];
+    tracker: ChangeTracker = new ChangeTracker();
+
+    get id(): string { return this.tracker.get(this, 'id'); }
+    set id(value: string) { this.tracker.set(this, 'id', value); }
+
+    get name(): string { return this.tracker.get(this, 'name'); }
+    set name(value: string) { this.tracker.set(this, 'name', value); }
+
+    get flashcards(): EditFlashcard[] { return this.tracker.get(this, 'flashcards'); }
+    set flashcards(value: EditFlashcard[]) { this.tracker.set(this, 'flashcards', value); }
 
     static createFromDto(dto: FlashcardDeckDto): EditFlashcardDeckImpl {
         var deck = new EditFlashcardDeckImpl();
         deck.id = dto.id;
         deck.name = dto.name;
-        //deck._flashcards = dto.map(EditFlashcardImpl.createFromDto);
+        deck.flashcards = [];
         return deck;
+    }
+
+    getAllChanges(): Partial<FlashcardDeckDto> | undefined {
+        return this.tracker.getAllChanges({ id: this.id });
     }
 }
 
 export class EditFlashcardLanguageImpl implements EditFlashcardLanguage {
-    id: string = "unknown";
-    name: string = "unknown";
-    abbreviation: string = "unknown";
+    tracker: ChangeTracker = new ChangeTracker();
+
+    get id(): string { return this.tracker.get(this, 'id'); }
+    set id(value: string) { this.tracker.set(this, 'id', value); }
+
+    get name(): string { return this.tracker.get(this, 'name'); }
+    set name(value: string) { this.tracker.set(this, 'name', value); }
+
+    get abbreviation(): string { return this.tracker.get(this, 'abbreviation'); }
+    set abbreviation(value: string) { this.tracker.set(this, 'abbreviation', value); }
 
     static createFromDto(dto: FlashcardLanguageDto): EditFlashcardLanguageImpl {
         var language = new EditFlashcardLanguageImpl();
@@ -73,12 +112,20 @@ export class EditFlashcardLanguageImpl implements EditFlashcardLanguage {
         language.abbreviation = dto.abbreviation;
         return language;
     }
+
+    getAllChanges(): Partial<FlashcardLanguageDto> | undefined {
+        return this.tracker.getAllChanges();
+    }
 }
 
 export class EditFlashcardImpl implements EditFlashcard {
     id: string = "unknown";
-    leftContentType: "text" | "image" | "audio" | "video" = "text";
-    rightContentType: "text" | "image" | "audio" | "video" = "text";
+
+    frontContent?: FlashcardContentDto | undefined;
+    backContent?: FlashcardContentDto | undefined;
+
+    leftContentType: FlashcardContentTypes = "text";
+    rightContentType: FlashcardContentTypes = "text";
 
     leftTextContent?: EditFlashcardTextImpl;
     rightTextContent?: EditFlashcardTextImpl;
@@ -107,20 +154,22 @@ export class EditFlashcardImpl implements EditFlashcard {
     public static createFromDto(dto: FlashcardDto): EditFlashcardImpl {
         var flashcard = new EditFlashcardImpl();
         flashcard.id = dto.id;
+        flashcard.frontContent = dto.frontContent;
+        flashcard.backContent = dto.backContent;
 
-        switch(dto.frontContent.type) {
+        switch (dto.frontContent.type) {
             case "audio":
                 flashcard.leftContentType = "audio";
                 flashcard.leftAudioContent = EditFlashcardAudioImpl.createFromDto(<FlashcardContentAudioDto>dto.frontContent);
                 break;
-            case "text": 
+            case "text":
                 flashcard.leftContentType = "text";
                 flashcard.leftTextContent = EditFlashcardTextImpl.createFromDto(<FlashcardContentTextDto>dto.frontContent);
                 break;
             case "image":
                 flashcard.leftContentType = "image";
                 flashcard.leftImageContent = EditFlashcardImageImpl.createFromDto(<FlashcardContentImageDto>dto.frontContent);
-                break; 
+                break;
             case "video":
                 flashcard.leftContentType = "video";
                 flashcard.leftVideoContent = EditFlashcardVideoImpl.createFromDto(<FlashcardContentVideoDto>dto.frontContent);
@@ -132,7 +181,7 @@ export class EditFlashcardImpl implements EditFlashcard {
                 flashcard.rightContentType = "audio";
                 flashcard.rightAudioContent = EditFlashcardAudioImpl.createFromDto(<FlashcardContentAudioDto>dto.backContent);
                 break;
-            case "text": 
+            case "text":
                 flashcard.rightContentType = "text";
                 flashcard.rightTextContent = EditFlashcardTextImpl.createFromDto(<FlashcardContentTextDto>dto.backContent);
                 break;
@@ -148,60 +197,123 @@ export class EditFlashcardImpl implements EditFlashcard {
 
         return flashcard;
     }
+
+    getAllChanges(): FlashcardChanges | undefined {
+        // Collect content changes 
+        let leftChanges = undefined;
+        let rightChanges = undefined;
+
+        switch (this.leftContentType) {
+            case "audio":
+                leftChanges = this.leftAudioContent!.getChanges();
+                break;
+            case "text":
+                leftChanges = this.leftTextContent!.getChanges();
+                break;
+            case "image":
+                leftChanges = this.leftImageContent!.getChanges();
+                break;
+            case "video":
+                leftChanges = this.leftVideoContent!.getChanges();
+                break;
+        }
+
+        switch (this.rightContentType) {
+            case "audio":
+                rightChanges = this.rightAudioContent!.getChanges();
+                break;
+            case "text":
+                rightChanges = this.rightTextContent!.getChanges();
+                break;
+            case "image":
+                rightChanges = this.rightImageContent!.getChanges();
+                break;
+            case "video":
+                rightChanges = this.rightVideoContent!.getChanges();
+                break;
+        }
+
+        if (!leftChanges && !rightChanges)
+            return undefined;
+
+        return {
+            flashcard: {
+                id: this.id,
+                frontContent: leftChanges?.content,
+                backContent: rightChanges?.content
+            },
+            files: [...(leftChanges?.files ?? []), ...(rightChanges?.files ?? [])]
+        };
+    }
 }
 
 export class EditFlashcardTextImpl implements EditFlashcardText {
-    _text: string = "";
-    _languageId?: string = undefined;
+    tracker: ChangeTracker = new ChangeTracker();
 
-    id: string = "unknown"; 
-    isDirty: boolean = false;
+    get id(): string { return this.tracker.get(this, 'id'); }
+    set id(value: string) { this.tracker.set(this, 'id', value); }
 
-    constructor(textValue: string) {
-        this._text = textValue;
+    get text(): string { return this.tracker.get(this, 'text'); }
+    set text(value: string) { this.tracker.set(this, 'text', value); }
+
+    get languageId(): string | undefined { return this.tracker.get(this, 'languageId'); }
+    set languageId(value: string | undefined) { this.tracker.set(this, 'languageId', value); }
+
+    getChanges(): FlashcardContentChanges | undefined {
+        let changes = this.tracker.getAllChanges({ id: this.id, type: "text" });
+        
+        if (!changes)
+            return undefined;
+
+        return {
+            content: changes,
+            files: []
+        };
     }
 
-    set text(value: string) {
-        if (this._text !== value) {
-            this._text = value;
-            this.isDirty = true;
-        }
-    }
-
-    get text(): string {
-        return this._text;
-    }
-
-    set languageId(value: string | undefined) {
-        if (this._languageId !== value) {
-            this._languageId = value;
-            this.isDirty = true;
-        }
-    }
-
-    get languageId(): string | undefined {
-        return this._languageId;
+    static create(): EditFlashcardTextImpl {
+        return new EditFlashcardTextImpl();
     }
 
     static createFromDto(dto: FlashcardContentTextDto): EditFlashcardTextImpl {
-        var text = new EditFlashcardTextImpl(dto.text);
+        var text = new EditFlashcardTextImpl();
         text.id = dto.id;
+        text.text = dto.text;
         text.languageId = dto.languageId;
         return text;
     }
-} 
+}
 
 export class EditFlashcardImageImpl implements EditFlashcardImage {
     id: string = "unknown";
     imageUrl?: string;
-    imageData?: string;
+    imageFile?: File;
 
     getSrc(): string {
-        return this.imageUrl ?? this.imageData ?? "";
+        return this.imageUrl ?? URL.createObjectURL(this.imageFile!) ?? "";
+    }
+
+    generateBlob(): Blob {
+        return this.imageFile!;
+    }
+
+    getChanges(): FlashcardContentChanges | undefined {
+        if (!this.imageFile)
+            return undefined;
+
+        return {
+            content: {
+                id: this.id,
+                type: "image-upload",
+                imageFileName: this.imageFile.name
+            } as FlashcardContentUploadImageDto,
+            files: [this.imageFile]
+        };
     }
 
     static createFromFile(file: File): EditFlashcardImageImpl {
         var image = new EditFlashcardImageImpl();
+        image.imageFile = file;
         image.imageUrl = URL.createObjectURL(file);
         return image;
     }
@@ -218,7 +330,6 @@ export class EditFlashcardImageImpl implements EditFlashcardImage {
         image.imageUrl = dto.imageUrl;
         return image;
     }
-
 }
 
 export class EditFlashcardAudioImpl {
@@ -228,7 +339,7 @@ export class EditFlashcardAudioImpl {
 }
 
 export class UrlAudioContent implements EditFlashcardAudio {
-    constructor(private url: string) {}
+    constructor(private url: string) { }
 
     get type(): string {
         return 'url';
@@ -240,13 +351,13 @@ export class UrlAudioContent implements EditFlashcardAudio {
         return audioElement;
     }
 
-    generateBlob(): Blob {
-        return new Blob();
+    getChanges(): FlashcardContentChanges | undefined {
+        return undefined;
     }
 }
 
 export class BlobAudioContent implements EditFlashcardAudio {
-    constructor(private blob: Blob) {}
+    constructor(private fileName: string, private blob: Blob) { }
 
     get type(): string {
         return 'blob';
@@ -258,13 +369,21 @@ export class BlobAudioContent implements EditFlashcardAudio {
         return audioElement;
     }
 
-    generateBlob(): Blob {
-        return this.blob;
+    getChanges(): FlashcardContentChanges | undefined {
+        return {
+            content: {
+                id: "new-id",
+                type: "audio-upload",
+                audioFileName: this.fileName,
+                languageId: "langVertex1"
+            } as FlashcardContentUploadAudioDto,
+            files: [new File([this.blob], this.fileName)]
+        };
     }
 }
 
 export class FileAudioContent implements EditFlashcardAudio {
-    constructor(private file: File) {}
+    constructor(private file: File) { }
 
     get type(): string {
         return 'file';
@@ -280,8 +399,16 @@ export class FileAudioContent implements EditFlashcardAudio {
         return audioElement;
     }
 
-    generateBlob(): Blob {
-        return this.file;
+    getChanges(): FlashcardContentChanges | undefined {
+        return {
+            content: {
+                id: "new-id",
+                type: "audio-upload",
+                languageId: "langVertex1",
+                audioFileName: this.file.name
+            } as FlashcardContentUploadAudioDto,
+            files: [this.file]
+        };
     }
 
     static isInstanceOf(obj: any) {
@@ -292,9 +419,25 @@ export class FileAudioContent implements EditFlashcardAudio {
 export class EditFlashcardVideoImpl implements EditFlashcardVideo {
     id: string = "unknown";
     videoUrl?: string;
+    videoFile?: File;
 
     getSrc(): string {
         return this.videoUrl ?? "";
+    }
+
+    getChanges(): FlashcardContentChanges | undefined {
+        if (!this.videoFile)
+            return undefined; 
+
+        return {
+            content: {
+                id: this.id,
+                type: "video-upload",
+                languageId: "langVertex1",
+                videoFileName: this.videoFile.name
+            } as FlashcardContentUploadVideoDto,
+            files: [this.videoFile]
+        };
     }
 
     static createFromDto(dto: FlashcardContentVideoDto): EditFlashcardVideoImpl {
@@ -307,6 +450,44 @@ export class EditFlashcardVideoImpl implements EditFlashcardVideo {
     static createFromFile(file: File): EditFlashcardVideoImpl {
         var video = new EditFlashcardVideoImpl();
         video.videoUrl = URL.createObjectURL(file);
+        video.videoFile = file;
         return video;
+    }
+}
+
+export class ChangeTracker {
+    data: { [key: string]: { originalValue: any, currentValue: any } } = {};
+
+    get<T>(obj: any, key: string): T {
+        if (!this.data.hasOwnProperty(key))
+            throw new Error(`Key ${key} not found in data`);
+
+        return this.data[key].currentValue;
+    }
+
+    set<T>(obj: any, key: string, value: T): void {
+        if (!this.data.hasOwnProperty(key)) {
+            this.data[key] = {
+                originalValue: value,
+                currentValue: value
+            };
+        }
+        else {
+            this.data[key].currentValue = value;
+        }
+    }
+
+    getAllChanges<T>(init?: Partial<T>): Partial<T> | undefined {
+        let hasChanges = false;
+        let buffer = init ? { ...init } : {} as Partial<T>;
+
+        for (let key in this.data) {
+            let isDirty = this.data[key].currentValue !== this.data[key].originalValue;
+            if (isDirty) {
+                hasChanges = true;
+                (buffer as any)[key] = this.data[key].currentValue;
+            }
+        }
+        return hasChanges ? buffer : undefined;
     }
 }

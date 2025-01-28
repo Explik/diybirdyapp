@@ -21,7 +21,7 @@ export class AudioRecordingService {
 
           this.mediaRecorder.onstop = () => {
             const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-            resolve(new BlobAudioContent(audioBlob));
+            resolve(new BlobAudioContent('recording.webm', audioBlob));
           };
 
           this.mediaRecorder.start();

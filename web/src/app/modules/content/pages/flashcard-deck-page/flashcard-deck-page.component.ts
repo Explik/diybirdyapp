@@ -7,7 +7,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FlashcardReviewComponent } from "../../components/flashcard-review/flashcard-review.component";
 import { CommonModule } from '@angular/common';
 import { FlashcardReviewContainerComponent } from '../../components/flashcard-review-container/flashcard-review-container.component';
-import { EditFlashcard, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
+import { EditFlashcard, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 
 @Component({
   selector: 'app-flashcard-deck-page',
@@ -17,35 +17,27 @@ import { EditFlashcard, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardL
   styleUrl: './flashcard-deck-page.component.css'
 })
 export class FlashcardDeckPageComponent implements OnInit {
-  originalName?: string = undefined;
-  originalFlashcards: EditFlashcard[] = []; 
-  flashcardDeckId?: string = undefined;
-  name?: string = undefined;
+  flashcardDeck?: EditFlashcardDeckImpl;
   flashcards: EditFlashcardImpl[] = [];
   flashcardLanguages: EditFlashcardLanguageImpl[] = [];
 
   constructor(
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private router: Router,
-    private service: FlashcardService) {}
+    private service: FlashcardService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      this.flashcardDeckId = id ?? undefined;
-      
+
       if (id) {
         this.service.getFlashcardDeck(id).subscribe(data => {
-          this.name = data.name;
-          this.originalName = data.name;
+          this.flashcardDeck = data;
         });
       }
 
       this.service.getFlashcards(id).subscribe(data => {
         this.flashcards = data;
-  
-        // TODO Use proper deep copy
-        this.originalFlashcards = JSON.parse(JSON.stringify(data));
       });
     });
 
@@ -56,62 +48,61 @@ export class FlashcardDeckPageComponent implements OnInit {
 
   // TODO Add support for language selection
   addFlashcard() {
-    const flashcard = { 
-      deckId: this.flashcardDeckId,
+    if (!this.flashcardDeck)
+      return;
+
+    const flashcard = {
+      deckId: this.flashcardDeck!.id,
       leftLanguage: { id: "langVertex1" },
       rightLanguage: { id: "langVertex2" }
     };
-    
+
     this.service.createFlashcard(flashcard).subscribe(data => {
-      //this.flashcards = [...this.flashcards, data];
+      this.flashcards = [...this.flashcards, data];
     });
   }
 
   saveFlashcards() {
-    const buffer = [];
-
-    if (this.flashcardDeckId && this.originalName != this.name) {
-      buffer.push(this.service.updateFlashcardDeck({ id: this.flashcardDeckId, name: this.name }));
+    const flashcardDeckChanges = this.flashcardDeck?.getAllChanges();
+    if (flashcardDeckChanges) {
+      this.service.updateFlashcardDeck(flashcardDeckChanges).subscribe(data => {
+        console.log("Flashcard deck updated");
+        console.log(data);
+      }); 
     }
 
-    const maxLength = Math.max(this.originalFlashcards.length, this.flashcards.length);
-    for(let i = 0; i < maxLength; i++) {
-      const originalFlashcard = this.originalFlashcards[i];
-      const currentFlashcard = this.flashcards[i];
+    this.flashcards.forEach(flashcard => {
+      const changes = flashcard.getAllChanges();
+      if (!changes)
+        return;
 
-      // TODO Add proper deep equal
-      if (JSON.stringify(originalFlashcard) == JSON.stringify(currentFlashcard))
-        continue;
-
-      buffer.push(this.service.updateFlashcard(currentFlashcard));
-    }
-
-    zip(...buffer).subscribe(data => {
-      this.originalName = this.name;
-      this.originalFlashcards = JSON.parse(JSON.stringify(this.flashcards));
+        this.service.updateFlashcard(flashcard).subscribe(data => {
+          console.log("Flashcard updated");
+          console.log(data);
+      });
     });
   }
 
   selectFlashcards() {
-    this.service.selectFlashcardDeck(this.flashcardDeckId!).subscribe(data => {
+    this.service.selectFlashcardDeck(this.flashcardDeck!.id).subscribe(data => {
       this.router.navigate(['/session/' + data.id]);
     });
   }
 
   reviewFlashcards() {
-    this.service.reviewFlashcardDeck(this.flashcardDeckId!).subscribe(data => {
+    this.service.reviewFlashcardDeck(this.flashcardDeck!.id).subscribe(data => {
       this.router.navigate(['/session/' + data.id]);
     });
   }
 
   writeFlashcards() {
-    this.service.writeFlashcardDeck(this.flashcardDeckId!).subscribe(data => {
+    this.service.writeFlashcardDeck(this.flashcardDeck!.id).subscribe(data => {
       this.router.navigate(['/session/' + data.id]);
     });
   }
 
   learnFlashcards() {
-    this.service.learnFlashcardDeck(this.flashcardDeckId!).subscribe(data => {
+    this.service.learnFlashcardDeck(this.flashcardDeck!.id).subscribe(data => {
       this.router.navigate(['/session/' + data.id]);
     });
   }
