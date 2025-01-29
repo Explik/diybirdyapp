@@ -55,6 +55,18 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     @Override
+    public void delete(String id) {
+        var flashcardVertex = FlashcardVertex.findById(traversalSource, id);
+
+        // Remove from deck
+        var deck = flashcardVertex.getDeck();
+        if (deck != null)
+            deck.removeFlashcard(flashcardVertex);
+
+        // TODO Remove vertex and content vertices
+    }
+
+    @Override
     public FlashcardModel get(String id) {
         var vertex = FlashcardVertex.findById(traversalSource, id);
         return flashcardCardModelFactory.create(vertex);

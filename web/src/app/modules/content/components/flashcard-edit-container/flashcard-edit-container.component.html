@@ -1,78 +1,85 @@
 <div>
-    <div>
-      <label for="name">Name:</label>
-      <app-text-field [(ngModel)]="name" (rows)="1"></app-text-field>
-    </div>
-    <div>
-        <label for="leftLanguageSelect">Choose a language:</label>
-        <select id="leftLanguageSelect" (change)="handleUpdateLeftLanguage($event)">
-          <option *ngFor="let language of flashcardLanguages" [value]="language.id">
-            {{ language.name }}
-          </option>
-        </select>
+  <div>
+    <label for="name">Name:</label>
+    <app-text-field [(ngModel)]="name" (rows)="1"></app-text-field>
+  </div>
+  <div>
+    <label for="leftLanguageSelect">Choose a language:</label>
+    <select id="leftLanguageSelect" (change)="handleUpdateLeftLanguage($event)">
+      <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+        {{ language.name }}
+      </option>
+    </select>
 
-        <label for="rightLanguageSelect">Choose a language:</label>
-        <select id="rightLanguageSelect" (change)="handleUpdateRightLanguage($event)">
-          <option *ngFor="let language of flashcardLanguages" [value]="language.id">
-            {{ language.name }}
-          </option>
-        </select>
-    </div>
+    <label for="rightLanguageSelect">Choose a language:</label>
+    <select id="rightLanguageSelect" (change)="handleUpdateRightLanguage($event)">
+      <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+        {{ language.name }}
+      </option>
+    </select>
 
-  <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list" [ngClass]="{'dragging': currentDragIndex !== undefined}">
+
+  </div>
+
+  <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list"
+    [ngClass]="{'dragging': currentDragIndex !== undefined}">
     @for(flashcard of flashcards; track flashcard; let i = $index) {
-      <app-flashcard-edit cdkDrag 
-        (cdkDragStarted)="handleDragStart(i)"
-        (cdkDragEnded)="handleDragEnd()"
-        class="flashcard-item block mb-4">
-        <ng-container header>
-            <span class="flashcard-item-number font-bold mr-8">#{{i + 1}}</span>
-            <select id="leftContentTypeSelect" [(ngModel)]="flashcard.leftContentType" class="mr-8">
-              <option value="text">Text</option>
-              <option value="audio">Audio</option>
-              <option value="image">Image</option>
-              <option value="video">Video</option>
-            </select>
-            <select id="rightContentTypeSelect" [(ngModel)]="flashcard.rightContentType">
-              <option value="text">Text</option>
-              <option value="audio">Audio</option>
-              <option value="image">Image</option>
-              <option value="video">Video</option>
-            </select>
-        </ng-container>
+    <app-flashcard-edit *ngIf="flashcard.state !== 'deleted'" cdkDrag (cdkDragStarted)="handleDragStart(i)" (cdkDragEnded)="handleDragEnd()"
+      class="flashcard-item block mb-4">
+      <ng-container header>
+        <div class="inline-block">
+          <span class="flashcard-item-number font-bold mr-8">#{{flashcard.deckOrder}}</span>
+          <select id="leftContentTypeSelect" [(ngModel)]="flashcard.leftContentType" class="mr-8">
+            <option value="text">Text</option>
+            <option value="audio">Audio</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+          <select id="rightContentTypeSelect" [(ngModel)]="flashcard.rightContentType">
+            <option value="text">Text</option>
+            <option value="audio">Audio</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
 
-        <ng-container *ngIf="flashcard.leftContentType === 'text'" left>
-          <app-text-input [(textData)]="flashcard.leftTextContent!" (rows)="1"></app-text-input>
-        </ng-container>
-        <ng-content *ngIf="flashcard.leftContentType === 'audio'" left>
-          <app-audio-input [(audioData)]="flashcard.leftAudioContent"></app-audio-input>
-        </ng-content>
-        <ng-content *ngIf="flashcard.leftContentType === 'image'" left>
-          <app-image-input [(imageData)]="flashcard.leftImageContent"></app-image-input>
-        </ng-content>
-        <ng-content *ngIf="flashcard.leftContentType === 'video'" left>
-          <app-video-input [(videoData)]="flashcard.leftVideoContent"></app-video-input>
-        </ng-content>
+        <div class="inline-block float-right">
+          <button class="btn btn-primary" (click)="handleDeleteFlashcard(flashcard)">Delete</button>
+        </div>
+      </ng-container>
 
-        <ng-container *ngIf="flashcard.rightContentType === 'text'" right>
-          <app-text-input [(textData)]="flashcard.rightTextContent!" (rows)="1"></app-text-input>
-        </ng-container>
-        <ng-container *ngIf="flashcard.rightContentType === 'audio'" right>
-          <app-audio-input [(audioData)]="flashcard.rightAudioContent"></app-audio-input>
-        </ng-container>
-        <ng-container *ngIf="flashcard.rightContentType === 'image'" right>
-          <app-image-input [(imageData)]="flashcard.rightImageContent"></app-image-input>
-        </ng-container>
-        <ng-container *ngIf="flashcard.rightContentType === 'video'" right>
-          <app-video-input [(videoData)]="flashcard.rightVideoContent"></app-video-input>
-        </ng-container>
-        
-      </app-flashcard-edit>
+      <ng-container *ngIf="flashcard.leftContentType === 'text'" left>
+        <app-text-input [(textData)]="flashcard.leftTextContent!" (rows)="1"></app-text-input>
+      </ng-container>
+      <ng-content *ngIf="flashcard.leftContentType === 'audio'" left>
+        <app-audio-input [(audioData)]="flashcard.leftAudioContent"></app-audio-input>
+      </ng-content>
+      <ng-content *ngIf="flashcard.leftContentType === 'image'" left>
+        <app-image-input [(imageData)]="flashcard.leftImageContent"></app-image-input>
+      </ng-content>
+      <ng-content *ngIf="flashcard.leftContentType === 'video'" left>
+        <app-video-input [(videoData)]="flashcard.leftVideoContent"></app-video-input>
+      </ng-content>
+
+      <ng-container *ngIf="flashcard.rightContentType === 'text'" right>
+        <app-text-input [(textData)]="flashcard.rightTextContent!" (rows)="1"></app-text-input>
+      </ng-container>
+      <ng-container *ngIf="flashcard.rightContentType === 'audio'" right>
+        <app-audio-input [(audioData)]="flashcard.rightAudioContent"></app-audio-input>
+      </ng-container>
+      <ng-container *ngIf="flashcard.rightContentType === 'image'" right>
+        <app-image-input [(imageData)]="flashcard.rightImageContent"></app-image-input>
+      </ng-container>
+      <ng-container *ngIf="flashcard.rightContentType === 'video'" right>
+        <app-video-input [(videoData)]="flashcard.rightVideoContent"></app-video-input>
+      </ng-container>
+
+    </app-flashcard-edit>
     }
   </div>
 
-    <div>
-        <app-text-button [label]="'＋ Add flashcard'" (click)="handleAddFlashcard()"></app-text-button>
-        <app-text-button [label]="'Save changes'" (click)="handleSaveFlashcards()" class="float-right"></app-text-button>
-    </div>
+  <div>
+    <app-text-button [label]="'＋ Add flashcard'" (click)="handleAddFlashcard()"></app-text-button>
+    <app-text-button [label]="'Save changes'" (click)="handleSaveFlashcards()" class="float-right"></app-text-button>
+  </div>
 </div>

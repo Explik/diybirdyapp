@@ -49,11 +49,21 @@ export class FlashcardEditContainerComponent {
 
   handleRearrangeFlashcard(event: CdkDragDrop<Partial<EditFlashcardImpl>[]>): void {
     moveItemInArray(this.flashcards, event.previousIndex, event.currentIndex);
-    this.flashcards.forEach((flashcard, index) => flashcard.deckOrder = index + 1);
+    this.flashcards
+      .filter(s => s.state !== 'deleted')
+      .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
   }
 
   handleAddFlashcard() {
     this.addFlashcard?.emit();
+  }
+
+  handleDeleteFlashcard(flashcard: EditFlashcardImpl): void {
+    flashcard.state = 'deleted';
+
+    this.flashcards
+      .filter(s => s.state !== 'deleted')
+      .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
   }
 
   handleUpdateLeftLanguage(event: Event): void {

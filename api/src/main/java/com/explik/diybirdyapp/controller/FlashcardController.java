@@ -81,4 +81,9 @@ public class FlashcardController {
             .map(s -> outgoingMapper.map(s))
             .collect(Collectors.toList());
     }
+
+    @DeleteMapping("/flashcard/{id}")
+    public void delete(@PathVariable String id) {
+        service.delete(id);
+    }
 }
