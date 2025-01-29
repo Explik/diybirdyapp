@@ -43,6 +43,14 @@ public class FlashcardVertex extends ContentVertex {
         return VertexHelper.getIngoingModel(this, FlashcardDeckVertex.EDGE_FLASHCARD, FlashcardDeckVertex::new);
     }
 
+    public Integer getDeckOrder() {
+        return VertexHelper.getIngoingProperty(this, FlashcardDeckVertex.EDGE_FLASHCARD, FlashcardDeckVertex.EDGE_FLASHCARD_PROPERTY_ORDER);
+    }
+
+    public void setDeckOrder(Integer order) {
+        VertexHelper.setIngoingProperty(this, FlashcardDeckVertex.EDGE_FLASHCARD, FlashcardDeckVertex.EDGE_FLASHCARD_PROPERTY_ORDER, order);
+    }
+
     public ContentVertex getLeftContent() {
         return VertexHelper.getOutgoingModel(this, EDGE_LEFT_CONTENT, VertexHelper::createContent);
     }

@@ -77,6 +77,7 @@ public class FlashcardController {
         var models = service.getAll(deckId);
 
         return models.stream()
+            .sorted(Comparator.comparingInt(FlashcardModel::getDeckOrder))
             .map(s -> outgoingMapper.map(s))
             .collect(Collectors.toList());
     }

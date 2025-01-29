@@ -47,6 +47,9 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
             var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
             flashcardDeckVertex.addFlashcard(flashcardVertex);
         }
+        if (flashcardModel.getDeckOrder() != null) {
+            flashcardVertex.setDeckOrder(flashcardModel.getDeckOrder());
+        }
 
         return flashcardCardModelFactory.create(flashcardVertex);
     }
@@ -82,6 +85,17 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var flashcardVertex = FlashcardVertex.findById(traversalSource, flashcardModel.getId());
         if (flashcardVertex == null)
             throw new IllegalArgumentException("Flashcard not found");
+
+        // Alter deck relation
+        if (flashcardModel.getDeckId() != null) {
+            flashcardVertex.getDeck().removeFlashcard(flashcardVertex);
+
+            var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
+            flashcardDeckVertex.addFlashcard(flashcardVertex);
+        }
+        if (flashcardModel.getDeckOrder() != null) {
+            flashcardVertex.setDeckOrder(flashcardModel.getDeckOrder());
+        }
 
         // Alter left content
         var leftModel = flashcardModel.getFrontContent();

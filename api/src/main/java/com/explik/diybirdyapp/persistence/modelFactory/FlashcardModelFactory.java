@@ -15,6 +15,7 @@ public class FlashcardModelFactory implements ModelFactory<FlashcardModel, Flash
         FlashcardModel model = new FlashcardModel();
         model.setId(vertex.getId());
         model.setDeckId(vertex.getDeck().getId());
+        model.setDeckOrder(vertex.getDeckOrder());
 
         switch (leftContent.getLabel()) {
             case AudioContentVertex.LABEL -> model.setFrontContent(createAudioContent((AudioContentVertex) leftContent));

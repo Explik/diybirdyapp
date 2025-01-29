@@ -1,10 +1,9 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
-
 public class FlashcardDto {
     private String id;
     private String deckId;
+    private Integer deckOrder;
 
     private FlashcardContentDto frontContent;
     private FlashcardContentDto backContent;
@@ -19,6 +18,14 @@ public class FlashcardDto {
 
     public String getDeckId() {
         return deckId;
+    }
+
+    public Integer getDeckOrder() {
+        return deckOrder;
+    }
+
+    public void setDeckOrder(Integer deckOrder) {
+        this.deckOrder = deckOrder;
     }
 
     public void setDeckId(String deckId) {

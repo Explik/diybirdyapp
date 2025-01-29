@@ -86,4 +86,40 @@ public class VertexHelper {
             .map(v -> mapper.apply(traversalSource, v))
             .toList();
     }
+
+    public static <T> T getOutgoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
+        var traversalSource = vertex.getUnderlyingSource();
+        var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
+                .outE(edgeLabel)
+                .values(property)
+                .next();
+        return (T)edgeProperty;
+    }
+
+    public static <T> T getIngoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
+        var traversalSource = vertex.getUnderlyingSource();
+        var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
+                .inE(edgeLabel)
+                .values(property)
+                .next();
+        return (T)edgeProperty;
+    }
+
+    public static <T> void setOutgoingProperty(AbstractVertex vertex, String edgeLabel, String property, T propertyValue) {
+        var traversalSource = vertex.getUnderlyingSource();
+        traversalSource.V(vertex.getUnderlyingVertex())
+                .outE(edgeLabel)
+                .property(property, propertyValue)
+                .iterate();
+        vertex.reload();
+    }
+
+    public static <T> void setIngoingProperty(AbstractVertex vertex, String edgeLabel, String property, T propertyValue) {
+        var traversalSource = vertex.getUnderlyingSource();
+        traversalSource.V(vertex.getUnderlyingVertex())
+                .inE(edgeLabel)
+                .property(property, propertyValue)
+                .iterate();
+        vertex.reload();
+    }
 }

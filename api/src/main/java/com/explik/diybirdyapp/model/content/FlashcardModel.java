@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.model.content;
 public class FlashcardModel {
     private String id;
     private String deckId;
+    private Integer deckOrder;
 
     private FlashcardContentModel frontContent;
     private FlashcardContentModel backContent;
@@ -30,6 +31,14 @@ public class FlashcardModel {
 
     public void setDeckId(String deckId) {
         this.deckId = deckId;
+    }
+
+    public Integer getDeckOrder() {
+        return deckOrder;
+    }
+
+    public void setDeckOrder(Integer deckOrder) {
+        this.deckOrder = deckOrder;
     }
 
     public FlashcardContentModel getFrontContent() {

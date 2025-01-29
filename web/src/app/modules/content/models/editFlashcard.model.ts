@@ -15,9 +15,12 @@ export interface EditFlashcardLanguage extends Partial<FlashcardLanguageDto> {
 
 }
 
+export type FlashcardStates = "unchanged" | "added" | "updated" | "deleted";
 export type FlashcardContentTypes = "text" | "image" | "audio" | "video";
 
 export interface EditFlashcard extends Partial<FlashcardDto> {
+    get state(): FlashcardStates;
+
     leftContentType: FlashcardContentTypes;
     rightContentType: FlashcardContentTypes;
 
@@ -56,6 +59,7 @@ export interface EditFlashcardVideo extends Partial<FlashcardContentVideoDto> {
 }
 
 export interface FlashcardChanges {
+    get state(): FlashcardStates;
     get flashcard(): RecursivePartial<FlashcardDto>;
     get files(): File[];
 }
@@ -119,7 +123,18 @@ export class EditFlashcardLanguageImpl implements EditFlashcardLanguage {
 }
 
 export class EditFlashcardImpl implements EditFlashcard {
+    _deckOrder: number | undefined;
+    
     id: string = "unknown";
+    state: FlashcardStates = "unchanged";
+
+    get deckOrder(): number | undefined { return this._deckOrder; }
+    set deckOrder(value: number | undefined) { 
+        if (this._deckOrder !== value && this.state === "unchanged")
+            this.state = "updated"; 
+        
+        this._deckOrder = value;    
+    }
 
     frontContent?: FlashcardContentDto | undefined;
     backContent?: FlashcardContentDto | undefined;
@@ -154,6 +169,7 @@ export class EditFlashcardImpl implements EditFlashcard {
     public static createFromDto(dto: FlashcardDto): EditFlashcardImpl {
         var flashcard = new EditFlashcardImpl();
         flashcard.id = dto.id;
+        flashcard._deckOrder = dto.deckOrder;
         flashcard.frontContent = dto.frontContent;
         flashcard.backContent = dto.backContent;
 
@@ -233,12 +249,14 @@ export class EditFlashcardImpl implements EditFlashcard {
                 break;
         }
 
-        if (!leftChanges && !rightChanges)
+        if (this.state === "unchanged" && !leftChanges && !rightChanges)
             return undefined;
 
         return {
+            state: this.state,
             flashcard: {
                 id: this.id,
+                deckOrder: this.deckOrder,
                 frontContent: leftChanges?.content,
                 backContent: rightChanges?.content
             },

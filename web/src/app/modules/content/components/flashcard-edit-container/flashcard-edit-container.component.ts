@@ -49,7 +49,7 @@ export class FlashcardEditContainerComponent {
 
   handleRearrangeFlashcard(event: CdkDragDrop<Partial<EditFlashcardImpl>[]>): void {
     moveItemInArray(this.flashcards, event.previousIndex, event.currentIndex);
-    // TODO persist change of order
+    this.flashcards.forEach((flashcard, index) => flashcard.deckOrder = index + 1);
   }
 
   handleAddFlashcard() {
