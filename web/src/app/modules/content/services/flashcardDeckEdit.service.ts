@@ -25,7 +25,7 @@ export class FlashcardDeckEditService {
     }
 
     addFlashcard() {
-        this.currentFlashcards.push(EditFlashcardImpl.create());
+        this.currentFlashcards.push(EditFlashcardImpl.createDefault());
     }
 
     duplicateFlashcard(id: string) {

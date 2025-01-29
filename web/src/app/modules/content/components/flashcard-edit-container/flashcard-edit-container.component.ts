@@ -34,7 +34,6 @@ export class FlashcardEditContainerComponent {
   @Input() flashcards: EditFlashcardImpl[] = [];
   @Input() flashcardLanguages: EditFlashcardLanguageImpl[] = [];
   
-  @Output() addFlashcard = new EventEmitter<void>();
   @Output() saveFlashcards = new EventEmitter<void>();
 
   currentDragIndex: number | undefined = undefined;
@@ -55,11 +54,20 @@ export class FlashcardEditContainerComponent {
   }
 
   handleAddFlashcard() {
-    this.addFlashcard?.emit();
+    var newFlashcard = EditFlashcardImpl.createDefault();
+    newFlashcard.state = 'added';
+    newFlashcard.deckId =  this.flashcards[0].deckId;
+    newFlashcard.deckOrder = this.flashcards.length + 1;
+    newFlashcard.leftTextContent!.languageId = this.flashcardLanguages[0].id;
+    newFlashcard.rightTextContent!.languageId = this.flashcardLanguages[1].id;
+    this.flashcards.push(newFlashcard);
   }
 
   handleDeleteFlashcard(flashcard: EditFlashcardImpl): void {
-    flashcard.state = 'deleted';
+    if (flashcard.state === 'added') {
+      this.flashcards = this.flashcards.filter(s => s !== flashcard);
+    }
+    else flashcard.state = 'deleted';
 
     this.flashcards
       .filter(s => s.state !== 'deleted')

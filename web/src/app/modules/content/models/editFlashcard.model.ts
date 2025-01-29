@@ -128,6 +128,7 @@ export class EditFlashcardImpl implements EditFlashcard {
     id: string = "unknown";
     state: FlashcardStates = "unchanged";
 
+    deckId?: string | undefined;
     get deckOrder(): number | undefined { return this._deckOrder; }
     set deckOrder(value: number | undefined) { 
         if (this._deckOrder !== value && this.state === "unchanged")
@@ -160,15 +161,23 @@ export class EditFlashcardImpl implements EditFlashcard {
         throw new Error("Not implemented");
     }
 
-    public static create(): EditFlashcardImpl {
+    public static createDefault(): EditFlashcardImpl {
         var flashcard = new EditFlashcardImpl();
-        // TODO add defaults
+        flashcard.id = "new-id";
+        flashcard._deckOrder = undefined;
+
+        flashcard.leftContentType = "text";
+        flashcard.rightContentType = "text";
+        flashcard.leftTextContent = EditFlashcardTextImpl.create();
+        flashcard.rightTextContent = EditFlashcardTextImpl.create();
+
         return flashcard;
     }
 
     public static createFromDto(dto: FlashcardDto): EditFlashcardImpl {
         var flashcard = new EditFlashcardImpl();
         flashcard.id = dto.id;
+        flashcard.deckId = dto.deckId;
         flashcard._deckOrder = dto.deckOrder;
         flashcard.frontContent = dto.frontContent;
         flashcard.backContent = dto.backContent;
@@ -256,6 +265,7 @@ export class EditFlashcardImpl implements EditFlashcard {
             state: this.state,
             flashcard: {
                 id: this.id,
+                deckId: this.state === 'added' ? this.deckId : undefined,
                 deckOrder: this.deckOrder,
                 frontContent: leftChanges?.content,
                 backContent: rightChanges?.content
@@ -290,7 +300,11 @@ export class EditFlashcardTextImpl implements EditFlashcardText {
     }
 
     static create(): EditFlashcardTextImpl {
-        return new EditFlashcardTextImpl();
+        var text = new EditFlashcardTextImpl();
+        text.id = "new-id";
+        text.text = "";
+        text.languageId = "";
+        return text;
     }
 
     static createFromDto(dto: FlashcardContentTextDto): EditFlashcardTextImpl {

@@ -38,10 +38,18 @@ export class FlashcardService {
         formData.append('files', file, file.name);
       }
 
-      // Send request
-      return this.http
-        .put<FlashcardDto>(this.flashcardBaseUrl + "/rich", formData)
-        .pipe(map(EditFlashcardImpl.createFromDto));
+      if (allChanges?.state === 'added') {
+        // Send request
+        return this.http
+          .post<FlashcardDto>(this.flashcardBaseUrl + "/rich", formData)
+          .pipe(map(EditFlashcardImpl.createFromDto));
+      }
+      else {
+        // Send request
+        return this.http
+          .put<FlashcardDto>(this.flashcardBaseUrl + "/rich", formData)
+          .pipe(map(EditFlashcardImpl.createFromDto));
+      }
     }
   }
 
