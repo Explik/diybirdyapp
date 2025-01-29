@@ -17,7 +17,8 @@ export class FlashcardReviewContainerComponent {
   currentIndex: number = 0;
   
   get currentFlashcard() {
-    return this.flashcards.length > 0 ? this.flashcards[this.currentIndex] : undefined;
+    var nonDeletedFlashcards = this.flashcards.filter(flashcard => flashcard.state !== 'deleted');
+    return nonDeletedFlashcards.length > 0 ? nonDeletedFlashcards[this.currentIndex] : undefined;
   }
 
   previousFlashcard() {
@@ -27,7 +28,8 @@ export class FlashcardReviewContainerComponent {
   }
 
   nextFlashcard() {
-    if (this.currentIndex < this.flashcards.length - 1) {
+    var nonDeletedFlashcards = this.flashcards.filter(flashcard => flashcard.state !== 'deleted');
+    if (this.currentIndex < nonDeletedFlashcards.length - 1) {
       this.currentIndex++;
     }
   }
