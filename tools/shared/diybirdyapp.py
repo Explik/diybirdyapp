@@ -20,6 +20,21 @@ flashcard_deck_controller = FlashcardDeckControllerApi(client)
 flashcard_api = FlashcardControllerApi(client)
 
 # Define functions 
+def get_languages(): 
+    # Fetch languages
+    languages = language_api.get_all()
+    return languages
+
+def get_language_by_abbrevation(abbreviation):
+    # Get a language by abbrievation
+    languages = language_api.get_all()
+    language = next((lang for lang in languages if lang.abbreviation == abbreviation), None)
+
+    if not language:
+        raise ValueError(f"Language with abbreviation {abbreviation} not found")
+
+    return language
+
 def get_language_by_name(name):
     # Get a language by name
     languages = language_api.get_all()
