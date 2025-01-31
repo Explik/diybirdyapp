@@ -24,7 +24,6 @@
         Learn flashcards
     </button>
 
-    <app-flashcard-edit-container [(name)]="flashcardDeck!.name" [flashcards]="flashcards" [flashcardLanguages]="flashcardLanguages"
-        (addFlashcard)="addFlashcard()" (saveFlashcards)="saveFlashcards()"></app-flashcard-edit-container>
+    <app-flashcard-edit-container [(name)]="flashcardDeck!.name" [flashcards]="flashcards" [flashcardLanguages]="flashcardLanguages" (saveFlashcards)="saveChanges()"></app-flashcard-edit-container>
 
 </div>

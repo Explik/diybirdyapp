@@ -46,23 +46,7 @@ export class FlashcardDeckPageComponent implements OnInit {
     });
   }
 
-  // TODO Add support for language selection
-  addFlashcard() {
-    if (!this.flashcardDeck)
-      return;
-
-    const flashcard = {
-      deckId: this.flashcardDeck!.id,
-      leftLanguage: { id: "langVertex1" },
-      rightLanguage: { id: "langVertex2" }
-    };
-
-    this.service.createFlashcard(flashcard).subscribe(data => {
-      this.flashcards = [...this.flashcards, data];
-    });
-  }
-
-  saveFlashcards() {
+  saveChanges() {
     const flashcardDeckChanges = this.flashcardDeck?.getAllChanges();
     if (flashcardDeckChanges) {
       this.service.updateFlashcardDeck(flashcardDeckChanges).subscribe(data => {
