@@ -39,6 +39,11 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
     @Override
     public FlashcardModel add(FlashcardModel flashcardModel) {
+        if (flashcardModel.getFrontContent() == null)
+            throw new IllegalArgumentException("Flashcard is missing front content");
+        if (flashcardModel.getBackContent() == null)
+            throw new IllegalArgumentException("Flashcard is missing back content");
+
         var leftContentVertex = createContent(flashcardModel.getFrontContent());
         var rightContentVertex = createContent(flashcardModel.getBackContent());
         var flashcardVertex = flashcardVertexFactory.create(traversalSource, new FlashcardVertexFactory.Options(UUID.randomUUID().toString(), leftContentVertex, rightContentVertex));

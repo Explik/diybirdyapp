@@ -1,0 +1,14 @@
+{
+  "name": "tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "generate-api-client": "openapi-generator-cli generate -i http://localhost:8080/v3/api-docs -g python -o ./shared/api_client --additional-properties=usePydanticModels=false"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openapitools/openapi-generator-cli": "^2.16.3"
+  }
+}
