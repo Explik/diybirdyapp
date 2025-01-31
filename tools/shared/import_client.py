@@ -54,6 +54,30 @@ def create_flashcard_deck(name, description):
 
     return deck
 
+def create_flashcard(deck, flashcard, file_paths = None):
+    # Manually create a FlashcardContentTextDto object as OpenAPI classes fail on serialization
+    if "id" not in flashcard: 
+        flashcard["id"] = str(random.randint(1, 1000000))
+    if "deckId" not in flashcard:
+        flashcard["deckId"] = deck.id
+
+    form_data = [
+        ("flashcard", (None, json.dumps(flashcard), "application/json"))
+    ]
+    for file_path in file_paths or []:
+        file_name = file_path.split("\\")[-1] 
+        form_data.append(("files", (file_name, open(file_path, "rb"), "application/octet-stream")))
+
+    response = requests.post("http://localhost:8080/flashcard/rich", files=form_data)
+
+    if response.status_code != 200:
+        raise Exception(f"Failed to create flashcard: {response.text}")
+    
+    flashcard_response = response.json()
+    print("Created flashcard: ", flashcard_response)
+
+    return flashcard_response
+
 def create_text_flashcard(deck, deck_order, front_language, back_language, front_text, back_text):
     id = str(random.randint(1, 1000000))
     deck_id = deck.id
