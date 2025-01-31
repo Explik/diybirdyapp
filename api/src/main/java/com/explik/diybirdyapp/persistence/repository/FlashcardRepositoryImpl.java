@@ -171,7 +171,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     private AudioContentVertex createAudioContent(FlashcardContentUploadAudioModel model) {
-        var url = "http://localhost:8080/file/" + model.getAudioFileName();
+        var url = model.getAudioFileName();
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
 
         return audioContentVertexFactory.create(
@@ -192,7 +192,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     private ImageContentVertex createImageContent(FlashcardContentUploadImageModel model) {
-        var url = "http://localhost:8080/file/" + model.getImageFileName();
+        var url = model.getImageFileName();
 
         return imageContentVertexFactory.create(
                 traversalSource,
@@ -234,7 +234,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     private VideoContentVertex createVideoContent(FlashcardContentUploadVideoModel model) {
-        var url = "http://localhost:8080/file/" + model.getVideoFileName();
+        var url = model.getVideoFileName();
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
 
         return videoContentVertexFactory.create(

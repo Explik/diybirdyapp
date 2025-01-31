@@ -1,6 +1,7 @@
 // =================================================================================================
 // ViewModel interfaces 
 
+import { environment } from "../../../../environments/environment";
 import { RecursivePartial } from "../../../shared/models/util.model";
 
 // =================================================================================================
@@ -322,7 +323,10 @@ export class EditFlashcardImageImpl implements EditFlashcardImage {
     imageFile?: File;
 
     getSrc(): string {
-        return this.imageUrl ?? URL.createObjectURL(this.imageFile!) ?? "";
+        if (this.imageUrl)
+            return this.imageUrl?.startsWith("http") ? this.imageUrl : environment.apiUrl + "/" + this.imageUrl
+
+        return URL.createObjectURL(this.imageFile!) ?? "";
     }
 
     generateBlob(): Blob {
@@ -379,7 +383,7 @@ export class UrlAudioContent implements EditFlashcardAudio {
 
     generateElement(): HTMLAudioElement {
         const audioElement = document.createElement('audio');
-        audioElement.src = this.url;
+        audioElement.src = this.url?.startsWith("http") ? this.url : environment.apiUrl + "/" + this.url;
         return audioElement;
     }
 
@@ -454,7 +458,10 @@ export class EditFlashcardVideoImpl implements EditFlashcardVideo {
     videoFile?: File;
 
     getSrc(): string {
-        return this.videoUrl ?? "";
+        if (this.videoUrl)
+            return this.videoUrl?.startsWith("http") ? this.videoUrl : environment.apiUrl + "/" + this.videoUrl;
+
+        return "";
     }
 
     getChanges(): FlashcardContentChanges | undefined {
