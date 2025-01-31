@@ -28,7 +28,7 @@ public class FileController {
     @Autowired
     BinaryStorageService storageService;
 
-    @PostMapping("/file/upload")
+    @PostMapping("upload")
     public ResponseEntity<FileUploadResultDto> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             var fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
@@ -36,16 +36,15 @@ public class FileController {
 
             storageService.set(newFileName, file.getBytes());
 
-            // TODO make configurable
             var result = new FileUploadResultDto();
-            result.setUrl("http://localhost:8080/file/" + newFileName);
+            result.setUrl(newFileName);
             return ResponseEntity.ok(result);
         } catch (IOException e) {
             throw new RuntimeException("File upload failed", e);
         }
     }
 
-    @GetMapping("/file/{filename}")
+    @GetMapping("{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         var fileContent = storageService.get(filename);
         var resource = new ByteArrayResource(fileContent);
