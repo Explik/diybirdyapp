@@ -1,7 +1,7 @@
 # Data Representation
 This document describes the data representation used for the Tinkerpop graph. 
 
-## Metadata
+## Concepts
 ### Language
 ```mermaid
 graph LR
@@ -13,7 +13,81 @@ Properties:
 - name: string
 - abbreviation: string
 
+### TextToSpeechConfig
+```mermaid
+graph LR
+Language(Language)
+TextToSpeechConfig(TextToSpeechConfig)
+
+TextToSpeechConfig--hasLanguage-->Language
+```
+
+Properties:
+- id: string
+- languageCode: string
+- voiceName: string
+
+Represents the configuration for Google Text-to-Speech API.
+
+### Word
+```mermaid
+graph LR
+V1(Word)
+V2(TextContent)
+V3(TextContent)
+V4(Language)
+V1--hasExample-->V2
+V1--hasExample-->V3
+V1--hasMainExample-->V3
+V1--hasLanguage-->V4
+```
+
+Properties:
+- id: string
+- value: string
+
+### Pronunciation
+```mermaid
+graph LR
+TextContent(TextContent)
+Pronunciation1(Pronunciation)
+Pronunciation2(Pronunciation)
+AudioContent1(AudioContent)
+AudioContent2(AudioContent)
+TextContent--hasPronunciation-->Pronunciation1
+TextContent--hasPronunciation-->Pronunciation2
+TextContent--hasMainPronunciation-->Pronunciation2
+Pronunciation1--hasAudioContent-->AudioContent1
+Pronunciation2--hasAudioContent-->AudioContent2
+```
+
+Properties:
+- id: string
+
+
 ## Content 
+### Audio content
+```mermaid
+graph LR
+V1(AudioContent)
+V2(Language)
+V1--hasLanguage-->V2
+```
+
+Properties:
+- id: string
+- url: string
+
+## Image content
+```mermaid
+graph LR
+V1(ImageContent)
+```
+
+Properties:
+- id: string
+- url: string
+
 ### Text content
 ```mermaid 
 graph LR
@@ -26,12 +100,24 @@ Properties:
 - id: string
 - text: string
 
-### Flashcard (with text content)
+### Video content
+```mermaid
+graph LR
+V1(VideoContent)
+V2(Language)
+V1--hasLanguage-->V2
+```
+
+Properties:
+- id: string
+- url: string
+
+### Flashcard
 ```mermaid
 graph LR
 V1(Flashcard)
 V2(TextContent)
-V3(TextContent)
+V3(ImageContent)
 
 V1--hasLeftContent-->V2
 V1--hasRightContent-->V3
@@ -54,6 +140,8 @@ Properties:
 - id: string
 - name: string
 - description: string
+
+Notes, hasFlashcard has a property called "order" which is an integer, which is used to sort the flashcards in the deck.
 
 ## Exercise
 ### General exercise 

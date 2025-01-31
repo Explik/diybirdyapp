@@ -1,7 +1,5 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
-import com.explik.diybirdyapp.model.ExerciseContentFlashcardModel;
-import com.explik.diybirdyapp.model.FlashcardModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -9,7 +7,11 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FlashcardVertex extends AbstractVertex implements IdentifiableVertex {
+public class FlashcardVertex extends ContentVertex {
+    public FlashcardVertex(AbstractVertex vertex) {
+        super(vertex.getUnderlyingSource(), vertex.getUnderlyingVertex());
+    }
+
     public FlashcardVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }
@@ -29,57 +31,40 @@ public class FlashcardVertex extends AbstractVertex implements IdentifiableVerte
         setProperty(PROPERTY_ID, id);
     }
 
+    @Override
+    public void makeStatic() {
+        super.makeStatic();
+
+        getLeftContent().makeStatic();
+        getRightContent().makeStatic();
+    }
+
     public FlashcardDeckVertex getDeck() {
-        var deckVertex = traversalSource.V(vertex).in(FlashcardDeckVertex.EDGE_FLASHCARD).next();
-        return new FlashcardDeckVertex(traversalSource, deckVertex);
+        return VertexHelper.getIngoingModel(this, FlashcardDeckVertex.EDGE_FLASHCARD, FlashcardDeckVertex::new);
     }
 
-    public TextContentVertex getLeftContent() {
-        var leftContentVertex = traversalSource.V(vertex).out(EDGE_LEFT_CONTENT).next();
-        return new TextContentVertex(traversalSource, leftContentVertex);
+    public Integer getDeckOrder() {
+        return VertexHelper.getIngoingProperty(this, FlashcardDeckVertex.EDGE_FLASHCARD, FlashcardDeckVertex.EDGE_FLASHCARD_PROPERTY_ORDER);
     }
 
-    public void setLeftContent(TextContentVertex vertex) {
+    public void setDeckOrder(Integer order) {
+        VertexHelper.setIngoingProperty(this, FlashcardDeckVertex.EDGE_FLASHCARD, FlashcardDeckVertex.EDGE_FLASHCARD_PROPERTY_ORDER, order);
+    }
+
+    public ContentVertex getLeftContent() {
+        return VertexHelper.getOutgoingModel(this, EDGE_LEFT_CONTENT, VertexHelper::createContent);
+    }
+
+    public void setLeftContent(ContentVertex vertex) {
         addEdgeOneToOne(EDGE_LEFT_CONTENT, vertex);
     }
 
-    public TextContentVertex getRightContent() {
-        var rightContentVertex = traversalSource.V(vertex).out(EDGE_RIGHT_CONTENT).next();
-        return new TextContentVertex(traversalSource, rightContentVertex);
+    public ContentVertex getRightContent() {
+        return VertexHelper.getOutgoingModel(this, EDGE_RIGHT_CONTENT, VertexHelper::createContent);
     }
 
-    public void setRightContent(TextContentVertex vertex) {
+    public void setRightContent(ContentVertex vertex) {
         addEdgeOneToOne(EDGE_RIGHT_CONTENT, vertex);
-    }
-
-    public FlashcardModel toFlashcardModel() {
-        var leftContent = getLeftContent();
-        var rightContent = getRightContent();
-
-        var model = new FlashcardModel();
-        model.setId(getId());
-        model.setDeckId(getDeck().getId());
-        model.setLeftValue(leftContent.getValue());
-        model.setLeftLanguage(leftContent.getLanguage().toFlashcardLanguageModel());
-        model.setRightValue(rightContent.getValue());
-        model.setRightLanguage(rightContent.getLanguage().toFlashcardLanguageModel());
-        return model;
-    }
-
-    public ExerciseContentFlashcardModel toExerciseContentFlashcardModel() {
-        return toExerciseContentFlashcardModel(true, true);
-    }
-
-    public ExerciseContentFlashcardModel toExerciseContentFlashcardModel(boolean includeFront, boolean includeBack) {
-        var model = new ExerciseContentFlashcardModel();
-        model.setId(getId());
-
-        if (includeFront)
-            model.setFront(getLeftContent().toExerciseContentTextModel());
-        if (includeBack)
-            model.setBack(getRightContent().toExerciseContentTextModel());
-
-        return model;
     }
 
     public static FlashcardVertex create(GraphTraversalSource traversalSource) {

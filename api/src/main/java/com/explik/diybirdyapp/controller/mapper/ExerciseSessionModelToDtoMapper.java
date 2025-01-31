@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.ExerciseSessionDto;
-import com.explik.diybirdyapp.controller.dto.ExerciseSessionProgressDto;
-import com.explik.diybirdyapp.model.ExerciseSessionModel;
-import com.explik.diybirdyapp.model.ExerciseSessionProgressModel;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseSessionProgressDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;

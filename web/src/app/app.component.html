@@ -2,19 +2,16 @@
   
 </style>
 
-<nav>
-  <h1>DIY birdy app</h1>
+<nav class="bg-blue-500 p-4">
+  <h1 class="text-white text-2xl">DIY birdy app</h1>
 
-  <ul>
+  <ul class="flex space-x-4 mt-2">
     <li>
-      <a [routerLink]="['/flashcard-deck']">Flashcard decks</a>
+      <a class="text-white hover:text-gray-300" [routerLink]="['/flashcard-deck']">Flashcard decks</a>
     </li>
-    <li *ngFor="let exercise of exercises">
-      <a [routerLink]="['/exercise', exercise.id]">Exercise {{exercise.id}}</a>
+    <li>
+      <a class="text-white hover:text-gray-300" [routerLink]="['/vocabulary']">Vocabulary</a>
     </li>
-    <li><a href="#" (click)="createWritingExercise()">Add writing exercise</a></li>
-    <li><a href="#" (click)="createTranslateExercise()">Add translate exercise</a></li>
-    <li><a href="#" (click)="createMultipleExercise()">Add multiple choice exercise</a></li>
   </ul>
 </nav>
 

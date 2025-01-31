@@ -5,7 +5,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 
-public class FlashcardDeckVertex extends AbstractVertex {
+public class FlashcardDeckVertex extends ContentVertex {
     public FlashcardDeckVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
     }
@@ -13,6 +13,7 @@ public class FlashcardDeckVertex extends AbstractVertex {
     public static final String LABEL = "flashcardDeck";
 
     public static final String EDGE_FLASHCARD = "hasFlashcard";
+    public static final String EDGE_FLASHCARD_PROPERTY_ORDER = "order";
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_NAME = "name";
@@ -43,15 +44,27 @@ public class FlashcardDeckVertex extends AbstractVertex {
     }
 
     public void addFlashcard(FlashcardVertex flashcardVertex) {
-        addEdgeOneToMany(EDGE_FLASHCARD, flashcardVertex);
+        int maxOrder = this.traversalSource.V(this.vertex)
+            .outE(EDGE_FLASHCARD)
+            .values(EDGE_FLASHCARD_PROPERTY_ORDER)
+            .tryNext()
+            .map(order -> (int)order)
+            .orElse(0);
+
+        this.traversalSource.V(this.vertex)
+                .addE(EDGE_FLASHCARD)
+                .property(EDGE_FLASHCARD_PROPERTY_ORDER, maxOrder + 1)
+                .to(flashcardVertex.vertex)
+                .next();
+        reload();
+    }
+
+    public void removeFlashcard(FlashcardVertex flashcardVertex) {
+        removeEdge(EDGE_FLASHCARD, flashcardVertex);
     }
 
     public List<? extends FlashcardVertex> getFlashcards() {
-        var flashcardVertices = traversalSource.V(vertex).out(EDGE_FLASHCARD).toList();
-
-        return flashcardVertices.stream()
-                .map(v -> new FlashcardVertex(traversalSource, v))
-                .toList();
+        return VertexHelper.getOutgoingModels(this, EDGE_FLASHCARD, FlashcardVertex::new);
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {

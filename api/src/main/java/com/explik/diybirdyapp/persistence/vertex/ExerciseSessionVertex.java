@@ -43,17 +43,11 @@ public class ExerciseSessionVertex extends AbstractVertex {
     }
 
     public ExerciseVertex getCurrentExercise() {
-        var vertexQuery = traversalSource.V(vertex).in(ExerciseVertex.EDGE_SESSION);
-        if (!vertexQuery.hasNext())
-            return null;
-        return new ExerciseVertex(traversalSource, vertexQuery.next());
+        return VertexHelper.getOptionalIngoingModel(this, ExerciseVertex.EDGE_SESSION, ExerciseVertex::new);
     }
 
     public List<ExerciseVertex> getExercises() {
-        var exerciseVertices = traversalSource.V(vertex).in(ExerciseVertex.EDGE_SESSION).toList();
-        return exerciseVertices.stream()
-                .map(v -> new ExerciseVertex(traversalSource, v))
-                .toList();
+        return VertexHelper.getIngoingModels(this, ExerciseVertex.EDGE_SESSION, ExerciseVertex::new);
     }
 
     public void setFlashcardDeck(FlashcardDeckVertex flashcardDeckVertex) {
@@ -61,10 +55,7 @@ public class ExerciseSessionVertex extends AbstractVertex {
     }
 
     public FlashcardDeckVertex getFlashcardDeck() {
-        var vertexQuery = traversalSource.V(vertex).out(EDGE_FLASHCARD_DECK);
-        if (!vertexQuery.hasNext())
-            return null;
-        return new FlashcardDeckVertex(traversalSource, vertexQuery.next());
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_FLASHCARD_DECK, FlashcardDeckVertex::new);
     }
 
     public static ExerciseSessionVertex findById(GraphTraversalSource traversalSource, String id) {

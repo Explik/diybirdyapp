@@ -2,15 +2,7 @@
     title="Do you still know this?"
     instruction='Write the other side?'></app-instruction>
 
-<app-flashcard-review *ngIf="content" class="block mb-4" [flippable]="false">
-    <ng-container left>
-        <span>{{content!.front?.text}}</span>
-    </ng-container>
-
-    <ng-container right>
-        <span>{{content!.back?.text}}</span>
-    </ng-container>
-</app-flashcard-review>
+<app-dynamic-flashcard-content *ngIf="content" [data]="content" class="block mb-4" />
 
 <app-correctable-text-field 
     *ngIf="input" 

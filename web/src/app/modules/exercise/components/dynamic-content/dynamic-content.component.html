@@ -1,0 +1,15 @@
+@if(data?.type === 'audio-content'){
+  <app-dynamic-audio-content [data]="castToAudio(data!)" />
+}
+@else if (data?.type === 'image-content') {
+  <app-dynamic-image-content [data]="castToImage(data!)" />
+}
+@else if (data?.type === 'text-content') {
+    <app-dynamic-text-content [data]="castToText(data!)" />
+}
+@else if (data?.type === 'video-content') {
+    <app-dynamic-video-content [data]="castToVideo(data!)" />
+}
+@else if (data) {
+    <p>Unknown content type {{data!.type}}</p>
+}

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 public class AbstractVertex {
@@ -24,6 +25,10 @@ public class AbstractVertex {
         this.vertex = this.traversalSource.V(this.vertex).next();
     }
 
+    public String getLabel() {
+        return this.vertex.label();
+    }
+
     protected void addEdgeOneToOne(String edgeLabel, AbstractVertex toVertex) {
         this.traversalSource.V(this.vertex).outE(edgeLabel).drop().iterate();
         this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).next();
@@ -32,6 +37,16 @@ public class AbstractVertex {
 
     protected void addEdgeOneToMany(String edgeLabel, AbstractVertex toVertex) {
         this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).next();
+        reload();
+    }
+
+    protected void removeEdges(String edgeLabel) {
+        this.traversalSource.V(this.vertex).outE(edgeLabel).drop().iterate();
+        reload();
+    }
+
+    protected void removeEdge(String edgeLabel, AbstractVertex toVertex) {
+        this.traversalSource.V(this.vertex).outE(edgeLabel).where(__.inV().is(toVertex.vertex)).drop().iterate();
         reload();
     }
 
@@ -45,6 +60,14 @@ public class AbstractVertex {
 
     protected String getPropertyAsString(String propertyKey) {
         return this.vertex.property(propertyKey).value().toString();
+    }
+
+    protected boolean getPropertyAsBoolean(String propertyKey) {
+        return (boolean)getProperty(propertyKey);
+    }
+
+    protected boolean getPropertyAsBoolean(String propertyKey, boolean defaultValue) {
+        return (boolean)getProperty(propertyKey, defaultValue);
     }
 
     protected <T> void setProperty(String propertyKey, T propertyValue) {

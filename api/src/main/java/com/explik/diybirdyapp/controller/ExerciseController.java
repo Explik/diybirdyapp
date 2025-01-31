@@ -1,11 +1,14 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.*;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.controller.mapper.GenericMapper;
-import com.explik.diybirdyapp.model.ExerciseInputModel;
-import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.event.ExerciseAnsweredEvent;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.service.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +23,9 @@ public class ExerciseController {
 
     @Autowired
     GenericMapper<ExerciseInputDto, ExerciseInputModel> exerciseInputMapper;
+
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/exercise")
     public List<ExerciseDto> get() {
@@ -40,6 +46,14 @@ public class ExerciseController {
     public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseInputDto dto) {
         var model = exerciseInputMapper.map(dto);
         var newModel = exerciseService.submitExerciseAnswer(id, model);
+
+        var event = new ExerciseAnsweredEvent(
+                this,
+                newModel.getType(),
+                newModel.getId(),
+                newModel.getAnswerId());
+        eventPublisher.publishEvent(event);
+
         return exerciseMapper.map(newModel);
     }
 }

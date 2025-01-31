@@ -1,10 +1,9 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.FlashcardModel;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.model.content.*;
+import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
+import com.explik.diybirdyapp.persistence.vertex.*;
+import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,41 +15,61 @@ import java.util.UUID;
 public class FlashcardRepositoryImpl implements FlashcardRepository {
     private final GraphTraversalSource traversalSource;
 
+    @Autowired
+    AudioContentVertexFactory audioContentVertexFactory;
+
+    @Autowired
+    ImageContentVertexFactory imageContentVertexFactory;
+
+    @Autowired
+    TextContentVertexFactory textContentVertexFactory;
+
+    @Autowired
+    VideoContentVertexFactory videoContentVertexFactory;
+
+    @Autowired
+    FlashcardVertexFactory flashcardVertexFactory;
+
+    @Autowired
+    FlashcardModelFactory flashcardCardModelFactory;
+
     public FlashcardRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
     }
 
     @Override
     public FlashcardModel add(FlashcardModel flashcardModel) {
-        // Binds flashcard to existing set
-        if (flashcardModel.getDeckId() == null)
-            throw new IllegalArgumentException("Model is missing deckId");
+        var leftContentVertex = createContent(flashcardModel.getFrontContent());
+        var rightContentVertex = createContent(flashcardModel.getBackContent());
+        var flashcardVertex = flashcardVertexFactory.create(traversalSource, new FlashcardVertexFactory.Options(UUID.randomUUID().toString(), leftContentVertex, rightContentVertex));
 
-        // Binds flashcard to existing languages
-        if (flashcardModel.getLeftLanguage() == null || flashcardModel.getLeftLanguage().getId() == null)
-            throw new IllegalArgumentException("leftLanguage is missing");
-        if (flashcardModel.getRightLanguage() == null || flashcardModel.getRightLanguage().getId() == null)
-            throw new IllegalArgumentException("rightLanguage is missing");
+        if (flashcardModel.getDeckId() != null) {
+            var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
+            flashcardDeckVertex.addFlashcard(flashcardVertex);
+        }
+        if (flashcardModel.getDeckOrder() != null) {
+            flashcardVertex.setDeckOrder(flashcardModel.getDeckOrder());
+        }
 
-        // Binds flashcard content
-        var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
-        var textContentVertex1 = createTextContent(traversalSource, flashcardModel.getLeftLanguage().getId(), flashcardModel.getLeftValue());
-        var textContentVertex2 = createTextContent(traversalSource, flashcardModel.getRightLanguage().getId(), flashcardModel.getRightValue());
+        return flashcardCardModelFactory.create(flashcardVertex);
+    }
 
-        var flashcardVertex = FlashcardVertex.create(traversalSource);
-        flashcardVertex.setId(UUID.randomUUID().toString());
-        flashcardVertex.setLeftContent(textContentVertex1);
-        flashcardVertex.setRightContent(textContentVertex2);
+    @Override
+    public void delete(String id) {
+        var flashcardVertex = FlashcardVertex.findById(traversalSource, id);
 
-        flashcardDeckVertex.addFlashcard(flashcardVertex);
+        // Remove from deck
+        var deck = flashcardVertex.getDeck();
+        if (deck != null)
+            deck.removeFlashcard(flashcardVertex);
 
-        return flashcardVertex.toFlashcardModel();
+        // TODO Remove vertex and content vertices
     }
 
     @Override
     public FlashcardModel get(String id) {
         var vertex = FlashcardVertex.findById(traversalSource, id);
-        return vertex.toFlashcardModel();
+        return flashcardCardModelFactory.create(vertex);
     }
 
     @Override
@@ -66,7 +85,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
         return vertices
             .stream()
-            .map(FlashcardVertex::toFlashcardModel)
+            .map(v -> flashcardCardModelFactory.create(v))
             .toList();
     }
 
@@ -76,36 +95,158 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
             throw new IllegalArgumentException("Flashcard is missing id");
 
         var flashcardVertex = FlashcardVertex.findById(traversalSource, flashcardModel.getId());
+        if (flashcardVertex == null)
+            throw new IllegalArgumentException("Flashcard not found");
 
-        if (flashcardModel.getLeftLanguage() != null) {
-            var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getLeftLanguage().getId());
-            flashcardVertex.getLeftContent().setLanguage(languageVertex);
+        // Alter deck relation
+        if (flashcardModel.getDeckId() != null) {
+            flashcardVertex.getDeck().removeFlashcard(flashcardVertex);
+
+            var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
+            flashcardDeckVertex.addFlashcard(flashcardVertex);
+        }
+        if (flashcardModel.getDeckOrder() != null) {
+            flashcardVertex.setDeckOrder(flashcardModel.getDeckOrder());
         }
 
-        if (flashcardModel.getRightLanguage() != null) {
-            var languageVertex = getLanguageVertex(traversalSource, flashcardModel.getRightLanguage().getId());
-            flashcardVertex.getRightContent().setLanguage(languageVertex);
-        }
+        // Alter left content
+        var leftModel = flashcardModel.getFrontContent();
+        var leftVertex = flashcardVertex.getLeftContent();
+        leftVertex = createOrUpdateContent(leftModel, leftVertex);
+        flashcardVertex.setLeftContent(leftVertex);
 
-        if (flashcardModel.getLeftValue() != null) {
-            flashcardVertex.getLeftContent().setValue(flashcardModel.getLeftValue());
-        }
+        // Alter right content
+        var rightModel = flashcardModel.getBackContent();
+        var rightVertex = flashcardVertex.getRightContent();
+        rightVertex = createOrUpdateContent(rightModel, rightVertex);
+        flashcardVertex.setRightContent(rightVertex);
 
-        if (flashcardModel.getRightValue() != null) {
-            flashcardVertex.getRightContent().setValue(flashcardModel.getRightValue());
-        }
-
-        return flashcardVertex.toFlashcardModel();
+        return flashcardCardModelFactory.create(flashcardVertex);
     }
 
-    private static TextContentVertex createTextContent(GraphTraversalSource traversalSource, String languageId, String value) {
-        var languageVertex = getLanguageVertex(traversalSource, languageId);
+    private ContentVertex createContent(FlashcardContentModel model) {
+        if (model instanceof FlashcardContentTextModel) {
+            return createTextContent((FlashcardContentTextModel) model);
+        }
+        else if (model instanceof FlashcardContentUploadAudioModel) {
+            return createAudioContent((FlashcardContentUploadAudioModel) model);
+        }
+        else if (model instanceof FlashcardContentUploadImageModel) {
+            return createImageContent((FlashcardContentUploadImageModel) model);
+        }
+        else if (model instanceof FlashcardContentUploadVideoModel) {
+            return createVideoContent((FlashcardContentUploadVideoModel) model);
+        }
+        throw new RuntimeException("Not implemented");
+    }
+
+    private ContentVertex createOrUpdateContent(FlashcardContentModel model, ContentVertex vertex) {
+        if (model instanceof FlashcardContentTextModel) {
+            return updateTextContent((TextContentVertex) vertex, (FlashcardContentTextModel) model);
+        }
+        else if (model instanceof FlashcardContentAudioModel) {
+            return updateAudioContent((AudioContentVertex) vertex, (FlashcardContentAudioModel) model);
+        }
+        else if (model instanceof FlashcardContentUploadAudioModel) {
+            return createAudioContent((FlashcardContentUploadAudioModel) model);
+        }
+        else if (model instanceof FlashcardContentImageModel) {
+            return updateImageContent((ImageContentVertex) vertex, (FlashcardContentImageModel) model);
+        }
+        else if (model instanceof FlashcardContentUploadImageModel) {
+            return createImageContent((FlashcardContentUploadImageModel) model);
+        }
+        else if (model instanceof FlashcardContentVideoModel) {
+            return updateVideoContent((VideoContentVertex) vertex, (FlashcardContentVideoModel) model);
+        }
+        else if(model instanceof FlashcardContentUploadVideoModel) {
+            return createVideoContent((FlashcardContentUploadVideoModel) model);
+        }
+        return vertex;
+    }
+
+    private AudioContentVertex createAudioContent(FlashcardContentUploadAudioModel model) {
+        var url = "http://localhost:8080/file/" + model.getAudioFileName();
+        var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
+
+        return audioContentVertexFactory.create(
+                traversalSource,
+                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), url, languageVertex));
+    }
+
+    private AudioContentVertex updateAudioContent(AudioContentVertex vertex, FlashcardContentAudioModel model) {
+        if (vertex.isStatic()) {
+            var newVertex = audioContentVertexFactory.copy(vertex);
+            newVertex.setUrl(model.getAudioUrl());
+            return newVertex;
+        }
+        else {
+            vertex.setUrl(model.getAudioUrl());
+            return vertex;
+        }
+    }
+
+    private ImageContentVertex createImageContent(FlashcardContentUploadImageModel model) {
+        var url = "http://localhost:8080/file/" + model.getImageFileName();
+
+        return imageContentVertexFactory.create(
+                traversalSource,
+                new ImageContentVertexFactory.Options(UUID.randomUUID().toString(), url));
+    }
+
+    private ImageContentVertex updateImageContent(ImageContentVertex vertex, FlashcardContentImageModel model) {
+        if (vertex.isStatic()) {
+            var newVertex = imageContentVertexFactory.copy(vertex);
+            newVertex.setUrl(model.getImageUrl());
+            return newVertex;
+        }
+        else {
+            vertex.setUrl(model.getImageUrl());
+            return vertex;
+        }
+    }
+
+    private TextContentVertex createTextContent(FlashcardContentTextModel model) {
+        var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
         var textContentVertex = TextContentVertex.create(traversalSource);
         textContentVertex.setId(UUID.randomUUID().toString());
         textContentVertex.setLanguage(languageVertex);
-        textContentVertex.setValue(value != null ? value : "");
+        textContentVertex.setValue(model.getText() != null ? model.getText() : "");
 
         return textContentVertex;
+    }
+
+    private TextContentVertex updateTextContent(TextContentVertex vertex, FlashcardContentTextModel model) {
+        if (vertex.isStatic()) {
+            var newVertex = textContentVertexFactory.copy(vertex);
+            newVertex.setValue(model.getText());
+            return newVertex;
+        }
+        else {
+            vertex.setValue(model.getText());
+            return vertex;
+        }
+    }
+
+    private VideoContentVertex createVideoContent(FlashcardContentUploadVideoModel model) {
+        var url = "http://localhost:8080/file/" + model.getVideoFileName();
+        var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
+
+        return videoContentVertexFactory.create(
+                traversalSource,
+                new VideoContentVertexFactory.Options(UUID.randomUUID().toString(), url, languageVertex));
+    }
+
+    private VideoContentVertex updateVideoContent(VideoContentVertex vertex, FlashcardContentVideoModel model) {
+        if (vertex.isStatic()) {
+            var newVertex = videoContentVertexFactory.copy(vertex);
+            newVertex.setUrl(model.getVideoUrl());
+            return newVertex;
+        }
+        else {
+            vertex.setUrl(model.getVideoUrl());
+            return vertex;
+        }
     }
 
     private static LanguageVertex getLanguageVertex(GraphTraversalSource traversalSource, String languageId) {

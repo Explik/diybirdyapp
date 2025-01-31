@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.*;
-import com.explik.diybirdyapp.model.*;
+import com.explik.diybirdyapp.controller.dto.exercise.*;
+import com.explik.diybirdyapp.model.exercise.*;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -17,8 +17,14 @@ public abstract class BaseModelToDtoMapper {
 
     Converter<ExerciseContentModel, ExerciseContentDto> exerciseContentConverter = new AbstractConverter<ExerciseContentModel, ExerciseContentDto>() {
         protected ExerciseContentDto convert(ExerciseContentModel source) {
+            if (source instanceof ExerciseContentAudioModel)
+                return modelMapper.map(source, ExerciseContentAudioDto.class);
             if (source instanceof ExerciseContentTextModel)
                 return modelMapper.map(source, ExerciseContentTextDto.class);
+            if (source instanceof ExerciseContentImageModel)
+                return modelMapper.map(source, ExerciseContentImageDto.class);
+            if (source instanceof ExerciseContentVideoModel)
+                return modelMapper.map(source, ExerciseContentVideoDto.class);
             if (source instanceof ExerciseContentFlashcardModel)
                 return modelMapper.map(source, ExerciseContentFlashcardDto.class);
             return null;

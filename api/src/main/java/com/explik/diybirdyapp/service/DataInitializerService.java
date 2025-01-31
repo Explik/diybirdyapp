@@ -1,10 +1,8 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.model.ExerciseSessionModel;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.builder.*;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -28,22 +26,37 @@ public class DataInitializerService {
     private ExerciseSelectFlashcardVertexFactory exerciseSelectFlashcardVertexFactory;
 
     @Autowired
+    private ExercisePronounceFlashcardVertexFactory exercisePronounceFlashcardVertexFactory;
+
+    @Autowired
     private ExerciseReviewFlashcardVertexFactory exerciseReviewFlashcardVertexFactory;
 
     @Autowired
     private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
-    private FlashcardVertexFactory flashcardVertexFactory;
-
-    @Autowired
-    private FlashcardDeckVertexFactory flashcardDeckVertexFactory;
-
-    @Autowired
     private LanguageVertexFactory languageVertexFactory;
 
     @Autowired
-    private TextContentVertexFactory textContentVertexFactory;
+    private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
+
+    @Autowired
+    private WordVertexFactory wordVertexFactory;
+
+    @Autowired
+    private PronunciationVertexFactory pronunciationVertexFactory;
+
+    @Autowired
+    private AudioContentVertexFactory audioContentVertexFactory;
+
+    @Autowired
+    private ImageContentVertexFactory imageContentVertexFactory;
+
+    @Autowired
+    private VideoContentVertexFactory videoImageContentVertexFactory;
+
+    @Autowired
+    private VertexBuilderFactory builderFactory;
 
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
@@ -52,109 +65,152 @@ public class DataInitializerService {
 
     public void appendInitialData() {
         addInitialLanguageData();
-        addInitialFlashcardData();
+        addInitialContentAndConcepts();
         addInitialExerciseData();
     }
 
     public void addInitialLanguageData() {
-        languageVertexFactory.create(
-                traversalSource,
-                new LanguageVertexFactory.Options("langVertex1", "Danish", "DA"));
+        builderFactory.createLanguageVertexBuilder()
+                .withId("langVertex1")
+                .withName("Danish")
+                .withAbbreviation("DA")
+                .withGoogleTextToSpeech("da-DK", "da-DK-Wavenet-A")
+                .build(traversalSource);
 
-        languageVertexFactory.create(
-                traversalSource,
-                new LanguageVertexFactory.Options("langVertex2", "English", "EN"));
+        builderFactory.createLanguageVertexBuilder()
+                .withId("langVertex2")
+                .withName("English")
+                .withAbbreviation("EN")
+                .withGoogleTextToSpeech("en-US", "en-US-Wavenet-A")
+                .build(traversalSource);
     }
 
-    public void addInitialFlashcardData() {
+    public void addInitialContentAndConcepts() {
         var langVertex1 = LanguageVertex.findByAbbreviation(traversalSource, "DA");
         var langVertex2 = LanguageVertex.findByAbbreviation(traversalSource, "EN");
 
-        var textVertex1 = TextContentVertex.create(traversalSource);
-        textVertex1.setId("textVertex1");
-        textVertex1.setValue("Hej verden");
-        textVertex1.setLanguage(langVertex1);
+        builderFactory.createTextContentVertexBuilder()
+                .withValue("Bereshit")
+                .withLanguage(langVertex1)
+                .build(traversalSource);
 
-        var textVertex2 = TextContentVertex.create(traversalSource);
-        textVertex2.setId("textVertex2");
-        textVertex2.setValue("Hello world");
-        textVertex2.setLanguage(langVertex2);
+        // Text content
+        var textVertex0 = TextContentVertex.create(traversalSource);
+        textVertex0.setId("textVertex0");
+        textVertex0.setValue("Bereshit");
+        textVertex0.setLanguage(langVertex1);
 
-        var textVertex3 = TextContentVertex.create(traversalSource);
-        textVertex3.setId("textVertex3");
-        textVertex3.setValue("Hej John");
-        textVertex3.setLanguage(langVertex1);
+        var imageVertex1 = imageContentVertexFactory.create(
+                traversalSource,
+                new ImageContentVertexFactory.Options("imageVertex1", "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"));
 
-        var textVertex4 = TextContentVertex.create(traversalSource);
-        textVertex4.setId("textVertex4");
-        textVertex4.setValue("Hey John");
-        textVertex4.setLanguage(langVertex2);
+        var audioContentVertex1 = audioContentVertexFactory.create(
+                traversalSource,
+                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex1));
 
-        var flashcardVertex1 = FlashcardVertex.create(traversalSource);
-        flashcardVertex1.setId("flashcardVertex1");
-        flashcardVertex1.setLeftContent(textVertex1);
-        flashcardVertex1.setRightContent(textVertex2);
+        var videoContentVertex1 = videoImageContentVertexFactory.create(
+                traversalSource,
+                new VideoContentVertexFactory.Options("videoContentVertex1", "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", langVertex2));
 
-        var flashcardVertex2 = FlashcardVertex.create(traversalSource);
-        flashcardVertex2.setId("flashcardVertex2");
-        flashcardVertex2.setLeftContent(textVertex3);
-        flashcardVertex2.setRightContent(textVertex4);
+        // Flashcard deck 1
+        builderFactory.createFlashcardDeckVertexBuilder()
+                .withId("flashcardDeckVertex1")
+                .withName("First ever flashcard deck")
+                .withDefaultLanguages(langVertex1, langVertex2)
+                .addFlashcard(new FlashcardVertexBuilder()
+                        .withFrontText("Hej verden")
+                        .withBackText("Hello world"))
+                .build(traversalSource);
 
-        var flashcardDeckVertex1 = FlashcardDeckVertex.create(traversalSource);
-        flashcardDeckVertex1.setId("flashcardDeckVertex1");
-        flashcardDeckVertex1.setName("First ever flashcard deck");
-        flashcardDeckVertex1.addFlashcard(flashcardVertex1);
+        // Flashcard deck 2
+        builderFactory.createFlashcardDeckVertexBuilder()
+                .withId("flashcardDeckVertex2")
+                .withName("Second ever flashcard deck")
+                .withDefaultLanguages(langVertex1, langVertex2)
+                .addFlashcard(new FlashcardVertexBuilder()
+                        .withFrontText("Hej John")
+                        .withBackText("Hey John"))
+                .addFlashcard(new FlashcardVertexBuilder()
+                        .withFrontText("Hej billede")
+                        .withBackContent(imageVertex1))
+                .addFlashcard(new FlashcardVertexBuilder()
+                        .withFrontText("Hej lyd")
+                        .withBackContent(audioContentVertex1))
+                .addFlashcard(new FlashcardVertexBuilder()
+                        .withFrontText("Hej video")
+                        .withBackContent(videoContentVertex1))
+                .build(traversalSource);
 
-        var flashcardDeckVertex2 = FlashcardDeckVertex.create(traversalSource);
-        flashcardDeckVertex2.setId("flashcardDeckVertex2");
-        flashcardDeckVertex2.setName("Second ever flashcard deck");
-        flashcardDeckVertex2.addFlashcard(flashcardVertex2);
+        // Flashcard deck 3
+        builderFactory.createFlashcardDeckVertexBuilder()
+                .withId("textOnlyFlashcardDeck")
+                .withName("Text only flashcard deck")
+                .withDefaultLanguages(langVertex1, langVertex2)
+                .addFlashcard(new FlashcardVertexBuilder()
+                        .withFrontText("Hej")
+                        .withBackText("Hello"))
+                .addFlashcard(new FlashcardVertexBuilder()
+                        .withFrontText("Verden")
+                        .withBackText("World"))
+                .build(traversalSource);
+
+        // Word concepts
+        var wordVertex1 = WordVertex.create(traversalSource);
+        wordVertex1.setId("wordVertex1");
+        wordVertex1.setValue(textVertex0.getValue());
+        wordVertex1.setLanguage(textVertex0.getLanguage());
+        wordVertex1.addExample(textVertex0);
+        wordVertex1.setMainExample(textVertex0);
+
+        // Pronunciation concept
+        var pronunciationVertex1 = pronunciationVertexFactory.create(
+                traversalSource,
+                new PronunciationVertexFactory.Options("pronunciationVertex1", textVertex0, audioContentVertex1));
     }
 
     public void addInitialExerciseData() {
         var langVertex = LanguageVertex.findByAbbreviation(traversalSource, "EN");
 
-        var wordVertex1 = textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options("1", "example", langVertex));
+        var wordVertex1 = builderFactory.createTextContentVertexBuilder()
+                .withId("1")
+                .withValue("example")
+                .withLanguage(langVertex)
+                .build(traversalSource);
 
         exerciseWriteSentenceUsingWordVertexFactory.create(
                 traversalSource,
                 new ExerciseWriteSentenceUsingWordVertexFactory.Options("1", "example", wordVertex1));
 
         // Exercise 2 - Translate sentence to Danish
-        var wordVertex2 = textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options("2", "This is an example sentence", langVertex));
+        var wordVertex2 = builderFactory.createTextContentVertexBuilder()
+                .withId("2")
+                .withValue("This is an example sentence")
+                .withLanguage(langVertex)
+                .build(traversalSource);
 
         exerciseWriteTranslatedSentenceVertexFactory.create(
                 traversalSource,
                 new ExerciseWriteTranslatedSentenceVertexFactory.Options("2", "Danish", wordVertex2));
 
         // Exercise 3 - Multiple choice text exercise
-        var wordVertex3 = textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options("3", "Random option 1", langVertex));
+        var flashcardVertex1 = builderFactory.createFlashcardVertexBuilder()
+                .withId("flashcardVertex1")
+                .withFrontText("Correct option", langVertex)
+                .withBackText("Correct option", langVertex)
+                .build(traversalSource);
 
-        var wordVertex4 = textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options("4", "Random option 2", langVertex));
-
-        var wordVertex5 = textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options("5", "Random option 3", langVertex));
-
-        var wordVertex6 = textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options("6", "Correct option", langVertex));
+        var flashcardVertex2 = builderFactory.createFlashcardVertexBuilder()
+                .withFrontText("Random option 1", langVertex)
+                .withBackText("Random option 1", langVertex)
+                .build(traversalSource);
 
         exerciseSelectFlashcardVertexFactory.create(
                 traversalSource,
                 new ExerciseSelectFlashcardVertexFactory.Options(
                         "3",
                         null,
-                        wordVertex6,
-                        List.of(wordVertex3, wordVertex4, wordVertex5),
+                        flashcardVertex1,
+                        List.of(flashcardVertex2),
                         "front"));
 
         // Exercise session 4
@@ -172,5 +228,16 @@ public class DataInitializerService {
         exerciseSessionFlashcardReviewVertexFactory.init(
                 traversalSource,
                 sessionModel);
+
+        // Exercise session 5 - Flashcard pronounce exercise
+        var flashcardVertex3 = builderFactory.createFlashcardVertexBuilder()
+                .withId("flashcardVertex3")
+                .withFrontContent(wordVertex1)
+                .withBackContent(wordVertex1)
+                .build(traversalSource);
+
+        exercisePronounceFlashcardVertexFactory.create(
+                traversalSource,
+                new ExercisePronounceFlashcardVertexFactory.Options("5", null, flashcardVertex3, "front"));
     }
 }

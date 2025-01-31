@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.model.ExerciseModel;
-import com.explik.diybirdyapp.model.ExerciseSessionModel;
-import com.explik.diybirdyapp.model.ExerciseSessionProgressModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

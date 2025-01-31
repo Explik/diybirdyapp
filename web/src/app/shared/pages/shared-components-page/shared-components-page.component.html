@@ -1,0 +1,24 @@
+<section class="p-2">
+    <h1 class="text-lg">Overall visual components</h1>
+
+    <app-flashcard side="front" class="mb-4">
+        <p front>Front shown first</p>
+        <p back>Back shown second</p>
+    </app-flashcard>
+
+    <app-flashcard side="back">
+        <p front>Front shown second</p>
+        <p back>Back shown first</p>
+    </app-flashcard>
+    
+    <app-flashcard>
+        <ng-content front>
+            <app-icon icon="mdi-volume-high" />
+            Hello world
+        </ng-content >
+        <ng-content back>
+            <app-icon icon="mdi-volume-high" />
+            Hej verden
+        </ng-content >
+    </app-flashcard>
+</section>

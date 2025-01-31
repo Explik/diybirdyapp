@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.FlashcardDeckModel;
+import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -20,6 +20,19 @@
 		<reflections.version>0.10.2</reflections.version>
 		<maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.google.cloud</groupId>
+				<artifactId>libraries-bom</artifactId>
+				<version>  26.52.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<!-- Spring Boot dependencies -->
 		<dependency>
@@ -90,6 +103,12 @@
 			<artifactId>picocli</artifactId>
 			<version>4.7.6</version>
 		</dependency>
+
+		<!-- Google Text To Speech API -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-texttospeech</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -117,6 +136,8 @@
 					<jsonLibrary>jackson2</jsonLibrary>
 					<classPatterns>
 						<pattern>com.explik.diybirdyapp.controller.dto.*</pattern>
+						<pattern>com.explik.diybirdyapp.controller.dto.content.*</pattern>
+						<pattern>com.explik.diybirdyapp.controller.dto.exercise.*</pattern>
 					</classPatterns>
 					<outputFile>../web/src/app/shared/models/endpoints.d.ts</outputFile>
 					<outputKind>global</outputKind>

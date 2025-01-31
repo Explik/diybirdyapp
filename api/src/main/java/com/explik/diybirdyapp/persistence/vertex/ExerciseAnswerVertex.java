@@ -33,8 +33,7 @@ public class ExerciseAnswerVertex extends AbstractVertex {
     }
 
     public ExerciseVertex getExercise() {
-        var exerciseVertex = traversalSource.V(vertex).out(EDGE_EXERCISE).next();
-        return new ExerciseVertex(traversalSource, exerciseVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_EXERCISE, ExerciseVertex::new);
     }
 
     public void setExercise(ExerciseVertex exerciseVertex) {
@@ -42,13 +41,11 @@ public class ExerciseAnswerVertex extends AbstractVertex {
     }
 
     public AbstractVertex getTextContent() {
-        var contentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
-        return new TextContentVertex(traversalSource, contentVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, TextContentVertex::new);
     }
 
     public AbstractVertex getFlashcardContent() {
-        var contentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
-        return new FlashcardVertex(traversalSource, contentVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, FlashcardVertex::new);
     }
 
     public void setContent(AbstractVertex contentVertex) {

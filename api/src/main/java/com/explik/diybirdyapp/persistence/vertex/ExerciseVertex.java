@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
-import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -17,6 +17,7 @@ public class ExerciseVertex extends AbstractVertex {
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_OPTION = "hasOption";
+    public final static String EDGE_OPTION_PROPERTY_ORDER = "order";
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TARGET_LANGUAGE = "targetLanguage";
@@ -39,7 +40,7 @@ public class ExerciseVertex extends AbstractVertex {
         setProperty(PROPERTY_TYPE, type);
     }
 
-    public AbstractVertex getContent() {
+    public ContentVertex getContent() {
         var contentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
         if (contentVertex.label().equals(TextContentVertex.LABEL))
             return new TextContentVertex(traversalSource, contentVertex);
@@ -50,13 +51,11 @@ public class ExerciseVertex extends AbstractVertex {
     }
 
     public FlashcardVertex getFlashcardAnswer() {
-        var answerVertex = traversalSource.V(vertex).out(EDGE_ANSWER).next();
-        return new FlashcardVertex(traversalSource, answerVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_ANSWER, FlashcardVertex::new);
     }
 
     public TextContentVertex getTextContentAnswer() {
-        var answerVertex = traversalSource.V(vertex).out(EDGE_ANSWER).next();
-        return new TextContentVertex(traversalSource, answerVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_ANSWER, TextContentVertex::new);
     }
 
     public void setAnswer(AbstractVertex answer) {
@@ -64,13 +63,11 @@ public class ExerciseVertex extends AbstractVertex {
     }
 
     public TextContentVertex getTextContent() {
-        var textContentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
-        return new TextContentVertex(traversalSource, textContentVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, TextContentVertex::new);
     }
 
     public FlashcardVertex getFlashcardContent() {
-        var flashcardContentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
-        return new FlashcardVertex(traversalSource, flashcardContentVertex);
+        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, FlashcardVertex::new);
     }
 
     public void setContent(AbstractVertex outVertex) {
@@ -94,24 +91,15 @@ public class ExerciseVertex extends AbstractVertex {
     }
 
     public List<? extends TextContentVertex> getTextContentOptions() {
-        var choiceVertices = traversalSource.V(vertex).out(EDGE_OPTION).toList();
-        return choiceVertices.stream()
-                .map(v -> new TextContentVertex(traversalSource, v))
-                .toList();
+        return VertexHelper.getOrderedOutgoingModels(this, EDGE_OPTION, EDGE_OPTION_PROPERTY_ORDER, TextContentVertex::new);
     }
 
     public List<? extends FlashcardVertex> getFlashcardOptions() {
-        var choiceVertices = traversalSource.V(vertex).out(EDGE_OPTION).toList();
-        return choiceVertices.stream()
-                .map(v -> new FlashcardVertex(traversalSource, v))
-                .toList();
+        return VertexHelper.getOrderedOutgoingModels(this, EDGE_OPTION, EDGE_OPTION_PROPERTY_ORDER, FlashcardVertex::new);
     }
 
     public ExerciseSessionVertex getSession() {
-        var vertexQuery = traversalSource.V(vertex).out(EDGE_SESSION);
-        if (!vertexQuery.hasNext())
-            return null;
-        return new ExerciseSessionVertex(traversalSource, vertexQuery.next());
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_SESSION, ExerciseSessionVertex::new);
     }
 
     public void setSession(AbstractVertex session) {

@@ -1,11 +1,9 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.model.ExerciseInputModel;
-import com.explik.diybirdyapp.model.ExerciseModel;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.VertexFactory;
 import com.explik.diybirdyapp.persistence.operation.ExerciseOperations;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.LimitedExerciseModelFactory;

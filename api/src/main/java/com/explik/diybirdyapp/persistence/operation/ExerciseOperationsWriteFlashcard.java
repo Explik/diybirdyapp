@@ -2,10 +2,10 @@ package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
-import com.explik.diybirdyapp.model.ExerciseInputModel;
-import com.explik.diybirdyapp.model.ExerciseInputTextModel;
-import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputTextModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
@@ -32,7 +32,7 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         ExerciseInputTextModel answerModel = (ExerciseInputTextModel)genericAnswerModel;
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var flashcardContent = exerciseVertex.getFlashcardContent();
-        var flashcardSide = !exerciseVertex.getFlashcardSide().equals("front") ? flashcardContent.getLeftContent() : flashcardContent.getRightContent();
+        var flashcardSide = (TextContentVertex)(!exerciseVertex.getFlashcardSide().equals("front") ? flashcardContent.getLeftContent() : flashcardContent.getRightContent());
 
         // Save answer
         var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();
@@ -42,10 +42,10 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         exerciseVertex.setAnswer(answerVertex);
 
         // Generate feedback
-        return createExerciseWithFeedback(flashcardSide, answerModel);
+        return createExerciseWithFeedback(exerciseVertex, flashcardSide, answerModel);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(TextContentVertex flashcardSide, ExerciseInputTextModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, TextContentVertex flashcardSide, ExerciseInputTextModel answerModel) {
 
         var isAnswerCorrect = flashcardSide.getValue().equalsIgnoreCase(answerModel.getText());
         var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isAnswerCorrect);
@@ -59,6 +59,8 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         input.setFeedback(inputFeedback);
 
         var exercise = new ExerciseModel();
+        exercise.setId(exerciseVertex.getId());
+        exercise.setType(exerciseVertex.getType());
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(input);
         return exercise;

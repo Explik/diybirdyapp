@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.vertex.manager;
 
-import com.explik.diybirdyapp.model.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
@@ -73,9 +73,9 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
 
         factory.init(traversalSource, model); // Initializes session and reviews 1/2 cards
         factory.nextExercise(traversalSource, model.getId()); // Reviews 2/2 cards
-        var nextExercise = factory.nextExercise(traversalSource, model.getId()); // No more cards to review
+        var newSessionState = factory.nextExercise(traversalSource, model.getId()); // No more cards to review
 
-        assertNull(nextExercise);
+        assertTrue(newSessionState.getCompleted());
     }
 
     @Test

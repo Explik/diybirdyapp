@@ -1,0 +1,16 @@
+.perspective {
+  perspective: 1000px;
+}
+
+.flashcard-inner {
+  transform-style: preserve-3d;
+}
+
+.flashcard-front,
+.flashcard-back {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}

@@ -1,8 +1,6 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.model.ExerciseModel;
-import com.explik.diybirdyapp.model.ExerciseSessionModel;
-import com.explik.diybirdyapp.persistence.repository.ExerciseRepository;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.repository.ExerciseSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

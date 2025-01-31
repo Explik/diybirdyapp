@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
-import com.explik.diybirdyapp.model.FlashcardLanguageModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -39,14 +38,6 @@ public class LanguageVertex extends AbstractVertex {
 
     public void setName(String name) {
         setProperty(PROPERTY_NAME, name);
-    }
-
-    public FlashcardLanguageModel toFlashcardLanguageModel() {
-        var model = new FlashcardLanguageModel();
-        model.setId(getId());
-        model.setAbbreviation(getAbbreviation());
-        model.setName(getName());
-        return model;
     }
 
     public static LanguageVertex create(GraphTraversalSource traversalSource) {

@@ -2,12 +2,12 @@ package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.ExerciseFeedbackModel;
-import com.explik.diybirdyapp.model.ExerciseInputModel;
-import com.explik.diybirdyapp.model.ExerciseInputMultipleChoiceTextModel;
-import com.explik.diybirdyapp.model.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.IdentifiableVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
@@ -34,7 +34,7 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
         var options = Stream.concat(Stream.of(correctOptionVertex), incorrectOptionVertices.stream()).collect(Collectors.toList());
 
         for(var option : options) {
-            var optionId = ((IdentifiableVertex)option).getId();
+            var optionId = option.getId();
             if (optionId.equals(answerModel.getValue())) {
                 exerciseVertex.setAnswer(option);
                 break;
@@ -42,12 +42,12 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
         }
 
         // Generate feedback
-        return createExerciseWithFeedback((IdentifiableVertex) correctOptionVertex, incorrectOptionVertices, answerModel);
+        return createExerciseWithFeedback(correctOptionVertex, incorrectOptionVertices, answerModel);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(IdentifiableVertex correctOptionVertex, List<? extends TextContentVertex> incorrectOptionVertices, ExerciseInputMultipleChoiceTextModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends TextContentVertex> incorrectOptionVertices, ExerciseInputMultipleChoiceTextModel answerModel) {
         var correctOptionId = correctOptionVertex.getId();
-        var incorrectOptionIds = incorrectOptionVertices.stream().map(IdentifiableVertex::getId).toList();
+        var incorrectOptionIds = incorrectOptionVertices.stream().map(ContentVertex::getId).toList();
         var isCorrect = answerModel.getValue().equals(correctOptionId);
 
         var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isCorrect);
@@ -61,6 +61,8 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
         exerciseInput.setFeedback(inputFeedback);
 
         var exercise = new ExerciseModel();
+        exercise.setId(correctOptionVertex.getId());
+        exercise.setType(ExerciseTypes.SELECT_FLASHCARD);
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(exerciseInput);
         return exercise;

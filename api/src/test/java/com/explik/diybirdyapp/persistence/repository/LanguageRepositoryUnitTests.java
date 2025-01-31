@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -19,7 +19,7 @@ public class LanguageRepositoryUnitTests {
     private static final String PRE_EXISTENT_ABBREVIATION = "pre-existent-abbreviation";
 
     @Autowired
-    LanguageRepository repository;
+    FlashcardLanguageRepository repository;
 
     @Test
     void givenUniqueLanguage_whenAdd_thenReturnLanguage() {

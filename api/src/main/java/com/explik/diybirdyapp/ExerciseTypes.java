@@ -8,4 +8,5 @@ public class ExerciseTypes {
     public static final String WRITE_FLASHCARD = "write-flashcard-exercise";
     public static final String REVIEW_FLASHCARD = "review-flashcard-exercise";
     public static final String SELECT_FLASHCARD = "select-flashcard-exercise";
+    public static final String PRONOUNCE_FLASHCARD = "pronounce-flashcard-exercise";
 }
