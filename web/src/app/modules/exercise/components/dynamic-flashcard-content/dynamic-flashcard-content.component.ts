@@ -10,7 +10,19 @@ import { DynamicContentComponent } from '../dynamic-content/dynamic-content.comp
   templateUrl: './dynamic-flashcard-content.component.html'
 })
 export class DynamicFlashcardContentComponent {
-  @Input() data?: ExerciseContentFlashcardDto; 
+  @Input() data?: ExerciseContentFlashcardDto | ExerciseContentFlashcardSideDto; 
 
-  constructor() {}
+  get flashcardData(): ExerciseContentFlashcardDto | undefined {
+    if (this.data?.type !== 'flashcard') 
+      return undefined; 
+
+    return this.data as ExerciseContentFlashcardDto;
+  }
+
+  get flashcardSideData(): ExerciseContentFlashcardSideDto | undefined {
+    if (this.data?.type !== 'flashcard-side') 
+      return undefined; 
+
+    return this.data as ExerciseContentFlashcardSideDto; 
+  }
 }

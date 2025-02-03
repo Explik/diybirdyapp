@@ -10,9 +10,11 @@ import { Component, HostListener, Input } from '@angular/core';
 })
 export class FlashcardComponent {
     @Input() side: 'front' | 'back' = 'front';
+    @Input() isFlippable: boolean = true;
 
     flip() {
-        this.side = (this.side === 'front') ? 'back' : 'front';
+        if (this.isFlippable)
+            this.side = (this.side === 'front') ? 'back' : 'front';
     }
 
     @HostListener('click')

@@ -11,4 +11,5 @@ public class ContentTypes {
     public static final String VIDEO_UPLOAD = "video-upload";
 
     public static final String FLASHCARD = "flashcard";
+    public static final String FLASHCARD_SIDE = "flashcard-side";
 }

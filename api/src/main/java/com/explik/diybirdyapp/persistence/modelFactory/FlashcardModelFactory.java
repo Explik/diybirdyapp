@@ -6,7 +6,7 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FlashcardModelFactory implements ModelFactory<FlashcardModel, FlashcardVertex> {
+public class FlashcardModelFactory implements ModelFactory<FlashcardVertex, FlashcardModel> {
     @Override
     public FlashcardModel create(FlashcardVertex vertex) {
         var leftContent = vertex.getLeftContent();

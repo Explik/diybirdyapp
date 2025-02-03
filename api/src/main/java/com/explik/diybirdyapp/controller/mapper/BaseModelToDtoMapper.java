@@ -27,6 +27,8 @@ public abstract class BaseModelToDtoMapper {
                 return modelMapper.map(source, ExerciseContentVideoDto.class);
             if (source instanceof ExerciseContentFlashcardModel)
                 return modelMapper.map(source, ExerciseContentFlashcardDto.class);
+            if (source instanceof ExerciseContentFlashcardSideModel)
+                return modelMapper.map(source, ExerciseContentFlashcardSideDto.class);
             return null;
         }
     };

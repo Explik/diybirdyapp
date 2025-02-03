@@ -42,12 +42,7 @@ public class ExerciseVertex extends AbstractVertex {
 
     public ContentVertex getContent() {
         var contentVertex = traversalSource.V(vertex).out(EDGE_CONTENT).next();
-        if (contentVertex.label().equals(TextContentVertex.LABEL))
-            return new TextContentVertex(traversalSource, contentVertex);
-        else if(contentVertex.label().equals(FlashcardVertex.LABEL))
-            return new FlashcardVertex(traversalSource, contentVertex);
-
-        throw new RuntimeException("Unknown content type: " + contentVertex.label());
+        return VertexHelper.createContent(traversalSource, contentVertex);
     }
 
     public FlashcardVertex getFlashcardAnswer() {

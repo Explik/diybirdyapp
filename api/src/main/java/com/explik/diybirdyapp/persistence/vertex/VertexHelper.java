@@ -11,6 +11,8 @@ public class VertexHelper {
     public static ContentVertex createContent(GraphTraversalSource traversalSource, Vertex vertex) {
         if (vertex.label().equals(AudioContentVertex.LABEL))
             return new AudioContentVertex(traversalSource, vertex);
+        if (vertex.label().equals(FlashcardVertex.LABEL))
+            return new FlashcardVertex(traversalSource, vertex);
         if (vertex.label().equals(TextContentVertex.LABEL))
             return new TextContentVertex(traversalSource, vertex);
         if(vertex.label().equals(ImageContentVertex.LABEL))

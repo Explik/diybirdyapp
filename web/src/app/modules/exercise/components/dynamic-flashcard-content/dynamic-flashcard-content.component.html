@@ -1,4 +1,10 @@
-<app-flashcard *ngIf="data">
-    <app-dynamic-content front *ngIf="data.front" [data]="data.front" />
-    <app-dynamic-content back *ngIf="data.back" [data]="data.back" />
+<app-flashcard *ngIf="flashcardData && !flashcardSideData">
+    <app-dynamic-content front [data]="flashcardData.front" />
+    <app-dynamic-content back [data]="flashcardData.back" />
 </app-flashcard>
+
+<app-flashcard *ngIf="flashcardSideData && !flashcardData" [isFlippable]="false">
+    <app-dynamic-content front [data]="flashcardSideData.content" />
+</app-flashcard>
+
+<p *ngIf="flashcardData && flashcardSideData">Invalid state</p>
