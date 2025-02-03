@@ -29,23 +29,15 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
 
         // Evaluate exercise
         var exerciseVertex = ExerciseVertex.getById(traversalSource, genericAnswerModel.getExerciseId());
-        var correctOptionVertex = exerciseVertex.getContent();
-        var incorrectOptionVertices = exerciseVertex.getTextContentOptions();
-        var options = Stream.concat(Stream.of(correctOptionVertex), incorrectOptionVertices.stream()).collect(Collectors.toList());
-
-        for(var option : options) {
-            var optionId = option.getId();
-            if (optionId.equals(answerModel.getValue())) {
-                exerciseVertex.setAnswer(option);
-                break;
-            }
-        }
+        var correctOptionVertex = exerciseVertex.getCorrectOptions().getFirst();
+        var incorrectOptionVertices = exerciseVertex.getOptions();
+        exerciseVertex.setAnswer(correctOptionVertex);
 
         // Generate feedback
         return createExerciseWithFeedback(correctOptionVertex, incorrectOptionVertices, answerModel);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends TextContentVertex> incorrectOptionVertices, ExerciseInputMultipleChoiceTextModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends ContentVertex> incorrectOptionVertices, ExerciseInputMultipleChoiceTextModel answerModel) {
         var correctOptionId = correctOptionVertex.getId();
         var incorrectOptionIds = incorrectOptionVertices.stream().map(ContentVertex::getId).toList();
         var isCorrect = answerModel.getValue().equals(correctOptionId);

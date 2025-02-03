@@ -5,10 +5,14 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component(ExerciseTypes.MULTIPLE_CHOICE_TEXT + ComponentTypes.MODEL_FACTORY)
 public class ExerciseModelFactoryMultipleChoiceText implements ExerciseModelFactory {
+    @Autowired
+    ModelFactory<ExerciseVertex, ExerciseInputMultipleChoiceTextModel> inputModelFactory;
+
     @Override
     public ExerciseModel create(ExerciseVertex vertex) {
         if (vertex == null)
@@ -20,13 +24,7 @@ public class ExerciseModelFactoryMultipleChoiceText implements ExerciseModelFact
         instance.setId(vertex.getId());
         instance.setType(vertex.getType());
 
-        var input = new ExerciseInputMultipleChoiceTextModel();
-        input.setType("multiple-choice-text-input");
-        vertex.getTextContentOptions()
-                .forEach(v -> {
-                    input.addOption(
-                            new ExerciseInputMultipleChoiceTextModel.Option(v.getId(), v.getValue()));
-                });
+        var input = inputModelFactory.create(vertex);
         instance.setInput(input);
 
         return instance;

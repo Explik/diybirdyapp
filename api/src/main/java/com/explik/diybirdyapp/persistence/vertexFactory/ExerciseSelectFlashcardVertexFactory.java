@@ -21,13 +21,15 @@ public class ExerciseSelectFlashcardVertexFactory implements VertexFactory<Exerc
         vertex.setContent(options.flashcardVertex);
         vertex.setSession(options.sessionVertex);
         vertex.setFlashcardSide(options.flashcardSide);
-        for(var alternativeFlashcard : options.alternativeFlashcards)
-            vertex.addOption(alternativeFlashcard);
 
-        // Make the flashcards vertex static so it can't be changed later
+        // Add options and make them static
+        vertex.addCorrectOption(options.flashcardVertex);
         options.flashcardVertex.makeStatic();
-        for(var alternativeFlashcard : options.alternativeFlashcards)
+
+        for(var alternativeFlashcard : options.alternativeFlashcards) {
+            vertex.addOption(alternativeFlashcard);
             alternativeFlashcard.makeStatic();
+        }
 
         return vertex;
     }

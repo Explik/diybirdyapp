@@ -12,7 +12,10 @@ import org.springframework.stereotype.Component;
 @Component(ExerciseTypes.SELECT_FLASHCARD + ComponentTypes.MODEL_FACTORY)
 public class ExerciseModelFactorySelectFlashcard implements ExerciseModelFactory {
     @Autowired
-    ExerciseContentModelFactory exerciseContentModelFactory;
+    ExerciseContentModelFactory contentModelFactory;
+
+    @Autowired
+    ExerciseInputModelFactoryMultipleChoice inputModelFactory;
 
     @Override
     public ExerciseModel create(ExerciseVertex vertex) {
@@ -26,33 +29,11 @@ public class ExerciseModelFactorySelectFlashcard implements ExerciseModelFactory
         instance.setType(vertex.getType());
 
         // Add content
-        var flashcardVertex = vertex.getFlashcardContent();
-        var isFront = vertex.getFlashcardSide().equals("front");
-        if (isFront) {
-            var flashcardModel = exerciseContentModelFactory.createFlashcardModelWithOnlyLeftSide(flashcardVertex);
-            instance.setContent(flashcardModel);
-        }
-        else {
-            var flashcardModel = exerciseContentModelFactory.createFlashcardModelWithOnlyRightSide(flashcardVertex);
-            instance.setContent(flashcardModel);
-        }
+        var contentModel = contentModelFactory.create(vertex);
+        instance.setContent(contentModel);
 
         // Add input
-        var inputModel = new ExerciseInputMultipleChoiceTextModel();
-
-        var correctOption = !vertex.getFlashcardSide().equals("front") ? flashcardVertex.getLeftContent() : flashcardVertex.getRightContent();
-        inputModel.addOption(new ExerciseInputMultipleChoiceTextModel.Option(
-                flashcardVertex.getId(),
-                ((TextContentVertex)correctOption).getValue()));
-
-        for(var incorrectOption : vertex.getFlashcardOptions()) {
-            var optionSideVertex = !vertex.getFlashcardSide().equals("front") ? incorrectOption.getLeftContent() : incorrectOption.getRightContent();
-
-            inputModel.addOption(
-                    new ExerciseInputMultipleChoiceTextModel.Option(
-                            incorrectOption.getId(),
-                            ((TextContentVertex)optionSideVertex).getValue()));
-        }
+        var inputModel = inputModelFactory.create(vertex);
         instance.setInput(inputModel);
 
         return instance;

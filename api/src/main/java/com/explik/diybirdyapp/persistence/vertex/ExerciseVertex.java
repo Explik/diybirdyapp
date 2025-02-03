@@ -18,6 +18,7 @@ public class ExerciseVertex extends AbstractVertex {
     public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_OPTION = "hasOption";
     public final static String EDGE_OPTION_PROPERTY_ORDER = "order";
+    public final static String EDGE_CORRECT_OPTION = "hasCorrectOption";
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TARGET_LANGUAGE = "targetLanguage";
@@ -82,15 +83,34 @@ public class ExerciseVertex extends AbstractVertex {
     public void setFlashcardSide(String flashcardSide) { setProperty(PROPERTY_FLASHCARD_SIDE, flashcardSide); }
 
     public void addOption(AbstractVertex option) {
-        addEdgeOneToMany(EDGE_OPTION, option);
+        addOrderedEdgeOneToMany(EDGE_OPTION, option, EDGE_OPTION_PROPERTY_ORDER, 0);
     }
 
-    public List<? extends TextContentVertex> getTextContentOptions() {
-        return VertexHelper.getOrderedOutgoingModels(this, EDGE_OPTION, EDGE_OPTION_PROPERTY_ORDER, TextContentVertex::new);
+    public void removeOption(AbstractVertex option) {
+        removeEdge(EDGE_OPTION, option);
     }
 
-    public List<? extends FlashcardVertex> getFlashcardOptions() {
-        return VertexHelper.getOrderedOutgoingModels(this, EDGE_OPTION, EDGE_OPTION_PROPERTY_ORDER, FlashcardVertex::new);
+    public List<? extends ContentVertex> getOptions() {
+        return VertexHelper.getOrderedOutgoingModels(
+                this,
+                EDGE_OPTION,
+                EDGE_OPTION_PROPERTY_ORDER,
+                VertexHelper::createContent);
+    }
+
+    public void addCorrectOption(AbstractVertex option) {
+        addEdgeOneToMany(EDGE_CORRECT_OPTION, option);
+    }
+
+    public void removeCorrectOption(AbstractVertex option) {
+        removeEdge(EDGE_CORRECT_OPTION, option);
+    }
+
+    public List<? extends ContentVertex> getCorrectOptions() {
+        return VertexHelper.getOutgoingModels(
+                this,
+                EDGE_CORRECT_OPTION,
+                VertexHelper::createContent);
     }
 
     public ExerciseSessionVertex getSession() {

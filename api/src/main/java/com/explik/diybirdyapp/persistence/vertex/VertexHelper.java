@@ -23,6 +23,10 @@ public class VertexHelper {
         throw new RuntimeException("Unknown content type: " + vertex.label());
     }
 
+    public static ContentVertex createContent(ContentVertex contentVertex){
+        return createContent(contentVertex.getUnderlyingSource(), contentVertex.getUnderlyingVertex());
+    }
+
     public static <T extends AbstractVertex> T getOutgoingModel(AbstractVertex vertex, String edgeLabel, BiFunction<GraphTraversalSource, Vertex, T> mapper) {
         var traversalSource = vertex.getUnderlyingSource();
         var v = traversalSource.V(vertex.getUnderlyingVertex()).out(edgeLabel).next();

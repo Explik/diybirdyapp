@@ -2,8 +2,10 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.TestEventListener;
+import com.explik.diybirdyapp.controller.dto.content.FlashcardContentTextDto;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
+import com.explik.diybirdyapp.model.content.FlashcardContentTextModel;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.command.CommandHandler;
 import com.explik.diybirdyapp.persistence.command.LockFlashcardContentCommand;
@@ -68,24 +70,22 @@ public class FlashcardControllerIntegrationTests {
     @Test
     void givenNewlyCreatedFlashcard_whenUpdateContent_thenReturnFlashcard() {
         var flashcard = createFlashcard();
-        var created = controller.create(flashcard);
-        created.setLeftLanguage(null);
-        created.setLeftValue("new-left-value");
-        created.setRightLanguage(null);
-        created.setRightValue("new-right-value");
+        var createdFlashcard = controller.create(flashcard);
+        setLeftTextValue(createdFlashcard, "new-left-value");
+        setRightTextValue(createdFlashcard, "new-right-value");
 
-        var updated = controller.update(created);
+        var updated = controller.update(createdFlashcard);
 
         assertNotNull(updated);
-        assertEquals("new-left-value", updated.getLeftValue());
-        assertEquals("new-right-value", updated.getRightValue());
+        assertEquals("new-left-value", getLeftTextValue(updated));
+        assertEquals("new-right-value", getRightTextValue(updated));
     }
 
     @Test
     void givenStaticFlashcard_whenUpdateContent_thenReturnFlashcard() {
         var flashcard = createFlashcard();
         var created = controller.create(flashcard);
-        created.setLeftValue("new-left-value");
+        setLeftTextValue(created, "new-left-value");
 
         lockContentCommandHandler.handle(
                 new LockFlashcardContentCommand(created.getId()));
@@ -99,7 +99,7 @@ public class FlashcardControllerIntegrationTests {
     void givenNewlyCreatedFlashcard_whenUpdateContent_thenPublishFlashcardUpdatedEvent() {
         var flashcard = createFlashcard();
         var created = controller.create(flashcard);
-        created.setLeftValue("new-left-value");
+        setLeftTextValue(created, "new-left-value");
 
         controller.update(created);
 
@@ -110,14 +110,39 @@ public class FlashcardControllerIntegrationTests {
 
     protected FlashcardDto createFlashcard() {
         // IMPORTANT: Relies on data from DataInitializer.addInitialFlashcardData()
+        var frontContent = new FlashcardContentTextDto();
+        frontContent.setText("left-value");
+        frontContent.setLanguageId(Languages.Danish.Id);
+
+        var backContent = new FlashcardContentTextDto();
+        backContent.setText("right-value");
+        backContent.setLanguageId(Languages.English.Id);
+
         var flashcard = new FlashcardDto();
         flashcard.setId("id");
         flashcard.setDeckId(FlashcardDeck.Id);
-        flashcard.setLeftValue("left-value");
-        flashcard.setLeftLanguage(new FlashcardLanguageModel(Languages.Danish.Id));
-        flashcard.setRightValue("right-value");
-        flashcard.setRightLanguage(new FlashcardLanguageModel(Languages.English.Id));
+        flashcard.setFrontContent(frontContent);
+        flashcard.setBackContent(backContent);
+
         return flashcard;
+    }
+
+    private String getLeftTextValue(FlashcardDto flashcard) {
+        return ((FlashcardContentTextDto)flashcard.getFrontContent()).getText();
+    }
+
+    private String getRightTextValue(FlashcardDto flashcard) {
+        return ((FlashcardContentTextDto)flashcard.getBackContent()).getText();
+    }
+
+    private void setLeftTextValue(FlashcardDto flashcard, String value) {
+        ((FlashcardContentTextDto)flashcard.getFrontContent()).setText(value);
+        ((FlashcardContentTextDto)flashcard.getFrontContent()).setLanguageId(null);
+    }
+
+    private void setRightTextValue(FlashcardDto flashcard, String value) {
+        ((FlashcardContentTextDto)flashcard.getBackContent()).setText(value);
+        ((FlashcardContentTextDto)flashcard.getBackContent()).setLanguageId(null);
     }
 
     @TestConfiguration
