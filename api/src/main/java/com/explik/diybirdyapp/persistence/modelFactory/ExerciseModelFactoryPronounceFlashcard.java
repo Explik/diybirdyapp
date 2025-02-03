@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component(ExerciseTypes.PRONOUNCE_FLASHCARD + ComponentTypes.MODEL_FACTORY)
 public class ExerciseModelFactoryPronounceFlashcard implements ExerciseModelFactory {
     @Autowired
-    ExerciseContentModelFactory exerciseContentModelFactory;
+    ExerciseContentModelFactory contentModelFactory;
 
     @Override
     public ExerciseModel create(ExerciseVertex vertex) {
@@ -23,16 +23,9 @@ public class ExerciseModelFactoryPronounceFlashcard implements ExerciseModelFact
         instance.setId(vertex.getId());
         instance.setType(vertex.getType());
 
+        var content = contentModelFactory.create(vertex);
+        instance.setContent(content);
 
-        var flashcardVertex = vertex.getFlashcardContent();
-        if (vertex.getFlashcardSide().equals("front")) {
-            var flashcardModel = exerciseContentModelFactory.createFlashcardModelWithOnlyLeftSide(flashcardVertex);
-            instance.setContent(flashcardModel);
-        }
-        else {
-            var flashcardModel = exerciseContentModelFactory.createFlashcardModelWithOnlyRightSide(flashcardVertex);
-            instance.setContent(flashcardModel);
-        }
         return instance;
     }
 }

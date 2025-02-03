@@ -23,7 +23,10 @@ public class ExerciseModelFactoryWriteTranslatedSentence implements ExerciseMode
         instance.setId(vertex.getId());
         instance.setType(vertex.getType());
         instance.setProperty("targetLanguage", vertex.getTargetLanguage());
-        instance.setContent(exerciseContentModelFactory.createTextModel(vertex.getTextContent()));
+
+        var content = exerciseContentModelFactory.create(vertex);
+        instance.setContent(content);
+
         return instance;
     }
 }

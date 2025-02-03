@@ -11,12 +11,16 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex,
         var contentVertex = vertex.getContent();
 
         if (contentVertex instanceof FlashcardVertex flashcardVertex) {
-            if (vertex.getFlashcardSide().equals("front"))
-                return createFlashcardModelWithOnlyLeftSide(flashcardVertex);
-            if (vertex.getFlashcardSide().equals("back"))
-                return createFlashcardModelWithOnlyRightSide(flashcardVertex);
+            var flashcardSide = vertex.getFlashcardSide();
 
-            return createFlashcardModel(flashcardVertex);
+            if (flashcardSide == null)
+                return createFlashcardModel(flashcardVertex);
+            else if (vertex.getFlashcardSide().equals("front"))
+                return createFlashcardModelWithOnlyLeftSide(flashcardVertex);
+            else if (vertex.getFlashcardSide().equals("back"))
+                return createFlashcardModelWithOnlyRightSide(flashcardVertex);
+            else
+                throw new RuntimeException("Unknown flashcard side " + vertex.getFlashcardSide());
         }
         return createNonFlashcardModel(contentVertex);
     }

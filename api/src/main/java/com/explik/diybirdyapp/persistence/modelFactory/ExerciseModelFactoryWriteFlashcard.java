@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component(ExerciseTypes.WRITE_FLASHCARD + ComponentTypes.MODEL_FACTORY)
 public class ExerciseModelFactoryWriteFlashcard implements ExerciseModelFactory {
     @Autowired
-    ExerciseContentModelFactory exerciseContentModelFactory;
+    ExerciseContentModelFactory contentModelFactory;
 
     @Override
     public ExerciseModel create(ExerciseVertex vertex) {
@@ -23,15 +23,8 @@ public class ExerciseModelFactoryWriteFlashcard implements ExerciseModelFactory 
         instance.setId(vertex.getId());
         instance.setType(vertex.getType());
 
-        var flashcardVertex = vertex.getFlashcardContent();
-        if (vertex.getFlashcardSide().equals("front")) {
-            var flashcardModel = exerciseContentModelFactory.createFlashcardModelWithOnlyLeftSide(flashcardVertex);
-            instance.setContent(flashcardModel);
-        }
-        else {
-            var flashcardModel = exerciseContentModelFactory.createFlashcardModelWithOnlyRightSide(flashcardVertex);
-            instance.setContent(flashcardModel);
-        }
+        var content = contentModelFactory.create(vertex);
+        instance.setContent(content);
 
         return instance;
     }

@@ -71,7 +71,11 @@ public class AbstractVertex {
     }
 
     protected String getPropertyAsString(String propertyKey) {
-        return this.vertex.property(propertyKey).value().toString();
+        return (String)getProperty(propertyKey);
+    }
+
+    protected String getPropertyAsString(String propertyKey, String defaultValue) {
+        return (String)getProperty(propertyKey, defaultValue);
     }
 
     protected boolean getPropertyAsBoolean(String propertyKey) {
