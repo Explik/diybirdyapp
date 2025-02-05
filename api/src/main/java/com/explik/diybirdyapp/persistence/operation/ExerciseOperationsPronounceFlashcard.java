@@ -30,9 +30,8 @@ public class ExerciseOperationsPronounceFlashcard implements ExerciseOperations 
 
         ExerciseInputAudioModel answerModel = (ExerciseInputAudioModel) genericAnswerModel;
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
-        var flashcardContent = exerciseVertex.getFlashcardContent();
-        var flashcardSide = !exerciseVertex.getFlashcardSide().equals("front") ? flashcardContent.getLeftContent() : flashcardContent.getRightContent();
-        var language = ((TextContentVertex)flashcardSide).getLanguage();
+        var textContent = exerciseVertex.getTextContent();
+        var language = textContent.getLanguage();
 
         // Save answer
         var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();

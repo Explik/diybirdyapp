@@ -26,17 +26,8 @@ public class ExerciseInputModelFactoryMultipleChoice implements ModelFactory<Exe
     private ExerciseInputMultipleChoiceTextModel.Option createOption(ExerciseVertex vertex, ContentVertex contentVertex) {
         if (contentVertex instanceof TextContentVertex)
             return createTextOption(vertex, (TextContentVertex)contentVertex);
-        if (contentVertex instanceof FlashcardVertex)
-            return createFlashcardOption(vertex, (FlashcardVertex)contentVertex);
 
         throw new RuntimeException("Unsupported content type: " + contentVertex.getClass().getName());
-    }
-
-    private ExerciseInputMultipleChoiceTextModel.Option createFlashcardOption(ExerciseVertex vertex, FlashcardVertex flashcardVertex) {
-        var flashcardSide = vertex.getFlashcardSide();
-        var flashcardOption = !flashcardSide.equals("front") ? flashcardVertex.getLeftContent() : flashcardVertex.getRightContent();
-
-        return createTextOption(vertex, (TextContentVertex)flashcardOption);
     }
 
     private ExerciseInputMultipleChoiceTextModel.Option createTextOption(ExerciseVertex vertex, TextContentVertex textContentVertex) {

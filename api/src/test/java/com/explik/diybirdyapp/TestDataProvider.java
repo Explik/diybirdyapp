@@ -158,9 +158,8 @@ public class TestDataProvider {
                 new ExerciseSelectFlashcardVertexFactory.Options(
                         SelectFlashcardExercise.Id,
                         null,
-                        flashcard1,
-                        List.of(flashcard2, flashcard3, flashcard4),
-                        "front"));
+                        flashcard1.getLeftContent(),
+                        List.of(flashcard2.getRightContent(), flashcard3.getRightContent(), flashcard4.getRightContent())));
     }
 
     private void addReviewFlashcardExercise(GraphTraversalSource traversalSource) {

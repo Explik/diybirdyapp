@@ -209,9 +209,8 @@ public class DataInitializerService {
                 new ExerciseSelectFlashcardVertexFactory.Options(
                         "3",
                         null,
-                        flashcardVertex1,
-                        List.of(flashcardVertex2),
-                        "front"));
+                        flashcardVertex1.getLeftContent(),
+                        List.of(flashcardVertex2.getRightContent())));
 
         // Exercise session 4
         var flashcardVertex = FlashcardVertex.findById(traversalSource, "flashcardVertex1");
@@ -238,6 +237,6 @@ public class DataInitializerService {
 
         exercisePronounceFlashcardVertexFactory.create(
                 traversalSource,
-                new ExercisePronounceFlashcardVertexFactory.Options("5", null, flashcardVertex3, "front"));
+                new ExercisePronounceFlashcardVertexFactory.Options("5", null, flashcardVertex3.getLeftContent()));
     }
 }

@@ -6,6 +6,7 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactorySelectFlashcard;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
@@ -39,12 +40,15 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
 
         // Create the vertex
         var sessionId = options.getId() != null ? options.getId() : java.util.UUID.randomUUID().toString();
-
-        var graphVertex = traversalSource.addV(ExerciseSessionVertex.LABEL).next();
-        var vertex = new ExerciseSessionVertex(traversalSource, graphVertex);
+        var vertex = ExerciseSessionVertex.create(traversalSource);
         vertex.setId(sessionId);
         vertex.setType(ExerciseSessionTypes.SELECT_FLASHCARD_DECK);
         vertex.setFlashcardDeck(flashcardDeckVertex);
+
+        var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
+        optionVertex.setId(UUID.randomUUID().toString());
+        optionVertex.setFlashcardSide("front"); // Start with this side
+        vertex.setOptions(optionVertex);
 
         // Generate first exercise
         nextExercise(traversalSource, sessionId);
@@ -69,14 +73,20 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
                     .limit(3)
                     .collect(Collectors.toList());
 
+            var flashcardSide = sessionVertex.getOptions().getFlashcardSide();
+            var correctContentVertex = flashcardVertex.getSide(flashcardSide);
+            var incorrectContentVertices = alternativeFlashcardVertices
+                    .stream()
+                    .map(f -> f.getOtherSide(flashcardSide))
+                    .toList();
+
             vertexFactory.create(
                     traversalSource,
                     new ExerciseSelectFlashcardVertexFactory.Options(
                             UUID.randomUUID().toString(),
                             sessionVertex,
-                            flashcardVertex,
-                            alternativeFlashcardVertices,
-                            "front"));
+                            correctContentVertex,
+                            incorrectContentVertices));
             sessionVertex.reload();
         } else {
             // If no flashcards are found, the session is complete

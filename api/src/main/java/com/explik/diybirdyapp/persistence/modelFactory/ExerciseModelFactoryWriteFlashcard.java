@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.model.exercise.ExerciseContentFlashcardSideModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,9 @@ public class ExerciseModelFactoryWriteFlashcard implements ExerciseModelFactory 
         instance.setId(vertex.getId());
         instance.setType(vertex.getType());
 
-        var content = contentModelFactory.create(vertex);
-        instance.setContent(content);
+        var flashcardSideContent = contentModelFactory.create(vertex.getContent());
+        var flashcardSide = ExerciseContentFlashcardSideModel.create(flashcardSideContent);
+        instance.setContent(flashcardSide);
 
         return instance;
     }

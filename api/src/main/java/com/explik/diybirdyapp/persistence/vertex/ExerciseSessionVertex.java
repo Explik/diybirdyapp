@@ -13,6 +13,7 @@ public class ExerciseSessionVertex extends AbstractVertex {
     public final static String LABEL = "exerciseSession";
 
     public final static String EDGE_FLASHCARD_DECK = "hasFlashcardDeck";
+    public final static String EDGE_OPTIONS = "hasOptions";
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TYPE = "type";
@@ -58,8 +59,21 @@ public class ExerciseSessionVertex extends AbstractVertex {
         return VertexHelper.getOptionalOutgoingModel(this, EDGE_FLASHCARD_DECK, FlashcardDeckVertex::new);
     }
 
+    public void setOptions(ExerciseSessionOptionsVertex optionsVertex) {
+        addEdgeOneToOne(EDGE_OPTIONS, optionsVertex);
+    }
+
+    public ExerciseSessionOptionsVertex getOptions() {
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_OPTIONS, ExerciseSessionOptionsVertex::new);
+    }
+
     public static ExerciseSessionVertex findById(GraphTraversalSource traversalSource, String id) {
         var vertex = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ID, id).next();
+        return new ExerciseSessionVertex(traversalSource, vertex);
+    }
+
+    public static ExerciseSessionVertex create(GraphTraversalSource traversalSource) {
+        var vertex = traversalSource.addV(LABEL).next();
         return new ExerciseSessionVertex(traversalSource, vertex);
     }
 }

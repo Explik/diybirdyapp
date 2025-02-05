@@ -31,28 +31,29 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
         // Evaluate answer
         ExerciseInputTextModel answerModel = (ExerciseInputTextModel)genericAnswerModel;
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
-        var flashcardContent = exerciseVertex.getFlashcardContent();
-        var flashcardSide = (TextContentVertex)(!exerciseVertex.getFlashcardSide().equals("front") ? flashcardContent.getLeftContent() : flashcardContent.getRightContent());
+        var textContent = exerciseVertex.getTextContent();
 
         // Save answer
         var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();
         var answerVertex = textContentVertexFactory.create(
                 traversalSource,
-                new TextContentVertexFactory.Options(answerId, answerModel.getText(), flashcardSide.getLanguage()));
+                new TextContentVertexFactory.Options(answerId, answerModel.getText(), textContent.getLanguage()));
         exerciseVertex.setAnswer(answerVertex);
 
         // Generate feedback
-        return createExerciseWithFeedback(exerciseVertex, flashcardSide, answerModel);
+        return createExerciseWithFeedback(exerciseVertex, answerModel);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, TextContentVertex flashcardSide, ExerciseInputTextModel answerModel) {
-
-        var isAnswerCorrect = flashcardSide.getValue().equalsIgnoreCase(answerModel.getText());
+    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputTextModel answerModel) {
+        // Compare correct options and answer (CASE INSENSITIVE)
+        var correctOptions = exerciseVertex.getCorrectOptions().stream().map(v -> (TextContentVertex)v).toList();
+        var correctOptionValues = correctOptions.stream().map(TextContentVertex::getValue).toList();
+        var isAnswerCorrect = correctOptionValues.stream().anyMatch(v -> v.equalsIgnoreCase(answerModel.getText()));
         var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isAnswerCorrect);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
         var inputFeedback = new ExerciseInputTextModel.Feedback();
-        inputFeedback.setCorrectValues(List.of(flashcardSide.getValue()));
+        inputFeedback.setCorrectValues(correctOptionValues);
         if (!isAnswerCorrect) inputFeedback.setIncorrectValues(List.of(answerModel.getText()));
 
         var input = new ExerciseInputTextModel();

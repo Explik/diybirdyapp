@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.model.exercise.ExerciseContentFlashcardSideModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -29,8 +30,9 @@ public class ExerciseModelFactorySelectFlashcard implements ExerciseModelFactory
         instance.setType(vertex.getType());
 
         // Add content
-        var contentModel = contentModelFactory.create(vertex);
-        instance.setContent(contentModel);
+        var flashcardSideContent = contentModelFactory.create(vertex.getContent());
+        var flashcardSide = ExerciseContentFlashcardSideModel.create(flashcardSideContent);
+        instance.setContent(flashcardSide);
 
         // Add input
         var inputModel = inputModelFactory.create(vertex);

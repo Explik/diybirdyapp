@@ -10,4 +10,10 @@ public class ExerciseContentFlashcardSideModel extends ExerciseContentModel {
     public void setContent(ExerciseContentModel content) {
         this.content = content;
     }
+
+    public static ExerciseContentFlashcardSideModel create(ExerciseContentModel content) {
+        var instance = new ExerciseContentFlashcardSideModel();
+        instance.setContent(content);
+        return instance;
+    }
 }

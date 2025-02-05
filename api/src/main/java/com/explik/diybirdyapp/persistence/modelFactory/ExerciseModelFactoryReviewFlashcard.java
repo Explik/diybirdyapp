@@ -23,7 +23,7 @@ public class ExerciseModelFactoryReviewFlashcard implements ExerciseModelFactory
         instance.setId(vertex.getId());
         instance.setType(vertex.getType());
 
-        var content = exerciseContentModelFactory.create(vertex);
+        var content = exerciseContentModelFactory.create(vertex.getContent());
         instance.setContent(content);
 
         return instance;

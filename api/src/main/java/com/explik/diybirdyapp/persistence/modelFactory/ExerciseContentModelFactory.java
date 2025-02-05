@@ -5,24 +5,12 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex, ExerciseContentModel> {
+public class ExerciseContentModelFactory implements ModelFactory<ContentVertex, ExerciseContentModel> {
     @Override
-    public ExerciseContentModel create(ExerciseVertex vertex) {
-        var contentVertex = vertex.getContent();
-
-        if (contentVertex instanceof FlashcardVertex flashcardVertex) {
-            var flashcardSide = vertex.getFlashcardSide();
-
-            if (flashcardSide == null)
-                return createFlashcardModel(flashcardVertex);
-            else if (vertex.getFlashcardSide().equals("front"))
-                return createFlashcardModelWithOnlyLeftSide(flashcardVertex);
-            else if (vertex.getFlashcardSide().equals("back"))
-                return createFlashcardModelWithOnlyRightSide(flashcardVertex);
-            else
-                throw new RuntimeException("Unknown flashcard side " + vertex.getFlashcardSide());
-        }
-        return createNonFlashcardModel(contentVertex);
+    public ExerciseContentModel create(ContentVertex vertex) {
+        if (vertex instanceof FlashcardVertex flashcardVertex)
+            return createFlashcardModel(flashcardVertex);
+        return createNonFlashcardModel(vertex);
     }
 
     public ExerciseContentFlashcardModel createFlashcardModel(FlashcardVertex vertex) {
@@ -33,24 +21,6 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex,
         model.setId(vertex.getId());
         model.setFront(leftContent);
         model.setBack(rightContent);
-        return model;
-    }
-
-    public ExerciseContentFlashcardSideModel createFlashcardModelWithOnlyLeftSide(FlashcardVertex vertex) {
-        var leftContent = createNonFlashcardModel(vertex.getLeftContent());
-
-        ExerciseContentFlashcardSideModel model = new ExerciseContentFlashcardSideModel();
-        model.setId(vertex.getId());
-        model.setContent(leftContent);
-        return model;
-    }
-
-    public ExerciseContentFlashcardSideModel createFlashcardModelWithOnlyRightSide(FlashcardVertex vertex) {
-        var rightContent = createNonFlashcardModel(vertex.getRightContent());
-
-        ExerciseContentFlashcardSideModel model = new ExerciseContentFlashcardSideModel();
-        model.setId(vertex.getId());
-        model.setContent(rightContent);
         return model;
     }
 

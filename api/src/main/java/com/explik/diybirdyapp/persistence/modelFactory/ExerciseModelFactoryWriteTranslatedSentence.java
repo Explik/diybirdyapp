@@ -24,7 +24,7 @@ public class ExerciseModelFactoryWriteTranslatedSentence implements ExerciseMode
         instance.setType(vertex.getType());
         instance.setProperty("targetLanguage", vertex.getTargetLanguage());
 
-        var content = exerciseContentModelFactory.create(vertex);
+        var content = exerciseContentModelFactory.create(vertex.getContent());
         instance.setContent(content);
 
         return instance;

@@ -6,10 +6,7 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseReviewFlashcardVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseVertexFactoryWriteFlashcard;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -44,11 +41,15 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
         // Create/init the session vertex
         var sessionId = options.getId() != null ? options.getId() : java.util.UUID.randomUUID().toString();
-        var graphVertex = traversalSource.addV(ExerciseSessionVertex.LABEL).next();
-        var vertex = new ExerciseSessionVertex(traversalSource, graphVertex);
+        var vertex = ExerciseSessionVertex.create(traversalSource);
         vertex.setId(sessionId);
         vertex.setType(ExerciseSessionTypes.LEARN_FLASHCARD);
         vertex.setFlashcardDeck(flashcardDeckVertex);
+
+        var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
+        optionVertex.setId(UUID.randomUUID().toString());
+        optionVertex.setFlashcardSide("front");
+        vertex.setOptions(optionVertex);
 
         // Generate first exercise
         nextExerciseVertex(traversalSource, vertex);
@@ -82,9 +83,13 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
         flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
         if (flashcardVertex != null) {
+            var flashcardSide = sessionVertex.getOptions().getFlashcardSide();
+            var questionContentVertex = flashcardVertex.getSide(flashcardSide);
+            var answerContentVertex = flashcardVertex.getOtherSide(flashcardSide);
+
             return writeFlashcardVertexFactory.create(
                     traversalSource,
-                    new ExerciseVertexFactoryWriteFlashcard.Options(UUID.randomUUID().toString(), sessionVertex, flashcardVertex, "back"));
+                    new ExerciseVertexFactoryWriteFlashcard.Options(UUID.randomUUID().toString(), sessionVertex, questionContentVertex, answerContentVertex));
         }
 
         return null;

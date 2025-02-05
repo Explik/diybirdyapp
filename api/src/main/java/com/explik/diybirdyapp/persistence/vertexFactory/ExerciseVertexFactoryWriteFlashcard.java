@@ -3,8 +3,8 @@ package com.explik.diybirdyapp.persistence.vertexFactory;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.vertex.AbstractVertex;
+import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
@@ -16,16 +16,16 @@ public class ExerciseVertexFactoryWriteFlashcard implements VertexFactory<Exerci
         var vertex = new ExerciseVertex(traversalSource, graphVertex);
         vertex.setId(options.id);
         vertex.setType(ExerciseTypes.WRITE_FLASHCARD);
-        vertex.setContent(options.flashcardVertex);
-        vertex.setFlashcardSide(options.flashcardSide);
         vertex.setSession(options.sessionVertex);
+        vertex.setContent(options.contentVertex);
+        vertex.addCorrectOption(options.answerVertex);
 
         // Make the flashcard vertex static so it can't be changed later
-        options.flashcardVertex.makeStatic();
+        options.contentVertex.makeStatic();
 
         return vertex;
     }
 
-    public record Options (String id, AbstractVertex sessionVertex, FlashcardVertex flashcardVertex, String flashcardSide) { }
+    public record Options (String id, AbstractVertex sessionVertex, ContentVertex contentVertex, ContentVertex answerVertex) { }
 
 }

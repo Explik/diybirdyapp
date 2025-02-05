@@ -78,10 +78,6 @@ public class ExerciseVertex extends AbstractVertex {
         setProperty(PROPERTY_TARGET_LANGUAGE, targetLanguage);
     }
 
-    public String getFlashcardSide() { return getPropertyAsString(PROPERTY_FLASHCARD_SIDE, null); }
-
-    public void setFlashcardSide(String flashcardSide) { setProperty(PROPERTY_FLASHCARD_SIDE, flashcardSide); }
-
     public void addOption(AbstractVertex option) {
         addOrderedEdgeOneToMany(EDGE_OPTION, option, EDGE_OPTION_PROPERTY_ORDER, 0);
     }
