@@ -167,13 +167,20 @@ All writing exercises will have TextContent answers. All TextContent answers wil
 graph TB
 Exercise(Exercise)
 Flashcard1(Flashcard)
+TextContent1A(TextContent)
 Flashcard2(Flashcard)
+TextContent2B(TextContent)
 Flashcard3(Flashcard)
+TextContent3B(TextContent)
 
-Exercise--hasContent-->Flashcard1
-Exercise--hasAnswer-->Flashcard2
-Exercise--hasOption-->Flashcard2
-Exercise--hasOption-->Flashcard3
+Exercise--hasContent-->TextContent1A
+Exercise--hasAnswer-->TextContent1A
+Exercise--hasOption-->TextContent2B
+Exercise--hasOption-->TextContent3B
+
+Flashcard1--hasLeftContent-->TextContent1A
+Flashcard2--hasRightContent-->TextContent2B
+Flashcard3--hasRightContent-->TextContent3B
 ```
 Note, the content is also an option, the correct option. 
 
@@ -201,15 +208,11 @@ Exercise(Exercise)
 Flashcard(Flashcard)
 TextContent1(TextContent)
 TextContent2A(TextContent)
-TextContent2B(TextContent)
 Language1(Language)
-Language2(Language)
 
-Exercise--hasContent-->Flashcard
+Exercise--hasContent-->TextContent2A
 Flashcard--hasLeftContent-->TextContent2A
-Flashcard--hasRightContent-->TextContent2B
 TextContent2A--hasLanguage-->Language1
-TextContent2B--hasLanguage-->Language2
 Exercise--hasAnswer-->TextContent1
 TextContent1--hasLanguage-->Language1
 ```
