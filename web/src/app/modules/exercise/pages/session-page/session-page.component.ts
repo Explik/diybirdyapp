@@ -2,7 +2,7 @@ import { Component, Injector, Input, OnInit, Type } from '@angular/core';
 import { ProgressBarComponent } from '../../../../shared/components/progress-bar/progress-bar.component';
 import { ExitIconButtonComponent } from "../../../../shared/components/exit-icon-button/exit-icon-button.component";
 import { InstructionComponent } from '../../components/instruction/instruction.component';
-import { CorrectableTextFieldComponent } from "../../../../shared/components/correctable-text-field/correctable-text-field.component";
+import { ExerciseInputWriteTextComponent } from "../../components/exercise-input-write-text/exercise-input-write-text.component";
 import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
 import { CommonModule, NgComponentOutlet } from '@angular/common';
@@ -23,7 +23,7 @@ import { Observable, map } from 'rxjs';
     selector: 'app-session-page',
     standalone: true,
     templateUrl: './session-page.component.html',
-    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, CorrectableTextFieldComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent]
+    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, ExerciseInputWriteTextComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent]
 })
 export class SessionPageComponent {
     sessionId: string | undefined = undefined;

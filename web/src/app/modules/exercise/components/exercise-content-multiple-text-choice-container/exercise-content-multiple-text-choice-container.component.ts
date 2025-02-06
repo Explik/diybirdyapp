@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InstructionComponent } from "../instruction/instruction.component";
-import { CorrectableMultipleChoiceTextFieldComponent } from "../../../../shared/components/correctable-multiple-choice-text-field/correctable-multiple-choice-text-field.component";
+import { ExerciseInputSelectOptionsComponent } from "../exercise-input-select-options/exercise-input-select-options.component";
 import { CommonModule } from '@angular/common';
 import { ExerciseService } from '../../services/exercise.service';
 //import { CorrectableMultipleChoiceTextInput } from '../../../../shared/models/input.interface';
@@ -8,7 +8,7 @@ import { ExerciseService } from '../../services/exercise.service';
 @Component({
   selector: 'app-exercise-content-multiple-text-choice-container',
   standalone: true,
-  imports: [CommonModule, InstructionComponent, CorrectableMultipleChoiceTextFieldComponent],
+  imports: [CommonModule, InstructionComponent, ExerciseInputSelectOptionsComponent],
   templateUrl: './exercise-content-multiple-text-choice-container.component.html'
 })
 export class ExerciseContentMultipleTextChoiceContainerComponent implements OnInit {

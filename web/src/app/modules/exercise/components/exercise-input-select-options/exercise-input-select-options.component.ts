@@ -3,13 +3,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-correctable-multiple-choice-text-field',
+  selector: 'app-exercise-input-select-options',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './correctable-multiple-choice-text-field.component.html',
-  styleUrl: './correctable-multiple-choice-text-field.component.css'
+  templateUrl: './exercise-input-select-options.component.html',
+  styleUrl: './exercise-input-select-options.component.css'
 })
-export class CorrectableMultipleChoiceTextFieldComponent {
+export class ExerciseInputSelectOptionsComponent {
   @Input() input: ExerciseInputMultipleChoiceTextDto | undefined = undefined;
   @Output()  optionSelected: EventEmitter<string> = new EventEmitter<string>();
 

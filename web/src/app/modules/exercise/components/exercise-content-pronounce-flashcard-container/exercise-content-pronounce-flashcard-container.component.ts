@@ -5,13 +5,13 @@ import { ExerciseSessionService } from '../../services/exerciseSession.service';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { InstructionComponent } from "../instruction/instruction.component";
 import { CommonModule } from '@angular/common';
-import { CorrectableAudioFieldComponent } from "../../../../shared/components/correctable-audio-field/correctable-audio-field.component";
+import { ExerciseInputRecordAudioComponent } from "../exercise-input-record-audio/exercise-input-record-audio.component";
 import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
 
 @Component({
   selector: 'app-exercise-content-pronounce-flashcard-container',
   standalone: true,
-  imports: [CommonModule, InstructionComponent, CorrectableAudioFieldComponent, DynamicFlashcardContentComponent],
+  imports: [CommonModule, InstructionComponent, ExerciseInputRecordAudioComponent, DynamicFlashcardContentComponent],
   templateUrl: './exercise-content-pronounce-flashcard-container.component.html'
 })
 export class ExerciseContentPronounceFlashcardContainerComponent {

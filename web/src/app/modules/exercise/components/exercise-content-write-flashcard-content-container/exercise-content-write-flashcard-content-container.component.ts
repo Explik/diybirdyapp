@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InstructionComponent } from "../instruction/instruction.component";
 import { CommonModule } from '@angular/common';
-import { CorrectableTextFieldComponent } from '../../../../shared/components/correctable-text-field/correctable-text-field.component';
+import { ExerciseInputWriteTextComponent } from '../exercise-input-write-text/exercise-input-write-text.component';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
@@ -9,7 +9,7 @@ import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/d
 @Component({
   selector: 'app-exercise-content-write-flashcard-content-container',
   standalone: true,
-  imports: [InstructionComponent, CommonModule, CorrectableTextFieldComponent, DynamicFlashcardContentComponent],
+  imports: [InstructionComponent, CommonModule, ExerciseInputWriteTextComponent, DynamicFlashcardContentComponent],
   templateUrl: './exercise-content-write-flashcard-content-container.component.html'
 })
 export class ExerciseContentWriteFlashcardContentContainerComponent implements OnInit {

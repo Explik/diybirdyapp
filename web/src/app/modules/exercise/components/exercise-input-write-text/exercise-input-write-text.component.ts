@@ -3,12 +3,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-correctable-text-field',
+  selector: 'app-exercise-input-write-text',
   standalone: true,
-  templateUrl: './correctable-text-field.component.html',
+  templateUrl: './exercise-input-write-text.component.html',
   imports: [CommonModule, FormsModule]
 })
-export class CorrectableTextFieldComponent {
+export class ExerciseInputWriteTextComponent {
   @Input({required: true}) input!: ExerciseInputTextDto;
   feedbackValues: { state: string, value: string}[] = []; 
 

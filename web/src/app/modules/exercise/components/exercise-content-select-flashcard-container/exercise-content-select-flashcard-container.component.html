@@ -4,7 +4,7 @@
 
 <app-dynamic-flashcard-content *ngIf="content" [data]="content"/>
 
-<app-correctable-multiple-choice-text-field
+<app-exercise-input-select-options
     *ngIf="input"
     [input]="input"
-    (optionSelected)="handleOptionSelected($event)"></app-correctable-multiple-choice-text-field>
+    (optionSelected)="handleOptionSelected($event)"></app-exercise-input-select-options>

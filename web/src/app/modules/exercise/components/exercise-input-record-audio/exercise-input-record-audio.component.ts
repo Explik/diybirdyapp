@@ -1,15 +1,15 @@
 import { Component, Input } from '@angular/core';
-import { AudioUploadService } from '../../services/audioUpload.service';
+import { AudioUploadService } from '../../../../shared/services/audioUpload.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-correctable-audio-field',
+  selector: 'app-exercise-input-record-audio',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './correctable-audio-field.component.html',
-  styleUrl: './correctable-audio-field.component.css'
+  templateUrl: './exercise-input-record-audio.component.html',
+  styleUrl: './exercise-input-record-audio.component.css'
 })
-export class CorrectableAudioFieldComponent {
+export class ExerciseInputRecordAudioComponent {
   isRecording = false;
   audioBlob: Blob | null = null;
   mediaRecorder!: MediaRecorder;
