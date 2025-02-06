@@ -4,10 +4,11 @@ import { ExerciseInputWriteTextComponent } from "../../components/exercise-input
 import { Exercise } from '../../models/exercise.interface';
 import { ExerciseInputSelectOptionsComponent } from '../../components/exercise-input-select-options/exercise-input-select-options.component';
 import { ExerciseInputRecordAudioComponent } from "../../components/exercise-input-record-audio/exercise-input-record-audio.component";
+import { ExerciseInputArrangeTextOptionsComponent } from "../../components/exercise-input-arrange-text-options/exercise-input-arrange-text-options.component";
 
 @Component({
   selector: 'app-exercise-components-page',
-  imports: [ExerciseInputWriteTextComponent, ExerciseInputSelectOptionsComponent, ExerciseInputRecordAudioComponent],
+  imports: [ExerciseInputWriteTextComponent, ExerciseInputSelectOptionsComponent, ExerciseInputRecordAudioComponent, ExerciseInputArrangeTextOptionsComponent],
   templateUrl: './exercise-components-page.component.html'
 })
 export class ExerciseComponentsPageComponent {
@@ -18,6 +19,18 @@ export class ExerciseComponentsPageComponent {
     type: 'audio',
     url: ''
   }
+
+  arrangeTextValue: ExerciseInputArrangeTextOptionsDto = {
+    id: '1',
+    type: 'arrange-text',
+    options: [
+      { id: '1', text: 'a' }, 
+      { id: '2', text: 'This' }, 
+      { id: '3', text: 'is' },
+      { id: '4', text: 'test' }
+    ],
+    value: '2'
+  };
 
   textValue: ExerciseInputTextDto = {
     id: '1',
