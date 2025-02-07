@@ -6,4 +6,5 @@ public class ExerciseInputTypes {
     public static final String TEXT = "text";
     public static final String AUDIO = "audio";
     public static final String ARRANGE_TEXT_OPTIONS = "arrange-text-options";
+    public static final String WRITE_PLACEHOLDERS = "write-placeholders";
 }

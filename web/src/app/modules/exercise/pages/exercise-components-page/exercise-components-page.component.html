@@ -14,14 +14,11 @@
 
     <br>
 
-    <p>Write placeholders</p>
-    <app-exercise-input-write-placeholders [parts]="[
-        { type: 'text', value: 'This is a' },
-        { type: 'placeholder', size: 100 },
-        { type: 'text', value: 'blue' },
-        { type: 'placeholder', size: 100 },
-        { type: 'text', value: 'car.' }
-    ]"></app-exercise-input-write-placeholders>
+    <p>Write placeholders (default)</p>
+    <app-exercise-input-write-placeholders [input]="writePlaceholdersValue"></app-exercise-input-write-placeholders>
+
+    <p>Write placeholders (correct/incorrect)</p>
+    <app-exercise-input-write-placeholders [input]="writePlaceholdersValueWithFeedback"></app-exercise-input-write-placeholders>
 
     <br>
 

@@ -54,6 +54,35 @@ export class ExerciseComponentsPageComponent {
     feedback: { correctValues: ['Hello, world!'], incorrectValues: ['Goodbye, World!'] } 
   };
 
+  writePlaceholdersValue: ExerciseInputWritePlaceholdersDto = {
+    id: '1',
+    type: 'write-placeholders',
+    parts: [
+      { id: '1', type: 'text', value: 'This is a' },
+      { id: '2', type: 'placeholder', value: '', size: 100 },
+      { id: '3', type: 'text', value: 'blue' },
+      { id: '4', type: 'placeholder', value: '', size: 100 },
+      { id: '5', type: 'text', value: 'car.' }
+    ],
+    feedback: undefined
+  }
+
+  writePlaceholdersValueWithFeedback: ExerciseInputWritePlaceholdersDto = {
+    id: '1',
+    type: 'write-placeholders',
+    parts: [
+      { id: '1', type: 'text', value: 'This is a' },
+      { id: '2', type: 'placeholder', value: 'big', size: 100 },
+      { id: '3', type: 'text', value: 'blue' },
+      { id: '4', type: 'placeholder', value: 'red', size: 100 },
+      { id: '5', type: 'text', value: 'car.' }
+    ],
+    feedback: { 
+      correctPlaceholdersIds: ['2'], 
+      incorrectPlaceholdersIds: ['4'] 
+    }
+  }
+
   multipleChoiceValue: ExerciseInputMultipleChoiceTextDto = {
     id: '1',
     type: 'multiple-choice',

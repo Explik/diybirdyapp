@@ -1,11 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-exercise-input-write-placeholders',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './exercise-input-write-placeholders.component.html'
 })
 export class ExerciseInputWritePlaceholdersComponent {
-  @Input() parts: { type: string, value?: string, size?: number }[] = [];
+  @Input({required: true}) input!: ExerciseInputWritePlaceholdersDto; 
+
+  get parts(): WritePlaceholdersPartDto[] {
+    return this.input.parts;
+  }
+
+  get feedback(): WritePlaceholdersFeedbackDto | undefined {
+    return this.input.feedback;
+  }
 }
