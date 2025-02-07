@@ -14,6 +14,17 @@
 
     <br>
 
+    <p>Write placeholders</p>
+    <app-exercise-input-write-placeholders [parts]="[
+        { type: 'text', value: 'This is a' },
+        { type: 'placeholder', size: 100 },
+        { type: 'text', value: 'blue' },
+        { type: 'placeholder', size: 100 },
+        { type: 'text', value: 'car.' }
+    ]"></app-exercise-input-write-placeholders>
+
+    <br>
+
     <p>Select options input (default)</p>
     <app-exercise-input-select-options [input]="multipleChoiceValue"></app-exercise-input-select-options>
 

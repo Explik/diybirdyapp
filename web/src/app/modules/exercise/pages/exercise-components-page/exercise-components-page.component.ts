@@ -5,10 +5,11 @@ import { Exercise } from '../../models/exercise.interface';
 import { ExerciseInputSelectOptionsComponent } from '../../components/exercise-input-select-options/exercise-input-select-options.component';
 import { ExerciseInputRecordAudioComponent } from "../../components/exercise-input-record-audio/exercise-input-record-audio.component";
 import { ExerciseInputArrangeTextOptionsComponent } from "../../components/exercise-input-arrange-text-options/exercise-input-arrange-text-options.component";
+import { ExerciseInputWritePlaceholdersComponent } from "../../components/exercise-input-write-placeholders/exercise-input-write-placeholders.component";
 
 @Component({
   selector: 'app-exercise-components-page',
-  imports: [ExerciseInputWriteTextComponent, ExerciseInputSelectOptionsComponent, ExerciseInputRecordAudioComponent, ExerciseInputArrangeTextOptionsComponent],
+  imports: [ExerciseInputWriteTextComponent, ExerciseInputSelectOptionsComponent, ExerciseInputRecordAudioComponent, ExerciseInputArrangeTextOptionsComponent, ExerciseInputWritePlaceholdersComponent],
   templateUrl: './exercise-components-page.component.html'
 })
 export class ExerciseComponentsPageComponent {

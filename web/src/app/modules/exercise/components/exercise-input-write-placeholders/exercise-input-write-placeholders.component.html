@@ -1,0 +1,9 @@
+<div class="p-4 rounded-lg border border-gray-300">
+    <ng-container *ngFor="let part of parts">
+      <span *ngIf="part.type === 'text'">{{ part.value }}</span>
+      <input *ngIf="part.type === 'placeholder'" 
+             type="text" 
+             [style.width.px]="part.size" 
+             class="border-b border-gray-400 focus:outline-none focus:border-blue-500 mx-1" />
+    </ng-container>
+  </div>
