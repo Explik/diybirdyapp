@@ -2,7 +2,7 @@
 <div class="w-96 h-96 rounded-lg flex flex-col items-center justify-center relative">
     <div *ngIf="!videoUrl" class="w-full h-2/3 bg-black rounded-lg flex items-center justify-center relative">
       <video #videoElement class="w-full h-full object-cover rounded-lg" autoplay *ngIf="mediaStream"></video>
-      <div *ngIf="!mediaStream" class="flex flex-col items-center justify-center">
+      <div *ngIf="!mediaStream && !isLoading" class="flex flex-col items-center justify-center">
         <span class="mdi mdi-video-off text-white text-4xl"></span>
         <button (click)="activateCamera()" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Activate Camera</button>
       </div>

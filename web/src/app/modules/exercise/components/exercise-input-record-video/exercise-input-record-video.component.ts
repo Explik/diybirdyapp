@@ -14,7 +14,14 @@ export class ExerciseInputRecordVideoComponent {
   recordedChunks: Blob[] = [];
   isRecording = false;
   videoUrl: string | null = null;
+  isLoading = false;
   
+  ngOnInit() {
+    this.isLoading = true;
+    this.activateCamera();
+    this.isLoading = false; 
+  }
+
   get recordButtonLabel() {
     if (this.mediaStream === null)
       return 'Enable camera to record';
