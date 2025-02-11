@@ -1,0 +1,21 @@
+<div class="flex gap-4 p-4">
+    <div class="w-1/2 space-y-2 ">
+      <button *ngFor="let option of leftOptions"
+           (click)="selectOption(option, 'left')"
+           [disabled]="isOptionDisabled(option)"
+           [ngClass]="getOptionClass(option, 'left')"
+           class="option block w-full bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:bg-slate-200">
+        {{ option.text }}
+      </button>
+    </div>
+
+    <div class="w-1/2 space-y-2">
+      <button *ngFor="let option of rightOptions"
+           (click)="selectOption(option, 'right')"
+           [disabled]="isOptionDisabled(option)"
+           [ngClass]="getOptionClass(option, 'right')"
+           class="option block w-full bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:bg-slate-200">
+        {{ option.text }}
+      </button>
+    </div>
+  </div>

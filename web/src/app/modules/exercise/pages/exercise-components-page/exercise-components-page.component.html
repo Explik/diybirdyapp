@@ -33,6 +33,24 @@
 
     <br>
 
+    <p>Pair options (default)</p>
+    <app-exercise-input-pair-options
+        [leftOptions]="[{ id: '1', text: 'Apple' }, { id: '2', text: 'Banana' }, { id: '3', text: 'Orange' }]" 
+        [rightOptions]="[{ id: 'a', text: 'Red' }, { id: 'b', text: 'Yellow' }, { id: 'c', text: 'Orange'}]" />
+
+    <p>Pair options (correct)</p>
+    <app-exercise-input-pair-options
+        [leftOptions]="[{ id: '1', text: 'Apple' }, { id: '2', text: 'Banana' }, { id: '3', text: 'Orange' }]" 
+        [rightOptions]="[{ id: 'a', text: 'Red' }, { id: 'b', text: 'Yellow' }, { id: 'c', text: 'Orange'}]"
+        [correctPairs]="[{ left: '2', right: 'a' }]" />
+
+    <p>Pair options (incorrect)</p>
+    <app-exercise-input-pair-options
+        [leftOptions]="[{ id: '1', text: 'Apple' }, { id: '2', text: 'Banana' }, { id: '3', text: 'Orange' }]" 
+        [rightOptions]="[{ id: 'a', text: 'Red' }, { id: 'b', text: 'Yellow' }, { id: 'c', text: 'Orange'}]"
+        [incorrectPairs]="[{ left: '1', right: 'b' }]" />
+    <br>
+
     <p>Record audio</p>
     <app-exercise-input-record-audio [input]="audioValue"></app-exercise-input-record-audio>
 
