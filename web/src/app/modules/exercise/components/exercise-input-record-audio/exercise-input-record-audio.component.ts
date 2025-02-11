@@ -6,8 +6,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-exercise-input-record-audio',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './exercise-input-record-audio.component.html',
-  styleUrl: './exercise-input-record-audio.component.css'
+  templateUrl: './exercise-input-record-audio.component.html'
 })
 export class ExerciseInputRecordAudioComponent {
   isRecording = false;
