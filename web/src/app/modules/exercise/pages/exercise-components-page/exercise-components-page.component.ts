@@ -6,10 +6,11 @@ import { ExerciseInputSelectOptionsComponent } from '../../components/exercise-i
 import { ExerciseInputRecordAudioComponent } from "../../components/exercise-input-record-audio/exercise-input-record-audio.component";
 import { ExerciseInputArrangeTextOptionsComponent } from "../../components/exercise-input-arrange-text-options/exercise-input-arrange-text-options.component";
 import { ExerciseInputWritePlaceholdersComponent } from "../../components/exercise-input-write-placeholders/exercise-input-write-placeholders.component";
+import { ExerciseInputSelectPlaceholdersComponent } from "../../components/exercise-input-select-placeholders/exercise-input-select-placeholders.component";
 
 @Component({
   selector: 'app-exercise-components-page',
-  imports: [ExerciseInputWriteTextComponent, ExerciseInputSelectOptionsComponent, ExerciseInputRecordAudioComponent, ExerciseInputArrangeTextOptionsComponent, ExerciseInputWritePlaceholdersComponent],
+  imports: [ExerciseInputWriteTextComponent, ExerciseInputSelectOptionsComponent, ExerciseInputRecordAudioComponent, ExerciseInputArrangeTextOptionsComponent, ExerciseInputWritePlaceholdersComponent, ExerciseInputSelectPlaceholdersComponent],
   templateUrl: './exercise-components-page.component.html'
 })
 export class ExerciseComponentsPageComponent {
