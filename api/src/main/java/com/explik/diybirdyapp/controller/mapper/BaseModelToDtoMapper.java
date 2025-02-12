@@ -37,9 +37,9 @@ public abstract class BaseModelToDtoMapper {
         @Override
         protected ExerciseInputDto convert(ExerciseInputModel source) {
             if (source instanceof ExerciseInputTextModel)
-                return modelMapper.map(source, ExerciseInputTextDto.class);
+                return modelMapper.map(source, ExerciseInputWriteTextDto.class);
             if (source instanceof ExerciseInputMultipleChoiceTextModel)
-                return modelMapper.map(source, ExerciseInputMultipleChoiceTextDto.class);
+                return modelMapper.map(source, ExerciseInputSelectOptionsDto.class);
             return null;
         }
     };

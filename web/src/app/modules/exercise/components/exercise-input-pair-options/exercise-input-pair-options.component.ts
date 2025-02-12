@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ExerciseInputPairOptionsDto, PairOptionFeedbackPair } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-pair-options',
@@ -8,16 +9,27 @@ import { Component, Input } from '@angular/core';
   styleUrl: './exercise-input-pair-options.component.css'
 })
 export class ExerciseInputPairOptionsComponent {
-  selectedPair?: { left: string, right: string } = undefined;
-  
-  @Input() leftOptions: { id: string, text: string }[] = [];
-  @Input() rightOptions: { id: string, text: string }[] = [];
-  
-  @Input() correctPairs: { left: string, right: string }[] = [];
-  @Input() incorrectPairs: { left: string, right: string }[] = [];
-
   selectedLeft: any = null;
   selectedRight: any = null;
+  selectedPair?: { left: string, right: string } = undefined;
+
+  @Input({required: true}) input!: ExerciseInputPairOptionsDto; 
+
+  get leftOptions() {
+    return this.input.leftOptions;
+  }
+
+  get rightOptions() {
+    return this.input.rightOptions;
+  }
+
+  get correctPairs(): PairOptionFeedbackPair[] {
+    return this.input.feedback?.correctPairs ?? [];
+  }
+
+  get incorrectPairs() {
+    return this.input.feedback?.incorrectPairs ?? [];
+  }
 
   selectOption(option: any, side: 'left' | 'right') {
     if (side === 'left') {
@@ -44,11 +56,11 @@ export class ExerciseInputPairOptionsComponent {
   getOptionClass(option: any, side: 'left' | 'right') {
     const optionId = option.id;
 
-    const isCorrect = this.correctPairs.some(p => p.left === optionId || p.right === optionId);
+    const isCorrect = this.correctPairs.some(p => p.leftId === optionId || p.rightId === optionId);
     if (isCorrect) 
       return 'correct';
     
-    const isIncorrect = this.incorrectPairs.some(p => p.left === optionId || p.right === optionId);
+    const isIncorrect = this.incorrectPairs.some(p => p.leftId === optionId || p.rightId === optionId);
     if (isIncorrect)
       return 'incorrect';
 
@@ -61,8 +73,8 @@ export class ExerciseInputPairOptionsComponent {
 
   isOptionDisabled(option: any) {
     const optionId = option.id;
-    const isCorrect = this.correctPairs.some(p => p.left === optionId || p.right === optionId);
-    const isIncorrect = this.incorrectPairs.some(p => p.left === optionId || p.right === optionId);
+    const isCorrect = this.correctPairs.some(p => p.leftId === optionId || p.rightId === optionId);
+    const isIncorrect = this.incorrectPairs.some(p => p.leftId === optionId || p.rightId === optionId);
 
     return isCorrect || isIncorrect;
   }

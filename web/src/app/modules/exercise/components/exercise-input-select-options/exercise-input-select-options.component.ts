@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ExerciseInputMultipleChoiceTextDto } from '../../../../shared/api-client';
+import { ExerciseInputSelectOptionsDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-select-options',
@@ -11,7 +11,7 @@ import { ExerciseInputMultipleChoiceTextDto } from '../../../../shared/api-clien
   styleUrl: './exercise-input-select-options.component.css'
 })
 export class ExerciseInputSelectOptionsComponent {
-  @Input() input: ExerciseInputMultipleChoiceTextDto | undefined = undefined;
+  @Input() input: ExerciseInputSelectOptionsDto | undefined = undefined;
   @Output()  optionSelected: EventEmitter<string> = new EventEmitter<string>();
 
   handleOptionSelected(optionId: string): void {

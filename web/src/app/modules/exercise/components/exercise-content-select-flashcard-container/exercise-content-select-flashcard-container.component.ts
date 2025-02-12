@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseInputSelectOptionsComponent } from '../exercise-input-select-options/exercise-input-select-options.component';
 import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
-import { ExerciseContentFlashcardDto, ExerciseInputMultipleChoiceTextDto } from '../../../../shared/api-client';
+import { ExerciseContentFlashcardDto, ExerciseInputSelectOptionsDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-select-flashcard-container',
@@ -14,13 +14,13 @@ import { ExerciseContentFlashcardDto, ExerciseInputMultipleChoiceTextDto } from 
 })
 export class ExerciseContentSelectFlashcardContainerComponent implements OnInit {
   content?: ExerciseContentFlashcardDto;
-  input?: ExerciseInputMultipleChoiceTextDto;
+  input?: ExerciseInputSelectOptionsDto;
 
   constructor(private service: ExerciseService) { }
 
   ngOnInit(): void {
     this.service.getContent<ExerciseContentFlashcardDto>().subscribe(data => this.content = data);
-    this.service.getInput<ExerciseInputMultipleChoiceTextDto>().subscribe(data => this.input = data);
+    this.service.getInput<ExerciseInputSelectOptionsDto>().subscribe(data => this.input = data);
   }
 
   handleOptionSelected(optionId: string): void {

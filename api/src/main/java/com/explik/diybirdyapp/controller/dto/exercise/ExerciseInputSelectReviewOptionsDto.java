@@ -2,7 +2,7 @@ package com.explik.diybirdyapp.controller.dto.exercise;
 
 import jakarta.validation.constraints.NotNull;
 
-public class ExerciseInputRecognizabilityRatingDto extends ExerciseInputDto {
+public class ExerciseInputSelectReviewOptionsDto extends ExerciseInputDto {
     @NotNull
     private String rating;
 

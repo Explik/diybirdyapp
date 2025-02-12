@@ -9,7 +9,7 @@ import { ExerciseInputWritePlaceholdersComponent } from "../../components/exerci
 import { ExerciseInputSelectPlaceholdersComponent } from "../../components/exercise-input-select-placeholders/exercise-input-select-placeholders.component";
 import { ExerciseInputPairOptionsComponent } from '../../components/exercise-input-pair-options/exercise-input-pair-options.component';
 import { ExerciseInputRecordVideoComponent } from "../../components/exercise-input-record-video/exercise-input-record-video.component";
-import { ExerciseInputArrangeTextOptionsDto, ExerciseInputAudioDto, ExerciseInputMultipleChoiceTextDto, ExerciseInputTextDto, ExerciseInputWritePlaceholdersDto } from '../../../../shared/api-client';
+import { ExerciseInputArrangeTextOptionsDto, ExerciseInputPairOptionsDto, ExerciseInputRecordAudioDto, ExerciseInputRecordVideoDto, ExerciseInputSelectOptionsDto, ExerciseInputSelectPlaceholdersDto, ExerciseInputWritePlaceholdersDto, ExerciseInputWriteTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-components-page',
@@ -19,9 +19,15 @@ import { ExerciseInputArrangeTextOptionsDto, ExerciseInputAudioDto, ExerciseInpu
 export class ExerciseComponentsPageComponent {
   constructor() { }
 
-  audioValue: ExerciseInputAudioDto = {
+  audioValue: ExerciseInputRecordAudioDto = {
     id: '1',
     type: 'audio',
+    url: ''
+  }
+
+  videoValue: ExerciseInputRecordVideoDto = {
+    id: '1',
+    type: 'video',
     url: ''
   }
 
@@ -37,21 +43,21 @@ export class ExerciseComponentsPageComponent {
     value: '2'
   };
 
-  textValue: ExerciseInputTextDto = {
+  textValue: ExerciseInputWriteTextDto = {
     id: '1',
     type: 'text',
     text: 'Hello, World!',
     feedback: undefined
   };
 
-  textValueWithCorrectFeedback: ExerciseInputTextDto = { 
+  textValueWithCorrectFeedback: ExerciseInputWriteTextDto = { 
     id: '1',
     type: 'text',
     text: 'Hello, World!', 
     feedback: { correctValues: ['Hello, World!'], incorrectValues: [] } 
   };
 
-  textValueWithIncorrectFeedback: ExerciseInputTextDto = { 
+  textValueWithIncorrectFeedback: ExerciseInputWriteTextDto = { 
     id: '1',
     type: 'text',
     text: 'Hello, ', 
@@ -87,9 +93,10 @@ export class ExerciseComponentsPageComponent {
     }
   }
 
-  multipleChoiceValue: ExerciseInputMultipleChoiceTextDto = {
+  selectOptionsValue: ExerciseInputSelectOptionsDto = {
     id: '1',
     type: 'multiple-choice',
+    optionType: 'text',
     options: [
       { id: '1', text: 'Option 1' },
       { id: '2', text: 'Option 2' },
@@ -99,9 +106,10 @@ export class ExerciseComponentsPageComponent {
     value: "1",
   };
 
-  multipleChoiceValueWithFeedback: ExerciseInputMultipleChoiceTextDto = { 
+  selectOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = { 
     id: '1',
     type: 'multiple-choice',
+    optionType: 'text',
     options: [
       { id: '1', text: 'Option 1' },
       { id: '2', text: 'Option 2' },
@@ -114,4 +122,76 @@ export class ExerciseComponentsPageComponent {
     },
     value: '1'
   };
+
+  selectPlaceholdersValue: ExerciseInputSelectPlaceholdersDto = {
+    id: '1',
+    type: 'select-placeholders',
+    parts: [
+      { type: 'text', value: 'This is a' },
+      { type: 'placeholder'}
+    ],
+    options: [
+      { id: '1', text: 'test' },
+      { id: '2', text: 'example' }
+    ]
+  }
+
+  pairOptionsValue: ExerciseInputPairOptionsDto = {
+    id: '1',
+    type: 'pair-options',
+    leftOptionType: 'text',
+    rightOptionType: 'text',
+    leftOptions: [
+      { id: '1', text: 'Apple' }, 
+      { id: '2', text: 'Banana' }, 
+      { id: '3', text: 'Orange' }
+    ] as any[],
+    rightOptions: [
+      { id: '4', text: 'Red' }, 
+      { id: '5', text: 'Yellow' }, 
+      { id: '6', text: 'Orange' }
+    ] as any[],
+  }
+
+  pairOptionsValueWithCorrectFeedback: ExerciseInputPairOptionsDto = {
+    id: '1',
+    type: 'pair-options',
+    leftOptionType: 'text',
+    rightOptionType: 'text',
+    leftOptions: [
+      { id: '1', text: 'Apple' }, 
+      { id: '2', text: 'Banana' }, 
+      { id: '3', text: 'Orange' }
+    ] as any[],
+    rightOptions: [
+      { id: 'a', text: 'Red' }, 
+      { id: 'b', text: 'Yellow' }, 
+      { id: 'c', text: 'Orange' }
+    ] as any[],
+    feedback: {
+      correctPairs: [{ leftId: '2', rightId: 'a' }],
+      incorrectPairs: []
+    }
+  }
+
+  pairOptionsValueWithIncorrectFeedback: ExerciseInputPairOptionsDto = {
+    id: '1',
+    type: 'pair-options',
+    leftOptionType: 'text',
+    rightOptionType: 'text',
+    leftOptions: [
+      { id: '1', text: 'Apple' }, 
+      { id: '2', text: 'Banana' }, 
+      { id: '3', text: 'Orange' }
+    ] as any[],
+    rightOptions: [
+      { id: 'a', text: 'Red' }, 
+      { id: 'b', text: 'Yellow' }, 
+      { id: 'c', text: 'Orange' }
+    ] as any[],
+    feedback: {
+      correctPairs: [],
+      incorrectPairs: [{ leftId: '1', rightId: 'b' }]
+    }
+  }
 }

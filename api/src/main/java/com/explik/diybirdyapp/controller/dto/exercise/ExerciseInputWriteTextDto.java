@@ -1,16 +1,19 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import com.explik.diybirdyapp.ExerciseInputTypes;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public class ExerciseInputTextDto extends ExerciseInputDto {
+public class ExerciseInputWriteTextDto extends ExerciseInputDto {
     @NotNull
     private String text;
 
     private ExerciseInputFeedbackTextDto feedback;
 
-    public static String TYPE = "text-input";
+    public ExerciseInputWriteTextDto() {
+        setType(ExerciseInputTypes.WRITE_TEXT);
+    }
 
     public String getText() { return text; }
 

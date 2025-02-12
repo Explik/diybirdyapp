@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
+import { ExerciseInputRecordVideoDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-record-video',
@@ -16,6 +17,8 @@ export class ExerciseInputRecordVideoComponent {
   videoUrl: string | null = null;
   isLoading = false;
   hasFailure = false;
+
+  @Input({required: true}) input!: ExerciseInputRecordVideoDto;
   
   ngOnInit() {
     this.isLoading = true;

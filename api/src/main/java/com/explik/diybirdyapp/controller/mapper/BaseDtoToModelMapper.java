@@ -17,13 +17,13 @@ public abstract class BaseDtoToModelMapper {
     Converter<ExerciseInputDto, ExerciseInputModel> exerciseInputConverter = new AbstractConverter<ExerciseInputDto, ExerciseInputModel>() {
         @Override
         protected ExerciseInputModel convert(ExerciseInputDto source) {
-            if (source instanceof ExerciseInputTextDto)
+            if (source instanceof ExerciseInputWriteTextDto)
                 return modelMapper.map(source, ExerciseInputTextModel.class);
-            if (source instanceof ExerciseInputMultipleChoiceTextDto)
+            if (source instanceof ExerciseInputSelectOptionsDto)
                 return modelMapper.map(source, ExerciseInputMultipleChoiceTextModel.class);
-            if (source instanceof ExerciseInputRecognizabilityRatingDto)
+            if (source instanceof ExerciseInputSelectReviewOptionsDto)
                 return modelMapper.map(source, ExerciseInputRecognizabilityRatingModel.class);
-            if (source instanceof ExerciseInputAudioDto)
+            if (source instanceof ExerciseInputRecordAudioDto)
                 return modelMapper.map(source, ExerciseInputAudioModel.class);
             return null;
         }

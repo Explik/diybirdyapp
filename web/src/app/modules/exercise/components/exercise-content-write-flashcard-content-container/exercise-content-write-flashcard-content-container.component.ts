@@ -5,7 +5,7 @@ import { ExerciseInputWriteTextComponent } from '../exercise-input-write-text/ex
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
-import { ExerciseContentFlashcardDto, ExerciseInputTextDto } from '../../../../shared/api-client';
+import { ExerciseContentFlashcardDto, ExerciseInputWriteTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-write-flashcard-content-container',
@@ -15,7 +15,7 @@ import { ExerciseContentFlashcardDto, ExerciseInputTextDto } from '../../../../s
 })
 export class ExerciseContentWriteFlashcardContentContainerComponent implements OnInit {
   content?: ExerciseContentFlashcardDto;
-  input?: ExerciseInputTextDto;
+  input?: ExerciseInputWriteTextDto;
 
   constructor(
     private contentService: ExerciseService,
@@ -26,7 +26,7 @@ export class ExerciseContentWriteFlashcardContentContainerComponent implements O
     this.contentService.getContent<ExerciseContentFlashcardDto>().subscribe(data => this.content = data);
     
     this.contentService.setDefaultInput(this.defaultContentService.getTextInput());
-    this.contentService.getInput<ExerciseInputTextDto>().subscribe(data => { 
+    this.contentService.getInput<ExerciseInputWriteTextDto>().subscribe(data => { 
       this.input = data; 
     });
   }

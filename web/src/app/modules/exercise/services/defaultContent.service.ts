@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { ExerciseInputAudioDto, ExerciseInputTextDto } from "../../../shared/api-client";
+import { ExerciseInputRecordAudioDto, ExerciseInputWriteTextDto } from "../../../shared/api-client";
 
 /**
  * Service to provide default content for exercises as most exercises have fixed content
@@ -11,8 +11,8 @@ import { ExerciseInputAudioDto, ExerciseInputTextDto } from "../../../shared/api
 export class DefaultContentService {
     constructor() {}
 
-    getTextInput(): Partial<ExerciseInputTextDto> {
-        const textInput: Partial<ExerciseInputTextDto> = {
+    getTextInput(): Partial<ExerciseInputWriteTextDto> {
+        const textInput: Partial<ExerciseInputWriteTextDto> = {
             id: "default",
             type: "text",
             text: "",
@@ -21,8 +21,8 @@ export class DefaultContentService {
         return textInput;
     }
 
-    getAudioInput(): Partial<ExerciseInputAudioDto> {
-        const audioInput: Partial<ExerciseInputAudioDto> = {
+    getAudioInput(): Partial<ExerciseInputRecordAudioDto> {
+        const audioInput: Partial<ExerciseInputRecordAudioDto> = {
             id: "default",
             type: "audio",
             url: ""

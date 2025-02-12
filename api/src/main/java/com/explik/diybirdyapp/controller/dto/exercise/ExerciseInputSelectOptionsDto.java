@@ -1,29 +1,46 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import com.explik.diybirdyapp.ExerciseInputTypes;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
-    private ExerciseInputFeedbackMultipleChoiceTextFeedbackDto feedback;
-    private List<Option> options;
+public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
+    @NotNull
+    private List<SelectOptionInputTextOption> options;
+
+    @NotNull
+    private String optionType = "text";
+
     private String value;
 
-    public static String TYPE = "multiple-choice-text-input";
+    private SelectOptionsInputFeedbackDto feedback;
 
-    public ExerciseInputFeedbackMultipleChoiceTextFeedbackDto getFeedback() {
+    public ExerciseInputSelectOptionsDto() {
+        setType(ExerciseInputTypes.SELECT_OPTIONS);
+    }
+
+    public SelectOptionsInputFeedbackDto getFeedback() {
         return feedback;
     }
 
-    public void setFeedback(ExerciseInputFeedbackMultipleChoiceTextFeedbackDto feedback) {
+    public void setFeedback(SelectOptionsInputFeedbackDto feedback) {
         this.feedback = feedback;
     }
 
-    public List<Option> getOptions() {
+    public String getOptionType() {
+        return optionType;
+    }
+
+    public void setOptionType(String optionType) {
+        this.optionType = optionType;
+    }
+
+    public List<SelectOptionInputTextOption> getOptions() {
         return options;
     }
 
-    public void setOptions(List<Option> options) {
+    public void setOptions(List<SelectOptionInputTextOption> options) {
         this.options = options;
     }
 
@@ -35,18 +52,18 @@ public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
         this.value = value;
     }
 
-    public static class Option {
+    public static class SelectOptionInputTextOption {
         @NotNull
         private String id;
 
         @NotNull
         private String text;
 
-        public Option() {
+        public SelectOptionInputTextOption() {
 
         }
 
-        public Option(String id, String text) {
+        public SelectOptionInputTextOption(String id, String text) {
             this.id = id;
             this.text = text;
         }
@@ -60,7 +77,7 @@ public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
         public void setText(String text) { this.text = text; }
     }
 
-    public static class ExerciseInputFeedbackMultipleChoiceTextFeedbackDto {
+    public static class SelectOptionsInputFeedbackDto {
         @NotNull
         private List<String> correctOptionIds = List.of();
 

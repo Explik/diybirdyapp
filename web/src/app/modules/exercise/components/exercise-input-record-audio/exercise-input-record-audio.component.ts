@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { AudioUploadService } from '../../../../shared/services/audioUpload.service';
 import { CommonModule } from '@angular/common';
-import { ExerciseInputAudioDto, FileUploadResultDto } from '../../../../shared/api-client';
+import { ExerciseInputRecordAudioDto, FileUploadResultDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-record-audio',
@@ -16,7 +16,7 @@ export class ExerciseInputRecordAudioComponent {
   audioChunks: Blob[] = [];
   isUploading = false;
 
-  @Input() input?: ExerciseInputAudioDto;
+  @Input() input?: ExerciseInputRecordAudioDto;
 
   constructor(private audioUploadService: AudioUploadService) {}
 

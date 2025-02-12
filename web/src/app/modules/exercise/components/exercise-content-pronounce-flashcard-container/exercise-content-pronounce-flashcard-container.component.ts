@@ -7,7 +7,7 @@ import { InstructionComponent } from "../instruction/instruction.component";
 import { CommonModule } from '@angular/common';
 import { ExerciseInputRecordAudioComponent } from "../exercise-input-record-audio/exercise-input-record-audio.component";
 import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
-import { ExerciseContentFlashcardDto, ExerciseInputAudioDto } from '../../../../shared/api-client';
+import { ExerciseContentFlashcardDto, ExerciseInputRecordAudioDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-pronounce-flashcard-container',
@@ -17,7 +17,7 @@ import { ExerciseContentFlashcardDto, ExerciseInputAudioDto } from '../../../../
 })
 export class ExerciseContentPronounceFlashcardContainerComponent {
   content?: ExerciseContentFlashcardDto;
-  input?: ExerciseInputAudioDto;
+  input?: ExerciseInputRecordAudioDto;
 
   constructor(
     private exerciseService: ExerciseService,
@@ -27,7 +27,7 @@ export class ExerciseContentPronounceFlashcardContainerComponent {
   ngOnInit(): void {
     this.exerciseService.getContent<ExerciseContentFlashcardDto>().subscribe(data => this.content = data);
     this.exerciseService.setDefaultInput(this.defaultContentService.getAudioInput());
-    this.exerciseService.getInput<ExerciseInputAudioDto>().subscribe(data => { 
+    this.exerciseService.getInput<ExerciseInputRecordAudioDto>().subscribe(data => { 
       this.input = data; 
     });
   }  

@@ -5,8 +5,8 @@ import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.controller.dto.exercise.ExerciseContentFlashcardDto;
 import com.explik.diybirdyapp.controller.dto.exercise.ExerciseContentTextDto;
-import com.explik.diybirdyapp.controller.dto.exercise.ExerciseInputMultipleChoiceTextDto;
-import com.explik.diybirdyapp.controller.dto.exercise.ExerciseInputRecognizabilityRatingDto;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseInputSelectOptionsDto;
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseInputSelectReviewOptionsDto;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +66,7 @@ public class ExerciseControllerIntegrationTests {
         assertEquals(exerciseId, actual.getId());
         assertEquals(ExerciseTypes.SELECT_FLASHCARD, actual.getType());
 
-        var input = (ExerciseInputMultipleChoiceTextDto)actual.getInput();
+        var input = (ExerciseInputSelectOptionsDto)actual.getInput();
         var options = input.getOptions();
         assertEquals(SelectFlashcardExercise.FlashcardText1, options.get(0).getText());
         assertEquals(SelectFlashcardExercise.FlashcardText2, options.get(1).getText());
@@ -92,7 +92,7 @@ public class ExerciseControllerIntegrationTests {
 
     @Test
     void givenExistingExercise_whenSubmitAnswer_thenReturnFeedback() {
-        var answer = new ExerciseInputRecognizabilityRatingDto();
+        var answer = new ExerciseInputSelectReviewOptionsDto();
         answer.setType(ExerciseInputTypes.RECOGNIZABILITY_RATING);
         answer.setRating("easy");
 

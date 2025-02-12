@@ -11,12 +11,15 @@ import jakarta.validation.constraints.NotNull;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ExerciseInputTextDto.class, name = ExerciseInputTypes.TEXT),
-        @JsonSubTypes.Type(value = ExerciseInputMultipleChoiceTextDto.class, name = ExerciseInputTypes.MULTIPLE_CHOICE),
-        @JsonSubTypes.Type(value = ExerciseInputRecognizabilityRatingDto.class, name = ExerciseInputTypes.RECOGNIZABILITY_RATING),
-        @JsonSubTypes.Type(value = ExerciseInputAudioDto.class, name = ExerciseInputTypes.AUDIO),
         @JsonSubTypes.Type(value = ExerciseInputArrangeTextOptionsDto.class, name = ExerciseInputTypes.ARRANGE_TEXT_OPTIONS),
-        @JsonSubTypes.Type(value = ExerciseInputWritePlaceholdersDto.class, name = ExerciseInputTypes.WRITE_PLACEHOLDERS)
+        @JsonSubTypes.Type(value = ExerciseInputPairOptionsDto.class, name = ExerciseInputTypes.PAIR_OPTIONS),
+        @JsonSubTypes.Type(value = ExerciseInputRecordAudioDto.class, name = ExerciseInputTypes.RECORD_AUDIO),
+        @JsonSubTypes.Type(value = ExerciseInputRecordVideoDto.class, name = ExerciseInputTypes.RECORD_VIDEO),
+        @JsonSubTypes.Type(value = ExerciseInputSelectOptionsDto.class, name = ExerciseInputTypes.SELECT_OPTIONS),
+        @JsonSubTypes.Type(value = ExerciseInputSelectPlaceholdersDto.class, name = ExerciseInputTypes.SELECT_PLACEHOLDERS),
+        @JsonSubTypes.Type(value = ExerciseInputSelectReviewOptionsDto.class, name = ExerciseInputTypes.RECOGNIZABILITY_RATING),
+        @JsonSubTypes.Type(value = ExerciseInputWritePlaceholdersDto.class, name = ExerciseInputTypes.WRITE_PLACEHOLDERS),
+        @JsonSubTypes.Type(value = ExerciseInputWriteTextDto.class, name = ExerciseInputTypes.WRITE_TEXT)
 })
 public class ExerciseInputDto {
     @NotNull

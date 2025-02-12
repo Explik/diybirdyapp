@@ -6,7 +6,7 @@ import { TextContent } from '../../../../shared/models/content.interface';
 import { CommonModule } from '@angular/common';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
-import { ExerciseInputTextDto } from '../../../../shared/api-client';
+import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-write-translated-sentence-container',
@@ -17,7 +17,7 @@ import { ExerciseInputTextDto } from '../../../../shared/api-client';
 export class ExerciseContentWriteTranslatedSentenceContainerComponent implements OnInit {
   targetLanguage?: string;
   content?: TextContent;
-  input?: ExerciseInputTextDto;
+  input?: ExerciseInputWriteTextDto;
 
   constructor(
     private exerciseService: ExerciseService,
@@ -28,6 +28,6 @@ export class ExerciseContentWriteTranslatedSentenceContainerComponent implements
     this.exerciseService.getContent<TextContent>().subscribe(data => this.content = data);
 
     this.exerciseService.setDefaultInput(this.defaultContentService.getTextInput());
-    this.exerciseService.getInput<ExerciseInputTextDto>().subscribe(data => this.input = data);
+    this.exerciseService.getInput<ExerciseInputWriteTextDto>().subscribe(data => this.input = data);
   }
 }

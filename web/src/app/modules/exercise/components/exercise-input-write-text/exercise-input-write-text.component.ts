@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ExerciseInputTextDto } from '../../../../shared/api-client';
+import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-write-text',
@@ -10,7 +10,7 @@ import { ExerciseInputTextDto } from '../../../../shared/api-client';
   imports: [CommonModule, FormsModule]
 })
 export class ExerciseInputWriteTextComponent {
-  @Input({required: true}) input!: ExerciseInputTextDto;
+  @Input({required: true}) input!: ExerciseInputWriteTextDto;
   feedbackValues: { state: string, value: string}[] = []; 
 
   ngOnInit() {
@@ -21,7 +21,7 @@ export class ExerciseInputWriteTextComponent {
     this.updateValues(this.input);
   }
 
-  updateValues(newValue: ExerciseInputTextDto) {
+  updateValues(newValue: ExerciseInputWriteTextDto) {
     const feedbackValues: { state: string, value: string}[] = [];
 
     if (newValue?.feedback?.correctValues) 

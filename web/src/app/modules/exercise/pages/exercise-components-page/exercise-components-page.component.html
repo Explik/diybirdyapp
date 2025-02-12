@@ -2,61 +2,43 @@
     <h1 class="text-lg font-bold">Input components</h1>
     <p>Arrange text options (default)</p>
     <app-exercise-input-arrange-text-options [input]="arrangeTextValue"></app-exercise-input-arrange-text-options>
-    
+    <br>
+
     <p>Write text input (default)</p>
     <app-exercise-input-write-text [input]="textValue"></app-exercise-input-write-text>
-
     <p>Write text input (correct)</p>
     <app-exercise-input-write-text [input]="textValueWithCorrectFeedback"></app-exercise-input-write-text>
-    
     <p>Write text input (incorrect)</p>
     <app-exercise-input-write-text [input]="textValueWithIncorrectFeedback"></app-exercise-input-write-text>
-
     <br>
 
     <p>Write placeholders (default)</p>
     <app-exercise-input-write-placeholders [input]="writePlaceholdersValue"></app-exercise-input-write-placeholders>
-
     <p>Write placeholders (correct/incorrect)</p>
     <app-exercise-input-write-placeholders [input]="writePlaceholdersValueWithFeedback"></app-exercise-input-write-placeholders>
-
     <br>
 
     <p>Select options input (default)</p>
-    <app-exercise-input-select-options [input]="multipleChoiceValue"></app-exercise-input-select-options>
-
+    <app-exercise-input-select-options [input]="selectOptionsValue"></app-exercise-input-select-options>
     <p>Select options input (correct/incorrect)</p>
-    <app-exercise-input-select-options [input]="multipleChoiceValueWithFeedback"></app-exercise-input-select-options>
+    <app-exercise-input-select-options [input]="selectOptionsValueWithFeedback"></app-exercise-input-select-options>
+    <br>
 
     <p>Select placeholders (default)</p>
-    <app-exercise-input-select-placeholders></app-exercise-input-select-placeholders>
-
+    <app-exercise-input-select-placeholders [input]="selectPlaceholdersValue"></app-exercise-input-select-placeholders>
     <br>
 
     <p>Pair options (default)</p>
-    <app-exercise-input-pair-options
-        [leftOptions]="[{ id: '1', text: 'Apple' }, { id: '2', text: 'Banana' }, { id: '3', text: 'Orange' }]" 
-        [rightOptions]="[{ id: 'a', text: 'Red' }, { id: 'b', text: 'Yellow' }, { id: 'c', text: 'Orange'}]" />
-
+    <app-exercise-input-pair-options [input]="pairOptionsValue" />
     <p>Pair options (correct)</p>
-    <app-exercise-input-pair-options
-        [leftOptions]="[{ id: '1', text: 'Apple' }, { id: '2', text: 'Banana' }, { id: '3', text: 'Orange' }]" 
-        [rightOptions]="[{ id: 'a', text: 'Red' }, { id: 'b', text: 'Yellow' }, { id: 'c', text: 'Orange'}]"
-        [correctPairs]="[{ left: '2', right: 'a' }]" />
-
+    <app-exercise-input-pair-options [input]="pairOptionsValueWithCorrectFeedback" /> 
     <p>Pair options (incorrect)</p>
-    <app-exercise-input-pair-options
-        [leftOptions]="[{ id: '1', text: 'Apple' }, { id: '2', text: 'Banana' }, { id: '3', text: 'Orange' }]" 
-        [rightOptions]="[{ id: 'a', text: 'Red' }, { id: 'b', text: 'Yellow' }, { id: 'c', text: 'Orange'}]"
-        [incorrectPairs]="[{ left: '1', right: 'b' }]" />
+    <app-exercise-input-pair-options [input]="pairOptionsValueWithIncorrectFeedback" />
     <br>
 
     <p>Record audio</p>
     <app-exercise-input-record-audio [input]="audioValue"></app-exercise-input-record-audio>
 
     <p>Record video</p>
-
-    <app-exercise-input-record-video></app-exercise-input-record-video>
-
-    
+    <app-exercise-input-record-video [input]="videoValue"></app-exercise-input-record-video>    
 </section>

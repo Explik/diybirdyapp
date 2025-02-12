@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, input, ViewChild } from '@angular/core';
 import { CdkDragDrop, DragDropModule, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
+import { ExerciseInputSelectPlaceholdersDto, SelectPlaceholdersInputOption, SelectPlaceholdersInputPart } from '../../../../shared/api-client';
 
-interface Part {
+interface Part extends SelectPlaceholdersInputPart {
   type: 'text' | 'placeholder';
   value?: string;
   option?: { id: string, text: string };
@@ -17,15 +18,15 @@ interface Part {
 export class ExerciseInputSelectPlaceholdersComponent {
   @ViewChild('optionList') optionList!: ElementRef;
 
-  parts: Part[] = [
-    { type: 'text', value: 'This is a ' },
-    { type: 'placeholder', option: undefined }
-  ];
+  @Input({required: true}) input!: ExerciseInputSelectPlaceholdersDto;
 
-  options = [
-    { id: '1', text: 'test' },
-    { id: '2', text: 'example' }
-  ];
+  get parts(): Part[] {
+    return this.input.parts.map(p => <Part>p);
+  }
+
+  get options(): SelectPlaceholdersInputOption[] {
+    return this.input.options;
+  }
 
   get placeholderSize(): number {
     const maxOptionSize = Math.max(...this.options.map(option => option.text.length));
