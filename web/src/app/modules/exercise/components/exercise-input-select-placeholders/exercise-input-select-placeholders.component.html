@@ -1,5 +1,5 @@
 <!-- filepath: src/app/select-placeholders/select-placeholders.component.html -->
-<ng-container cdkDropListGroup>
+<div cdkDropListGroup class="w-full max-w-xl">
     <div class="p-4 rounded-lg border border-gray-300">
         <div class="flex flex-wrap gap-2">
             <ng-container *ngFor="let part of parts; let i = index">
@@ -16,10 +16,10 @@
         </div>
     </div>
     <div cdkDropList #optionList [cdkDropListData]="options"
-        (cdkDropListDropped)="drop($event, 'options')" class="mt-4 flex gap-2">
+        (cdkDropListDropped)="drop($event, 'options')" class="mt-2 flex gap-2">
         <div *ngFor="let option of options" cdkDrag
         [cdkDragData]="option" class="p-2 bg-blue-200 rounded cursor-pointer">
             {{ option.text }}
         </div>
     </div>
-</ng-container>
+</div>

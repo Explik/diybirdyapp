@@ -1,15 +1,15 @@
-<div class="p-4">
-    <div class="flex flex-wrap mb-4">
+<div class="mt-2 mb-2">
+    <div class="flex flex-wrap mb-2">
       <div
         *ngFor="let id of selectedOptionIds; let i = index"
-        class="p-2 m-1 bg-blue-200 rounded cursor-pointer"
+        class="p-2 mr-2 bg-blue-200 rounded cursor-pointer"
         (click)="removeWord(i)"
       >
         {{ getOptionTextById(id) }}
       </div>
       <div
         *ngFor="let _ of emptySlots"
-        class="p-2 m-1 bg-gray-200 rounded"
+        class="p-2 mr-2 bg-gray-200 rounded"
       >
         &nbsp;
       </div>
@@ -18,7 +18,7 @@
     @for(option of options; track option) {
         <div
         *ngIf="!selectedOptionIds.includes(option.id)"
-        class="p-2 m-1 bg-green-200 rounded cursor-pointer"
+        class="p-2 mr-2 bg-green-200 rounded cursor-pointer"
         (click)="addWord(option.id)"
       >
         {{ option.text }}

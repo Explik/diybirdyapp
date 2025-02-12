@@ -15,6 +15,7 @@ export class ExerciseInputRecordVideoComponent {
   isRecording = false;
   videoUrl: string | null = null;
   isLoading = false;
+  hasFailure = false;
   
   ngOnInit() {
     this.isLoading = true;
@@ -24,7 +25,7 @@ export class ExerciseInputRecordVideoComponent {
 
   get recordButtonLabel() {
     if (this.mediaStream === null)
-      return 'Enable camera to record';
+      return this.hasFailure ? 'Unable to gain access to camera' : 'Enable camera to record';
 
     if (this.isRecording) 
       return 'Stop Recording';
@@ -42,6 +43,7 @@ export class ExerciseInputRecordVideoComponent {
   async activateCamera() {
     try {
       this.mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      this.hasFailure = false; 
       
       // Allows Angular to render the video element before setting the srcObject
       setTimeout(() => {
@@ -49,6 +51,7 @@ export class ExerciseInputRecordVideoComponent {
       }, 0);
     } catch (error) {
       console.error('Error accessing the camera:', error);
+      this.hasFailure = true;
     }
   }
 

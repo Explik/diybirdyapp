@@ -1,4 +1,4 @@
-<div class="p-4 rounded-lg border border-gray-300 flex">
+<div class="w-full max-w-xl p-4 rounded-lg border border-gray-300 flex">
     <ng-container *ngFor="let part of parts">
       <div *ngIf="part.type === 'text'" class="inline-block h-full">{{ part.value }}</div>
       <div *ngIf="part.type === 'placeholder'" class="inline-block h-full" >
