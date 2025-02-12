@@ -5,6 +5,7 @@ import { RecognizabilityRatingComponent } from "../../../../shared/components/re
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseSessionService } from '../../services/exerciseSession.service';
 import { DynamicFlashcardContentComponent } from '../dynamic-flashcard-content/dynamic-flashcard-content.component';
+import { ExerciseContentFlashcardDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-review-flashcard-container',

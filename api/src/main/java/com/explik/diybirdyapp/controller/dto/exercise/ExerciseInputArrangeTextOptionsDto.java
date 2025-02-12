@@ -1,7 +1,11 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import jakarta.validation.constraints.NotNull;
+
 public class ExerciseInputArrangeTextOptionsDto extends ExerciseInputDto {
     private String value;
+
+    @NotNull
     private ArrangeTextOption[] options;
 
     public String getValue() {
@@ -21,7 +25,10 @@ public class ExerciseInputArrangeTextOptionsDto extends ExerciseInputDto {
     }
 
     public static class ArrangeTextOption {
+        @NotNull
         private String id;
+
+        @NotNull
         private String text;
 
         public ArrangeTextOption() {

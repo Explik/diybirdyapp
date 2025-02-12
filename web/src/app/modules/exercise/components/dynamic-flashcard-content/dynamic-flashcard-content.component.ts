@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { FlashcardComponent } from "../../../../shared/components/flashcard/flashcard.component";
 import { CommonModule } from '@angular/common';
 import { DynamicContentComponent } from '../dynamic-content/dynamic-content.component';
+import { ExerciseContentFlashcardDto, ExerciseContentFlashcardSideDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-dynamic-flashcard-content',

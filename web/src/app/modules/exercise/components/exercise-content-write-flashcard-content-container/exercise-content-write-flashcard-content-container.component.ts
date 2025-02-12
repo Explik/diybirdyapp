@@ -5,6 +5,7 @@ import { ExerciseInputWriteTextComponent } from '../exercise-input-write-text/ex
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
+import { ExerciseContentFlashcardDto, ExerciseInputTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-write-flashcard-content-container',

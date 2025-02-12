@@ -1,5 +1,7 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
@@ -34,7 +36,10 @@ public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
     }
 
     public static class Option {
+        @NotNull
         private String id;
+
+        @NotNull
         private String text;
 
         public Option() {
@@ -56,8 +61,11 @@ public class ExerciseInputMultipleChoiceTextDto extends ExerciseInputDto {
     }
 
     public static class ExerciseInputFeedbackMultipleChoiceTextFeedbackDto {
-        private List<String> correctOptionIds;
-        private List<String> incorrectOptionIds;
+        @NotNull
+        private List<String> correctOptionIds = List.of();
+
+        @NotNull
+        private List<String> incorrectOptionIds = List.of();
 
         public List<String> getCorrectOptionIds() { return correctOptionIds; }
 

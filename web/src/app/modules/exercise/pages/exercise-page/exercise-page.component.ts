@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
     selector: 'app-exercise-page',
     standalone: true,
     templateUrl: './exercise-page.component.html',
-    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, ExerciseInputWriteTextComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent]
+    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent]
 })
 export class ExercisePageComponent {
     sessionId: string | undefined = undefined;

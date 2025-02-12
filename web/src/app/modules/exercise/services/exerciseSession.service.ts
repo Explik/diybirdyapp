@@ -6,6 +6,7 @@ import { Exercise, ExerciseAnswer } from '../models/exercise.interface';
 import { ExerciseSessionDataService } from './exerciseSessionData.service';
 import { ExerciseService } from './exercise.service';
 import { Router } from '@angular/router';
+import { ExerciseSessionDto } from '../../../shared/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -31,7 +32,7 @@ export class ExerciseSessionService {
     setExerciseSession(session?: ExerciseSessionDto) {
         this.session$.next(session);
 
-        if (session) {
+        if (session && session.exercise) {
             this.exerciseService.setExercise(session.exercise);
         }
     }

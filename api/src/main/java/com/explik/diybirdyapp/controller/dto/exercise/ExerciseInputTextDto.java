@@ -1,9 +1,13 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public class ExerciseInputTextDto extends ExerciseInputDto {
+    @NotNull
     private String text;
+
     private ExerciseInputFeedbackTextDto feedback;
 
     public static String TYPE = "text-input";
@@ -17,8 +21,11 @@ public class ExerciseInputTextDto extends ExerciseInputDto {
     public void setFeedback(ExerciseInputFeedbackTextDto feedback) { this.feedback = feedback; }
 
     public static class ExerciseInputFeedbackTextDto {
-        private List<String> correctValues;
-        private List<String> incorrectValues;
+        @NotNull
+        private List<String> correctValues = List.of();
+
+        @NotNull
+        private List<String> incorrectValues = List.of();
 
         public List<String> getCorrectValues() { return correctValues; }
 

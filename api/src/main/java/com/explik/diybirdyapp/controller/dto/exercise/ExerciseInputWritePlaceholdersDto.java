@@ -1,5 +1,7 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import jakarta.validation.constraints.NotNull;
+
 public class ExerciseInputWritePlaceholdersDto extends ExerciseInputDto {
     private WritePlaceholdersPartDto[] parts;
     private WritePlaceholdersFeedbackDto feedback;
@@ -11,9 +13,14 @@ public class ExerciseInputWritePlaceholdersDto extends ExerciseInputDto {
     public void setFeedback(WritePlaceholdersFeedbackDto feedback) { this.feedback = feedback; }
 
     public static class WritePlaceholdersPartDto {
+        @NotNull
         private String id;
+
+        @NotNull
         private String type;
+
         private String value;
+
         private Number size;
 
         public String getId() { return id; }
@@ -30,8 +37,11 @@ public class ExerciseInputWritePlaceholdersDto extends ExerciseInputDto {
     }
 
     public static class WritePlaceholdersFeedbackDto {
-        private String[] correctPlaceholdersIds;
-        private String[] incorrectPlaceholdersIds;
+        @NotNull
+        private String[] correctPlaceholdersIds = new String[0];
+
+        @NotNull
+        private String[] incorrectPlaceholdersIds = new String[0];
 
         public String[] getCorrectPlaceholdersIds() { return correctPlaceholdersIds; }
         public void setCorrectPlaceholdersIds(String[] correctPlaceholdersIds) { this.correctPlaceholdersIds = correctPlaceholdersIds; }

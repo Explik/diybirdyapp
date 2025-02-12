@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom } from 'rxjs';
 import { ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
+import { ExerciseDto, ExerciseFeedbackDto } from "../../../shared/api-client";
 
 @Injectable({
     providedIn: 'root'

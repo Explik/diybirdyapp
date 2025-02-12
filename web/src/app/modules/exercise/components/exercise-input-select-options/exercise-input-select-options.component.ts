@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ExerciseInputMultipleChoiceTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-select-options',

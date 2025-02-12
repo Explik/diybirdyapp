@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
+import { ExerciseInputAudioDto, ExerciseInputTextDto } from "../../../shared/api-client";
 
 /**
  * Service to provide default content for exercises as most exercises have fixed content

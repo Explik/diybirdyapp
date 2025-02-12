@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ArrangeTextOption, ExerciseInputArrangeTextOptionsDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-arrange-text-options',

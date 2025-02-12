@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseInputSelectOptionsComponent } from '../exercise-input-select-options/exercise-input-select-options.component';
 import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
+import { ExerciseContentFlashcardDto, ExerciseInputMultipleChoiceTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-select-flashcard-container',

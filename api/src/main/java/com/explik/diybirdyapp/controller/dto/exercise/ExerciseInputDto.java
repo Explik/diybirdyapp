@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.controller.dto.exercise;
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -18,7 +19,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = ExerciseInputWritePlaceholdersDto.class, name = ExerciseInputTypes.WRITE_PLACEHOLDERS)
 })
 public class ExerciseInputDto {
+    @NotNull
     private String id;
+
+    @NotNull
     private String type;
 
     public String getId() { return id; }

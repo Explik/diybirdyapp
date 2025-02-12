@@ -3,6 +3,7 @@ import { InstructionComponent } from "../instruction/instruction.component";
 import { ExerciseInputSelectOptionsComponent } from "../exercise-input-select-options/exercise-input-select-options.component";
 import { CommonModule } from '@angular/common';
 import { ExerciseService } from '../../services/exercise.service';
+import { ExerciseInputMultipleChoiceTextDto } from '../../../../shared/api-client';
 //import { CorrectableMultipleChoiceTextInput } from '../../../../shared/models/input.interface';
 
 @Component({

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ExerciseInputWriteTextComponent } from "../exercise-input-write-text/exercise-input-write-text.component";
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
+import { ExerciseInputTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-write-sentence-using-word-container',

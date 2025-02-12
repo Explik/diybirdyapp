@@ -7,7 +7,8 @@
     "start-dev": "ng serve --configuration development",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "generate-api-client": "openapi-generator-cli generate -i http://localhost:8080/v3/api-docs -g typescript-angular -o ./src/app/shared/api-client --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model"
   },
   "private": true,
   "dependencies": {
@@ -29,6 +30,7 @@
     "@angular-devkit/build-angular": "^19.1.2",
     "@angular/cli": "^19.1.2",
     "@angular/compiler-cli": "^19.1.1",
+    "@openapitools/openapi-generator-cli": "^2.16.3",
     "@types/jasmine": "~5.1.0",
     "autoprefixer": "^10.4.19",
     "jasmine-core": "~5.1.0",

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ExerciseInputTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-write-text',

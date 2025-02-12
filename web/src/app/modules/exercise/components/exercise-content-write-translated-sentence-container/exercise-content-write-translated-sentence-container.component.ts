@@ -6,6 +6,7 @@ import { TextContent } from '../../../../shared/models/content.interface';
 import { CommonModule } from '@angular/common';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
+import { ExerciseInputTextDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-content-write-translated-sentence-container',

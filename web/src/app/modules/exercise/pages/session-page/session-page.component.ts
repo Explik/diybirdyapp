@@ -23,7 +23,7 @@ import { Observable, map } from 'rxjs';
     selector: 'app-session-page',
     standalone: true,
     templateUrl: './session-page.component.html',
-    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, InstructionComponent, ExerciseInputWriteTextComponent, TextButtonComponent, TextQuoteComponent, InfoBoxComponent]
+    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent]
 })
 export class SessionPageComponent {
     sessionId: string | undefined = undefined;

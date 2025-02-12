@@ -1,11 +1,19 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
+import jakarta.validation.constraints.NotNull;
+
 public class FlashcardDto {
+    @NotNull
     private String id;
+
     private String deckId;
+
     private Integer deckOrder;
 
+    @NotNull
     private FlashcardContentDto frontContent;
+
+    @NotNull
     private FlashcardContentDto backContent;
 
     public String getId() {

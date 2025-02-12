@@ -9,6 +9,7 @@ import { ExerciseInputWritePlaceholdersComponent } from "../../components/exerci
 import { ExerciseInputSelectPlaceholdersComponent } from "../../components/exercise-input-select-placeholders/exercise-input-select-placeholders.component";
 import { ExerciseInputPairOptionsComponent } from '../../components/exercise-input-pair-options/exercise-input-pair-options.component';
 import { ExerciseInputRecordVideoComponent } from "../../components/exercise-input-record-video/exercise-input-record-video.component";
+import { ExerciseInputArrangeTextOptionsDto, ExerciseInputAudioDto, ExerciseInputMultipleChoiceTextDto, ExerciseInputTextDto, ExerciseInputWritePlaceholdersDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-components-page',
