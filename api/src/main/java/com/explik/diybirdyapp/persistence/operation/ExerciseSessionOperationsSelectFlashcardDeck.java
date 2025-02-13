@@ -6,22 +6,26 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactorySelectFlashcard;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseSelectFlashcardVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component(ExerciseSessionTypes.SELECT_FLASHCARD_DECK + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSessionOperations {
     @Autowired
-    ExerciseSelectFlashcardVertexFactory vertexFactory;
+    ExerciseAbstractVertexFactory abstractVertexFactory;
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
@@ -80,13 +84,15 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
                     .map(f -> f.getOtherSide(flashcardSide))
                     .toList();
 
-            vertexFactory.create(
-                    traversalSource,
-                    new ExerciseSelectFlashcardVertexFactory.Options(
-                            UUID.randomUUID().toString(),
-                            sessionVertex,
-                            correctContentVertex,
-                            incorrectContentVertices));
+            var exerciseParameters = new ExerciseParameters()
+                    .withSession(sessionVertex)
+                    .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
+                            .withCorrectOptions(List.of(correctContentVertex))
+                            .withIncorrectOptions(incorrectContentVertices)
+                    );
+            var exerciseVertexFactory = abstractVertexFactory.create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE);
+            exerciseVertexFactory.create(traversalSource, exerciseParameters);
+
             sessionVertex.reload();
         } else {
             // If no flashcards are found, the session is complete

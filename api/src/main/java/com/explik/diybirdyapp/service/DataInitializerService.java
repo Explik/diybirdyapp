@@ -1,10 +1,16 @@
 package com.explik.diybirdyapp.service;
 
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.builder.*;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,9 +27,6 @@ public class DataInitializerService {
 
     @Autowired
     private ExerciseWriteTranslatedSentenceVertexFactory exerciseWriteTranslatedSentenceVertexFactory;
-
-    @Autowired
-    private ExerciseSelectFlashcardVertexFactory exerciseSelectFlashcardVertexFactory;
 
     @Autowired
     private ExercisePronounceFlashcardVertexFactory exercisePronounceFlashcardVertexFactory;
@@ -57,6 +60,9 @@ public class DataInitializerService {
 
     @Autowired
     private VertexBuilderFactory builderFactory;
+
+    @Autowired
+    private ExerciseAbstractVertexFactory exerciseAbstractVertexFactory;
 
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
@@ -169,6 +175,7 @@ public class DataInitializerService {
     }
 
     public void addInitialExerciseData() {
+        // Exercise 1 - Write sentence exercise
         var langVertex = LanguageVertex.findByAbbreviation(traversalSource, "EN");
 
         var wordVertex1 = builderFactory.createTextContentVertexBuilder()
@@ -192,7 +199,7 @@ public class DataInitializerService {
                 traversalSource,
                 new ExerciseWriteTranslatedSentenceVertexFactory.Options("2", "Danish", wordVertex2));
 
-        // Exercise 3 - Multiple choice text exercise
+        // Exercise 3 - Select flashcard exercise
         var flashcardVertex1 = builderFactory.createFlashcardVertexBuilder()
                 .withId("flashcardVertex1")
                 .withFrontText("Correct option", langVertex)
@@ -204,13 +211,17 @@ public class DataInitializerService {
                 .withBackText("Random option 1", langVertex)
                 .build(traversalSource);
 
-        exerciseSelectFlashcardVertexFactory.create(
-                traversalSource,
-                new ExerciseSelectFlashcardVertexFactory.Options(
-                        "3",
-                        null,
-                        flashcardVertex1.getLeftContent(),
-                        List.of(flashcardVertex2.getRightContent())));
+        var selectFlashcardExerciseParameters = new ExerciseParameters()
+                .withId("3")
+                .withSession(null)
+                .withContent(new ExerciseContentParameters()
+                        .withContent(flashcardVertex1))
+                .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
+                        .withCorrectOptions(List.of(flashcardVertex1.getLeftContent()))
+                        .withIncorrectOptions(List.of(flashcardVertex2.getRightContent())));
+
+        var selectFlashcardExerciseFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE);
+        selectFlashcardExerciseFactory.create(traversalSource, selectFlashcardExerciseParameters);
 
         // Exercise session 4
         var flashcardVertex = FlashcardVertex.findById(traversalSource, "flashcardVertex1");

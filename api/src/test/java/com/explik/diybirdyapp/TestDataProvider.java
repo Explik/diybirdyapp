@@ -4,13 +4,10 @@ import com.explik.diybirdyapp.persistence.builder.FlashcardVertexBuilder;
 import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseReviewFlashcardVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseSelectFlashcardVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseWriteSentenceUsingWordVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseWriteTranslatedSentenceVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,8 +28,6 @@ public class TestDataProvider {
     @Autowired
     private ExerciseWriteTranslatedSentenceVertexFactory writeTranslatedSentenceVertexFactory;
 
-    @Autowired
-    private ExerciseSelectFlashcardVertexFactory selectFlashcardVertexFactory;
 
     @Autowired
     private ExerciseReviewFlashcardVertexFactory reviewFlashcardVertexFactory;
@@ -152,14 +147,6 @@ public class TestDataProvider {
                 .withFrontText(SelectFlashcardExercise.FlashcardText4)
                 .withBackText(SelectFlashcardExercise.FlashcardText4)
                 .build(traversalSource);
-
-        selectFlashcardVertexFactory.create(
-                traversalSource,
-                new ExerciseSelectFlashcardVertexFactory.Options(
-                        SelectFlashcardExercise.Id,
-                        null,
-                        flashcard1.getLeftContent(),
-                        List.of(flashcard2.getRightContent(), flashcard3.getRightContent(), flashcard4.getRightContent())));
     }
 
     private void addReviewFlashcardExercise(GraphTraversalSource traversalSource) {
