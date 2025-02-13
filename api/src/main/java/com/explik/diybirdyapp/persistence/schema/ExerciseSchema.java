@@ -6,6 +6,7 @@ public class ExerciseSchema {
     private String exerciseType;
     private String contentType;
     private String inputType;
+    private boolean requireTargetLanguage = false;
 
     public String getExerciseType() {
         return exerciseType;
@@ -44,5 +45,14 @@ public class ExerciseSchema {
     public ExerciseSchema withInputType(String inputType) {
         this.inputType = inputType;
         return this;
+    }
+
+    public ExerciseSchema requireTargetLanguage() {
+        this.requireTargetLanguage = true;
+        return this;
+    }
+
+    public boolean getRequireTargetLanguage() {
+        return requireTargetLanguage;
     }
 }

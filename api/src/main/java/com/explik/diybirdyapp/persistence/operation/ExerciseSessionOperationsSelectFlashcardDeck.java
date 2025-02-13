@@ -12,6 +12,7 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -86,6 +87,7 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
 
             var exerciseParameters = new ExerciseParameters()
                     .withSession(sessionVertex)
+                    .withContent(new ExerciseContentParameters().withContent(correctContentVertex))
                     .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
                             .withCorrectOptions(List.of(correctContentVertex))
                             .withIncorrectOptions(incorrectContentVertices)

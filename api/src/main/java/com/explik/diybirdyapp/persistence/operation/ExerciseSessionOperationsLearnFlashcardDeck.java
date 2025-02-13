@@ -6,9 +6,12 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseReviewFlashcardVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseVertexFactoryWriteFlashcard;
+import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersWriteText;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,10 +22,7 @@ import java.util.UUID;
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSessionOperations {
     @Autowired
-    private ExerciseReviewFlashcardVertexFactory reviewFlashcardVertexFactory;
-
-    @Autowired
-    private ExerciseVertexFactoryWriteFlashcard writeFlashcardVertexFactory;
+    private ExerciseAbstractVertexFactory abstractVertexFactory;
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
@@ -76,9 +76,12 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
         flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.REVIEW_FLASHCARD);
         if (flashcardVertex != null) {
-            return reviewFlashcardVertexFactory.create(
-                    traversalSource,
-                    new ExerciseReviewFlashcardVertexFactory.Options(UUID.randomUUID().toString(), sessionVertex, flashcardVertex));
+            var exerciseParameters = new ExerciseParameters()
+                    .withSession(sessionVertex)
+                    .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
+            var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
+
+            return exerciseFactory.create(traversalSource, exerciseParameters);
         }
 
         flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
@@ -87,11 +90,14 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
             var questionContentVertex = flashcardVertex.getSide(flashcardSide);
             var answerContentVertex = flashcardVertex.getOtherSide(flashcardSide);
 
-            return writeFlashcardVertexFactory.create(
-                    traversalSource,
-                    new ExerciseVertexFactoryWriteFlashcard.Options(UUID.randomUUID().toString(), sessionVertex, questionContentVertex, answerContentVertex));
-        }
+            var exerciseParameters = new ExerciseParameters()
+                    .withSession(sessionVertex)
+                    .withContent(new ExerciseContentParameters().withContent(questionContentVertex))
+                    .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
+            var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE);
 
+            return exerciseFactory.create(traversalSource, exerciseParameters);
+        }
         return null;
     }
 }

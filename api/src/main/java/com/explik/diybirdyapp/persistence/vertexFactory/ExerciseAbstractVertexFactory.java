@@ -27,6 +27,9 @@ public class ExerciseAbstractVertexFactory {
             if (options.getSession() != null)
                 vertex.setSession(options.getSession());
 
+            if (this.schema.getRequireTargetLanguage())
+                vertex.setTargetLanguage(options.getTargetLanguage());
+
             if (this.schema.getContentType() != null)
                 attachContent(vertex, options);
             if (this.schema.getInputType() != null)
@@ -39,6 +42,9 @@ public class ExerciseAbstractVertexFactory {
             String contentType = this.schema.getContentType();
 
             if (contentType.equals(ContentTypes.FLASHCARD)) {
+                vertex.setContent(options.getContent().getVertex());
+            }
+            else if (contentType.equals(ContentTypes.FLASHCARD_SIDE)) {
                 vertex.setContent(options.getContent().getVertex());
             }
             else if (contentType.equals(ContentTypes.AUDIO)) {
@@ -74,6 +80,11 @@ public class ExerciseAbstractVertexFactory {
                     vertex.addOption(option);
                     option.makeStatic();
                 }
+            } else if (inputType.equals(ExerciseInputTypes.WRITE_TEXT)) {
+                var inputText = options.getWriteTextInput();
+
+                if (inputText != null)
+                    vertex.addCorrectOption(inputText.getCorrectOption());
             }
             else throw new IllegalArgumentException("Unsupported input type: " + inputType);
         }

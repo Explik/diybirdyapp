@@ -1,12 +1,9 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.TestEventListener;
 import com.explik.diybirdyapp.controller.dto.content.FlashcardContentTextDto;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
-import com.explik.diybirdyapp.model.content.FlashcardContentTextModel;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.command.CommandHandler;
 import com.explik.diybirdyapp.persistence.command.LockFlashcardContentCommand;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -31,8 +28,7 @@ public class FlashcardControllerIntegrationTests {
     @Autowired
     FlashcardController controller;
 
-    @Autowired
-    TestDataProvider dataProvider;
+    // TODO Initialize test data
 
     @Autowired
     TestEventListener<FlashcardAddedEvent> flashcardAddedEventListener;
@@ -42,7 +38,6 @@ public class FlashcardControllerIntegrationTests {
 
     @BeforeEach
     void setUp() {
-        dataProvider.resetData();
         flashcardAddedEventListener.reset();
         flashcardUpdatedEventTestEventListener.reset();
     }

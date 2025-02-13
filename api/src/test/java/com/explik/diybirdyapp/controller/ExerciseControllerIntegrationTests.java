@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.controller.dto.exercise.ExerciseContentFlashcardDto;
@@ -24,13 +23,7 @@ public class ExerciseControllerIntegrationTests {
     @Autowired
     ExerciseController controller;
 
-    @Autowired
-    TestDataProvider testDataProvider;
-
-    @BeforeEach
-    void setUp() {
-        testDataProvider.resetData();
-    }
+    // TODO Initialize test data
 
     @Test
     void givenExistingWriteSentenceUsingWordExercise_whenGetById_thenReturnExercise() {

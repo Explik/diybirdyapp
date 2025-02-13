@@ -1,10 +1,8 @@
 package com.explik.diybirdyapp.persistence.command;
 
 import com.explik.diybirdyapp.TestDataConstants;
-import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,14 +19,7 @@ public class GenerateAudioForFlashcardCommandHandlerIntegrationTest {
     @Autowired
     GraphTraversalSource traversalSource;
 
-    @Autowired
-    TestDataProvider dataProvider;
-
-    // Runs before each test
-    @BeforeEach
-    void setUp() {
-        dataProvider.resetData();
-    }
+    // TODO Initialize test data
 
     @Autowired
     private GenerateAudioForFlashcardCommandHandler handler;

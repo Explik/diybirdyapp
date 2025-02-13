@@ -7,8 +7,11 @@ import java.util.UUID;
 public class ExerciseParameters {
     private String id = UUID.randomUUID().toString();
     private ExerciseSessionVertex session;
+    private String targetLanguage;
+
     private ExerciseContentParameters content;
     private ExerciseInputParametersSelectOptions selectOptionsInput;
+    private ExerciseInputParametersWriteText writeTextInput;
 
     public String getId() {
         return id;
@@ -36,6 +39,19 @@ public class ExerciseParameters {
         return this;
     }
 
+    public String getTargetLanguage() {
+        return targetLanguage;
+    }
+
+    public void setTargetLanguage(String targetLanguage) {
+        this.targetLanguage = targetLanguage;
+    }
+
+    public ExerciseParameters withTargetLanguage(String language) {
+        this.targetLanguage = language;
+        return this;
+    }
+
     public ExerciseContentParameters getContent() {
         return content;
     }
@@ -59,6 +75,19 @@ public class ExerciseParameters {
 
     public ExerciseParameters withSelectOptionsInput(ExerciseInputParametersSelectOptions selectOptionsInput) {
         this.selectOptionsInput = selectOptionsInput;
+        return this;
+    }
+
+    public ExerciseInputParametersWriteText getWriteTextInput() {
+        return writeTextInput;
+    }
+
+    public void setWriteTextInput(ExerciseInputParametersWriteText writeTextInput) {
+        this.writeTextInput = writeTextInput;
+    }
+
+    public ExerciseParameters withWriteTextInput(ExerciseInputParametersWriteText writeTextInput) {
+        this.writeTextInput = writeTextInput;
         return this;
     }
 }
