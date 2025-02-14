@@ -3,9 +3,10 @@ package com.explik.diybirdyapp.persistence.repository;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.persistence.modelFactory.ExerciseAbstractModelFactory;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseOperations;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.LimitedExerciseModelFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     private LimitedExerciseModelFactory limitedExerciseModelFactory;
 
     @Autowired
-    private Map<String, ExerciseModelFactory> exerciseModelFactories;
+    private ExerciseAbstractModelFactory abstractModelFactory;
 
     @Autowired
     private Map<String, ExerciseOperations> exerciseManagers;
@@ -35,12 +36,10 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     public ExerciseModel get(String id) {
         var vertex = ExerciseVertex.getById(traversalSource, id);
         var exerciseType = vertex.getType();
+        var exerciseSchema = ExerciseSchemas.getByType(exerciseType);
+        var exerciseFactory = abstractModelFactory.create(exerciseSchema);
 
-        var modelFactory = exerciseModelFactories.getOrDefault(exerciseType + ComponentTypes.MODEL_FACTORY, null);
-        if (modelFactory == null)
-            throw new RuntimeException("Unsupported exercise type: " + exerciseType);
-
-        return modelFactory.create(vertex);
+        return exerciseFactory.create(vertex);
     }
 
     @Override

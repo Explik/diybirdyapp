@@ -4,7 +4,6 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactorySelectFlashcard;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
@@ -30,9 +29,6 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
-
-    @Autowired
-    ExerciseModelFactorySelectFlashcard exerciseModelFactory;
 
     @Override
     public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseSessionModel options) {

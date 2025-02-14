@@ -10,7 +10,6 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactoryReviewFlashcard;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
@@ -27,9 +26,6 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
-
-    @Autowired
-    ExerciseModelFactoryReviewFlashcard exerciseModelFactory;
 
     @Override
     public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseSessionModel options) {

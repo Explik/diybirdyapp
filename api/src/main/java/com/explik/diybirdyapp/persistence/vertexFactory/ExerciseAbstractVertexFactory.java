@@ -21,7 +21,9 @@ public class ExerciseAbstractVertexFactory {
         public ExerciseVertex create(GraphTraversalSource traversalSource, ExerciseParameters options) {
             var vertex = ExerciseVertex.create(traversalSource);
 
-            vertex.setId(UUID.randomUUID().toString());
+            var id = options.getId() != null ? options.getId() : UUID.randomUUID().toString();
+            vertex.setId(id);
+
             vertex.setType(this.schema.getExerciseType());
 
             if (options.getSession() != null)

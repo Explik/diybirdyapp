@@ -4,6 +4,8 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,7 @@ import java.util.Map;
 @Component
 public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFactory {
     @Autowired
-    Map<String, ExerciseModelFactory> exerciseModelFactories;
+    ExerciseAbstractModelFactory abstractModelFactory;
 
     @Override
     public ExerciseSessionModel create(ExerciseSessionVertex vertex) {
@@ -42,11 +44,10 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
             return null;
 
         var exerciseType = exerciseVertex.getType();
-        var exerciseModelFactory = exerciseModelFactories.getOrDefault(exerciseType + ComponentTypes.MODEL_FACTORY, null);
-        if (exerciseModelFactory == null)
-            throw new RuntimeException("Unsupported exercise type " + exerciseType);
+        var exerciseSchema = ExerciseSchemas.getByType(exerciseType);
+        var exerciseFactory = abstractModelFactory.create(exerciseSchema);
 
-        return exerciseModelFactory.create(exerciseVertex);
+        return exerciseFactory.create(exerciseVertex);
     }
 
     private ExerciseSessionProgressModel createProgress(ExerciseSessionVertex vertex) {

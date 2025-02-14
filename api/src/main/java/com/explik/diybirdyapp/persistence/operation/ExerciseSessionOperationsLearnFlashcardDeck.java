@@ -4,7 +4,6 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -16,7 +15,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
@@ -26,9 +24,6 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
-
-    @Autowired
-    private Map<String, ExerciseModelFactory> exerciseModelFactories;
 
     @Override
     public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseSessionModel options) {
