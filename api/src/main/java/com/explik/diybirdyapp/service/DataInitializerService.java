@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.service;
 
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.builder.*;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
@@ -161,42 +162,9 @@ public class DataInitializerService {
     }
 
     public void addInitialExerciseData() {
-        // Exercise 1 - Write sentence exercise
+        // Setting up exercise content
         var langVertex = LanguageVertex.findByAbbreviation(traversalSource, "EN");
 
-        var wordVertex1 = builderFactory.createTextContentVertexBuilder()
-                .withId("1")
-                .withValue("example")
-                .withLanguage(langVertex)
-                .build(traversalSource);
-
-        var writeSentenceUsingWordParameters = new ExerciseParameters()
-                .withId("1")
-                .withSession(null)
-                .withTargetLanguage("example")
-                .withContent(new ExerciseContentParameters()
-                        .withContent(wordVertex1));
-        var writeSentenceUsingWordFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.WRITE_SENTENCE_USING_WORD_EXERCISE);
-        writeSentenceUsingWordFactory.create(traversalSource, writeSentenceUsingWordParameters);
-
-        // Exercise 2 - Translate sentence to Danish
-        var wordVertex2 = builderFactory.createTextContentVertexBuilder()
-                .withId("2")
-                .withValue("This is an example sentence")
-                .withLanguage(langVertex)
-                .build(traversalSource);
-
-        var writeTranslatedSentenceExerciseParameters = new ExerciseParameters()
-                .withId("2")
-                .withSession(null)
-                .withTargetLanguage("Danish")
-                .withContent(new ExerciseContentParameters()
-                        .withContent(wordVertex2));
-
-        var exerciseWriteTranslatedSentenceVertexFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.WRITE_TRANSLATED_SENTENCE_EXERCISE);
-        exerciseWriteTranslatedSentenceVertexFactory.create(traversalSource, writeTranslatedSentenceExerciseParameters);
-
-        // Exercise 3 - Select flashcard exercise
         var flashcardVertex1 = builderFactory.createFlashcardVertexBuilder()
                 .withId("flashcardVertex1")
                 .withFrontText("Correct option", langVertex)
@@ -208,49 +176,75 @@ public class DataInitializerService {
                 .withBackText("Random option 1", langVertex)
                 .build(traversalSource);
 
-        var selectFlashcardExerciseParameters = new ExerciseParameters()
-                .withId("3")
-                .withSession(null)
-                .withContent(new ExerciseContentParameters()
-                        .withContent(flashcardVertex1))
-                .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
+        // Setting up exercise parameters
+        var shortTextContentParameters = new ExerciseContentParameters()
+                .withContent(builderFactory.createTextContentVertexBuilder()
+                        .withId("textContent1")
+                        .withValue("Example")
+                        .withLanguage(langVertex)
+                        .build(traversalSource));
+        var longTextContentParameters = new ExerciseContentParameters()
+                .withContent(builderFactory.createTextContentVertexBuilder()
+                        .withId("textContent2")
+                        .withValue("This is an example sentence")
+                        .withLanguage(langVertex)
+                        .build(traversalSource));
+
+        var flashcardContentParameters = new ExerciseContentParameters()
+                .withContent(flashcardVertex1);
+
+        var flashcardSideContentParameters = new ExerciseContentParameters()
+                .withContent(flashcardVertex1.getLeftContent());
+
+        var selectFlashcardParameters = new ExerciseInputParametersSelectOptions()
                         .withCorrectOptions(List.of(flashcardVertex1.getLeftContent()))
-                        .withIncorrectOptions(List.of(flashcardVertex2.getRightContent())));
+                        .withIncorrectOptions(List.of(flashcardVertex2.getRightContent()));
 
-        var selectFlashcardExerciseFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE);
-        selectFlashcardExerciseFactory.create(traversalSource, selectFlashcardExerciseParameters);
+        // Exercise - Write sentence using word
+        var writeSentenceUsingWordParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.WRITE_SENTENCE_USING_WORD)
+                .withSession(null)
+                .withTargetLanguage("example")
+                .withContent(shortTextContentParameters);
+        var writeSentenceUsingWordFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.WRITE_SENTENCE_USING_WORD_EXERCISE);
+        writeSentenceUsingWordFactory.create(traversalSource, writeSentenceUsingWordParameters);
 
-        // Exercise session 4 - Flashcard review exercise
-        var flashcardVertex = FlashcardVertex.findById(traversalSource, "flashcardVertex1");
+        // Exercise - Write translated sentence
+        var writeTranslatedSentenceExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.WRITE_TRANSLATED_SENTENCE)
+                .withSession(null)
+                .withTargetLanguage("Danish")
+                .withContent(longTextContentParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.WRITE_TRANSLATED_SENTENCE_EXERCISE)
+                .create(traversalSource, writeTranslatedSentenceExerciseParameters);
+
+        // Exercise - Select flashcard exercise
+        var selectFlashcardExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.SELECT_FLASHCARD)
+                .withSession(null)
+                .withContent(flashcardSideContentParameters)
+                .withSelectOptionsInput(selectFlashcardParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE)
+                .create(traversalSource, selectFlashcardExerciseParameters);
+
+        // Exercise - Flashcard review exercise
         var reviewFlashcardExerciseParameters = new ExerciseParameters()
-                .withId("4")
+                .withId(ExerciseTypes.REVIEW_FLASHCARD)
                 .withSession(null)
-                .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
-        var reviewFlashcardExerciseFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
-        reviewFlashcardExerciseFactory.create(traversalSource, reviewFlashcardExerciseParameters);
+                .withContent(flashcardContentParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE)
+                .create(traversalSource, reviewFlashcardExerciseParameters);
 
-        // Exercise session 4 - Flashcard exercise session
-        var sessionModel = new ExerciseSessionModel();
-        sessionModel.setId("4");
-        sessionModel.setType("flashcard-review-session");
-        sessionModel.setFlashcardDeckId("flashcardDeckVertex1");
-
-        exerciseSessionFlashcardReviewVertexFactory.init(
-                traversalSource,
-                sessionModel);
-
-        // Exercise session 5 - Flashcard pronounce exercise
-        var flashcardVertex3 = builderFactory.createFlashcardVertexBuilder()
-                .withId("flashcardVertex3")
-                .withFrontContent(wordVertex1)
-                .withBackContent(wordVertex1)
-                .build(traversalSource);
-
+        // Exercise - Flashcard pronounce exercise
         var pronounceFlashcardExerciseParameters = new ExerciseParameters()
-                .withId("5")
+                .withId(ExerciseTypes.PRONOUNCE_FLASHCARD)
                 .withSession(null)
-                .withContent(new ExerciseContentParameters().withContent(flashcardVertex3));
-        var pronounceFlashcardExerciseFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE);
-        pronounceFlashcardExerciseFactory.create(traversalSource, pronounceFlashcardExerciseParameters);
+                .withContent(flashcardContentParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE)
+                .create(traversalSource, pronounceFlashcardExerciseParameters);
     }
 }
