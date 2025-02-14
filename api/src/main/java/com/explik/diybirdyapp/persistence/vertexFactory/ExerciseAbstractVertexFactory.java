@@ -6,100 +6,117 @@ import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
 public class ExerciseAbstractVertexFactory {
+    @Autowired
+    private PairVertexFactory pairVertexFactory;
+
     public VertexFactory<ExerciseVertex, ExerciseParameters> create(ExerciseSchema schema) {
-        return new ConcreteFactory(schema);
+        return (traversalSource, options) -> create(traversalSource, schema, options);
     }
 
-    record ConcreteFactory(ExerciseSchema schema) implements VertexFactory<ExerciseVertex, ExerciseParameters> {
-        @Override
-        public ExerciseVertex create(GraphTraversalSource traversalSource, ExerciseParameters options) {
-            var vertex = ExerciseVertex.create(traversalSource);
+    private ExerciseVertex create(GraphTraversalSource traversalSource, ExerciseSchema schema, ExerciseParameters options) {
+        var vertex = ExerciseVertex.create(traversalSource);
 
-            var id = options.getId() != null ? options.getId() : UUID.randomUUID().toString();
-            vertex.setId(id);
+        var id = options.getId() != null ? options.getId() : UUID.randomUUID().toString();
+        vertex.setId(id);
 
-            vertex.setType(this.schema.getExerciseType());
+        vertex.setType(schema.getExerciseType());
 
-            if (options.getSession() != null)
-                vertex.setSession(options.getSession());
+        if (options.getSession() != null)
+            vertex.setSession(options.getSession());
 
-            if (this.schema.getRequireTargetLanguage())
-                vertex.setTargetLanguage(options.getTargetLanguage());
+        if (schema.getRequireTargetLanguage())
+            vertex.setTargetLanguage(options.getTargetLanguage());
 
-            if (this.schema.getContentType() != null)
-                attachContent(vertex, options);
-            if (this.schema.getInputType() != null)
-                attachInput(vertex, options);
+        if (schema.getContentType() != null)
+            attachContent(vertex, schema, options);
+        if (schema.getInputType() != null)
+            attachInput(vertex, schema, options);
 
-            return vertex;
+        return vertex;
+    }
+
+    private void attachContent(ExerciseVertex vertex, ExerciseSchema schema, ExerciseParameters options) {
+        String contentType = schema.getContentType();
+
+        if (contentType.equals(ContentTypes.FLASHCARD)) {
+            vertex.setContent(options.getContent().getVertex());
         }
-
-        private void attachContent(ExerciseVertex vertex, ExerciseParameters options) {
-            String contentType = this.schema.getContentType();
-
-            if (contentType.equals(ContentTypes.FLASHCARD)) {
-                vertex.setContent(options.getContent().getVertex());
-            }
-            else if (contentType.equals(ContentTypes.FLASHCARD_SIDE)) {
-                vertex.setContent(options.getContent().getVertex());
-            }
-            else if (contentType.equals(ContentTypes.AUDIO)) {
-                vertex.setContent(options.getContent().getVertex());
-            }
-            else if (contentType.equals(ContentTypes.IMAGE)) {
-                vertex.setContent(options.getContent().getVertex());
-            }
-            else if (contentType.equals(ContentTypes.TEXT)) {
-                vertex.setContent(options.getContent().getVertex());
-            }
-            else if (contentType.equals(ContentTypes.VIDEO)) {
-                vertex.setContent(options.getContent().getVertex());
-            }
-            else throw new IllegalArgumentException("Unsupported content type: " + contentType);
+        else if (contentType.equals(ContentTypes.FLASHCARD_SIDE)) {
+            vertex.setContent(options.getContent().getVertex());
         }
-
-        private void attachInput(ExerciseVertex vertex, ExerciseParameters options) {
-            String inputType = this.schema.getInputType();
-
-            if (inputType.equals(ExerciseInputTypes.ARRANGE_TEXT_OPTIONS)) {
-                var inputOptions = options.getArrangeTextOptionsInput();
-
-                if (inputOptions == null)
-                    throw new IllegalArgumentException("ArrangeTextOptionsInput is required for input type: " + inputType);
-
-                for (var option : inputOptions.getOptions()) {
-                    vertex.addOption(option);
-                    option.makeStatic();
-                }
-            }
-            else if (inputType.equals(ExerciseInputTypes.SELECT_OPTIONS)) {
-                var inputOptions = options.getSelectOptionsInput();
-
-                if (inputOptions == null)
-                    throw new IllegalArgumentException("SelectOptionsInput is required for input type: " + inputType);
-
-                for (var option : inputOptions.getCorrectOptions()) {
-                    vertex.addCorrectOption(option);
-                    option.makeStatic();
-                }
-
-                for (var option : inputOptions.getIncorrectOptions()) {
-                    vertex.addOption(option);
-                    option.makeStatic();
-                }
-            } else if (inputType.equals(ExerciseInputTypes.WRITE_TEXT)) {
-                var inputText = options.getWriteTextInput();
-
-                if (inputText != null)
-                    vertex.addCorrectOption(inputText.getCorrectOption());
-            }
-            else throw new IllegalArgumentException("Unsupported input type: " + inputType);
+        else if (contentType.equals(ContentTypes.AUDIO)) {
+            vertex.setContent(options.getContent().getVertex());
         }
+        else if (contentType.equals(ContentTypes.IMAGE)) {
+            vertex.setContent(options.getContent().getVertex());
+        }
+        else if (contentType.equals(ContentTypes.TEXT)) {
+            vertex.setContent(options.getContent().getVertex());
+        }
+        else if (contentType.equals(ContentTypes.VIDEO)) {
+            vertex.setContent(options.getContent().getVertex());
+        }
+        else throw new IllegalArgumentException("Unsupported content type: " + contentType);
+    }
+
+    private void attachInput(ExerciseVertex vertex, ExerciseSchema schema, ExerciseParameters options) {
+        String inputType = schema.getInputType();
+
+        if (inputType.equals(ExerciseInputTypes.ARRANGE_TEXT_OPTIONS)) {
+            var inputOptions = options.getArrangeTextOptionsInput();
+
+            if (inputOptions == null)
+                throw new IllegalArgumentException("ArrangeTextOptionsInput is required for input type: " + inputType);
+
+            for (var option : inputOptions.getOptions()) {
+                vertex.addOption(option);
+                option.makeStatic();
+            }
+        }
+        else if (inputType.equals(ExerciseInputTypes.SELECT_OPTIONS)) {
+            var inputOptions = options.getSelectOptionsInput();
+
+            if (inputOptions == null)
+                throw new IllegalArgumentException("SelectOptionsInput is required for input type: " + inputType);
+
+            for (var option : inputOptions.getCorrectOptions()) {
+                vertex.addCorrectOption(option);
+                option.makeStatic();
+            }
+
+            for (var option : inputOptions.getIncorrectOptions()) {
+                vertex.addOption(option);
+                option.makeStatic();
+            }
+        }
+        else if (inputType.equals(ExerciseInputTypes.PAIR_OPTIONS)){
+            var inputOptions = options.getPairOptionsInput();
+
+            if (inputOptions == null)
+                throw new IllegalArgumentException("PairOptionsInput is required for input type: " + inputType);
+
+            for (var pairs : inputOptions.getPairs()) {
+                var leftSide = pairs.get(0);
+                var rightSide = pairs.get(1);
+                var pairVertex = pairVertexFactory.create(
+                        vertex.getUnderlyingSource(),
+                        new PairVertexFactory.Options(UUID.randomUUID().toString(),  leftSide, rightSide));
+                vertex.addOptionPair(pairVertex);
+            }
+        }
+        else if (inputType.equals(ExerciseInputTypes.WRITE_TEXT)) {
+            var inputText = options.getWriteTextInput();
+
+            if (inputText != null)
+                vertex.addCorrectOption(inputText.getCorrectOption());
+        }
+        else throw new IllegalArgumentException("Unsupported input type: " + inputType);
     }
 }

@@ -12,6 +12,10 @@ public class ExerciseSchemas {
             .withContentType(ContentTypes.TEXT)
             .withInputType(ExerciseInputTypes.ARRANGE_TEXT_OPTIONS);
 
+    public static final ExerciseSchema TAP_PAIRS_EXERCISE = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.TAP_PAIRS)
+            .withInputType(ExerciseInputTypes.PAIR_OPTIONS);
+
     public static final ExerciseSchema SELECT_FLASHCARD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.SELECT_FLASHCARD)
             .withContentType(ContentTypes.FLASHCARD_SIDE)
@@ -45,6 +49,7 @@ public class ExerciseSchemas {
         return switch (type) {
             case ExerciseTypes.ARRANGE_WORDS_IN_TRANSLATION -> ARRANGE_WORDS_IN_TRANSLATION;
             case ExerciseTypes.SELECT_FLASHCARD -> SELECT_FLASHCARD_EXERCISE;
+            case ExerciseTypes.TAP_PAIRS ->  TAP_PAIRS_EXERCISE;
             case ExerciseTypes.PRONOUNCE_FLASHCARD -> PRONOUNCE_FLASHCARD_EXERCISE;
             case ExerciseTypes.REVIEW_FLASHCARD -> REVIEW_FLASHCARD_EXERCISE;
             case ExerciseTypes.WRITE_FLASHCARD -> WRITE_FLASHCARD_EXERCISE;

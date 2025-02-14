@@ -7,10 +7,7 @@ import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersArrangeTextOptions;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -216,6 +213,12 @@ public class DataInitializerService {
                         .withCorrectOptions(List.of(flashcardVertex1.getLeftContent()))
                         .withIncorrectOptions(List.of(flashcardVertex2.getRightContent()));
 
+        var pairFlashcardParameters = new ExerciseInputParametersPairOptions()
+                .withPairs(List.of(
+                        List.of(flashcardVertex1.getLeftContent(), flashcardVertex1.getRightContent()),
+                        List.of(flashcardVertex2.getLeftContent(), flashcardVertex2.getRightContent())
+                ));
+
         // Exercise - Write sentence using word
         var writeSentenceUsingWordParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.WRITE_SENTENCE_USING_WORD)
@@ -272,5 +275,14 @@ public class DataInitializerService {
         exerciseAbstractVertexFactory
                 .create(ExerciseSchemas.ARRANGE_WORDS_IN_TRANSLATION)
                 .create(traversalSource, arrangeWordsInTranslationExerciseParameters);
+
+        // Exercise - Tap pairs exercise
+        var tapPairsExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.TAP_PAIRS)
+                .withSession(null)
+                .withPairOptionsInput(pairFlashcardParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.TAP_PAIRS_EXERCISE)
+                .create(traversalSource, tapPairsExerciseParameters);
     }
 }

@@ -17,6 +17,7 @@ public class ExerciseVertex extends AbstractVertex {
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_OPTION = "hasOption";
+    public final static String EDGE_OPTION_PAIR = "hasOptionPair";
     public final static String EDGE_OPTION_PROPERTY_ORDER = "order";
     public final static String EDGE_CORRECT_OPTION = "hasCorrectOption";
 
@@ -107,6 +108,21 @@ public class ExerciseVertex extends AbstractVertex {
                 this,
                 EDGE_CORRECT_OPTION,
                 VertexHelper::createContent);
+    }
+
+    public void addOptionPair(AbstractVertex optionPair) {
+        addEdgeOneToMany(EDGE_OPTION_PAIR, optionPair);
+    }
+
+    public void removeOptionPair(AbstractVertex optionPair) {
+        removeEdge(EDGE_OPTION_PAIR, optionPair);
+    }
+
+    public List<? extends PairVertex> getOptionPairs() {
+        return VertexHelper.getOutgoingModels(
+                this,
+                EDGE_OPTION_PAIR,
+                PairVertex::new);
     }
 
     public ExerciseSessionVertex getSession() {

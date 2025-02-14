@@ -16,6 +16,8 @@ public class ExerciseInputDtoToModelMapper extends BaseDtoToModelMapper implemen
             return modelMapper.map(source, ExerciseInputMultipleChoiceTextModel.class);
         if (source instanceof ExerciseInputSelectReviewOptionsDto)
             return modelMapper.map(source, ExerciseInputRecognizabilityRatingModel.class);
+        if (source instanceof ExerciseInputPairOptionsDto)
+            return modelMapper.map(source, ExerciseInputPairOptionsModel.class);
         if (source instanceof ExerciseInputRecordAudioDto)
             return modelMapper.map(source, ExerciseInputAudioModel.class);
 

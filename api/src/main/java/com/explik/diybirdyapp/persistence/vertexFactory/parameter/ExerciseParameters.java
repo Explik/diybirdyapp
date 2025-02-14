@@ -12,6 +12,7 @@ public class ExerciseParameters {
     private ExerciseContentParameters content;
     private ExerciseInputParametersArrangeTextOptions arrangeTextOptionsInput;
     private ExerciseInputParametersSelectOptions selectOptionsInput;
+    private ExerciseInputParametersPairOptions pairOptionsInput;
     private ExerciseInputParametersWriteText writeTextInput;
 
     public String getId() {
@@ -89,6 +90,19 @@ public class ExerciseParameters {
 
     public ExerciseParameters withSelectOptionsInput(ExerciseInputParametersSelectOptions selectOptionsInput) {
         this.selectOptionsInput = selectOptionsInput;
+        return this;
+    }
+
+    public ExerciseInputParametersPairOptions getPairOptionsInput() {
+        return pairOptionsInput;
+    }
+
+    public void setPairOptionsInput(ExerciseInputParametersPairOptions pairOptionsInput) {
+        this.pairOptionsInput = pairOptionsInput;
+    }
+
+    public ExerciseParameters withPairOptionsInput(ExerciseInputParametersPairOptions pairOptionsInput) {
+        this.pairOptionsInput = pairOptionsInput;
         return this;
     }
 

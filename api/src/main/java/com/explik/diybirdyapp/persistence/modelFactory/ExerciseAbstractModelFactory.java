@@ -22,6 +22,9 @@ public class ExerciseAbstractModelFactory {
     @Autowired
     private ExerciseInputModelFactoryMultipleChoice selectOptionsModelFactory;
 
+    @Autowired
+    private ExerciseInputModelFactoryPairOptions pairOptionsModelFactory;
+
     public ModelFactory<ExerciseVertex, ExerciseModel> create(ExerciseSchema schema) {
         return vertex -> createExercise(vertex, schema);
     }
@@ -68,6 +71,9 @@ public class ExerciseAbstractModelFactory {
         }
         if (inputType.equals(ExerciseInputTypes.SELECT_OPTIONS)) {
             return selectOptionsModelFactory.create(vertex);
+        }
+        if (inputType.equals(ExerciseInputTypes.PAIR_OPTIONS)) {
+            return pairOptionsModelFactory.create(vertex);
         }
         else throw new RuntimeException("Unsupported input type: " + inputType);
     }
