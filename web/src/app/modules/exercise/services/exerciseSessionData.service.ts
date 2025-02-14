@@ -22,6 +22,11 @@ export class ExerciseSessionDataService {
         return this.http.get<ExerciseDto[]>(`${environment.apiUrl}/exercise`);
     }
 
+    getExerciseTypes(): Observable<string[]> {
+        // TODO Add error handling
+        return this.http.get<string[]>(`${environment.apiUrl}/exercise/types`);
+    }
+
     // === ExerciseAnswer ===
     submitExerciseAnswer(exerciseId: string, answer: ExerciseAnswer): Observable<ExerciseDto> {
         // TODO Add error handling

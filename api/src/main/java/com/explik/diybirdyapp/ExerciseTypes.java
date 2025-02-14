@@ -9,4 +9,16 @@ public class ExerciseTypes {
     public static final String REVIEW_FLASHCARD = "review-flashcard-exercise";
     public static final String SELECT_FLASHCARD = "select-flashcard-exercise";
     public static final String PRONOUNCE_FLASHCARD = "pronounce-flashcard-exercise";
+
+    public static String[] getAll() {
+        return new String[] {
+            WRITE_SENTENCE_USING_WORD,
+            WRITE_TRANSLATED_SENTENCE,
+            MULTIPLE_CHOICE_TEXT,
+            WRITE_FLASHCARD,
+            REVIEW_FLASHCARD,
+            SELECT_FLASHCARD,
+            PRONOUNCE_FLASHCARD
+        };
+    }
 }

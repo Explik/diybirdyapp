@@ -7,6 +7,7 @@ import { VocabularyPageComponent } from './modules/content/pages/vocabulary-page
 import { SharedComponentsPageComponent } from './shared/pages/shared-components-page/shared-components-page.component';
 import { ContentComponentsPageComponent } from './modules/content/pages/content-components-page/content-components-page.component';
 import { ExerciseComponentsPageComponent } from './modules/exercise/pages/exercise-components-page/exercise-components-page.component';
+import { ExerciseSamplesPageComponent } from './modules/exercise/pages/exercise-samples-page/exercise-samples-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/flashcard-deck', pathMatch: 'full' },
@@ -17,5 +18,6 @@ export const routes: Routes = [
   { path: 'vocabulary', component: VocabularyPageComponent },
   { path: 'docs/shared-components', component: SharedComponentsPageComponent },
   { path: 'docs/content-components', component: ContentComponentsPageComponent },
-  { path: 'docs/exercise-components', component: ExerciseComponentsPageComponent }
+  { path: 'docs/exercise-components', component: ExerciseComponentsPageComponent },
+  { path: 'docs/exercise-samples', component: ExerciseSamplesPageComponent }
 ];

@@ -1,0 +1,8 @@
+<section class="pl-4">
+    <h1>All exercise samples: </h1>
+    <ul class="pl-2">
+        <li *ngFor="let exerciseType of exerciseTypes" class="text-blue-500 hover:underline cursor-pointer">
+            - <a (click)="goToExerciseType(exerciseType)">{{ exerciseType?.replaceAll('-',' ') }}</a>
+        </li>
+    </ul>
+</section>
