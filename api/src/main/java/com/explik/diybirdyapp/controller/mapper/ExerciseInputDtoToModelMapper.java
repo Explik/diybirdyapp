@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 public class ExerciseInputDtoToModelMapper extends BaseDtoToModelMapper implements GenericMapper<ExerciseInputDto, ExerciseInputModel> {
     @Override
     public ExerciseInputModel map(ExerciseInputDto source) {
+        if (source instanceof ExerciseInputArrangeTextOptionsDto)
+            return modelMapper.map(source, ExerciseInputArrangeTextOptionsModel.class);
         if (source instanceof ExerciseInputWriteTextDto)
             return modelMapper.map(source, ExerciseInputTextModel.class);
         if (source instanceof ExerciseInputSelectOptionsDto)

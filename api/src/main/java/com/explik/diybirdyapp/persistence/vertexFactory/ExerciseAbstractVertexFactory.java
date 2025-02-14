@@ -67,7 +67,18 @@ public class ExerciseAbstractVertexFactory {
         private void attachInput(ExerciseVertex vertex, ExerciseParameters options) {
             String inputType = this.schema.getInputType();
 
-            if (inputType.equals(ExerciseInputTypes.SELECT_OPTIONS)) {
+            if (inputType.equals(ExerciseInputTypes.ARRANGE_TEXT_OPTIONS)) {
+                var inputOptions = options.getArrangeTextOptionsInput();
+
+                if (inputOptions == null)
+                    throw new IllegalArgumentException("ArrangeTextOptionsInput is required for input type: " + inputType);
+
+                for (var option : inputOptions.getOptions()) {
+                    vertex.addOption(option);
+                    option.makeStatic();
+                }
+            }
+            else if (inputType.equals(ExerciseInputTypes.SELECT_OPTIONS)) {
                 var inputOptions = options.getSelectOptionsInput();
 
                 if (inputOptions == null)

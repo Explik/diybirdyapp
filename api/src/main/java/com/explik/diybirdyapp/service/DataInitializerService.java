@@ -8,12 +8,14 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersArrangeTextOptions;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -165,6 +167,21 @@ public class DataInitializerService {
         // Setting up exercise content
         var langVertex = LanguageVertex.findByAbbreviation(traversalSource, "EN");
 
+        var sentenceTextContent = builderFactory.createTextContentVertexBuilder()
+                .withId("textContent2")
+                .withValue("This is an example sentence")
+                .withLanguage(langVertex)
+                .build(traversalSource);
+
+        var wordTextContents = new ArrayList<TextContentVertex>();
+        for (var word : sentenceTextContent.getValue().split(" ")) {
+            var wordTextContent = builderFactory.createTextContentVertexBuilder()
+                    .withValue(word)
+                    .withLanguage(langVertex)
+                    .build(traversalSource);
+            wordTextContents.add(wordTextContent);
+        }
+
         var flashcardVertex1 = builderFactory.createFlashcardVertexBuilder()
                 .withId("flashcardVertex1")
                 .withFrontText("Correct option", langVertex)
@@ -184,17 +201,16 @@ public class DataInitializerService {
                         .withLanguage(langVertex)
                         .build(traversalSource));
         var longTextContentParameters = new ExerciseContentParameters()
-                .withContent(builderFactory.createTextContentVertexBuilder()
-                        .withId("textContent2")
-                        .withValue("This is an example sentence")
-                        .withLanguage(langVertex)
-                        .build(traversalSource));
+                .withContent(sentenceTextContent);
 
         var flashcardContentParameters = new ExerciseContentParameters()
                 .withContent(flashcardVertex1);
 
         var flashcardSideContentParameters = new ExerciseContentParameters()
                 .withContent(flashcardVertex1.getLeftContent());
+
+        var arrangeTextOptionsParameters = new ExerciseInputParametersArrangeTextOptions()
+                .withOptions(wordTextContents);
 
         var selectFlashcardParameters = new ExerciseInputParametersSelectOptions()
                         .withCorrectOptions(List.of(flashcardVertex1.getLeftContent()))
@@ -246,5 +262,15 @@ public class DataInitializerService {
         exerciseAbstractVertexFactory
                 .create(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE)
                 .create(traversalSource, pronounceFlashcardExerciseParameters);
+
+        // Exercise - Arrange all words in translation exercise
+        var arrangeWordsInTranslationExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.ARRANGE_WORDS_IN_TRANSLATION)
+                .withSession(null)
+                .withContent(longTextContentParameters)
+                .withArrangeTextOptionsInput(arrangeTextOptionsParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.ARRANGE_WORDS_IN_TRANSLATION)
+                .create(traversalSource, arrangeWordsInTranslationExerciseParameters);
     }
 }

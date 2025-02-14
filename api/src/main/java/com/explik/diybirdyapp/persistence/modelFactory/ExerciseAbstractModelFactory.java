@@ -17,6 +17,9 @@ public class ExerciseAbstractModelFactory {
     private ExerciseContentModelFactory contentModelFactory;
 
     @Autowired
+    private ExerciseInputModelFactoryArrangeTextOptions arrangeTextOptionsModelFactory;
+
+    @Autowired
     private ExerciseInputModelFactoryMultipleChoice selectOptionsModelFactory;
 
     public ModelFactory<ExerciseVertex, ExerciseModel> create(ExerciseSchema schema) {
@@ -60,6 +63,9 @@ public class ExerciseAbstractModelFactory {
     private ExerciseInputModel createInput(ExerciseVertex vertex, ExerciseSchema schema) {
         var inputType = schema.getInputType();
 
+        if (inputType.equals(ExerciseInputTypes.ARRANGE_TEXT_OPTIONS)) {
+            return arrangeTextOptionsModelFactory.create(vertex);
+        }
         if (inputType.equals(ExerciseInputTypes.SELECT_OPTIONS)) {
             return selectOptionsModelFactory.create(vertex);
         }

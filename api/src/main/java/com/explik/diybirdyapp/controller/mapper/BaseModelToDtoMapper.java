@@ -36,6 +36,8 @@ public abstract class BaseModelToDtoMapper {
     Converter<ExerciseInputModel, ExerciseInputDto> exerciseInputConverter = new AbstractConverter<ExerciseInputModel, ExerciseInputDto>() {
         @Override
         protected ExerciseInputDto convert(ExerciseInputModel source) {
+            if (source instanceof ExerciseInputArrangeTextOptionsModel)
+                return modelMapper.map(source, ExerciseInputArrangeTextOptionsDto.class);
             if (source instanceof ExerciseInputTextModel)
                 return modelMapper.map(source, ExerciseInputWriteTextDto.class);
             if (source instanceof ExerciseInputMultipleChoiceTextModel)

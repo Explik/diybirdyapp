@@ -10,6 +10,7 @@ public class ExerciseParameters {
     private String targetLanguage;
 
     private ExerciseContentParameters content;
+    private ExerciseInputParametersArrangeTextOptions arrangeTextOptionsInput;
     private ExerciseInputParametersSelectOptions selectOptionsInput;
     private ExerciseInputParametersWriteText writeTextInput;
 
@@ -62,6 +63,19 @@ public class ExerciseParameters {
 
     public ExerciseParameters withContent(ExerciseContentParameters content) {
         this.content = content;
+        return this;
+    }
+
+    public ExerciseInputParametersArrangeTextOptions getArrangeTextOptionsInput() {
+        return arrangeTextOptionsInput;
+    }
+
+    public void setArrangeTextOptionsInput(ExerciseInputParametersArrangeTextOptions arrangeTextOptionsInput) {
+        this.arrangeTextOptionsInput = arrangeTextOptionsInput;
+    }
+
+    public ExerciseParameters withArrangeTextOptionsInput(ExerciseInputParametersArrangeTextOptions arrangeTextOptionsInput) {
+        this.arrangeTextOptionsInput = arrangeTextOptionsInput;
         return this;
     }
 

@@ -7,6 +7,11 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import java.util.Map;
 
 public class ExerciseSchemas {
+    public static final ExerciseSchema ARRANGE_WORDS_IN_TRANSLATION = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.ARRANGE_WORDS_IN_TRANSLATION)
+            .withContentType(ContentTypes.TEXT)
+            .withInputType(ExerciseInputTypes.ARRANGE_TEXT_OPTIONS);
+
     public static final ExerciseSchema SELECT_FLASHCARD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.SELECT_FLASHCARD)
             .withContentType(ContentTypes.FLASHCARD_SIDE)
@@ -38,6 +43,7 @@ public class ExerciseSchemas {
 
     public static ExerciseSchema getByType(String type) {
         return switch (type) {
+            case ExerciseTypes.ARRANGE_WORDS_IN_TRANSLATION -> ARRANGE_WORDS_IN_TRANSLATION;
             case ExerciseTypes.SELECT_FLASHCARD -> SELECT_FLASHCARD_EXERCISE;
             case ExerciseTypes.PRONOUNCE_FLASHCARD -> PRONOUNCE_FLASHCARD_EXERCISE;
             case ExerciseTypes.REVIEW_FLASHCARD -> REVIEW_FLASHCARD_EXERCISE;

@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
+import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextModel;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -12,7 +13,7 @@ public class ExerciseInputModelFactoryMultipleChoice implements ModelFactory<Exe
     @Override
     public ExerciseInputMultipleChoiceTextModel create(ExerciseVertex vertex) {
         var input = new ExerciseInputMultipleChoiceTextModel();
-        input.setType("multiple-choice-text-input");
+        input.setType(ExerciseInputTypes.SELECT_OPTIONS);
 
         var correctOptions = vertex.getCorrectOptions();
         correctOptions.forEach(v -> input.addOption(createOption(vertex, v)));
