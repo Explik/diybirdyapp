@@ -10,11 +10,11 @@ import { TextQuoteComponent } from "../../../../shared/components/text-quote/tex
 import { ActivatedRoute, Router } from '@angular/router';
 import { InfoBoxComponent } from '../../components/info-box/info-box.component';
 import { ExerciseSessionDataService } from '../../services/exerciseSessionData.service';
-import { ExerciseContentWriteSentenceUsingWordContainerComponent } from '../../components/exercise-content-write-sentence-using-word-container/exercise-content-write-sentence-using-word-container.component';
-import { ExerciseContentWriteTranslatedSentenceContainerComponent } from '../../components/exercise-content-write-translated-sentence-container/exercise-content-write-translated-sentence-container.component';
+import { ExerciseContentWriteSentenceUsingWordContainerComponent } from '../../container-components/exercise-content-write-sentence-using-word-container/exercise-content-write-sentence-using-word-container.component';
+import { ExerciseContentWriteTranslatedSentenceContainerComponent } from '../../container-components/exercise-content-write-translated-sentence-container/exercise-content-write-translated-sentence-container.component';
 import { ExerciseSessionService } from '../../services/exerciseSession.service';
-import { ExerciseContentMultipleTextChoiceContainerComponent } from '../../components/exercise-content-multiple-text-choice-container/exercise-content-multiple-text-choice-container.component';
-import { ExerciseContentReviewFlashcardContainerComponent } from '../../components/exercise-content-review-flashcard-container/exercise-content-review-flashcard-container.component';
+import { ExerciseContentMultipleTextChoiceContainerComponent } from '../../container-components/exercise-content-multiple-text-choice-container/exercise-content-multiple-text-choice-container.component';
+import { ExerciseContentReviewFlashcardContainerComponent } from '../../container-components/exercise-content-review-flashcard-container/exercise-content-review-flashcard-container.component';
 import { ExerciseComponentService } from '../../services/exerciseComponent.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { Observable, map } from 'rxjs';

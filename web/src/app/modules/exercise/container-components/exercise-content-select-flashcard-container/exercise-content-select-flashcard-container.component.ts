@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { InstructionComponent } from "../instruction/instruction.component";
+import { InstructionComponent } from "../../components/instruction/instruction.component";
 import { CommonModule } from '@angular/common';
 import { ExerciseService } from '../../services/exercise.service';
-import { ExerciseInputSelectOptionsComponent } from '../exercise-input-select-options/exercise-input-select-options.component';
-import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
+import { ExerciseInputSelectOptionsComponent } from '../../components/exercise-input-select-options/exercise-input-select-options.component';
+import { DynamicFlashcardContentComponent } from "../../components/dynamic-flashcard-content/dynamic-flashcard-content.component";
 import { ExerciseContentFlashcardDto, ExerciseInputSelectOptionsDto } from '../../../../shared/api-client';
 
 @Component({

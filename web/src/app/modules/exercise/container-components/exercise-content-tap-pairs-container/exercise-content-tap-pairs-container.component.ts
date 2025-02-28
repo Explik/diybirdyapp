@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { InstructionComponent } from "../instruction/instruction.component";
-import { ExerciseInputPairOptionsComponent } from "../exercise-input-pair-options/exercise-input-pair-options.component";
+import { InstructionComponent } from "../../components/instruction/instruction.component";
+import { ExerciseInputPairOptionsComponent } from "../../components/exercise-input-pair-options/exercise-input-pair-options.component";
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseInputPairOptionsDto } from '../../../../shared/api-client';
 import { CommonModule } from '@angular/common';

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { InstructionComponent } from "../instruction/instruction.component";
+import { InstructionComponent } from "../../components/instruction/instruction.component";
 import { TextQuoteComponent } from "../../../../shared/components/text-quote/text-quote.component";
-import { ExerciseInputWriteTextComponent } from "../exercise-input-write-text/exercise-input-write-text.component";
+import { ExerciseInputWriteTextComponent } from "../../components/exercise-input-write-text/exercise-input-write-text.component";
 import { TextContent } from '../../../../shared/models/content.interface';
 import { CommonModule } from '@angular/common';
 import { DefaultContentService } from '../../services/defaultContent.service';

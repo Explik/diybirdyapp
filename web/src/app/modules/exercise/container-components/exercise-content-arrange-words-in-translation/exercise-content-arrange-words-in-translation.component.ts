@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ExerciseContentDto, ExerciseInputArrangeTextOptionsDto } from '../../../../shared/api-client';
 import { ExerciseService } from '../../services/exercise.service';
-import { InstructionComponent } from "../instruction/instruction.component";
-import { ExerciseInputArrangeTextOptionsComponent } from "../exercise-input-arrange-text-options/exercise-input-arrange-text-options.component";
-import { DynamicContentComponent } from "../dynamic-content/dynamic-content.component";
+import { InstructionComponent } from "../../components/instruction/instruction.component";
+import { ExerciseInputArrangeTextOptionsComponent } from "../../components/exercise-input-arrange-text-options/exercise-input-arrange-text-options.component";
+import { DynamicContentComponent } from "../../components/dynamic-content/dynamic-content.component";
 
 @Component({
   selector: 'app-exercise-content-arrange-words-in-translation',

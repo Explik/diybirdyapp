@@ -3,10 +3,10 @@ import { FlashcardContent } from '../../../../shared/models/content.interface';
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseSessionService } from '../../services/exerciseSession.service';
 import { DefaultContentService } from '../../services/defaultContent.service';
-import { InstructionComponent } from "../instruction/instruction.component";
+import { InstructionComponent } from "../../components/instruction/instruction.component";
 import { CommonModule } from '@angular/common';
-import { ExerciseInputRecordAudioComponent } from "../exercise-input-record-audio/exercise-input-record-audio.component";
-import { DynamicFlashcardContentComponent } from "../dynamic-flashcard-content/dynamic-flashcard-content.component";
+import { ExerciseInputRecordAudioComponent } from "../../components/exercise-input-record-audio/exercise-input-record-audio.component";
+import { DynamicFlashcardContentComponent } from "../../components/dynamic-flashcard-content/dynamic-flashcard-content.component";
 import { ExerciseContentFlashcardDto, ExerciseInputRecordAudioDto } from '../../../../shared/api-client';
 
 @Component({

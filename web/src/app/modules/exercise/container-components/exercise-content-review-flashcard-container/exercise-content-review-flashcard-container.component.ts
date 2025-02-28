@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { InstructionComponent } from "../instruction/instruction.component";
+import { InstructionComponent } from "../../components/instruction/instruction.component";
 import { CommonModule } from '@angular/common';
 import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseSessionService } from '../../services/exerciseSession.service';
-import { DynamicFlashcardContentComponent } from '../dynamic-flashcard-content/dynamic-flashcard-content.component';
+import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 import { ExerciseContentFlashcardDto } from '../../../../shared/api-client';
 
 @Component({

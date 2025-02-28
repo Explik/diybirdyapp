@@ -10,8 +10,8 @@ import { TextQuoteComponent } from "../../../../shared/components/text-quote/tex
 import { ActivatedRoute } from '@angular/router';
 import { InfoBoxComponent } from '../../components/info-box/info-box.component';
 import { ExerciseSessionDataService } from '../../services/exerciseSessionData.service';
-import { ExerciseContentWriteSentenceUsingWordContainerComponent } from '../../components/exercise-content-write-sentence-using-word-container/exercise-content-write-sentence-using-word-container.component';
-import { ExerciseContentWriteTranslatedSentenceContainerComponent } from '../../components/exercise-content-write-translated-sentence-container/exercise-content-write-translated-sentence-container.component';
+import { ExerciseContentWriteSentenceUsingWordContainerComponent } from '../../container-components/exercise-content-write-sentence-using-word-container/exercise-content-write-sentence-using-word-container.component';
+import { ExerciseContentWriteTranslatedSentenceContainerComponent } from '../../container-components/exercise-content-write-translated-sentence-container/exercise-content-write-translated-sentence-container.component';
 import { ExerciseSessionService } from '../../services/exerciseSession.service';
 import { ExerciseComponentService } from '../../services/exerciseComponent.service';
 import { ExerciseService } from '../../services/exercise.service';
