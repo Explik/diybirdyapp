@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { ExerciseInputPairOptionsDto, PairOptionFeedbackPair } from '../../../../shared/api-client';
+import { ExerciseInputPairOptionsDto, PairOptionFeedbackPair, SelectOptionInputTextOption } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-exercise-input-pair-options',
@@ -16,11 +16,11 @@ export class ExerciseInputPairOptionsComponent {
   @Input({required: true}) input!: ExerciseInputPairOptionsDto; 
 
   get leftOptions() {
-    return this.input.leftOptions;
+    return this.input.leftOptions as any as SelectOptionInputTextOption[];
   }
 
   get rightOptions() {
-    return this.input.rightOptions;
+    return this.input.rightOptions as any as SelectOptionInputTextOption[];
   }
 
   get correctPairs(): PairOptionFeedbackPair[] {

@@ -1,6 +1,8 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
@@ -64,6 +66,9 @@ public class ExerciseInputPairOptionsDto extends ExerciseInputDto {
         this.feedback = feedback;
     }
 
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = PairOptionsInputTextOptionDto.class, name = "text")
+    })
     public static abstract class PairOptionsInputOptionDto {
         @NotNull
         private String id;
