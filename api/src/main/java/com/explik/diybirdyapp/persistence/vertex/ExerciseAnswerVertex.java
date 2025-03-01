@@ -51,4 +51,9 @@ public class ExerciseAnswerVertex extends AbstractVertex {
     public void setContent(AbstractVertex contentVertex) {
         addEdgeOneToOne(EDGE_CONTENT, contentVertex);
     }
+
+    public static ExerciseAnswerVertex create(GraphTraversalSource traversalSource) {
+        var vertex = traversalSource.addV(LABEL).next();
+        return new ExerciseAnswerVertex(traversalSource, vertex);
+    }
 }

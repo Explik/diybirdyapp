@@ -38,4 +38,9 @@ public class ExerciseFeedbackVertex extends AbstractVertex {
     public void setAnswer(ExerciseAnswerVertex answerVertex) {
         addEdgeOneToOne(EDGE_EXERCISE_ANSWER, answerVertex);
     }
+
+    public static ExerciseFeedbackVertex create(GraphTraversalSource traversalSource) {
+        var vertex = traversalSource.addV(LABEL).next();
+        return new ExerciseFeedbackVertex(traversalSource, vertex);
+    }
 }

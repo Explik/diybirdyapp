@@ -151,11 +151,4 @@ public class ExerciseVertex extends AbstractVertex {
                 .map(v -> new ExerciseVertex(traversalSource, v))
                 .toList();
     }
-
-    public ExerciseModel toLimitedExerciseModel() {
-        var model = new ExerciseModel();
-        model.setId(getId());
-        model.setType(getType());
-        return model;
-    }
 }
