@@ -135,6 +135,19 @@ public class ExerciseVertex extends AbstractVertex {
         addEdgeOneToMany(EDGE_SESSION, session);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ExerciseVertex other)
+            return this.getId().equals(other.getId());
+
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
+
     public static ExerciseVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new ExerciseVertex(traversalSource, vertex);

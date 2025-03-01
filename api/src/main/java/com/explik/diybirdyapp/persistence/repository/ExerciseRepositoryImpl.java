@@ -4,6 +4,8 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseAbstractModelFactory;
+import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
+import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseOperations;
@@ -17,16 +19,13 @@ import java.util.Map;
 
 @Component
 public class ExerciseRepositoryImpl implements ExerciseRepository {
-    @Autowired
-    private LimitedExerciseModelFactory limitedExerciseModelFactory;
-
-    @Autowired
-    private ExerciseAbstractModelFactory abstractModelFactory;
-
-    @Autowired
-    private Map<String, ExerciseOperations> exerciseManagers;
-
     private final GraphTraversalSource traversalSource;
+
+    @Autowired
+    private GenericProvider<ModelFactory<ExerciseVertex, ExerciseModel>> exerciseModelFactoryProvider;
+
+    @Autowired
+    private GenericProvider<ExerciseOperations> exerciseOperationProvider;
 
     public ExerciseRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
@@ -36,19 +35,20 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     public ExerciseModel get(String id) {
         var vertex = ExerciseVertex.getById(traversalSource, id);
         var exerciseType = vertex.getType();
-        var exerciseSchema = ExerciseSchemas.getByType(exerciseType);
-        var exerciseFactory = abstractModelFactory.create(exerciseSchema);
+        var exerciseFactory = exerciseModelFactoryProvider.get(exerciseType);
 
         return exerciseFactory.create(vertex);
     }
 
     @Override
     public List<ExerciseModel> getAll() {
+        // Null indicates generic exercise model factory
+        var factory = exerciseModelFactoryProvider.get(null);
         var vertices = ExerciseVertex.getAll(traversalSource);
 
         return vertices
                 .stream()
-                .map(limitedExerciseModelFactory::create)
+                .map(factory::create)
                 .toList();
     }
 
@@ -58,10 +58,8 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
 
         var exerciseVertex = ExerciseVertex.getById(traversalSource, id);
         var exerciseType = exerciseVertex.getType();
-        var manager = exerciseManagers.getOrDefault(exerciseType + ComponentTypes.OPERATIONS, null);
-        if (manager == null)
-            throw new RuntimeException("Unsupported exercise type: " + exerciseType);
+        var exerciseOperations = exerciseOperationProvider.get(exerciseType);
 
-        return manager.evaluate(traversalSource, answer);
+        return exerciseOperations.evaluate(traversalSource, answer);
     }
 }
