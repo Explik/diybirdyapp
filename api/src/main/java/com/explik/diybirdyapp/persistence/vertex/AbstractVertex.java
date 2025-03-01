@@ -40,17 +40,10 @@ public class AbstractVertex {
         reload();
     }
 
-    protected void addOrderedEdgeOneToOne(String edgeLabel, AbstractVertex toVertex, String orderProperty, Object orderValue) {
-        this.traversalSource.V(this.vertex).outE(edgeLabel).drop().iterate();
-        this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).property(orderProperty, orderValue).next();
-        reload();
-    }
-
     protected void addOrderedEdgeOneToMany(String edgeLabel, AbstractVertex toVertex, String orderProperty, Object orderValue) {
         this.traversalSource.V(this.vertex).addE(edgeLabel).to(toVertex.vertex).property(orderProperty, orderValue).next();
         reload();
     }
-
 
     protected void removeEdges(String edgeLabel) {
         this.traversalSource.V(this.vertex).outE(edgeLabel).drop().iterate();
