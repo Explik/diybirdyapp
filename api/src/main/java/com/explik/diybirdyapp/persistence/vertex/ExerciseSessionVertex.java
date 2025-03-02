@@ -67,6 +67,19 @@ public class ExerciseSessionVertex extends AbstractVertex {
         return VertexHelper.getOptionalOutgoingModel(this, EDGE_OPTIONS, ExerciseSessionOptionsVertex::new);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ExerciseSessionVertex other)
+            return this.getId().equals(other.getId());
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getId().hashCode();
+    }
+
     public static ExerciseSessionVertex findById(GraphTraversalSource traversalSource, String id) {
         var vertex = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ID, id).next();
         return new ExerciseSessionVertex(traversalSource, vertex);

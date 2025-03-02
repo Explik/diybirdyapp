@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
@@ -19,7 +20,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Autowired
-    Map<String, ExerciseSessionOperations> sessionManagers;
+    GenericProvider<ExerciseSessionOperations> sessionOperationProvider;
 
     public ExerciseSessionRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
@@ -28,9 +29,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     @Override
     public ExerciseSessionModel add(ExerciseSessionModel model) {
         var sessionType = model.getType();
-        var sessionManager = sessionManagers.getOrDefault(model.getType() + ComponentTypes.OPERATIONS, null);
-        if (sessionManager == null)
-            throw new IllegalArgumentException("No factory for type " + sessionType);
+        var sessionManager = sessionOperationProvider.get(sessionType);
 
         return sessionManager.init(traversalSource, model);
     }
@@ -50,9 +49,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             throw new IllegalArgumentException("No session with id " + modelId);
 
         var sessionType = sessionVertex.getType();
-        var sessionManager = sessionManagers.getOrDefault(sessionType + ComponentTypes.OPERATIONS, null);
-        if (sessionManager == null)
-            throw new IllegalArgumentException("No factory for type " + sessionType);
+        var sessionManager = sessionOperationProvider.get(sessionType);
 
         return sessionManager.nextExercise(traversalSource, modelId);
     }
