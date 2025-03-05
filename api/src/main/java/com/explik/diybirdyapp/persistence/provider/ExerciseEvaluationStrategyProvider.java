@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.provider;
 
 import com.explik.diybirdyapp.ComponentTypes;
+import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,18 @@ public class ExerciseEvaluationStrategyProvider implements GenericProvider<Exerc
 
     @Override
     public ExerciseEvaluationStrategy get(String exerciseType) {
-        var operations = exerciseManagers.getOrDefault(exerciseType + ComponentTypes.OPERATIONS, null);
-        if (operations == null)
+        if (exerciseType == null)
+            throw new RuntimeException("Exercise type is required");
+
+        var exerciseSchema = ExerciseSchemas.getByType(exerciseType);
+        if (exerciseSchema == null)
             throw new RuntimeException("Unsupported exercise type: " + exerciseType);
 
-        return operations;
+        var evaluationType = exerciseSchema.getEvaluationType();
+        var evaluationStrategy = exerciseManagers.getOrDefault(evaluationType + ComponentTypes.STRATEGY, null);
+        if (evaluationStrategy == null)
+            throw new RuntimeException("Unsupported evaluation type: " + evaluationType);
+
+        return evaluationStrategy;
     }
 }

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.strategy;
 
 import com.explik.diybirdyapp.ComponentTypes;
+import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
@@ -8,37 +9,30 @@ import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryAudio;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component(ExerciseTypes.PRONOUNCE_FLASHCARD + ComponentTypes.OPERATIONS)
+@Component(ExerciseEvaluationTypes.CORRECT_SPEECH_TO_TEXT + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEvaluationStrategy {
     @Autowired
     GraphTraversalSource traversalSource;
 
     @Autowired
-    private AudioContentVertexFactory audioContentVertexFactory;
+    ExerciseAnswerVertexFactoryAudio answerVertexFactory;
 
     @Override
     public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
         if (genericAnswerModel == null)
             throw new RuntimeException("Answer model is null");
-        if (!(genericAnswerModel instanceof ExerciseInputAudioModel))
+        if (!(genericAnswerModel instanceof ExerciseInputAudioModel answerModel))
             throw new RuntimeException("Answer model type is not audio");
 
-        ExerciseInputAudioModel answerModel = (ExerciseInputAudioModel) genericAnswerModel;
-        var textContent = exerciseVertex.getTextContent();
-        var language = textContent.getLanguage();
-
         // Save answer
-        var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();
-        var answerVertex = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options(answerId, answerModel.getUrl(), language));
-        exerciseVertex.setAnswer(answerVertex);
+        var answerVertex = answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
         var exerciseFeedback = ExerciseFeedbackModel.createIndecisiveFeedback();

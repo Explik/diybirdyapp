@@ -10,6 +10,7 @@ public class ExerciseSchema {
     private String exerciseType;
     private String contentType;
     private String inputType;
+    private String evaluationType;
     private boolean requireTargetLanguage = false;
     private Map<String, Function<ExerciseVertex, Object>> modelProperties;
 
@@ -49,6 +50,19 @@ public class ExerciseSchema {
 
     public ExerciseSchema withInputType(String inputType) {
         this.inputType = inputType;
+        return this;
+    }
+
+    public String getEvaluationType() {
+        return evaluationType;
+    }
+
+    public void setEvaluationType(String evaluationType) {
+        this.evaluationType = evaluationType;
+    }
+
+    public ExerciseSchema withEvaluationType(String evaluationType) {
+        this.evaluationType = evaluationType;
         return this;
     }
 

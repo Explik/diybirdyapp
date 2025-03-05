@@ -12,6 +12,7 @@ public class ExerciseAnswerVertex extends AbstractVertex {
 
     public final static String EDGE_EXERCISE = "hasExercise";
     public final static String EDGE_CONTENT = "hasContent";
+    public final static String EDGE_RECOGNIZABILITY_RATING = "hasRecognizabilityRating";
 
     public final String PROPERTY_ID = "id";
     public final String PROPERTY_TYPE = "type";
@@ -40,16 +41,20 @@ public class ExerciseAnswerVertex extends AbstractVertex {
         addEdgeOneToOne(EDGE_EXERCISE, exerciseVertex);
     }
 
-    public AbstractVertex getTextContent() {
-        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, TextContentVertex::new);
+    public ContentVertex getContent() {
+        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, ContentVertex::new);
     }
 
-    public AbstractVertex getFlashcardContent() {
-        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, FlashcardVertex::new);
-    }
-
-    public void setContent(AbstractVertex contentVertex) {
+    public void setContent(ContentVertex contentVertex) {
         addEdgeOneToOne(EDGE_CONTENT, contentVertex);
+    }
+
+    public RecognizabilityRatingVertex getRecognizabilityRating() {
+        return VertexHelper.getOutgoingModel(this, EDGE_RECOGNIZABILITY_RATING, RecognizabilityRatingVertex::new);
+    }
+
+    public void setRecognizabilityRating(RecognizabilityRatingVertex ratingVertex) {
+        addEdgeOneToOne(EDGE_RECOGNIZABILITY_RATING, ratingVertex);
     }
 
     public static ExerciseAnswerVertex create(GraphTraversalSource traversalSource) {

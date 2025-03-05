@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.strategy;
 
 import com.explik.diybirdyapp.ComponentTypes;
+import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component(ExerciseTypes.SELECT_FLASHCARD + ComponentTypes.OPERATIONS)
+@Component(ExerciseEvaluationTypes.CORRECT_OPTIONS + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvaluationStrategy {
     @Autowired
     private GraphTraversalSource traversalSource;
