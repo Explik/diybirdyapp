@@ -3,14 +3,12 @@ package com.explik.diybirdyapp.persistence.repository;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
-import com.explik.diybirdyapp.persistence.operation.ExerciseOperations;
+import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -35,10 +33,10 @@ public class ExerciseRepositoryUnitTest {
     private ModelFactory<ExerciseVertex, ExerciseModel> exerciseModelFactory;
 
     @MockBean
-    private GenericProvider<ExerciseOperations> exerciseOperationProvider;
+    private GenericProvider<ExerciseEvaluationStrategy> exerciseOperationProvider;
 
     @MockBean(name = "mockedExerciseOperations")
-    private ExerciseOperations exerciseOperations;
+    private ExerciseEvaluationStrategy exerciseOperations;
 
     @Autowired
     private GraphTraversalSource traversalSource;

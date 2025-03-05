@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.operation;
+package com.explik.diybirdyapp.persistence.strategy;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
@@ -7,7 +7,6 @@ import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +15,21 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component(ExerciseTypes.PRONOUNCE_FLASHCARD + ComponentTypes.OPERATIONS)
-public class ExerciseOperationsPronounceFlashcard implements ExerciseOperations {
+public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEvaluationStrategy {
+    @Autowired
+    GraphTraversalSource traversalSource;
+
     @Autowired
     private AudioContentVertexFactory audioContentVertexFactory;
 
     @Override
-    public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseInputModel genericAnswerModel) {
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
         if (genericAnswerModel == null)
             throw new RuntimeException("Answer model is null");
         if (!(genericAnswerModel instanceof ExerciseInputAudioModel))
             throw new RuntimeException("Answer model type is not audio");
 
-
         ExerciseInputAudioModel answerModel = (ExerciseInputAudioModel) genericAnswerModel;
-        var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var textContent = exerciseVertex.getTextContent();
         var language = textContent.getLanguage();
 

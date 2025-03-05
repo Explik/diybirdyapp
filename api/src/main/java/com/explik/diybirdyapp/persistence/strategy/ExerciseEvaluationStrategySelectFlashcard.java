@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.operation;
+package com.explik.diybirdyapp.persistence.strategy;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
@@ -8,18 +8,19 @@ import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextMode
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component(ExerciseTypes.SELECT_FLASHCARD + ComponentTypes.OPERATIONS)
-public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
+public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvaluationStrategy {
+    @Autowired
+    private GraphTraversalSource traversalSource;
+
     @Override
-    public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseInputModel genericAnswerModel) {
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
         if (genericAnswerModel == null)
             throw new RuntimeException("Answer model is null");
         if (!(genericAnswerModel instanceof ExerciseInputMultipleChoiceTextModel))
@@ -28,7 +29,6 @@ public class ExerciseOperationsSelectFlashcard implements ExerciseOperations {
         var answerModel = (ExerciseInputMultipleChoiceTextModel)genericAnswerModel;
 
         // Evaluate exercise
-        var exerciseVertex = ExerciseVertex.getById(traversalSource, genericAnswerModel.getExerciseId());
         var correctOptionVertex = exerciseVertex.getCorrectOptions().getFirst();
         var incorrectOptionVertices = exerciseVertex.getOptions();
         exerciseVertex.setAnswer(correctOptionVertex);

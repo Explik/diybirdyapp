@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.operation;
+package com.explik.diybirdyapp.persistence.strategy;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
@@ -17,12 +17,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Component(ExerciseTypes.WRITE_FLASHCARD + ComponentTypes.OPERATIONS)
-public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
+public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluationStrategy {
+    @Autowired
+    private GraphTraversalSource traversalSource;
+
     @Autowired
     private TextContentVertexFactory textContentVertexFactory;
 
     @Override
-    public ExerciseModel evaluate(GraphTraversalSource traversalSource, ExerciseInputModel genericAnswerModel) {
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
         if (genericAnswerModel == null)
             throw new RuntimeException("Answer model is null");
         if (!(genericAnswerModel instanceof ExerciseInputTextModel))
@@ -30,7 +33,6 @@ public class ExerciseOperationsWriteFlashcard implements ExerciseOperations {
 
         // Evaluate answer
         ExerciseInputTextModel answerModel = (ExerciseInputTextModel)genericAnswerModel;
-        var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var textContent = exerciseVertex.getTextContent();
 
         // Save answer
