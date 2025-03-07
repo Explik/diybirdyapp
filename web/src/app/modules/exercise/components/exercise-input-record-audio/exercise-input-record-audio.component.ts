@@ -45,6 +45,11 @@ export class ExerciseInputRecordAudioComponent {
       };
       this.mediaRecorder.onstop = () => {
         this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+
+        if (this.input) {
+          this.input.url = 'audio.webm'; 
+          this.input.files = [new File(this.audioChunks, 'audio.webm')]; 
+        }
       };
       this.mediaRecorder.start();
       this.isRecording = true;

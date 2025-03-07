@@ -11,6 +11,7 @@ import com.explik.diybirdyapp.service.ExerciseTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -54,7 +55,25 @@ public class ExerciseController {
     @PostMapping("/exercise/{id}/answer")
     public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseInputDto dto) {
         var model = exerciseInputMapper.map(dto);
-        var newModel = exerciseService.submitExerciseAnswer(id, model);
+        var newModel = exerciseService.submitExerciseAnswer(id, model, null);
+
+        var event = new ExerciseAnsweredEvent(
+                this,
+                newModel.getType(),
+                newModel.getId(),
+                newModel.getAnswerId());
+        eventPublisher.publishEvent(event);
+
+        return exerciseMapper.map(newModel);
+    }
+
+    @PostMapping("/exercise/{id}/answer/rich")
+    public ExerciseDto submitAnswerRich(
+            @PathVariable String id,
+            @RequestPart("answer") ExerciseInputDto dto,
+            @RequestPart(value = "files", required = false) MultipartFile[] files) {
+        var model = exerciseInputMapper.map(dto);
+        var newModel = exerciseService.submitExerciseAnswer(id, model, files);
 
         var event = new ExerciseAnsweredEvent(
                 this,

@@ -7,6 +7,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.persistence.service.SpeechToTextService;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryAudio;
@@ -24,12 +25,21 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
     @Autowired
     ExerciseAnswerVertexFactoryAudio answerVertexFactory;
 
+    @Autowired
+    SpeechToTextService speechToTextService;
+
     @Override
     public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
         if (genericAnswerModel == null)
             throw new RuntimeException("Answer model is null");
         if (!(genericAnswerModel instanceof ExerciseInputAudioModel answerModel))
             throw new RuntimeException("Answer model type is not audio");
+
+        // Transcribe answer
+        var audioContentUrl = answerModel.getUrl();
+        var audioLangId = "en-US";
+        var transcribedText = speechToTextService.generateTranscription(audioContentUrl, audioLangId);
+        answerModel.setTranscription(transcribedText);
 
         // Save answer
         var answerVertex = answerVertexFactory.create(traversalSource, answerModel);

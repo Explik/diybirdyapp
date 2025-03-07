@@ -29,8 +29,20 @@ export class ExerciseSessionDataService {
 
     // === ExerciseAnswer ===
     submitExerciseAnswer(exerciseId: string, answer: ExerciseAnswer): Observable<ExerciseDto> {
-        // TODO Add error handling
-        return this.http.post<ExerciseDto>(`${environment.apiUrl}/exercise/${exerciseId}/answer`, answer);
+        const formData = new FormData();
+        
+        // Attach files 
+        if (answer.files) {
+            for (let file of answer.files)
+                formData.append('files', file, file.name);
+        }
+
+        // Generate JSON
+        const jsonObject = { ...answer, files: undefined }; 
+        const jsonString = JSON.stringify(jsonObject); 
+        formData.append('answer', new Blob([jsonString], { type: 'application/json' }));
+
+        return this.http.post<ExerciseDto>(`${environment.apiUrl}/exercise/${exerciseId}/answer/rich`, formData);
     }
 
     // === ExerciseSession ===

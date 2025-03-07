@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.persistence.vertexFactory;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,8 @@ public class ExerciseAnswerVertexFactoryAudio implements VertexFactory<ExerciseA
     @Override
     public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseInputAudioModel answerModel) {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
-        var textContent = exerciseVertex.getTextContent();
+        var flashcardContent = exerciseVertex.getFlashcardContent();
+        var textContent = (TextContentVertex)flashcardContent.getLeftContent();
         var language = textContent.getLanguage();
 
         var audioVertex = audioContentVertexFactory.create(
