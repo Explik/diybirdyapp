@@ -11,6 +11,7 @@ public class ExerciseAnswerVertex extends AbstractVertex {
     public final static String LABEL = "exerciseAnswer";
 
     public final static String EDGE_EXERCISE = "hasExercise";
+    public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_RECOGNIZABILITY_RATING = "hasRecognizabilityRating";
 
@@ -39,6 +40,14 @@ public class ExerciseAnswerVertex extends AbstractVertex {
 
     public void setExercise(ExerciseVertex exerciseVertex) {
         addEdgeOneToOne(EDGE_EXERCISE, exerciseVertex);
+    }
+
+    public ExerciseSessionVertex getSession() {
+        return VertexHelper.getOutgoingModel(this, EDGE_SESSION, ExerciseSessionVertex::new);
+    }
+
+    public void setSession(ExerciseSessionVertex sessionVertex) {
+        addEdgeOneToOne(EDGE_SESSION, sessionVertex);
     }
 
     public ContentVertex getContent() {

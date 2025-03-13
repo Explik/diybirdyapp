@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom } from 'rxjs';
 import { ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
-import { ExerciseDto, ExerciseFeedbackDto } from "../../../shared/api-client";
+import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto } from "../../../shared/api-client";
 
 @Injectable({
     providedIn: 'root'
@@ -10,6 +10,7 @@ import { ExerciseDto, ExerciseFeedbackDto } from "../../../shared/api-client";
 export class ExerciseService {
     private defaultInput: unknown | undefined = undefined;
 
+    private session$: BehaviorSubject<ExerciseSessionDto|undefined> = new BehaviorSubject<ExerciseSessionDto|undefined>(undefined); 
     private exercise$: BehaviorSubject<ExerciseDto | undefined> = new BehaviorSubject<ExerciseDto | undefined>(undefined);
     private exersiceInput$: BehaviorSubject<unknown | undefined> = new BehaviorSubject<unknown | undefined>(undefined);
     private exerciseAnswer$: BehaviorSubject<ExerciseAnswer | undefined> = new BehaviorSubject<ExerciseAnswer | undefined>(undefined);
@@ -18,6 +19,24 @@ export class ExerciseService {
     constructor(private service: ExerciseSessionDataService) { }
 
     // State functions 
+    loadExerciseSession(id: string) {
+        this.service.getExerciseSession(id).subscribe(data => {
+            this.setExerciseSession(data);
+        });
+    }
+
+    getExerciseSession(): Observable<ExerciseSessionDto|undefined> {
+        return this.session$.asObservable();
+    }
+
+    setExerciseSession(session?: ExerciseSessionDto) {
+        this.session$.next(session);
+
+        if (session && session.exercise) {
+            this.setExercise(session.exercise);
+        }
+    }
+
     getExercise(): Observable<ExerciseDto | undefined> {
         return this.exercise$.asObservable();
     }
@@ -30,6 +49,10 @@ export class ExerciseService {
     }
 
     // Read functions
+    getProgress(): Observable<number> {
+        return this.session$.pipe(map(session => session?.progress?.percentage || 0));
+    }
+    
     getState(): Observable<ExerciseStates> {
         return this.exerciseAnswer$.pipe(
             map(answer => answer ? ExerciseStates.Answered : ExerciseStates.Unanswered)
@@ -68,17 +91,44 @@ export class ExerciseService {
         await this.submitAnswerAsync(currentInput as ExerciseAnswer);
     }
 
+    async nextExerciseAsync() {
+        const session = this.session$.getValue();
+        if (!session) 
+            throw new Error("No session found");
+        
+        const newSession = await this.service.nextExercise(session.id).toPromise();
+        this.setExerciseSession(newSession);
+        
+        if (newSession?.exercise)
+            this.setExercise(newSession.exercise);
+    }
+
+    async skipExerciseAsync() {
+        const session = this.session$.getValue();
+        if (!session) 
+            throw new Error("No session found");
+
+        const newSession = await this.service.skipExercise(session.id).toPromise();
+        this.setExerciseSession(newSession);
+
+        if (newSession?.exercise)
+            this.setExercise(newSession.exercise);
+    }
+
     async submitAnswerAsync(answer: ExerciseAnswer) {
         // Save the answer locally
         this.exerciseAnswer$.next(answer);
 
         // Save the answer to server
         const currentExercise = this.exercise$.getValue();
-
         if (!currentExercise)
             throw new Error("No exercise loaded");
 
-        const exerciseWithFeedback = await this.service.submitExerciseAnswer(currentExercise.id, answer).toPromise();
+        const currentSession = this.session$.getValue();
+        if (!currentSession)
+            throw new Error("No session found");
+
+        const exerciseWithFeedback = await this.service.submitExerciseAnswer(currentExercise.id, {...answer, sessionId: currentSession.id }).toPromise();
         
         // Update input feedback
         if ((exerciseWithFeedback?.input as any)?.feedback) {

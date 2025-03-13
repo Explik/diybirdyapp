@@ -24,11 +24,20 @@ public class ExerciseService {
         return repository.get(id);
     }
 
-    public ExerciseModel submitExerciseAnswer(String id, ExerciseInputModel answer, MultipartFile[] files) {
+    public ExerciseModel submitExerciseAnswer(ExerciseInputModel answer, MultipartFile[] files) {
+        // Validate model
+        if (answer == null)
+            throw new IllegalArgumentException("Answer model is required");
+        if (answer.getExerciseId() == null)
+            throw new IllegalArgumentException("Exercise ID is required");
+        if (answer.getSessionId() == null)
+            throw new IllegalArgumentException("Session ID is required");
+
+        // Validate files
         validateFiles(answer, files);
         saveFilesIfAny(files);
 
-        return repository.submitAnswer(id, answer);
+        return repository.submitAnswer(answer);
     }
 
     private void validateFiles(ExerciseInputModel answer, MultipartFile[] files) {

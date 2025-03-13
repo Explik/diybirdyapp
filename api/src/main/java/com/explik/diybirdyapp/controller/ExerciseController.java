@@ -55,7 +55,9 @@ public class ExerciseController {
     @PostMapping("/exercise/{id}/answer")
     public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseInputDto dto) {
         var model = exerciseInputMapper.map(dto);
-        var newModel = exerciseService.submitExerciseAnswer(id, model, null);
+        model.setExerciseId(id);
+
+        var newModel = exerciseService.submitExerciseAnswer(model, null);
 
         var event = new ExerciseAnsweredEvent(
                 this,
@@ -73,7 +75,9 @@ public class ExerciseController {
             @RequestPart("answer") ExerciseInputDto dto,
             @RequestPart(value = "files", required = false) MultipartFile[] files) {
         var model = exerciseInputMapper.map(dto);
-        var newModel = exerciseService.submitExerciseAnswer(id, model, files);
+        model.setExerciseId(id);
+
+        var newModel = exerciseService.submitExerciseAnswer(model, files);
 
         var event = new ExerciseAnsweredEvent(
                 this,

@@ -12,7 +12,6 @@ import { InfoBoxComponent } from '../../components/info-box/info-box.component';
 import { ExerciseSessionDataService } from '../../services/exerciseSessionData.service';
 import { ExerciseContentWriteSentenceUsingWordContainerComponent } from '../../container-components/exercise-content-write-sentence-using-word-container/exercise-content-write-sentence-using-word-container.component';
 import { ExerciseContentWriteTranslatedSentenceContainerComponent } from '../../container-components/exercise-content-write-translated-sentence-container/exercise-content-write-translated-sentence-container.component';
-import { ExerciseSessionService } from '../../services/exerciseSession.service';
 import { ExerciseContentMultipleTextChoiceContainerComponent } from '../../container-components/exercise-content-multiple-text-choice-container/exercise-content-multiple-text-choice-container.component';
 import { ExerciseContentReviewFlashcardContainerComponent } from '../../container-components/exercise-content-review-flashcard-container/exercise-content-review-flashcard-container.component';
 import { ExerciseComponentService } from '../../services/exerciseComponent.service';
@@ -37,11 +36,10 @@ export class SessionPageComponent {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private sessionService: ExerciseSessionService,
         private exerciseService: ExerciseService,
         private exerciseComponentService: ExerciseComponentService,
         ) {
-            this.sessionProgress$ = this.sessionService.getProgress().pipe(map(progress => progress || 0));
+            this.sessionProgress$ = this.exerciseService.getProgress().pipe(map(progress => progress || 0));
             this.exerciseComponent$ = this.exerciseComponentService.getComponent();
             this.exerciseNavigationComponent$ = this.exerciseComponentService.getNavigationComponent();
         }
@@ -50,7 +48,7 @@ export class SessionPageComponent {
         // Load the session
         this.route.paramMap.subscribe(params => {
           this.sessionId = params.get('id') ?? "1";
-          this.sessionService.loadExerciseSession(this.sessionId);
+          this.exerciseService.loadExerciseSession(this.sessionId);
         });   
 
         // Attach exercise listernes 
@@ -59,9 +57,9 @@ export class SessionPageComponent {
         });
 
         // Attach session listeners
-        this.sessionService.getExerciseSession().subscribe(session => {
+        this.exerciseService.getExerciseSession().subscribe(session => {
             if (session?.completed) {
-                this.sessionService.setExerciseSession(undefined);
+                this.exerciseService.setExerciseSession(undefined);
                 this.router.navigate(['/']);
             }
         });

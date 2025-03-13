@@ -8,11 +8,14 @@ import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component(ExerciseEvaluationTypes.CORRECT_OPTIONS + ComponentTypes.STRATEGY)
@@ -32,7 +35,24 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
         // Evaluate exercise
         var correctOptionVertex = exerciseVertex.getCorrectOptions().getFirst();
         var incorrectOptionVertices = exerciseVertex.getOptions();
-        exerciseVertex.setAnswer(correctOptionVertex);
+
+        // Save answer
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
+
+        var allOptionVertices = new ArrayList<ContentVertex>();
+        allOptionVertices.add(correctOptionVertex);
+        allOptionVertices.addAll(incorrectOptionVertices);
+
+        var selectedOptionId = answerModel.getValue();
+        var selectedOptionVertex = allOptionVertices.stream()
+                .filter(option -> option.getId().equals(selectedOptionId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Selected option not found"));
+
+        var exerciseAnswerVertex = ExerciseAnswerVertex.create(traversalSource);
+        exerciseAnswerVertex.setExercise(exerciseVertex);
+        exerciseAnswerVertex.setSession(sessionVertex);
+        exerciseAnswerVertex.setContent(selectedOptionVertex);
 
         // Generate feedback
         return createExerciseWithFeedback(correctOptionVertex, incorrectOptionVertices, answerModel);

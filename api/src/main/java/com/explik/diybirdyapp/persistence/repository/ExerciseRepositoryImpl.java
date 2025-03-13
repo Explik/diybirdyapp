@@ -48,10 +48,11 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
-    public ExerciseModel submitAnswer(String id, ExerciseInputModel answer) {
-        answer.setExerciseId(id);
+    public ExerciseModel submitAnswer(ExerciseInputModel answer) {
+        assert answer != null;
+        assert answer.getExerciseId() != null;
 
-        var exerciseVertex = ExerciseVertex.getById(traversalSource, id);
+        var exerciseVertex = ExerciseVertex.getById(traversalSource, answer.getExerciseId());
         var exerciseType = exerciseVertex.getType();
         var strategy = evaluationStrategyProvider.get(exerciseType);
 

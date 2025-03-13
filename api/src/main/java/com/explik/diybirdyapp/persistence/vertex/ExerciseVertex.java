@@ -13,17 +13,16 @@ public class ExerciseVertex extends AbstractVertex {
 
     public final static String LABEL = "exercise";
 
-    public final static String EDGE_ANSWER = "hasAnswer";
     public final static String EDGE_CONTENT = "hasContent";
+    public final static String EDGE_CONTENT_PROPERTY_FLASHCARD_SIDE = "flashcardSide";
     public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_OPTION = "hasOption";
     public final static String EDGE_OPTION_PAIR = "hasOptionPair";
     public final static String EDGE_OPTION_PROPERTY_ORDER = "order";
     public final static String EDGE_CORRECT_OPTION = "hasCorrectOption";
-
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TARGET_LANGUAGE = "targetLanguage";
-    public final static String PROPERTY_FLASHCARD_SIDE = "flashcardSide";
+
     public final static String PROPERTY_TYPE = "exerciseType";
 
     public String getId() {
@@ -47,28 +46,29 @@ public class ExerciseVertex extends AbstractVertex {
         return VertexHelper.createContent(traversalSource, contentVertex);
     }
 
-    public FlashcardVertex getFlashcardAnswer() {
-        return VertexHelper.getOutgoingModel(this, EDGE_ANSWER, FlashcardVertex::new);
-    }
-
-    public TextContentVertex getTextContentAnswer() {
-        return VertexHelper.getOutgoingModel(this, EDGE_ANSWER, TextContentVertex::new);
-    }
-
-    public void setAnswer(AbstractVertex answer) {
-        addEdgeOneToOne(EDGE_ANSWER, answer);
-    }
-
     public TextContentVertex getTextContent() {
-        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, TextContentVertex::new);
+        return (TextContentVertex) getContent();
     }
 
     public FlashcardVertex getFlashcardContent() {
-        return VertexHelper.getOutgoingModel(this, EDGE_CONTENT, FlashcardVertex::new);
+        return (FlashcardVertex) getContent();
     }
 
     public void setContent(AbstractVertex outVertex) {
         addEdgeOneToOne(EDGE_CONTENT, outVertex);
+    }
+
+    public void setFlashcardContent(FlashcardVertex flashcardVertex, String flashcardSide) {
+        this.traversalSource.V(this.vertex)
+                .addE(EDGE_CONTENT)
+                .property(EDGE_CONTENT_PROPERTY_FLASHCARD_SIDE, flashcardSide)
+                .to(flashcardVertex.vertex)
+                .next();
+        reload();
+    }
+
+    public String getFlashcardSide() {
+        return VertexHelper.getOptionalOutgoingProperty(this, EDGE_CONTENT, EDGE_CONTENT_PROPERTY_FLASHCARD_SIDE);
     }
 
     public String getTargetLanguage() {

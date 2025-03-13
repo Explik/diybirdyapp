@@ -102,12 +102,32 @@ public class VertexHelper {
         return (T)edgeProperty;
     }
 
+    public static <T> T getOptionalOutgoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
+        var traversalSource = vertex.getUnderlyingSource();
+        var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
+                .outE(edgeLabel)
+                .values(property)
+                .tryNext()
+                .orElse(null);
+        return (T)edgeProperty;
+    }
+
     public static <T> T getIngoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
         var traversalSource = vertex.getUnderlyingSource();
         var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
                 .inE(edgeLabel)
                 .values(property)
                 .next();
+        return (T)edgeProperty;
+    }
+
+    public static <T> T getOptionalIngoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
+        var traversalSource = vertex.getUnderlyingSource();
+        var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
+                .inE(edgeLabel)
+                .values(property)
+                .tryNext()
+                .orElse(null);
         return (T)edgeProperty;
     }
 

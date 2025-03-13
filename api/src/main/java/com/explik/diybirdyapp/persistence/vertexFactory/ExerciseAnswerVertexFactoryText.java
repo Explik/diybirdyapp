@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.vertexFactory;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseInputTextModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAn
     @Override
     public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseInputTextModel answerModel) {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
+
         var textContent = exerciseVertex.getTextContent();
 
         var textVertex = textContentVertexFactory.create(
@@ -27,6 +30,7 @@ public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAn
         var exerciseAnswerVertex = ExerciseAnswerVertex.create(traversalSource);
         exerciseAnswerVertex.setId(answerId);
         exerciseAnswerVertex.setExercise(exerciseVertex);
+        exerciseAnswerVertex.setSession(sessionVertex);
         exerciseAnswerVertex.setContent(textVertex);
 
         return exerciseAnswerVertex;

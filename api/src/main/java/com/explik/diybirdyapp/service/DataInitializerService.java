@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.builder.*;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -149,10 +148,10 @@ public class DataInitializerService {
         // Word concepts
         var wordVertex1 = WordVertex.create(traversalSource);
         wordVertex1.setId("wordVertex1");
-        wordVertex1.setValue(textVertex0.getValue());
+        wordVertex1.setValues(new String[] { textVertex0.getValue() });
         wordVertex1.setLanguage(textVertex0.getLanguage());
         wordVertex1.addExample(textVertex0);
-        wordVertex1.setMainExample(textVertex0);
+        wordVertex1.setTextContent(textVertex0);
 
         // Pronunciation concept
         var pronunciationVertex1 = pronunciationVertexFactory.create(

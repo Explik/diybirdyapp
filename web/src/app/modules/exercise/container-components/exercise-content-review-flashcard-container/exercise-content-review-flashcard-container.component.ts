@@ -3,7 +3,6 @@ import { InstructionComponent } from "../../components/instruction/instruction.c
 import { CommonModule } from '@angular/common';
 import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
 import { ExerciseService } from '../../services/exercise.service';
-import { ExerciseSessionService } from '../../services/exerciseSession.service';
 import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 import { ExerciseContentFlashcardDto } from '../../../../shared/api-client';
 
@@ -17,8 +16,7 @@ export class ExerciseContentReviewFlashcardContainerComponent implements OnInit 
   content?: ExerciseContentFlashcardDto;
 
   constructor(
-    private exerciseService: ExerciseService,
-    private sessionService: ExerciseSessionService
+    private exerciseService: ExerciseService
   ) { }
 
   ngOnInit(): void {
@@ -27,6 +25,6 @@ export class ExerciseContentReviewFlashcardContainerComponent implements OnInit 
 
   async handleRatingSelected(rating: string) {
     await this.exerciseService.submitAnswerAsync({ type: "recognizability-rating", rating });
-    await this.sessionService.nextExerciseAsync();
+    await this.exerciseService.nextExerciseAsync();
   }
 }

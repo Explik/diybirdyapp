@@ -53,14 +53,7 @@ public class ExerciseAbstractModelFactory {
     }
 
     private ExerciseContentModel createContent(ExerciseVertex vertex, ExerciseSchema schema) {
-        var contentType = schema.getContentType();
-
-        if (contentType.equals(ContentTypes.FLASHCARD_SIDE)) {
-            var content = contentModelFactory.create(vertex.getContent());
-            return ExerciseContentFlashcardSideModel.create(content);
-        } else {
-            return contentModelFactory.create(vertex.getContent());
-        }
+        return contentModelFactory.create(vertex);
     }
 
     private ExerciseInputModel createInput(ExerciseVertex vertex, ExerciseSchema schema) {

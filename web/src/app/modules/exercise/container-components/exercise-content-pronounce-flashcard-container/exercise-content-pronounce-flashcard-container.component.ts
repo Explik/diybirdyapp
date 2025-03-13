@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FlashcardContent } from '../../../../shared/models/content.interface';
 import { ExerciseService } from '../../services/exercise.service';
-import { ExerciseSessionService } from '../../services/exerciseSession.service';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { InstructionComponent } from "../../components/instruction/instruction.component";
 import { CommonModule } from '@angular/common';

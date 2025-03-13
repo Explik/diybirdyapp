@@ -60,6 +60,8 @@ Properties:
 
 ## Configuration 
 ### TextToSpeechConfig
+Represents the configuration for Google Text-to-speech API.
+
 ```mermaid
 graph LR
 Language(Language)
@@ -68,7 +70,14 @@ TextToSpeechConfig(TextToSpeechConfig)
 TextToSpeechConfig--hasLanguage-->Language
 ```
 
+Properties:
+- id: string
+- languageCode: string
+- voiceName: string
+
 ### SpeechToTextConfig
+Represents the configuration for Google Speech-to-text API.
+
 ```mermaid
 graph LR
 Language(Language)
@@ -80,8 +89,6 @@ SpeechToTextConfig--hasLanguage-->Language
 Properties:
 - id: string
 - languageCode: string
-
-Represents the configuration for Google Text-to-Speech API.
 
 ## Basic Content 
 ### Audio content

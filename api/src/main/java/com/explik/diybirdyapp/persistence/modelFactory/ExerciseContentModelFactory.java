@@ -5,17 +5,21 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseContentModelFactory implements ModelFactory<ContentVertex, ExerciseContentModel> {
+public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex, ExerciseContentModel> {
     @Override
-    public ExerciseContentModel create(ContentVertex vertex) {
-        if (vertex instanceof FlashcardVertex flashcardVertex)
-            return createFlashcardModel(flashcardVertex);
-        return createNonFlashcardModel(vertex);
+    public ExerciseContentModel create(ExerciseVertex exerciseVertex) {
+        var vertex = exerciseVertex.getContent();
+
+        if (vertex instanceof FlashcardVertex flashcardVertex) {
+            var side = exerciseVertex.getFlashcardSide();
+            return (side != null) ? createFlashcardSideModel(flashcardVertex, side) : createFlashcardModel(flashcardVertex);
+        }
+        return createBasicContentModel(vertex);
     }
 
     public ExerciseContentFlashcardModel createFlashcardModel(FlashcardVertex vertex) {
-        var leftContent = createNonFlashcardModel(vertex.getLeftContent());
-        var rightContent = createNonFlashcardModel(vertex.getRightContent());
+        var leftContent = createBasicContentModel(vertex.getLeftContent());
+        var rightContent = createBasicContentModel(vertex.getRightContent());
 
         ExerciseContentFlashcardModel model = new ExerciseContentFlashcardModel();
         model.setId(vertex.getId());
@@ -24,7 +28,16 @@ public class ExerciseContentModelFactory implements ModelFactory<ContentVertex, 
         return model;
     }
 
-    public ExerciseContentModel createNonFlashcardModel(ContentVertex contentVertex) {
+    public ExerciseContentFlashcardSideModel createFlashcardSideModel(FlashcardVertex vertex, String side) {
+        var content = createBasicContentModel(vertex.getSide(side));
+
+        ExerciseContentFlashcardSideModel model = new ExerciseContentFlashcardSideModel();
+        model.setId(vertex.getId());
+        model.setContent(content);
+        return model;
+    }
+
+    public ExerciseContentModel createBasicContentModel(ContentVertex contentVertex) {
         if (contentVertex instanceof AudioContentVertex audioContentVertex)
             return createAudioModel(audioContentVertex);
         if (contentVertex instanceof TextContentVertex textContentVertex)

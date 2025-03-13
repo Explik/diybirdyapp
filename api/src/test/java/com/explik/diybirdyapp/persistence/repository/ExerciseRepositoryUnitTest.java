@@ -97,7 +97,10 @@ public class ExerciseRepositoryUnitTest {
     @Test
     void givenNonExistentExerciseId_whenSubmitAnswer_thenThrowException() {
         var id = "non-existent-id";
-        assertThrows(RuntimeException.class, () -> repository.submitAnswer(id, new ExerciseInputModel()));
+        var model = new ExerciseInputModel();
+        model.setExerciseId(id);
+
+        assertThrows(RuntimeException.class, () -> repository.submitAnswer(model));
     }
 
     @Test
@@ -113,7 +116,10 @@ public class ExerciseRepositoryUnitTest {
         when(exerciseOperationProvider.get(eq(exerciseType))).thenReturn(exerciseOperations);
         when(exerciseOperations.evaluate(any(), any())).thenReturn(model);
 
-        var actualModel = repository.submitAnswer(exerciseId, new ExerciseInputModel());
+        var inputModel = new ExerciseInputModel();
+        inputModel.setExerciseId(exerciseId);
+
+        var actualModel = repository.submitAnswer(inputModel);
 
         assertEquals(model, actualModel);
     }

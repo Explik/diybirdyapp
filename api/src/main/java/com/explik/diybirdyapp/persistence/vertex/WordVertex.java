@@ -17,7 +17,8 @@ public class WordVertex extends AbstractVertex {
 
     public static final String EDGE_LANGUAGE = "hasLanguage";
     public static final String EDGE_EXAMPLE = "hasExample";
-    public static final String EDGE_MAIN_EXAMPLE = "hasMainExample";
+    public static final String EDGE_TEXT_CONTENT = "hasTextContent";
+    public static final String EDGE_AUDIO_CONTENT = "hasAudioContent";
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_VALUE = "value";
@@ -30,11 +31,11 @@ public class WordVertex extends AbstractVertex {
         setProperty(PROPERTY_ID, id);
     }
 
-    public String getValue() {
-        return getPropertyAsString(PROPERTY_VALUE);
+    public String[] getValues() {
+        return getProperty(PROPERTY_VALUE);
     }
 
-    public void setValue(String value) {
+    public void setValues(String[] value) {
         setProperty(PROPERTY_VALUE, value);
     }
 
@@ -54,12 +55,20 @@ public class WordVertex extends AbstractVertex {
         return VertexHelper.getOutgoingModels(this, EDGE_EXAMPLE, TextContentVertex::new);
     }
 
-    public void setMainExample(AbstractVertex exampleVertex) {
-        addEdgeOneToOne(EDGE_MAIN_EXAMPLE, exampleVertex);
+    public void setTextContent(AbstractVertex exampleVertex) {
+        addEdgeOneToOne(EDGE_TEXT_CONTENT, exampleVertex);
     }
 
-    public TextContentVertex getMainExample() {
-        return VertexHelper.getOutgoingModel(this, EDGE_MAIN_EXAMPLE, TextContentVertex::new);
+    public TextContentVertex getTextContent() {
+        return VertexHelper.getOutgoingModel(this, EDGE_TEXT_CONTENT, TextContentVertex::new);
+    }
+
+    public void setAudioContent(AbstractVertex audioContentVertex) {
+        addEdgeOneToOne(EDGE_AUDIO_CONTENT, audioContentVertex);
+    }
+
+    public AudioContentVertex getAudioContent() {
+        return VertexHelper.getOutgoingModel(this, EDGE_AUDIO_CONTENT, AudioContentVertex::new);
     }
 
     public static WordVertex create(GraphTraversalSource traversalSource) {

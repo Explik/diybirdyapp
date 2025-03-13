@@ -28,6 +28,9 @@ public class ExerciseInputDto {
     @NotNull
     private String type;
 
+    @NotNull
+    private String sessionId;
+
     public String getId() { return id; }
 
     public void setId(String id) { this.id = id; }
@@ -35,4 +38,12 @@ public class ExerciseInputDto {
     public String getType() { return type; }
 
     public void setType(String type) { this.type = type; }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 }
