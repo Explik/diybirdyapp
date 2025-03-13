@@ -5,6 +5,7 @@ import { map, Observable } from "rxjs";
 import { RecursivePartial } from "../../../shared/models/util.model";
 import { FlashcardContent } from "../../../shared/models/content.interface";
 import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguageImpl } from "../models/editFlashcard.model";
+import { ExerciseSessionDto, FlashcardDeckDto, FlashcardDto, FlashcardLanguageDto } from "../../../shared/api-client";
 
 @Injectable({
   providedIn: 'root'

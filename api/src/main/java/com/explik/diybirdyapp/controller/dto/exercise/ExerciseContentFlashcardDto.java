@@ -1,14 +1,14 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import com.explik.diybirdyapp.ContentTypes;
+
 public class ExerciseContentFlashcardDto extends ExerciseContentDto {
     private ExerciseContentDto front; // Left in flashcard editing
     private ExerciseContentDto back; // Right in flashcard editing
 
     public ExerciseContentFlashcardDto() {
-        super(TYPE);
+        super(ContentTypes.FLASHCARD);
     }
-
-    public static String TYPE = "flashcard-content";
 
     public ExerciseContentDto getFront() { return front; }
 

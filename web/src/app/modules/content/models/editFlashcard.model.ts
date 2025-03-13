@@ -2,6 +2,7 @@
 // ViewModel interfaces 
 
 import { environment } from "../../../../environments/environment";
+import { FlashcardContentAudioDto, FlashcardContentDto, FlashcardContentImageDto, FlashcardContentTextDto, FlashcardContentUploadAudioDto, FlashcardContentUploadImageDto, FlashcardContentUploadVideoDto, FlashcardContentVideoDto, FlashcardDeckDto, FlashcardDto, FlashcardLanguageDto } from "../../../shared/api-client";
 import { RecursivePartial } from "../../../shared/models/util.model";
 
 // =================================================================================================

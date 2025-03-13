@@ -7,6 +7,6 @@ import { Component, Input } from '@angular/core';
   templateUrl: './instruction.component.html'
 })
 export class InstructionComponent {
-  @Input() title: string = 'Translate the sentence';
-  @Input() instruction: string = 'Select the correct translation below';
+  @Input() title: string = '';
+  @Input() instruction: string = '';
 }

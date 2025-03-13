@@ -5,21 +5,49 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseContentModelFactory implements ModelFactory<ExerciseContentModel, ContentVertex> {
+public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex, ExerciseContentModel> {
     @Override
-    public ExerciseContentModel create(ContentVertex vertex) {
-        if (vertex.getLabel().equals(AudioContentVertex.LABEL))
-            return createAudioModel(new AudioContentVertex(vertex));
-        if (vertex.getLabel().equals(TextContentVertex.LABEL))
-            return createTextModel(new TextContentVertex(vertex));
-        if (vertex.getLabel().equals(ImageContentVertex.LABEL))
-            return createImageModel(new ImageContentVertex(vertex));
-        if (vertex.getLabel().equals(VideoContentVertex.LABEL))
-            return createVideoModel(new VideoContentVertex(vertex));
-        if (vertex.getLabel().equals(FlashcardVertex.LABEL))
-            return createFlashcardModel((FlashcardVertex) vertex);
+    public ExerciseContentModel create(ExerciseVertex exerciseVertex) {
+        var vertex = exerciseVertex.getContent();
 
-        throw new RuntimeException("Unknown content type " + vertex.getClass().getName());
+        if (vertex instanceof FlashcardVertex flashcardVertex) {
+            var side = exerciseVertex.getFlashcardSide();
+            return (side != null) ? createFlashcardSideModel(flashcardVertex, side) : createFlashcardModel(flashcardVertex);
+        }
+        return createBasicContentModel(vertex);
+    }
+
+    public ExerciseContentFlashcardModel createFlashcardModel(FlashcardVertex vertex) {
+        var leftContent = createBasicContentModel(vertex.getLeftContent());
+        var rightContent = createBasicContentModel(vertex.getRightContent());
+
+        ExerciseContentFlashcardModel model = new ExerciseContentFlashcardModel();
+        model.setId(vertex.getId());
+        model.setFront(leftContent);
+        model.setBack(rightContent);
+        return model;
+    }
+
+    public ExerciseContentFlashcardSideModel createFlashcardSideModel(FlashcardVertex vertex, String side) {
+        var content = createBasicContentModel(vertex.getSide(side));
+
+        ExerciseContentFlashcardSideModel model = new ExerciseContentFlashcardSideModel();
+        model.setId(vertex.getId());
+        model.setContent(content);
+        return model;
+    }
+
+    public ExerciseContentModel createBasicContentModel(ContentVertex contentVertex) {
+        if (contentVertex instanceof AudioContentVertex audioContentVertex)
+            return createAudioModel(audioContentVertex);
+        if (contentVertex instanceof TextContentVertex textContentVertex)
+            return createTextModel(textContentVertex);
+        if (contentVertex instanceof ImageContentVertex imageContentVertex)
+            return createImageModel(imageContentVertex);
+        if (contentVertex instanceof VideoContentVertex videoContentVertex)
+            return createVideoModel(videoContentVertex);
+
+        throw new RuntimeException("Unknown content type " + contentVertex.getLabel());
     }
 
     public ExerciseContentAudioModel createAudioModel(AudioContentVertex vertex) {
@@ -54,32 +82,6 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseContent
         model.setId(vertex.getId());
         model.setVideoUrl(vertex.getUrl());
 
-        return model;
-    }
-
-    public ExerciseContentFlashcardModel createFlashcardModel(FlashcardVertex vertex) {
-        var leftContent = create(vertex.getLeftContent());
-        var rightContent = create(vertex.getRightContent());
-
-        ExerciseContentFlashcardModel model = new ExerciseContentFlashcardModel();
-        model.setFront(leftContent);
-        model.setBack(rightContent);
-        return model;
-    }
-
-    public ExerciseContentFlashcardModel createFlashcardModelWithOnlyLeftSide(FlashcardVertex vertex) {
-        var leftContent = create(vertex.getLeftContent());
-
-        ExerciseContentFlashcardModel model = new ExerciseContentFlashcardModel();
-        model.setFront(leftContent);
-        return model;
-    }
-
-    public ExerciseContentFlashcardModel createFlashcardModelWithOnlyRightSide(FlashcardVertex vertex) {
-        var rightContent = create(vertex.getRightContent());
-
-        ExerciseContentFlashcardModel model = new ExerciseContentFlashcardModel();
-        model.setBack(rightContent);
         return model;
     }
 }

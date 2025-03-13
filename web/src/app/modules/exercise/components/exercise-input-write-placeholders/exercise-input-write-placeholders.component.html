@@ -1,0 +1,19 @@
+<div class="w-full max-w-xl p-4 rounded-lg border border-gray-300 flex">
+    <ng-container *ngFor="let part of parts">
+      <div *ngIf="part.type === 'text'" class="inline-block h-full">{{ part.value }}</div>
+      <div *ngIf="part.type === 'placeholder'" class="inline-block h-full" >
+        <input
+        type="text" 
+        [(ngModel)]="part.value"
+        [style.width.px]="part.size" 
+        class="border-b border-gray-400 focus:outline-none focus:border-blue-500 mx-1"
+        [ngStyle]="{'background-color': feedback ? 'transparent' : ''}"
+        [disabled]="!!feedback"
+        [ngClass]="{'border-green-500': feedback?.correctPlaceholdersIds?.includes(part.id) ?? false, 'border-red-500': feedback?.incorrectPlaceholdersIds?.includes(part.id)}" />
+        <div class="w-full flex justify-center">
+          <span *ngIf="feedback && feedback.correctPlaceholdersIds.includes(part.id)" class="text-green-500">&#10003;</span>
+          <span *ngIf="feedback && feedback.incorrectPlaceholdersIds.includes(part.id)" class="text-red-500 mx-auto">&#10007;</span>
+        </div>
+      </div>
+    </ng-container>
+  </div>

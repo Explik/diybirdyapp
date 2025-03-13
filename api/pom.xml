@@ -115,6 +115,12 @@
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-texttospeech</artifactId>
 		</dependency>
+
+		<!-- Google Speech To Text API -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-speech</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -123,33 +129,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>${springboot.version}</version>
-			</plugin>
-
-
-
-			<plugin>
-				<groupId>cz.habarta.typescript-generator</groupId>
-				<artifactId>typescript-generator-maven-plugin</artifactId>
-				<version>3.2.1263</version>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<phase>process-classes</phase>
-					</execution>
-				</executions>
-				<configuration>
-					<jsonLibrary>jackson2</jsonLibrary>
-					<classPatterns>
-						<pattern>com.explik.diybirdyapp.controller.dto.*</pattern>
-						<pattern>com.explik.diybirdyapp.controller.dto.content.*</pattern>
-						<pattern>com.explik.diybirdyapp.controller.dto.exercise.*</pattern>
-					</classPatterns>
-					<outputFile>../web/src/app/shared/models/endpoints.d.ts</outputFile>
-					<outputKind>global</outputKind>
-				</configuration>
 			</plugin>
 
 			<plugin>

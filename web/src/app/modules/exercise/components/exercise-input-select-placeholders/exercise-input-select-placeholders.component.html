@@ -1,0 +1,25 @@
+<!-- filepath: src/app/select-placeholders/select-placeholders.component.html -->
+<div cdkDropListGroup class="w-full max-w-xl">
+    <div class="p-4 rounded-lg border border-gray-300">
+        <div class="flex flex-wrap gap-2">
+            <ng-container *ngFor="let part of parts; let i = index">
+                <span *ngIf="part.type === 'text'">{{ part.value }}</span>
+                <div *ngIf="part.type === 'placeholder'" 
+                    cdkDropList 
+                    [cdkDropListData]="part"
+                    (cdkDropListDropped)="drop($event, 'placeholders')"
+                    [style.width.ch]="placeholderSize"
+                    class="inline-block border-b border-solid border-gray-400 text-center">
+                    <span *ngIf="part.option" cdkDrag [cdkDragData]="part" class="p-2 bg-blue-200 rounded cursor-pointer">{{ part.option!.text }}</span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <div cdkDropList #optionList [cdkDropListData]="options"
+        (cdkDropListDropped)="drop($event, 'options')" class="mt-2 flex gap-2">
+        <div *ngFor="let option of options" cdkDrag
+        [cdkDragData]="option" class="p-2 bg-blue-200 rounded cursor-pointer">
+            {{ option.text }}
+        </div>
+    </div>
+</div>

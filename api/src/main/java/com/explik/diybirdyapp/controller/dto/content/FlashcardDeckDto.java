@@ -1,7 +1,12 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
+import jakarta.validation.constraints.NotNull;
+
 public class FlashcardDeckDto {
+    @NotNull
     private String id;
+
+    @NotNull
     private String name;
 
     public FlashcardDeckDto() {}

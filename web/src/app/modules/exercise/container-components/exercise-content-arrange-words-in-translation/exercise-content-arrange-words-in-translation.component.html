@@ -1,0 +1,12 @@
+<app-instruction
+    title="Translate this sentence"
+    instruction="What is the correct word order in the translation"></app-instruction>
+
+<app-dynamic-content
+    class="block mt-4 mb-4"
+    *ngIf="content"
+    [data]="content"></app-dynamic-content>
+
+<app-exercise-input-arrange-text-options
+    *ngIf="input"
+    [input]="input"></app-exercise-input-arrange-text-options>

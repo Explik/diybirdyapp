@@ -1,0 +1,9 @@
+<app-instruction  
+    title="Do you still know this?"
+    instruction='Write the other side?'></app-instruction>
+
+<app-dynamic-flashcard-content *ngIf="content" [data]="content" class="block mb-4" />
+
+<app-exercise-input-write-text 
+    *ngIf="input" 
+    [input]="input"></app-exercise-input-write-text>

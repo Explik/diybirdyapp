@@ -10,5 +10,5 @@ public interface ExerciseRepository {
 
     List<ExerciseModel> getAll();
 
-    ExerciseModel submitAnswer(String id, ExerciseInputModel answer);
+    ExerciseModel submitAnswer(ExerciseInputModel answer);
 }

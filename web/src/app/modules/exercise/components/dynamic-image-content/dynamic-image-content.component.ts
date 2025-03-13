@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ExerciseContentImageDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-dynamic-image-content',

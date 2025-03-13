@@ -1,13 +1,21 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
+import jakarta.validation.constraints.NotNull;
 
 public class ExerciseSessionDto {
+    @NotNull
     private String id;
+
+    @NotNull
     private String type;
+
     private boolean completed;
+
     private String flashcardDeckId;
+
     private ExerciseDto exercise;
+
     private ExerciseSessionProgressModel progress;
 
     public String getId() {

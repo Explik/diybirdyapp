@@ -13,9 +13,9 @@ public class WordVertexFactory implements VertexFactory<WordVertex, WordVertexFa
         var graphVertex = traversalSource.addV(WordVertex.LABEL).next();
         var vertex = new WordVertex(traversalSource, graphVertex);
         vertex.setId(options.id);
-        vertex.setValue(options.value);
+        vertex.setValues(new String[] { options.value });
         vertex.addExample(options.mainExample);
-        vertex.setMainExample(options.mainExample);
+        vertex.setTextContent(options.mainExample);
         vertex.setLanguage(options.languageVertex);
 
         // Make the main example vertex static so it can't be changed later

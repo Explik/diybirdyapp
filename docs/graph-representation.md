@@ -3,6 +3,7 @@ This document describes the data representation used for the Tinkerpop graph.
 
 ## Concepts
 ### Language
+A language represents a common group of content and concepts, like words, text, pronunciation, etc. 
 ```mermaid
 graph LR
 V1(Language)
@@ -13,7 +14,54 @@ Properties:
 - name: string
 - abbreviation: string
 
+### Word
+A word represents an entry in a language's vocabulary in the system. 
+The systems usage of word is analogous to a dictionary entry. 
+A word may have multiple spellings, where each spelling is indicated by hasTextContent. 
+A word may also have example of usage like a sentence or phrase, indicated by hasExample.  
+A word may also have a pronunciation, indicated by hasAudioContent.
+
+```mermaid
+graph LR
+V1(Word)
+V2(TextContent)
+V3(TextContent)
+V4(AudioContent)
+V4(Language)
+V1--hasExample-->V2
+V1--hasExample-->V3
+V1--hasTextContent-->V3
+V1--hasAudioContent-->V4
+V1--hasLanguage-->V4
+```
+
+Properties: 
+- id: string
+- values: string[] (dictionary spellings of a word)
+
+### Pronunciation
+A pronunciation represents a single instance of a word's pronunciation in a language.
+Mostly in the form of an audio file, but may also be represented as text.
+
+Pronunciation for text content. 
+```mermaid
+graph LR
+AudioContent(AudioContent)
+TextContent(TextContent)
+Pronunciation(Pronunciation)
+
+TextContent--hasPronunciation-->Pronunciation
+Pronunciation--hasAudioContent-->TextContent
+Pronunciation--hasTextContent-->TextContent
+```
+
+Properties:
+- id: string
+
+## Configuration 
 ### TextToSpeechConfig
+Represents the configuration for Google Text-to-speech API.
+
 ```mermaid
 graph LR
 Language(Language)
@@ -27,45 +75,22 @@ Properties:
 - languageCode: string
 - voiceName: string
 
-Represents the configuration for Google Text-to-Speech API.
+### SpeechToTextConfig
+Represents the configuration for Google Speech-to-text API.
 
-### Word
 ```mermaid
 graph LR
-V1(Word)
-V2(TextContent)
-V3(TextContent)
-V4(Language)
-V1--hasExample-->V2
-V1--hasExample-->V3
-V1--hasMainExample-->V3
-V1--hasLanguage-->V4
+Language(Language)
+SpeechToTextConfig(SpeechToTextConfig)
+
+SpeechToTextConfig--hasLanguage-->Language
 ```
 
 Properties:
 - id: string
-- value: string
+- languageCode: string
 
-### Pronunciation
-```mermaid
-graph LR
-TextContent(TextContent)
-Pronunciation1(Pronunciation)
-Pronunciation2(Pronunciation)
-AudioContent1(AudioContent)
-AudioContent2(AudioContent)
-TextContent--hasPronunciation-->Pronunciation1
-TextContent--hasPronunciation-->Pronunciation2
-TextContent--hasMainPronunciation-->Pronunciation2
-Pronunciation1--hasAudioContent-->AudioContent1
-Pronunciation2--hasAudioContent-->AudioContent2
-```
-
-Properties:
-- id: string
-
-
-## Content 
+## Basic Content 
 ### Audio content
 ```mermaid
 graph LR
@@ -78,7 +103,7 @@ Properties:
 - id: string
 - url: string
 
-## Image content
+### Image content
 ```mermaid
 graph LR
 V1(ImageContent)
@@ -112,21 +137,32 @@ Properties:
 - id: string
 - url: string
 
+## Flashcard content
 ### Flashcard
+A flashcard will always have both left and right content, however, they may be of different types.
 ```mermaid
 graph LR
 V1(Flashcard)
-V2(TextContent)
-V3(ImageContent)
+V2(<T> Content)
+V3(<U> Content)
 
 V1--hasLeftContent-->V2
 V1--hasRightContent-->V3
 ```
 
-Properties:
+Flashcard properties:
 - id: string
 
+Allowed content types are:
+- AudioContent
+- ImageContent
+- TextContent
+- VideoContent
+
 ### Flashcard deck 
+A flashcard may contain 0, 1, or more flashcards.
+Each flashcard is ordered according to the order property located on the hasFlashcard edge.
+
 ```mermaid
 graph LR
 V1(FlashcardDeck)
@@ -136,118 +172,124 @@ V1--hasFlashcard-->V2
 V1--hasFlashcard-->V3
 ```
 
-Properties:
+Flashcard deck properties:
 - id: string
 - name: string
 - description: string
 
-Notes, hasFlashcard has a property called "order" which is an integer, which is used to sort the flashcards in the deck.
+hasFlashcard properties:
+- order: integer
 
-## Exercise
-### General exercise 
+## Exercise content
+This section describes the components of an exercise. 
+It first describes the overall relationship between exercises, exercise answers, and exercise sessions. 
+Then it describes the different available exercise contents and inputs. 
+
+Documentation for each of specific exercise type is provided in exercise-types.md.
+
+### Exercise, ExerciseAnswer, ExerciseSession
+This section describes the overall relationship between exercises, exercise answers, and exercise sessions.
 ```mermaid
 graph TB
 ExerciseSession(ExerciseSession) 
 Exercise(Exercise)
-ExerciseAnswer("[Any]")
+ExerciseAnswer(ExerciseAnswer)
 
 Exercise--hasSession-->ExerciseSession
-Exercise--hasAnswer-->ExerciseAnswer
+ExerciseAnswer--hasSession-->ExerciseSession
+ExerciseAnswer--hasExercise-->ExerciseSession
 ```
 
 Exercise properties:
 - id: string
 - type: string
 
-All exercise may have none or multiple answers. 
-All writing exercises will have TextContent answers. All TextContent answers will have a Language defined by the exercise type. 
+Exercise answer properties:
+- id: string
 
-### Flashcard select exercise
-```mermaid
+Exercise session properties:
+- id: string
+
+### Exercise with Audio/Image/Text/Video Content
+```mermaid 
 graph TB
 Exercise(Exercise)
-Flashcard1(Flashcard)
-Flashcard2(Flashcard)
-Flashcard3(Flashcard)
+AnyContent(<T> Content)
 
-Exercise--hasContent-->Flashcard1
-Exercise--hasAnswer-->Flashcard2
-Exercise--hasOption-->Flashcard2
-Exercise--hasOption-->Flashcard3
+Exercise--hasContent-->AnyContent
 ```
-Note, the content is also an option, the correct option. 
 
-Additional exercise properties: 
-- flashcardSide: string
+Exercise can by default have any basic content type. 
+However, some exercise types may restrict the allowed content types.
 
-### Flashcard review exercise
+### Exercise with Flashcard (Side) Content 
 ```mermaid
 graph TB
 Exercise(Exercise)
 Flashcard(Flashcard)
+
+Exercise--hasContent-->Flashcard
+```
+
+The flashcard content can exist in two forms: 
+- A regular flashcard (two-sided) is indicated by the hasContent edge (without any flashcardSide attribute).
+- A flashcard side (one-sided) is indicated by the flashcardSide property on the hasContent edge.
+
+### Exercise with Select Options Input
+This section describes the graph representation for the select-option input.
+
+```mermaid
+graph TB
+Exercise(Exercise)
+ExerciseAnswer(ExerciseAnswer)
+AnyContent1(<T> Content)
+AnyContent2(<T> Content)
+AnyContent3(<T> Content)
+AnyContent4(<T> Content)
+
+Exercise--hasCorrectOption-->AnyContent1
+Exercise--hasCorrectOption-->AnyContent2
+Exercise--hasOption-->AnyContent3
+Exercise--hasIncorrectOption-->AnyContent4
+Exercise--hasAnswer-->ExerciseAnswer
+ExerciseAnswer--hasSelectedOption-->AnyContent1
+```
+The allowed option types are: 
+- AudioContent
+- TextContent
+- ImageContent
+
+All options must be of the same type. Each option can either be correct, incorrect and undecided (indicated by hasOption). 
+
+### Exercise with Recognizability Rating Input
+This section describes the graph representation for the recognizability rating input.
+```mermaid
+graph TB
+Exercise(Exercise)
+ExerciseAnswer(ExerciseAnswer)
 RecognizabilityRating(RecognizabilityRating)
-
-Exercise--hasContent-->Flashcard
-Exercise--hasAnswer-->RecognizabilityRating
 ```
 
-Additional exercise properties: 
-- flashcardSide: string
+The available ratings are stored in code and are not represented in the graph.
+The selected rating is stored in the RecognizabilityRating vertex.
 
-### Flashcard write exercise 
+### Exercise with Write Text Input
+This section describes the graph representation for the write text input.
 ```mermaid
 graph TB
 Exercise(Exercise)
-Flashcard(Flashcard)
-TextContent1(TextContent)
-TextContent2A(TextContent)
-TextContent2B(TextContent)
-Language1(Language)
-Language2(Language)
-
-Exercise--hasContent-->Flashcard
-Flashcard--hasLeftContent-->TextContent2A
-Flashcard--hasRightContent-->TextContent2B
-TextContent2A--hasLanguage-->Language1
-TextContent2B--hasLanguage-->Language2
-Exercise--hasAnswer-->TextContent1
-TextContent1--hasLanguage-->Language1
-```
-Note, the answer will either have the same language as either side of the flashcard's content. 
-
-Additional exercise properties: 
-- flashcardSide: string
-
-### Write sentence using word 
-```mermaid
-graph TB
-Exercise(Exercise)
+ExerciseAnswer(ExerciseAnswer)
 TextContent1(TextContent)
 TextContent2(TextContent)
-Language(Language)
+TextContent3(TextContent)
 
-Exercise--hasContent-->TextContent1
-Exercise--hasAnswer-->TextContent2
-TextContent1--hasLanguage-->Language
-TextContent2--hasLanguage-->Language
+Exercise--hasCorrectOption-->TextContent1
+Exercise--hasIncorrectOption-->TextContent2
+Exercise--hasAnswer-->ExerciseAnswer
+ExerciseAnswer--hasContent-->TextContent3
 ```
+The correct option(s) represents a clearly correct answer to the exercise. \
+The incorrect option(s) represents a clearly incorrect answer to the exercise. \
+The actual answer will be stored in the ExerciseAnswer vertex.
 
-Additional exercise properties: none
-
-### Write translated sentence 
-```mermaid
-graph TB
-Exercise(Exercise)
-TextContent1(TextContent)
-TextContent2(TextContent)
-Language1(Language)
-Language2(Language)
-
-Exercise--hasContent-->TextContent1
-TextContent1--hasLanguage-->Language1
-Exercise--hasAnswer-->TextContent2
-TextContent2--hasLanguage-->Language2
-Exercise--hasTargetLanguage-->Language2
-```
-
-Additional exercise properties: none
+NB, it is possible for an exercise to have no correct or incorrect options.

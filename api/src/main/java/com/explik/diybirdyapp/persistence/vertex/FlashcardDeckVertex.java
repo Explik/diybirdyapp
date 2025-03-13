@@ -64,7 +64,7 @@ public class FlashcardDeckVertex extends ContentVertex {
     }
 
     public List<? extends FlashcardVertex> getFlashcards() {
-        return VertexHelper.getOutgoingModels(this, EDGE_FLASHCARD, FlashcardVertex::new);
+        return VertexHelper.getOrderedOutgoingModels(this, EDGE_FLASHCARD, "order", FlashcardVertex::new);
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {

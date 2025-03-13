@@ -1,8 +1,15 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
+import jakarta.validation.constraints.NotNull;
+
 public class FlashcardLanguageDto {
+    @NotNull
     private String id;
+
+    @NotNull
     private String abbreviation;
+
+    @NotNull
     private String name;
 
     public FlashcardLanguageDto() {}

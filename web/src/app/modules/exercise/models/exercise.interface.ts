@@ -60,6 +60,7 @@ export interface ExerciseAnswer {
     //id: string;
     //exerciseId: string;
     [key: string]: any;
+    files?: File[];
 }
 
 export enum ExerciseStates {

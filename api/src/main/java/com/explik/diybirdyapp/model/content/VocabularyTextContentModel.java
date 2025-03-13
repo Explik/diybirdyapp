@@ -1,5 +1,7 @@
 package com.explik.diybirdyapp.model.content;
 
+import jakarta.validation.constraints.NotNull;
+
 public class VocabularyTextContentModel {
     public VocabularyTextContentModel() {}
 
@@ -7,7 +9,10 @@ public class VocabularyTextContentModel {
         this.text = text;
     }
 
+    @NotNull
     private String text;
+
+    @NotNull
     private String pronunciationUrl;
 
     public String getText() { return text; }

@@ -3,6 +3,7 @@ import { VocabularyService } from '../../services/vocabulary.service';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { AudioPlayService } from '../../../../shared/services/audioPlay.service';
+import { VocabularyDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-vocabulary-page',

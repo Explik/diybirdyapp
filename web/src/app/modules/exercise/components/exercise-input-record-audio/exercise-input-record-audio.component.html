@@ -1,0 +1,10 @@
+<div class="w-full max-w-xl">
+    <button
+      (click)="toggleRecording()"
+      [disabled]="isUploading"
+      [attr.aria-pressed]="isRecording"
+      class="w-full p-2 bg-red-500 text-white rounded-lg flex flex-col items-center justify-center disabled:bg-gray-500">
+      <span class="mdi mdi-microphone text-xl"></span>
+      {{ isRecording ? 'Stop Recording' : 'Start Recording' }}
+    </button>
+  </div>

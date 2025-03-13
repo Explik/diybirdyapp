@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.explik.diybirdyapp.model.content.FlashcardContentTextModel;
 import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
@@ -29,27 +30,29 @@ public class FlashcardRepositoryImplUnitTest {
     void givenNewlyCreatedFlashcard_whenAdd_thenReturnFlashcard() {
         var languageId1 = "lang1";
         var languageId2 = "lang2";
-        builderFactory.createLanguageVertexBuilder()
-                .withId(languageId1)
-                .build(traversalSource);
-        builderFactory.createLanguageVertexBuilder()
-                .withId(languageId2)
-                .build(traversalSource);
+
+        var flashcardFront = new FlashcardContentTextModel();
+        flashcardFront.setLanguageId(languageId1);
+        flashcardFront.setText("left-value");
+
+        var flashcardBack = new FlashcardContentTextModel();
+        flashcardBack.setLanguageId(languageId2);
+        flashcardBack.setText("right-value");
 
         var flashcard = new FlashcardModel(
-            null,
-            "flashcardDeck1",
-            "left-value",
-            new FlashcardLanguageModel(languageId1),
-            "right-value",
-            new FlashcardLanguageModel(languageId2));
+                "flashcard1",
+                "flashcardDeck1",
+                flashcardFront,
+                flashcardBack);
 
-        var savedFlashcard1 = repository.add(flashcard);
+        var savedFlashcard = repository.add(flashcard);
+        var savedFlashcardFrontContent = (FlashcardContentTextModel)savedFlashcard.getFrontContent();
+        var savedFlashcardBackContent = (FlashcardContentTextModel)savedFlashcard.getBackContent();
 
-        assertNotNull(savedFlashcard1.getId());
-        assertNotNull(savedFlashcard1.getDeckId());
-        assertEquals(languageId1, savedFlashcard1.getLeftLanguage().getId());
-        assertEquals(languageId2, savedFlashcard1.getRightLanguage().getId());
+        assertNotNull(savedFlashcard.getId());
+        assertNotNull(savedFlashcard.getDeckId());
+        assertEquals(languageId1, savedFlashcardFrontContent.getLanguageId());
+        assertEquals(languageId2, savedFlashcardBackContent.getLanguageId());
     }
 
     @Test
@@ -74,27 +77,29 @@ public class FlashcardRepositoryImplUnitTest {
     void givenNewlyCreatedFlashcard_whenGetById_thenReturnFlashcard() {
         var languageId1 = "lang1";
         var languageId2 = "lang2";
-        builderFactory.createLanguageVertexBuilder()
-                .withId(languageId1)
-                .build(traversalSource);
-        builderFactory.createLanguageVertexBuilder()
-                .withId(languageId2)
-                .build(traversalSource);
+
+        var flashcardFront = new FlashcardContentTextModel();
+        flashcardFront.setLanguageId(languageId1);
+        flashcardFront.setText("left-value");
+
+        var flashcardBack = new FlashcardContentTextModel();
+        flashcardBack.setLanguageId(languageId2);
+        flashcardBack.setText("right-value");
 
         var flashcard = new FlashcardModel(
-            null,
-            "flashcardDeck1",
-            "left-value",
-            new FlashcardLanguageModel(languageId1),
-            "right-value",
-            new FlashcardLanguageModel(languageId2));
+                "flashcard1",
+                "flashcardDeck1",
+                flashcardFront,
+                flashcardBack);
 
-        var savedFlashcard1 = repository.add(flashcard);
-        var savedFlashcard2 = repository.get(savedFlashcard1.getId());
+        var savedFlashcardId = repository.add(flashcard).getId();
+        var savedFlashcard = repository.get(savedFlashcardId);
+        var savedFlashcardFrontContent = (FlashcardContentTextModel)savedFlashcard.getFrontContent();
+        var savedFlashcardBackContent = (FlashcardContentTextModel)savedFlashcard.getBackContent();
 
-        assertEquals(savedFlashcard1.getId(), savedFlashcard2.getId());
-        assertEquals(languageId1, savedFlashcard2.getLeftLanguage().getId());
-        assertEquals(languageId2, savedFlashcard2.getRightLanguage().getId());
+        assertEquals(savedFlashcardId, savedFlashcard.getId());
+        assertEquals(languageId1, savedFlashcardFrontContent.getLanguageId());
+        assertEquals(languageId2, savedFlashcardBackContent.getLanguageId());
     }
 
     @Test
@@ -105,14 +110,18 @@ public class FlashcardRepositoryImplUnitTest {
                 .withFrontText("old-value")
                 .build(traversalSource);
 
+        var textChanges = new FlashcardContentTextModel();
+        textChanges.setText("new-value");
+
         var flashcardChanges = new FlashcardModel();
         flashcardChanges.setId(flashcardId);
-        flashcardChanges.setLeftValue("new-value");
+        flashcardChanges.setFrontContent(textChanges);
 
         var savedFlashCard = repository.update(flashcardChanges);
+        var savedFlashcardFrontContent = (FlashcardContentTextModel)savedFlashCard.getFrontContent();
 
         assertEquals(flashcardId, savedFlashCard.getId());
-        assertEquals("new-value", savedFlashCard.getLeftValue());
+        assertEquals("new-value", savedFlashcardFrontContent.getText());
     }
 
     @Test
@@ -123,14 +132,18 @@ public class FlashcardRepositoryImplUnitTest {
                 .withBackText("old-value")
                 .build(traversalSource);
 
+        var textChanges = new FlashcardContentTextModel();
+        textChanges.setText("new-value");
+
         var flashcardChanges = new FlashcardModel();
         flashcardChanges.setId(flashcardId);
-        flashcardChanges.setRightValue("new-value");
+        flashcardChanges.setFrontContent(textChanges);
 
         var savedFlashCard = repository.update(flashcardChanges);
+        var savedFlashcardBackContent = (FlashcardContentTextModel)savedFlashCard.getBackContent();
 
         assertEquals(flashcardId, savedFlashCard.getId());
-        assertEquals("new-value", savedFlashCard.getRightValue());
+        assertEquals("new-value", savedFlashcardBackContent.getText());
     }
 
     @TestConfiguration

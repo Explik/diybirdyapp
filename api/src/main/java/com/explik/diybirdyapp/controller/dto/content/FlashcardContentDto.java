@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.controller.dto.content;
 import com.explik.diybirdyapp.ContentTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -18,7 +19,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = FlashcardContentUploadVideoDto.class, name = ContentTypes.VIDEO_UPLOAD)
 })
 public class FlashcardContentDto {
+    @NotNull
     private String id;
+
+    @NotNull
     private String type;
 
     public FlashcardContentDto(String type) {

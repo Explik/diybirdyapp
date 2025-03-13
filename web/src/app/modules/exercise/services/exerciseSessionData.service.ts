@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ExerciseAnswer } from '../models/exercise.interface';
+import { ExerciseDto, ExerciseSessionDto } from '../../../shared/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -21,10 +22,27 @@ export class ExerciseSessionDataService {
         return this.http.get<ExerciseDto[]>(`${environment.apiUrl}/exercise`);
     }
 
+    getExerciseTypes(): Observable<string[]> {
+        // TODO Add error handling
+        return this.http.get<string[]>(`${environment.apiUrl}/exercise/types`);
+    }
+
     // === ExerciseAnswer ===
     submitExerciseAnswer(exerciseId: string, answer: ExerciseAnswer): Observable<ExerciseDto> {
-        // TODO Add error handling
-        return this.http.post<ExerciseDto>(`${environment.apiUrl}/exercise/${exerciseId}/answer`, answer);
+        const formData = new FormData();
+        
+        // Attach files 
+        if (answer.files) {
+            for (let file of answer.files)
+                formData.append('files', file, file.name);
+        }
+
+        // Generate JSON
+        const jsonObject = { ...answer, files: undefined }; 
+        const jsonString = JSON.stringify(jsonObject); 
+        formData.append('answer', new Blob([jsonString], { type: 'application/json' }));
+
+        return this.http.post<ExerciseDto>(`${environment.apiUrl}/exercise/${exerciseId}/answer/rich`, formData);
     }
 
     // === ExerciseSession ===

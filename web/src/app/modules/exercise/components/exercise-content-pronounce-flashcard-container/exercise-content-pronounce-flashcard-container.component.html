@@ -1,9 +1,0 @@
-<app-instruction  
-    title="Can you pronounce this?"
-    instruction='Click the button and do your best attempt'></app-instruction>
-
-<app-dynamic-flashcard-content *ngIf="content" [data]="content" class="block mb-4" />
-
-<app-correctable-audio-field 
-    *ngIf="input" 
-    [input]="input"></app-correctable-audio-field>

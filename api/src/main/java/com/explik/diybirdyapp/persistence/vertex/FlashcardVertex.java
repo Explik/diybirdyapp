@@ -67,6 +67,22 @@ public class FlashcardVertex extends ContentVertex {
         addEdgeOneToOne(EDGE_RIGHT_CONTENT, vertex);
     }
 
+    public ContentVertex getSide(String side) {
+        return switch (side) {
+            case "left", "front" -> getLeftContent();
+            case "right", "back" -> getRightContent();
+            default -> throw new IllegalArgumentException("Invalid side: " + side);
+        };
+    }
+
+    public ContentVertex getOtherSide(String side) {
+        return switch (side) {
+            case "left", "front" -> getRightContent();
+            case "right", "back" -> getLeftContent();
+            default -> throw new IllegalArgumentException("Invalid side: " + side);
+        };
+    }
+
     public static FlashcardVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new FlashcardVertex(traversalSource, vertex);

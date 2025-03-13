@@ -11,6 +11,8 @@ public class VertexHelper {
     public static ContentVertex createContent(GraphTraversalSource traversalSource, Vertex vertex) {
         if (vertex.label().equals(AudioContentVertex.LABEL))
             return new AudioContentVertex(traversalSource, vertex);
+        if (vertex.label().equals(FlashcardVertex.LABEL))
+            return new FlashcardVertex(traversalSource, vertex);
         if (vertex.label().equals(TextContentVertex.LABEL))
             return new TextContentVertex(traversalSource, vertex);
         if(vertex.label().equals(ImageContentVertex.LABEL))
@@ -19,6 +21,10 @@ public class VertexHelper {
             return new VideoContentVertex(traversalSource, vertex);
 
         throw new RuntimeException("Unknown content type: " + vertex.label());
+    }
+
+    public static ContentVertex createContent(ContentVertex contentVertex){
+        return createContent(contentVertex.getUnderlyingSource(), contentVertex.getUnderlyingVertex());
     }
 
     public static <T extends AbstractVertex> T getOutgoingModel(AbstractVertex vertex, String edgeLabel, BiFunction<GraphTraversalSource, Vertex, T> mapper) {
@@ -96,12 +102,32 @@ public class VertexHelper {
         return (T)edgeProperty;
     }
 
+    public static <T> T getOptionalOutgoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
+        var traversalSource = vertex.getUnderlyingSource();
+        var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
+                .outE(edgeLabel)
+                .values(property)
+                .tryNext()
+                .orElse(null);
+        return (T)edgeProperty;
+    }
+
     public static <T> T getIngoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
         var traversalSource = vertex.getUnderlyingSource();
         var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
                 .inE(edgeLabel)
                 .values(property)
                 .next();
+        return (T)edgeProperty;
+    }
+
+    public static <T> T getOptionalIngoingProperty(AbstractVertex vertex, String edgeLabel, String property) {
+        var traversalSource = vertex.getUnderlyingSource();
+        var edgeProperty = traversalSource.V(vertex.getUnderlyingVertex())
+                .inE(edgeLabel)
+                .values(property)
+                .tryNext()
+                .orElse(null);
         return (T)edgeProperty;
     }
 

@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
-import com.explik.diybirdyapp.TestDataProvider;
 import com.explik.diybirdyapp.controller.dto.exercise.ExerciseSessionDto;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -20,14 +19,6 @@ import static com.explik.diybirdyapp.TestDataConstants.*;
 public class ExerciseSessionControllerIntegrationTests {
     @Autowired
     ExerciseSessionController controller;
-
-    @Autowired
-    TestDataProvider testDataProvider;
-
-    @BeforeEach
-    void setUp() {
-        testDataProvider.resetData();
-    }
 
     @Test
     void givenNothing_whenCreate_thenReturnExerciseSession() {

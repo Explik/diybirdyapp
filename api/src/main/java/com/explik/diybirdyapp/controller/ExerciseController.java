@@ -7,9 +7,11 @@ import com.explik.diybirdyapp.event.ExerciseAnsweredEvent;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.service.ExerciseService;
+import com.explik.diybirdyapp.service.ExerciseTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +19,9 @@ import java.util.List;
 public class ExerciseController {
     @Autowired
     ExerciseService exerciseService;
+
+    @Autowired
+    ExerciseTypeService exerciseTypeService;
 
     @Autowired
     GenericMapper<ExerciseModel, ExerciseDto> exerciseMapper;
@@ -36,6 +41,11 @@ public class ExerciseController {
                 .toList();
     }
 
+    @GetMapping("/exercise/types")
+    public List<String> getTypes() {
+        return exerciseTypeService.getAll();
+    }
+
     @GetMapping("/exercise/{id}")
     public ExerciseDto get(@PathVariable String id) {
         var model = exerciseService.getExercise(id);
@@ -45,7 +55,29 @@ public class ExerciseController {
     @PostMapping("/exercise/{id}/answer")
     public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseInputDto dto) {
         var model = exerciseInputMapper.map(dto);
-        var newModel = exerciseService.submitExerciseAnswer(id, model);
+        model.setExerciseId(id);
+
+        var newModel = exerciseService.submitExerciseAnswer(model, null);
+
+        var event = new ExerciseAnsweredEvent(
+                this,
+                newModel.getType(),
+                newModel.getId(),
+                newModel.getAnswerId());
+        eventPublisher.publishEvent(event);
+
+        return exerciseMapper.map(newModel);
+    }
+
+    @PostMapping("/exercise/{id}/answer/rich")
+    public ExerciseDto submitAnswerRich(
+            @PathVariable String id,
+            @RequestPart("answer") ExerciseInputDto dto,
+            @RequestPart(value = "files", required = false) MultipartFile[] files) {
+        var model = exerciseInputMapper.map(dto);
+        model.setExerciseId(id);
+
+        var newModel = exerciseService.submitExerciseAnswer(model, files);
 
         var event = new ExerciseAnsweredEvent(
                 this,

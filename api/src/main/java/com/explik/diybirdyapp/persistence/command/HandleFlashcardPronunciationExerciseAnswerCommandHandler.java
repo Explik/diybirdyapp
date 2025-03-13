@@ -25,7 +25,7 @@ public class HandleFlashcardPronunciationExerciseAnswerCommandHandler implements
         if (!exerciseVertex.getType().equals(ExerciseTypes.PRONOUNCE_FLASHCARD))
             throw new RuntimeException("Exercise is not a pronunciation exercise");
 
-        var textContentVertex = (TextContentVertex)(exerciseVertex.getFlashcardSide().equals("front") ? exerciseVertex.getFlashcardContent().getLeftContent() : exerciseVertex.getFlashcardContent().getRightContent());
+        var textContentVertex = (TextContentVertex)exerciseVertex.getContent();
         var audioContent = AudioContentVertex.getById(traversalSource, command.getAnswerId());
 
         pronunciationVertexFactory.create(

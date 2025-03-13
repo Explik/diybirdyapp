@@ -5,7 +5,7 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LimitedExerciseModelFactory implements ExerciseModelFactory {
+public class LimitedExerciseModelFactory implements ModelFactory<ExerciseVertex, ExerciseModel> {
     @Override
     public ExerciseModel create(ExerciseVertex vertex) {
         if (vertex == null)

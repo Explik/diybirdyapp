@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.controller.dto.exercise;
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -10,14 +11,25 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ExerciseInputTextDto.class, name = ExerciseInputTypes.TEXT),
-        @JsonSubTypes.Type(value = ExerciseInputMultipleChoiceTextDto.class, name = ExerciseInputTypes.MULTIPLE_CHOICE),
-        @JsonSubTypes.Type(value = ExerciseInputRecognizabilityRatingDto.class, name = ExerciseInputTypes.RECOGNIZABILITY_RATING),
-        @JsonSubTypes.Type(value = ExerciseInputAudioDto.class, name = ExerciseInputTypes.AUDIO)
+        @JsonSubTypes.Type(value = ExerciseInputArrangeTextOptionsDto.class, name = ExerciseInputTypes.ARRANGE_TEXT_OPTIONS),
+        @JsonSubTypes.Type(value = ExerciseInputPairOptionsDto.class, name = ExerciseInputTypes.PAIR_OPTIONS),
+        @JsonSubTypes.Type(value = ExerciseInputRecordAudioDto.class, name = ExerciseInputTypes.RECORD_AUDIO),
+        @JsonSubTypes.Type(value = ExerciseInputRecordVideoDto.class, name = ExerciseInputTypes.RECORD_VIDEO),
+        @JsonSubTypes.Type(value = ExerciseInputSelectOptionsDto.class, name = ExerciseInputTypes.SELECT_OPTIONS),
+        @JsonSubTypes.Type(value = ExerciseInputSelectPlaceholdersDto.class, name = ExerciseInputTypes.SELECT_PLACEHOLDERS),
+        @JsonSubTypes.Type(value = ExerciseInputSelectReviewOptionsDto.class, name = ExerciseInputTypes.RECOGNIZABILITY_RATING),
+        @JsonSubTypes.Type(value = ExerciseInputWritePlaceholdersDto.class, name = ExerciseInputTypes.WRITE_PLACEHOLDERS),
+        @JsonSubTypes.Type(value = ExerciseInputWriteTextDto.class, name = ExerciseInputTypes.WRITE_TEXT)
 })
 public class ExerciseInputDto {
+    @NotNull
     private String id;
+
+    @NotNull
     private String type;
+
+    @NotNull
+    private String sessionId;
 
     public String getId() { return id; }
 
@@ -26,4 +38,12 @@ public class ExerciseInputDto {
     public String getType() { return type; }
 
     public void setType(String type) { this.type = type; }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 }

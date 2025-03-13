@@ -1,13 +1,22 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Dictionary;
 
 public class ExerciseDto {
+    @NotNull
     private String id;
+
+    @NotNull
     private String type;
+
     private ExerciseContentDto content;
+
     private ExerciseInputDto input;
+
     private ExerciseFeedbackDto feedback;
+
     private Dictionary<String, Object> properties;
 
     public String getId() { return id; }

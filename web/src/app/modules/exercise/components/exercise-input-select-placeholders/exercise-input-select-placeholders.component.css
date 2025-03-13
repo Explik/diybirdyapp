@@ -1,0 +1,11 @@
+/* filepath: src/app/select-placeholders/select-placeholders.component.css */
+.cdk-drag-preview {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .cdk-drag-placeholder {
+    opacity: 0;
+  }
