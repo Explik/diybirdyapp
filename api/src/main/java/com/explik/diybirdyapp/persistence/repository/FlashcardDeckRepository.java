@@ -12,4 +12,6 @@ public interface FlashcardDeckRepository {
     FlashcardDeckModel update(FlashcardDeckModel flashcardDeckModel);
 
     List<FlashcardDeckModel> getAll();
+
+    void delete(String id);
 }

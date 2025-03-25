@@ -66,6 +66,15 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
         return create(vertex);
     }
 
+    @Override
+    public void delete(String id) {
+        var query = traversalSource.V().has(FlashcardDeckVertex.LABEL, FlashcardDeckVertex.PROPERTY_ID, id);
+        if (!query.hasNext())
+            throw new IllegalArgumentException("FlashcardDeck with id " + id + " not found");
+
+        query.next().remove();
+    }
+
     private static FlashcardDeckModel create(FlashcardDeckVertex v) {
         return new FlashcardDeckModel(v.getId(), v.getName());
     }

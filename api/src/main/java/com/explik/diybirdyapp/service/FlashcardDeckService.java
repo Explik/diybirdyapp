@@ -27,4 +27,8 @@ public class FlashcardDeckService {
     public FlashcardDeckModel update(FlashcardDeckModel model) {
         return repository.update(model);
     }
+
+    public void delete(String id) {
+        repository.delete(id);
+    }
 }

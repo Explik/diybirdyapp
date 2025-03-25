@@ -47,4 +47,9 @@ public class FlashcardDeckController {
 
         return modelMapper.map(persistedModel, FlashcardDeckDto.class);
     }
+
+    @DeleteMapping("flashcard-deck/{id}")
+    public void delete(@PathVariable String id) {
+        service.delete(id);
+    }
 }
