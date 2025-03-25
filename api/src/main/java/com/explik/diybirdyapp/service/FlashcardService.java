@@ -39,6 +39,10 @@ public class FlashcardService {
         repository.delete(id);
     }
 
+    public FlashcardModel get(String id) {
+        return repository.get(id);
+    }
+
     public List<FlashcardModel> getAll(@Nullable String setId) {
         return repository.getAll(setId);
     }

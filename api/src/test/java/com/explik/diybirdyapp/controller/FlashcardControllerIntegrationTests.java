@@ -1,34 +1,28 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.ContentTypes;
+import com.explik.diybirdyapp.IntegrationTestConfigurations;
+import com.explik.diybirdyapp.TestDataService;
 import com.explik.diybirdyapp.TestEventListener;
+import com.explik.diybirdyapp.controller.dto.content.FlashcardContentDto;
 import com.explik.diybirdyapp.controller.dto.content.FlashcardContentTextDto;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
-import com.explik.diybirdyapp.persistence.command.CommandHandler;
-import com.explik.diybirdyapp.persistence.command.LockFlashcardContentCommand;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.explik.diybirdyapp.controller.dto.content.FlashcardDto;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static com.explik.diybirdyapp.TestDataConstants.*;
+import static com.explik.diybirdyapp.TestDataService.*;
 
 @SpringBootTest
 public class FlashcardControllerIntegrationTests {
     @Autowired
-    CommandHandler<LockFlashcardContentCommand> lockContentCommandHandler;
-
-    @Autowired
     FlashcardController controller;
-
-    // TODO Initialize test data
 
     @Autowired
     TestEventListener<FlashcardAddedEvent> flashcardAddedEventListener;
@@ -36,15 +30,20 @@ public class FlashcardControllerIntegrationTests {
     @Autowired
     TestEventListener<FlashcardUpdatedEvent> flashcardUpdatedEventTestEventListener;
 
+    @Autowired
+    TestDataService testDataService;
+
     @BeforeEach
     void setUp() {
-        flashcardAddedEventListener.reset();
-        flashcardUpdatedEventTestEventListener.reset();
+        testDataService.clear();
+        testDataService.populateFlashcardLanguages();
+        testDataService.populateFlashcardDecks();
     }
 
+    // POST /api/flashcard tests
     @Test
     void givenNothing_whenCreate_thenReturnFlashcard() {
-        var flashcard = createFlashcard();
+        var flashcard = createTextFlashcard();
 
         var created = controller.create(flashcard);
 
@@ -53,7 +52,7 @@ public class FlashcardControllerIntegrationTests {
 
     @Test
     void givenNothing_whenCreate_thenPublishFlashcardAddedEvent() {
-        var flashcard = createFlashcard();
+        var flashcard = createTextFlashcard();
 
         var created = controller.create(flashcard);
 
@@ -62,90 +61,147 @@ public class FlashcardControllerIntegrationTests {
                 .hasFieldOrPropertyWithValue("flashcardId", created.getId());
     }
 
+    // POST /api/flashcard/rich tests
     @Test
-    void givenNewlyCreatedFlashcard_whenUpdateContent_thenReturnFlashcard() {
-        var flashcard = createFlashcard();
-        var createdFlashcard = controller.create(flashcard);
-        setLeftTextValue(createdFlashcard, "new-left-value");
-        setRightTextValue(createdFlashcard, "new-right-value");
+    void givenNothing_whenCreateRich_thenReturnFlashcard() {
+        var flashcard = createTextFlashcard();
+        var created = controller.createRich(flashcard, null);
 
-        var updated = controller.update(createdFlashcard);
-
-        assertNotNull(updated);
-        assertEquals("new-left-value", getLeftTextValue(updated));
-        assertEquals("new-right-value", getRightTextValue(updated));
+        assertNotNull(created);
     }
 
     @Test
-    void givenStaticFlashcard_whenUpdateContent_thenReturnFlashcard() {
-        var flashcard = createFlashcard();
+    void givenNothing_whenCreateRich_thenPublishFlashcardAddedEvent() {
+        var flashcard = createTextFlashcard();
+        var created = controller.createRich(flashcard, null);
+
+        assertThat(flashcardAddedEventListener.getEvents())
+                .last()
+                .hasFieldOrPropertyWithValue("flashcardId", created.getId());
+    }
+
+    // GET /api/flashcard/{id} tests
+    @Test
+    void givenNewlyCreatedFlashcard_whenGetById_thenReturnFlashcard() {
+        var flashcard = createTextFlashcard();
         var created = controller.create(flashcard);
-        setLeftTextValue(created, "new-left-value");
 
-        lockContentCommandHandler.handle(
-                new LockFlashcardContentCommand(created.getId()));
+        var found = controller.get(created.getId());
 
-        var updated = controller.update(created);
-
-        assertNotEquals(created.getId(), updated.getId());
+        assertNotNull(found);
+        assertEquals(created.getId(), found.getId());
     }
 
+    @Test
+    void givenNonExistentFlashcard_whenGet_thenThrowsException() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.get("Non-existent id"));
+    }
+
+    // GET /api/flashcard tests
+    void givenNothing_whenGetAll_thenReturnEmptyList() {
+        var all = controller.getAll(null);
+
+        assertNotNull(all);
+        assertTrue(all.isEmpty());
+    }
+
+    void givenOneNewlyCreatedFlashcard_whenGetAll_thenReturnListWithOneElement() {
+        controller.create(createTextFlashcard());
+
+        var all = controller.getAll(null);
+
+        assertNotNull(all);
+        assertEquals(1, all.size());
+    }
+
+    void givenTwoNewlyCreatedFlashcards_whenGetAll_thenReturnListWithTwoElements() {
+        controller.create(createTextFlashcard());
+        controller.create(createTextFlashcard());
+
+        var all = controller.getAll(null);
+
+        assertNotNull(all);
+        assertEquals(2, all.size());
+    }
+
+    // PUT /api/flashcard tests
     @Test
     void givenNewlyCreatedFlashcard_whenUpdateContent_thenPublishFlashcardUpdatedEvent() {
-        var flashcard = createFlashcard();
+        var flashcard = createTextFlashcard();
         var created = controller.create(flashcard);
-        setLeftTextValue(created, "new-left-value");
 
-        controller.update(created);
+        var flashcardChange = createFlashcardChange(created.getId());
+        controller.update(flashcardChange);
 
         assertThat(flashcardUpdatedEventTestEventListener.getEvents())
                 .last()
                 .hasFieldOrPropertyWithValue("flashcardId", created.getId());
     }
 
-    protected FlashcardDto createFlashcard() {
-        // IMPORTANT: Relies on data from DataInitializer.addInitialFlashcardData()
-        var frontContent = new FlashcardContentTextDto();
-        frontContent.setText("left-value");
-        frontContent.setLanguageId(Languages.Danish.Id);
+    // PUT /api/flashcard/rich tests
+    @Test
+    void givenNewlyCreatedFlashcard_whenUpdateContentRich_thenPublishFlashcardUpdatedEvent() {
+        var flashcard = createTextFlashcard();
+        var created = controller.create(flashcard);
 
-        var backContent = new FlashcardContentTextDto();
-        backContent.setText("right-value");
-        backContent.setLanguageId(Languages.English.Id);
+        var flashcardChange = createFlashcardChange(created.getId());
+        controller.update(flashcardChange);
 
+        assertThat(flashcardUpdatedEventTestEventListener.getEvents())
+                .last()
+                .hasFieldOrPropertyWithValue("flashcardId", created.getId());
+    }
+
+    // DELETE /api/flashcard/{id} tests
+    @Test
+    void givenNewlyCreatedFlashcard_whenDelete_thenFlashcardIsDeleted() {
+        var flashcard = createTextFlashcard();
+        var created = controller.create(flashcard);
+
+        controller.delete(created.getId());
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.get(created.getId()));
+    }
+
+    FlashcardDto createTextFlashcard() {
+        var leftContent = new FlashcardContentTextDto();
+        leftContent.setType(ContentTypes.TEXT);
+        leftContent.setLanguageId(LEFT_LANGUAGE_ID);
+        leftContent.setText("Left content");
+
+        var rightContent = new FlashcardContentTextDto();
+        rightContent.setType(ContentTypes.TEXT);
+        rightContent.setLanguageId(RIGHT_LANGUAGE_ID);
+        rightContent.setText("Right content");
+
+        return createFlashcard(leftContent, rightContent);
+    }
+
+    FlashcardDto createFlashcardChange(String flashcardId) {
+        var flashcardContentChange = new FlashcardContentTextDto();
+        flashcardContentChange.setType(ContentTypes.TEXT);
+        flashcardContentChange.setText("New content");
+
+        var flashcardChange = createTextFlashcard();
+        flashcardChange.setId(flashcardId);
+        flashcardChange.setFrontContent(flashcardContentChange);
+
+        return flashcardChange;
+    }
+
+    FlashcardDto createFlashcard(FlashcardContentDto leftContent, FlashcardContentDto rightContent) {
         var flashcard = new FlashcardDto();
-        flashcard.setId("id");
-        flashcard.setDeckId(FlashcardDeck.Id);
-        flashcard.setFrontContent(frontContent);
-        flashcard.setBackContent(backContent);
+        flashcard.setId("Original id");
+        flashcard.setDeckId(FLASHCARD_DECK_1_ID);
+        flashcard.setFrontContent(leftContent);
+        flashcard.setBackContent(rightContent);
 
         return flashcard;
     }
-
-    private String getLeftTextValue(FlashcardDto flashcard) {
-        return ((FlashcardContentTextDto)flashcard.getFrontContent()).getText();
-    }
-
-    private String getRightTextValue(FlashcardDto flashcard) {
-        return ((FlashcardContentTextDto)flashcard.getBackContent()).getText();
-    }
-
-    private void setLeftTextValue(FlashcardDto flashcard, String value) {
-        ((FlashcardContentTextDto)flashcard.getFrontContent()).setText(value);
-        ((FlashcardContentTextDto)flashcard.getFrontContent()).setLanguageId(null);
-    }
-
-    private void setRightTextValue(FlashcardDto flashcard, String value) {
-        ((FlashcardContentTextDto)flashcard.getBackContent()).setText(value);
-        ((FlashcardContentTextDto)flashcard.getBackContent()).setLanguageId(null);
-    }
-
     @TestConfiguration
-    static class Configuration {
-        @Bean
-        public GraphTraversalSource traversalSource() {
-            var graph = TinkerGraph.open();
-            return graph.traversal();
-        }
-    }
+    static class TestConfig extends IntegrationTestConfigurations.Default { }
 }

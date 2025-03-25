@@ -72,6 +72,13 @@ public class FlashcardController {
         return outgoingMapper.map(newModel);
     }
 
+    @GetMapping("/flashcard/{id}")
+    public FlashcardDto get(@PathVariable String id) {
+        var model = service.get(id);
+
+        return outgoingMapper.map(model);
+    }
+
     @GetMapping("/flashcard")
     public List<FlashcardDto> getAll(@RequestParam(required = false) String deckId) {
         var models = service.getAll(deckId);
