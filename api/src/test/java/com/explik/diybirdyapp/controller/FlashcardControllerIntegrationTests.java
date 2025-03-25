@@ -1,19 +1,21 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.ContentTypes;
-import com.explik.diybirdyapp.IntegrationTestConfigurations;
-import com.explik.diybirdyapp.TestDataService;
-import com.explik.diybirdyapp.TestEventListener;
-import com.explik.diybirdyapp.controller.dto.content.FlashcardContentDto;
-import com.explik.diybirdyapp.controller.dto.content.FlashcardContentTextDto;
+import com.explik.diybirdyapp.*;
+import com.explik.diybirdyapp.controller.dto.content.*;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.explik.diybirdyapp.controller.dto.content.FlashcardDto;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,11 +65,30 @@ public class FlashcardControllerIntegrationTests {
 
     // POST /api/flashcard/rich tests
     @Test
-    void givenNothing_whenCreateRich_thenReturnFlashcard() {
+    void givenFlashcard_whenCreateRich_thenReturnFlashcard() {
         var flashcard = createTextFlashcard();
         var created = controller.createRich(flashcard, null);
 
         assertNotNull(created);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideFlashcardContentCombinations")
+    void givenFlashcardWithUpload_whenCreateRich_thenReturnFlashcard(String leftType, String rightType) {
+        var flashcard = createRichFlashcard(leftType, rightType);
+        var created = controller.createRich(flashcard.dto(), flashcard.files());
+
+        assertNotNull(created);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideFlashcardContentCombinations")
+    void givenFlashcardWithUploadButNoFiles_whenCreateRich_thenThrowsException(String leftType, String rightType) {
+        var creation = createRichFlashcard(leftType, rightType);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.createRich(creation.dto(), new MultipartFile[0]));
     }
 
     @Test
@@ -85,6 +106,18 @@ public class FlashcardControllerIntegrationTests {
     void givenNewlyCreatedFlashcard_whenGetById_thenReturnFlashcard() {
         var flashcard = createTextFlashcard();
         var created = controller.create(flashcard);
+
+        var found = controller.get(created.getId());
+
+        assertNotNull(found);
+        assertEquals(created.getId(), found.getId());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideFlashcardContentCombinations")
+    void givenNewlyCreatedRichFlashcard_whenGetById_thenReturnFlashcard(String leftType, String rightType) {
+        var flashcard = createRichFlashcard(leftType, rightType);
+        var created = controller.createRich(flashcard.dto(), flashcard.files());
 
         var found = controller.get(created.getId());
 
@@ -132,7 +165,7 @@ public class FlashcardControllerIntegrationTests {
         var flashcard = createTextFlashcard();
         var created = controller.create(flashcard);
 
-        var flashcardChange = createFlashcardChange(created.getId());
+        var flashcardChange = createTextFlashcardChange(created.getId());
         controller.update(flashcardChange);
 
         assertThat(flashcardUpdatedEventTestEventListener.getEvents())
@@ -146,7 +179,7 @@ public class FlashcardControllerIntegrationTests {
         var flashcard = createTextFlashcard();
         var created = controller.create(flashcard);
 
-        var flashcardChange = createFlashcardChange(created.getId());
+        var flashcardChange = createTextFlashcardChange(created.getId());
         controller.update(flashcardChange);
 
         assertThat(flashcardUpdatedEventTestEventListener.getEvents())
@@ -178,10 +211,15 @@ public class FlashcardControllerIntegrationTests {
         rightContent.setLanguageId(RIGHT_LANGUAGE_ID);
         rightContent.setText("Right content");
 
-        return createFlashcard(leftContent, rightContent);
+        var flashcard = new FlashcardDto();
+        flashcard.setId("Original id");
+        flashcard.setDeckId(FLASHCARD_DECK_1_ID);
+        flashcard.setFrontContent(leftContent);
+        flashcard.setBackContent(rightContent);
+        return flashcard;
     }
 
-    FlashcardDto createFlashcardChange(String flashcardId) {
+    FlashcardDto createTextFlashcardChange(String flashcardId) {
         var flashcardContentChange = new FlashcardContentTextDto();
         flashcardContentChange.setType(ContentTypes.TEXT);
         flashcardContentChange.setText("New content");
@@ -193,15 +231,41 @@ public class FlashcardControllerIntegrationTests {
         return flashcardChange;
     }
 
-    FlashcardDto createFlashcard(FlashcardContentDto leftContent, FlashcardContentDto rightContent) {
-        var flashcard = new FlashcardDto();
-        flashcard.setId("Original id");
-        flashcard.setDeckId(FLASHCARD_DECK_1_ID);
-        flashcard.setFrontContent(leftContent);
-        flashcard.setBackContent(rightContent);
+    TestDataFactories.FlashcardCreation createRichFlashcard(String leftSide, String rightSide) {
+        var flashcardFactory = new TestDataFactories.FlashcardCreationFactory();
+        var flashcard = flashcardFactory.create(leftSide, rightSide);
+        flashcard.dto().setDeckId(FLASHCARD_DECK_1_ID);
+
+        if (flashcard.dto().getFrontContent() instanceof FlashcardContentTextDto textContent)
+            textContent.setLanguageId(LEFT_LANGUAGE_ID);
+        if (flashcard.dto().getFrontContent() instanceof FlashcardContentUploadAudioDto audioDto)
+            audioDto.setLanguageId(LEFT_LANGUAGE_ID);
+        if (flashcard.dto().getFrontContent() instanceof FlashcardContentUploadVideoDto videoDto)
+            videoDto.setLanguageId(LEFT_LANGUAGE_ID);
+
+        if (flashcard.dto().getBackContent() instanceof FlashcardContentTextDto textContent)
+            textContent.setLanguageId(RIGHT_LANGUAGE_ID);
+        if (flashcard.dto().getBackContent() instanceof FlashcardContentUploadAudioDto audioDto)
+            audioDto.setLanguageId(RIGHT_LANGUAGE_ID);
+        if (flashcard.dto().getBackContent() instanceof FlashcardContentUploadVideoDto videoDto)
+            videoDto.setLanguageId(RIGHT_LANGUAGE_ID);
 
         return flashcard;
     }
+
+    static Stream<Arguments> provideFlashcardContentCombinations() {
+        var allContentTypes = new ArrayList<String>();
+        allContentTypes.add(ContentTypes.TEXT);
+        allContentTypes.add(ContentTypes.AUDIO_UPLOAD);
+        allContentTypes.add(ContentTypes.IMAGE_UPLOAD);
+        allContentTypes.add(ContentTypes.VIDEO_UPLOAD);
+
+        // All combinations of content types (left side, right side)
+        return allContentTypes.stream()
+                .flatMap(leftType -> allContentTypes.stream()
+                        .map(rightType -> Arguments.of(leftType, rightType)));
+    }
+
     @TestConfiguration
     static class TestConfig extends IntegrationTestConfigurations.Default { }
 }

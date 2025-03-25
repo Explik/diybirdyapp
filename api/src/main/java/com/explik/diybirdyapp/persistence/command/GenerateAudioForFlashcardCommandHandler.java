@@ -31,9 +31,11 @@ public class GenerateAudioForFlashcardCommandHandler implements CommandHandler<G
         if (flashcardVertex == null)
             throw new RuntimeException("Flashcard not found: " + command.getFlashcardId());
 
-        var failOnMissingVoice = command.getFailOnMissingVoice();
-        addAudioContent((TextContentVertex)flashcardVertex.getLeftContent(), failOnMissingVoice);
-        addAudioContent((TextContentVertex)flashcardVertex.getRightContent(), failOnMissingVoice);
+        boolean failOnMissingVoice = command.getFailOnMissingVoice();
+        if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent)
+            addAudioContent(leftTextContent, failOnMissingVoice);
+        if (flashcardVertex.getRightContent() instanceof TextContentVertex rightTextContent)
+            addAudioContent(rightTextContent, failOnMissingVoice);
     }
 
     private void addAudioContent(TextContentVertex textContentVertex, boolean failOnMissingVoice) {

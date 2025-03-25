@@ -24,8 +24,12 @@ public class ExtractWordsFromFlashcardCommandHandler implements CommandHandler<E
     @Override
     public void handle(ExtractWordsFromFlashcardCommand command) {
         var flashcardVertex = FlashcardVertex.findById(traversalSource, command.getFlashcardId());
-        createWordsForSide((TextContentVertex)flashcardVertex.getLeftContent());
-        createWordsForSide((TextContentVertex)flashcardVertex.getRightContent());
+
+        if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent)
+            createWordsForSide(leftTextContent);
+
+        if (flashcardVertex.getRightContent() instanceof TextContentVertex rightTextContent)
+            createWordsForSide(rightTextContent);
     }
 
     private void createWordsForSide(TextContentVertex textContent) {
