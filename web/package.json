@@ -8,6 +8,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "cypress:open": "cypress open", 
+    "cypress:run": "cypress run",
     "generate-api-client": "openapi-generator-cli generate -i http://localhost:8080/v3/api-docs -g typescript-angular -o ./src/app/shared/api-client --additional-properties fileNaming=kebab-case,withInterfaces=true --generate-alias-as-model"
   },
   "private": true,
@@ -33,6 +35,7 @@
     "@openapitools/openapi-generator-cli": "^2.16.3",
     "@types/jasmine": "~5.1.0",
     "autoprefixer": "^10.4.19",
+    "cypress": "^14.2.1",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
