@@ -18,7 +18,6 @@ import { EditFlashcard, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardL
 })
 export class FlashcardDeckPageComponent implements OnInit {
   flashcardDeck?: EditFlashcardDeckImpl;
-  flashcards: EditFlashcardImpl[] = [];
   flashcardLanguages: EditFlashcardLanguageImpl[] = [];
 
   constructor(
@@ -31,14 +30,14 @@ export class FlashcardDeckPageComponent implements OnInit {
       const id = params.get('id');
 
       if (id) {
-        this.service.getFlashcardDeck(id).subscribe(data => {
-          this.flashcardDeck = data;
+        zip(
+          this.service.getFlashcardDeck(id),
+          this.service.getFlashcards(id)
+        ).subscribe(([deck, flashcards]) => {
+          this.flashcardDeck = deck;
+          this.flashcardDeck.flashcards = flashcards;
         });
       }
-
-      this.service.getFlashcards(id).subscribe(data => {
-        this.flashcards = data;
-      });
     });
 
     this.service.getFlashcardLanguages().subscribe(data => {
@@ -55,7 +54,7 @@ export class FlashcardDeckPageComponent implements OnInit {
       }); 
     }
 
-    this.flashcards.forEach(flashcard => {
+    this.flashcardDeck?.flashcards.forEach(flashcard => {
       const changes = flashcard.getAllChanges();
       if (!changes)
         return;

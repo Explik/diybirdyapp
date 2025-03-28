@@ -5,7 +5,7 @@ import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.compone
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
 import { FormsModule } from '@angular/forms';
 import { CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { EditFlashcard, EditFlashcardDeck, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
+import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 import { AudioInputComponent } from "../audio-input/audio-input.component";
 import { ImageInputComponent } from "../image-input/image-input.component";
 import { VideoInputComponent } from "../video-input/video-input.component";
@@ -19,8 +19,7 @@ import { TextInputComponent } from "../text-input/text-input.component";
     imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent]
 })
 export class FlashcardEditContainerComponent {
-  @Input() flashcardDeck: EditFlashcardDeck | undefined = undefined;
-  @Input() flashcards: EditFlashcardImpl[] = [];
+  @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
   @Input() flashcardLanguages: EditFlashcardLanguageImpl[] = [];
   
   @Output() saveFlashcards = new EventEmitter<void>();
@@ -36,8 +35,8 @@ export class FlashcardEditContainerComponent {
   }
 
   handleRearrangeFlashcard(event: CdkDragDrop<Partial<EditFlashcardImpl>[]>): void {
-    moveItemInArray(this.flashcards, event.previousIndex, event.currentIndex);
-    this.flashcards
+    moveItemInArray(this.flashcardDeck!.flashcards, event.previousIndex, event.currentIndex);
+    this.flashcardDeck!.flashcards
       .filter(s => s.state !== 'deleted')
       .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
   }
@@ -46,19 +45,19 @@ export class FlashcardEditContainerComponent {
     var newFlashcard = EditFlashcardImpl.createDefault();
     newFlashcard.state = 'added';
     newFlashcard.deckId =  this.flashcardDeck!.id;
-    newFlashcard.deckOrder = this.flashcards.length + 1;
+    newFlashcard.deckOrder = this.flashcardDeck!.flashcards.length + 1;
     newFlashcard.leftTextContent!.languageId = this.flashcardLanguages[0].id;
     newFlashcard.rightTextContent!.languageId = this.flashcardLanguages[1].id;
-    this.flashcards.push(newFlashcard);
+    this.flashcardDeck!.flashcards.push(newFlashcard);
   }
 
   handleDeleteFlashcard(flashcard: EditFlashcardImpl): void {
     if (flashcard.state === 'added') {
-      this.flashcards = this.flashcards.filter(s => s !== flashcard);
+      this.flashcardDeck!.flashcards = this.flashcardDeck!.flashcards.filter(s => s !== flashcard);
     }
     else flashcard.state = 'deleted';
 
-    this.flashcards
+    this.flashcardDeck!.flashcards
       .filter(s => s.state !== 'deleted')
       .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
   }
@@ -69,7 +68,7 @@ export class FlashcardEditContainerComponent {
     if (!selectedLanguage) 
       return;
 
-    for(let flashcard of this.flashcards) {
+    for(let flashcard of this.flashcardDeck!.flashcards) {
       //flashcard.leftLanguage = selectedLanguage;
     }
   }
@@ -80,7 +79,7 @@ export class FlashcardEditContainerComponent {
     if (!selectedLanguage) 
       return;
 
-    for(let flashcard of this.flashcards) {
+    for(let flashcard of this.flashcardDeck!.flashcards) {
       //flashcard.rightLanguage = selectedLanguage;
     }
   }

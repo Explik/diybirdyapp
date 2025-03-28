@@ -83,8 +83,8 @@ export class EditFlashcardDeckImpl implements EditFlashcardDeck {
     get name(): string { return this.tracker.get(this, 'name'); }
     set name(value: string) { this.tracker.set(this, 'name', value); }
 
-    get flashcards(): EditFlashcard[] { return this.tracker.get(this, 'flashcards'); }
-    set flashcards(value: EditFlashcard[]) { this.tracker.set(this, 'flashcards', value); }
+    get flashcards(): EditFlashcardImpl[] { return this.tracker.get(this, 'flashcards'); }
+    set flashcards(value: EditFlashcardImpl[]) { this.tracker.set(this, 'flashcards', value); }
 
     static createFromDto(dto: FlashcardDeckDto): EditFlashcardDeckImpl {
         var deck = new EditFlashcardDeckImpl();

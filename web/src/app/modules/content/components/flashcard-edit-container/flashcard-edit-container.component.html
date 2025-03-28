@@ -1,7 +1,7 @@
-<div *ngIf="flashcardDeck">
+<div *ngIf="flashcardDeck" class="flashcard-deck-edit-container">
   <div>
     <label for="name">Name:</label>
-    <app-text-field  [(ngModel)]="flashcardDeck!.name" (rows)="1"></app-text-field>
+    <app-text-field [(ngModel)]="flashcardDeck!.name" (rows)="1" class="deck-name-input"></app-text-field>
   </div>
   <div>
     <label for="leftLanguageSelect">Choose a language:</label>
@@ -21,19 +21,19 @@
 
   <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list"
     [ngClass]="{'dragging': currentDragIndex !== undefined}">
-    @for(flashcard of flashcards; track flashcard; let i = $index) {
+    @for(flashcard of flashcardDeck!.flashcards; track flashcard; let i = $index) {
     <app-flashcard-edit *ngIf="flashcard.state !== 'deleted'" cdkDrag (cdkDragStarted)="handleDragStart(i)" (cdkDragEnded)="handleDragEnd()"
       class="flashcard-item block mb-4">
       <ng-container header>
         <div class="inline-block">
           <span class="flashcard-item-number font-bold mr-8">#{{flashcard.deckOrder}}</span>
-          <select id="leftContentTypeSelect" [(ngModel)]="flashcard.leftContentType" class="mr-8">
+          <select class="left-content-type-input mr-8" [(ngModel)]="flashcard.leftContentType">
             <option value="text">Text</option>
             <option value="audio">Audio</option>
             <option value="image">Image</option>
             <option value="video">Video</option>
           </select>
-          <select id="rightContentTypeSelect" [(ngModel)]="flashcard.rightContentType">
+          <select class="right-content-type-input" [(ngModel)]="flashcard.rightContentType">
             <option value="text">Text</option>
             <option value="audio">Audio</option>
             <option value="image">Image</option>

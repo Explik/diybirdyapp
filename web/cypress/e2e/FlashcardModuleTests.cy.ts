@@ -54,12 +54,47 @@ describe('Flashcard deck features', () => {
   it ('Flashcard is added when add flashcard is clicked', () => {
     createNewDeck();
 
-    cy.contains('Add flashcard').click();
+    createNewFlashcard(); 
     
-    cy.get(':nth-child(1) > .bg-white').should('exist'); 
+    cy.get('flaschart-edit-item').should('exist'); 
+  }); 
+
+  it ('Flashcard is removed when remove flashcard is clicked', () => {
+    createNewDeck();
+    createNewFlashcard(); 
+
+    deleteFlashcard();
+
+    cy.get('flaschart-edit-item').should('not.exist');
+  }); 
+
+  it ('Text-text flashcard is persisted when saved', () => {
+    createNewDeck();
+
+    createNewFlashcard(); 
+    setLeftTextContent('Question 1')
+    setRightTextContent('Answer 1')
+    saveDeckChanges();
+
+    cy.reload(); 
+    cy.contains('Question 1').should('exist'); 
+    cy.contains('Answer 1').should('exist');
+  }); 
+
+  it ('Text-text flashcard is not persisted when not saved', () => {
+    createNewDeck();
+
+    createNewFlashcard(); 
+    setLeftTextContent('Question 1')
+    setRightTextContent('Answer 1')
+    cy.reload(); 
+
+    cy.contains('Question 1').should('not.exist'); 
+    cy.contains('Answer 1').should('not.exist');
   }); 
 });
 
+// Flashcard deck functions 
 function createNewDeck() {
   cy.visit('/flashcard-deck/')
   cy.contains('Add deck').click()
@@ -67,19 +102,29 @@ function createNewDeck() {
 }
 
 function setDeckName(name: string) {
-  cy.get('.ng-untouched > .border').clear().type(name); 
+  cy.get('.deck-name-input > .border').clear().type(name); 
 }
-
-function setLeftTextContent(content: string) {
-  cy.get('#leftContentTypeSelect').select('Text'); 
-  cy.get(':nth-child(1) > .bg-white > .items-center > :nth-child(1) > app-text-input > app-text-field.ng-untouched > .border').clear().type(content);
-}
-
-function setRightTextContent(content: string) {
-  cy.get('#rightContentTypeSelect').select('Text');
-  cy.get(':nth-child(1) > .bg-white > .items-center > :nth-child(1) > app-text-input > app-text-field.ng-untouched > .border').clear().type(content);
-} 
 
 function saveDeckChanges() {
   cy.contains('Save changes').click(); 
 }
+
+// Flashcard functions 
+function createNewFlashcard() {
+  cy.contains('Add flashcard').click();
+}
+
+function deleteFlashcard() {
+  cy.get(':nth-child(1) > .flashcard-edit-item').contains('Delete').click(); 
+}
+
+function setLeftTextContent(content: string) {
+  cy.get(':nth-child(1) > .flashcard-edit-item .left-content-type-input').select('Text'); 
+  cy.get(':nth-child(1) > .flashcard-edit-item .left-side .text-input-container textarea').clear().type(content);
+}
+
+function setRightTextContent(content: string) {
+  cy.get(':nth-child(1) > .flashcard-edit-item .right-content-type-input').select('Text');
+  cy.get(':nth-child(1) > .flashcard-edit-item .right-side .text-input-container > textarea').clear().type(content);
+} 
+
