@@ -1,7 +1,7 @@
-<div>
+<div *ngIf="flashcardDeck">
   <div>
     <label for="name">Name:</label>
-    <app-text-field [(ngModel)]="name" (rows)="1"></app-text-field>
+    <app-text-field  [(ngModel)]="flashcardDeck!.name" (rows)="1"></app-text-field>
   </div>
   <div>
     <label for="leftLanguageSelect">Choose a language:</label>
@@ -17,8 +17,6 @@
         {{ language.name }}
       </option>
     </select>
-
-
   </div>
 
   <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list"

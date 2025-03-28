@@ -5,7 +5,7 @@ import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.compone
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
 import { FormsModule } from '@angular/forms';
 import { CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { EditFlashcard, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
+import { EditFlashcard, EditFlashcardDeck, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 import { AudioInputComponent } from "../audio-input/audio-input.component";
 import { ImageInputComponent } from "../image-input/image-input.component";
 import { VideoInputComponent } from "../video-input/video-input.component";
@@ -19,18 +19,7 @@ import { TextInputComponent } from "../text-input/text-input.component";
     imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent]
 })
 export class FlashcardEditContainerComponent {
-  _name: string | undefined = undefined;
-
-  @Input()
-  get name() {
-    return this._name;
-  } 
-  set name(val: string | undefined) {
-    this.nameChange.emit(val);
-    this._name = val;
-  }
-  @Output() nameChange = new EventEmitter<string>();
-
+  @Input() flashcardDeck: EditFlashcardDeck | undefined = undefined;
   @Input() flashcards: EditFlashcardImpl[] = [];
   @Input() flashcardLanguages: EditFlashcardLanguageImpl[] = [];
   
@@ -56,7 +45,7 @@ export class FlashcardEditContainerComponent {
   handleAddFlashcard() {
     var newFlashcard = EditFlashcardImpl.createDefault();
     newFlashcard.state = 'added';
-    newFlashcard.deckId =  this.flashcards[0].deckId;
+    newFlashcard.deckId =  this.flashcardDeck!.id;
     newFlashcard.deckOrder = this.flashcards.length + 1;
     newFlashcard.leftTextContent!.languageId = this.flashcardLanguages[0].id;
     newFlashcard.rightTextContent!.languageId = this.flashcardLanguages[1].id;
