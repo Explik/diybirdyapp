@@ -1,8 +1,29 @@
-<div *ngIf="currentFlashcard">
+<div *ngIf="currentFlashcard" class="flashcard-review-container">
     <div class="flex justify-center">
         <app-flashcard class="text-gray-500 text-sm">
             <ng-container front *ngIf="currentFlashcard.leftContentType === 'text'">
                 <span class="mr-1">{{currentFlashcard.leftTextContent!.text }}</span>
+            </ng-container>
+
+            <ng-container front *ngIf="currentFlashcard.leftContentType === 'audio'">
+                <app-audio-preview *ngIf="currentFlashcard.leftAudioContent; else noAudio" [data]="currentFlashcard.leftAudioContent"></app-audio-preview>
+                <ng-template #noAudio>
+                    <span>Sorry, no audio available...</span>
+                </ng-template>
+            </ng-container>
+
+            <ng-container front *ngIf="currentFlashcard.leftContentType === 'image'">
+                <app-image-preview *ngIf="currentFlashcard.leftImageContent; else noImage" [data]="currentFlashcard.leftImageContent"></app-image-preview>
+                <ng-template #noImage>
+                    <span>Sorry, no image available...</span>
+                </ng-template>
+            </ng-container>
+
+            <ng-container front *ngIf="currentFlashcard.leftContentType === 'video'">
+                <app-video-preview *ngIf="currentFlashcard.leftVideoContent; else noVideo" [data]="currentFlashcard.leftVideoContent"></app-video-preview>
+                <ng-template #noVideo>
+                    <span>Sorry, no video available...</span>
+                </ng-template>
             </ng-container>
 
             <ng-container back *ngIf="currentFlashcard.rightContentType === 'text'">
