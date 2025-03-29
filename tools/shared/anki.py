@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import sqlite3
 import zipfile 
+import os
 
 ####################################################################################################
 ## Functions 
@@ -16,8 +17,18 @@ def extract_files(archive_file_path):
     return temp_dir
 
 def fetch_database(folder_path): 
-    database_file_path = folder_path + "\\collection.anki2"
-    return sqlite3.connect(database_file_path)
+    # If collection.anki21 file exists, use it
+    anki21_path = folder_path + "\\collection.anki21"
+    if os.path.exists(anki21_path):
+        return sqlite3.connect(anki21_path)
+
+    # If collection.anki2 file exists, use it
+    anki20_path = folder_path + "\\collection.anki2"
+    if os.path.exists(anki20_path):
+        return sqlite3.connect(anki20_path)
+
+    # If neither file exists, raise an error
+    raise FileNotFoundError("No valid ANKI database file found in the provided folder.")
 
 def fetch_media_map(folder_path):
     media_file_path = folder_path + "\\media"
@@ -33,12 +44,10 @@ def get_field_names(db):
     # Fetch cursor 
     cursor = db.cursor()
 
-    # Collection data is stored inside as a single row the "col" table
-    collection_row = cursor.execute("SELECT * FROM col LIMIT 1").fetchone()
+    # Collection data is stored inside as a single row the "col" and "models" column table
+    result = cursor.execute("SELECT models FROM col LIMIT 1").fetchone()
     
-    # Collection fields are stored in the 9'th column as JSON  
-    field_metadata = collection_row[9]
-    field_schema = json.loads(field_metadata)
+    field_schema = json.loads(result[0])
 
     # Collection columns
     main_key = next(iter(field_schema))
@@ -78,9 +87,25 @@ class AnkiDeck:
         self.field_names = None
         self.cards = None
 
-    def get_flashcards(self):
+    def get_field_names(self) -> list[str]:
+        return self.field_names
+    
+    def get_sound_field_names(self) -> list[str]:
+        buffer = list()
+
+        for field_name in self.field_names:
+            first_field_value = self.flashcards[0].get_raw_value(field_name)
+            if first_field_value and first_field_value.startswith("[sound:"):
+                buffer.append(field_name)
+
+        return buffer
+
+    def get_flashcards(self) -> list['AnkiCard']:
         return self.flashcards
     
+    def get_number_of_flashcards(self) -> int:
+        return len(self.flashcards)
+
     def get_media_path(self, media_name): 
         return self.media_map.get(media_name) if media_name in self.media_map else None
     
@@ -118,12 +143,18 @@ class AnkiCard:
 
     def get_media_path(self, field_name, transform=None):
         text_value = self.get_text_value(field_name, transform)
+        text_value = text_value.lstrip("[sound:]").rstrip("]")
         media_path = self.file.get_media_path(text_value)
         if not media_path:
             raise ValueError(f"Media file not found for text value {text_value}")
 
         return media_path
-
+    
+    def has_media_path(self, field_name, transform=None):
+        text_value = self.get_text_value(field_name, transform)
+        media_path = self.file.get_media_path(text_value)
+        return media_path is not None
+    
     def get_text_value(self, field_name, transform=None):
         raw_value = self.get_raw_value(field_name)
         transformed_value = transform(raw_value) if transform else raw_value
