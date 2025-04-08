@@ -73,14 +73,14 @@ public class FlashcardController {
     }
 
     @GetMapping("/flashcard/{id}")
-    public FlashcardDto get(@PathVariable String id) {
+    public FlashcardDto get(@PathVariable("id") String id) {
         var model = service.get(id);
 
         return outgoingMapper.map(model);
     }
 
     @GetMapping("/flashcard")
-    public List<FlashcardDto> getAll(@RequestParam(required = false) String deckId) {
+    public List<FlashcardDto> getAll(@RequestParam(name = "deckId", required = false) String deckId) {
         var models = service.getAll(deckId);
 
         return models.stream()
@@ -90,7 +90,7 @@ public class FlashcardController {
     }
 
     @DeleteMapping("/flashcard/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable("id") String id) {
         service.delete(id);
     }
 }

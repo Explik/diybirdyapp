@@ -26,7 +26,7 @@ public class FlashcardDeckController {
     }
 
     @GetMapping("/flashcard-deck/{id}")
-    public FlashcardDeckDto get(@PathVariable String id) {
+    public FlashcardDeckDto get(@PathVariable("id") String id) {
         var model = service.get(id);
         return modelMapper.map(model, FlashcardDeckDto.class);
     }
@@ -49,7 +49,7 @@ public class FlashcardDeckController {
     }
 
     @DeleteMapping("flashcard-deck/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable("id") String id) {
         service.delete(id);
     }
 }
