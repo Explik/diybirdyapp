@@ -6,10 +6,7 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
@@ -65,17 +62,23 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
             throw new RuntimeException("Session with " + sessionId +" not found");
 
         // Finds first flashcard (in deck) not connected to review exercise (in session)
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionId, ExerciseTypes.SELECT_FLASHCARD);
+        // TODO Add support for non-text flashcards
+        var flashcardVertices = FlashcardVertex.findNonExercised(traversalSource, sessionId, ExerciseTypes.SELECT_FLASHCARD);
+        var textFlashcardVertex = flashcardVertices.stream()
+                .filter(f -> f.getLeftContent() instanceof TextContentVertex && f.getRightContent() instanceof TextContentVertex )
+                .findFirst()
+                .orElse(null);
 
-        if (flashcardVertex != null) {
+        if (textFlashcardVertex != null) {
             var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
             var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
-                    .filter(flashcard -> !flashcard.getId().equals(flashcardVertex.getId()))
+                    .filter(flashcard -> !flashcard.getId().equals(textFlashcardVertex.getId()))
+                    .filter(flashcard -> flashcard.getLeftContent() instanceof TextContentVertex && flashcard.getRightContent() instanceof TextContentVertex)
                     .limit(3)
                     .collect(Collectors.toList());
 
             var flashcardSide = sessionVertex.getOptions().getFlashcardSide();
-            var correctContentVertex = flashcardVertex.getSide(flashcardSide);
+            var correctContentVertex = textFlashcardVertex.getSide(flashcardSide);
             var incorrectContentVertices = alternativeFlashcardVertices
                     .stream()
                     .map(f -> f.getOtherSide(flashcardSide))

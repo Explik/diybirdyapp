@@ -4,6 +4,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -129,5 +130,23 @@ public class FlashcardVertex extends ContentVertex {
             return null;
 
         return new FlashcardVertex(traversalSource, query.next());
+    }
+
+    public static List<FlashcardVertex> findNonExercised(GraphTraversalSource traversalSource, String sessionId, String exerciseType) {
+        var query = traversalSource.V()
+                .has(ExerciseSessionVertex.LABEL, ExerciseSessionVertex.PROPERTY_ID, sessionId)
+                .out(ExerciseSessionVertex.EDGE_FLASHCARD_DECK)
+                .out(FlashcardDeckVertex.EDGE_FLASHCARD)
+                .not(__.in(ExerciseVertex.EDGE_CONTENT)
+                        .has(ExerciseVertex.PROPERTY_TYPE, exerciseType)
+                        .out(ExerciseVertex.EDGE_SESSION)
+                        .has(ExerciseSessionVertex.LABEL, ExerciseSessionVertex.PROPERTY_ID, sessionId));
+
+        if (!query.hasNext())
+            return new ArrayList<>();
+
+        return query.toList().stream()
+                .map(v -> new FlashcardVertex(traversalSource, v))
+                .collect(Collectors.toList());
     }
 }
