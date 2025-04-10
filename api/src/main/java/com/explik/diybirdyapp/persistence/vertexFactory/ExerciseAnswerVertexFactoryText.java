@@ -1,9 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertexFactory;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseInputTextModel;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,11 +18,21 @@ public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAn
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
 
-        var textContent = exerciseVertex.getTextContent();
+        LanguageVertex languageVertex;
+        var content = exerciseVertex.getContent();
+        if (content instanceof TextContentVertex textContentVertex) {
+            languageVertex = textContentVertex.getLanguage();
+        }
+        else if (content instanceof FlashcardVertex flashcardVertex){
+            var flashcardSide = exerciseVertex.getFlashcardSide();
+            var textContentVertex = (TextContentVertex)flashcardVertex.getSide(flashcardSide);
+            languageVertex = textContentVertex.getLanguage();
+        }
+        else throw new RuntimeException("Unsupported content type for exercise: " + content.getClass().getSimpleName());
 
         var textVertex = textContentVertexFactory.create(
                 traversalSource,
-                new TextContentVertexFactory.Options(UUID.randomUUID().toString(), answerModel.getText(), textContent.getLanguage()));
+                new TextContentVertexFactory.Options(UUID.randomUUID().toString(), answerModel.getText(), languageVertex));
 
         var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();
         var exerciseAnswerVertex = ExerciseAnswerVertex.create(traversalSource);

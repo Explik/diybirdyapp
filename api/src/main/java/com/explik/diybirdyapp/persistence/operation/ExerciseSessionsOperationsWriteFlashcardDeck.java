@@ -69,7 +69,7 @@ public class ExerciseSessionsOperationsWriteFlashcardDeck implements ExerciseSes
 
             var exerciseParameters = new ExerciseParameters()
                     .withSession(sessionVertex)
-                    .withContent(new ExerciseContentParameters().withContent(questionContentVertex))
+                    .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
                     .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
             var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE);
             exerciseFactory.create(traversalSource, exerciseParameters);

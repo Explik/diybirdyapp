@@ -33,9 +33,7 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
         if (!(genericAnswerModel instanceof ExerciseInputTextModel))
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
 
-        // Evaluate answer
         ExerciseInputTextModel answerModel = (ExerciseInputTextModel)genericAnswerModel;
-        var textContent = exerciseVertex.getTextContent();
 
         // Save answer
         answerVertexFactory.create(traversalSource, answerModel);
