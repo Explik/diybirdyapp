@@ -86,7 +86,7 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
 
             var exerciseParameters = new ExerciseParameters()
                     .withSession(sessionVertex)
-                    .withContent(new ExerciseContentParameters().withContent(correctContentVertex))
+                    .withContent(new ExerciseContentParameters().withFlashcardContent(textFlashcardVertex, flashcardSide))
                     .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
                             .withCorrectOptions(List.of(correctContentVertex))
                             .withIncorrectOptions(incorrectContentVertices)
