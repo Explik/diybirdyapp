@@ -87,12 +87,17 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
             var exerciseParameters = new ExerciseParameters()
                     .withSession(sessionVertex)
-                    .withContent(new ExerciseContentParameters().withContent(questionContentVertex))
+                    .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
                     .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
             var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE);
 
             return exerciseFactory.create(traversalSource, exerciseParameters);
         }
+        else {
+            // If no flashcards are found, the session is complete
+            sessionVertex.setCompleted(true);
+        }
+
         return null;
     }
 }
