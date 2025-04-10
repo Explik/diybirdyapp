@@ -28,6 +28,8 @@ describe('Flashcard deck features', () => {
       cy.visit('/flashcard-deck/')
       cy.contains('Updated deck').should('not.exist')
     }); 
+
+    // TODO Add test for deck languages
   }); 
 
   describe('Flashcard deck exercises', () => {

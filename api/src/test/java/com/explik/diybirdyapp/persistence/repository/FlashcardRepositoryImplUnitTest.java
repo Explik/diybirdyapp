@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.explik.diybirdyapp.model.content.FlashcardContentTextModel;
 import com.explik.diybirdyapp.model.content.FlashcardModel;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -103,7 +102,7 @@ public class FlashcardRepositoryImplUnitTest {
     }
 
     @Test
-    void givenNewLeftValue_whenUpdate_thenReturnFlashcard() {
+    void givenNewLeftTextValue_whenUpdate_thenReturnFlashcard() {
         var flashcardId = "flashcard1";
         builderFactory.createFlashcardVertexBuilder()
                 .withId(flashcardId)
@@ -125,7 +124,7 @@ public class FlashcardRepositoryImplUnitTest {
     }
 
     @Test
-    void givenNewRightValue_whenUpdate_thenReturnFlashcard() {
+    void givenNewRightTextValue_whenUpdate_thenReturnFlashcard() {
         var flashcardId = "flashcard1";
         builderFactory.createFlashcardVertexBuilder()
                 .withId(flashcardId)
@@ -145,6 +144,11 @@ public class FlashcardRepositoryImplUnitTest {
         assertEquals(flashcardId, savedFlashCard.getId());
         assertEquals("new-value", savedFlashcardBackContent.getText());
     }
+
+    // TODO Add test for updating languageId on text content
+    // TODO Add test for updating audio content/upload
+    // TODO Add test for updating image content/upload
+    // TODO Add test for updating video content/upload
 
     @TestConfiguration
     static class Configuration {

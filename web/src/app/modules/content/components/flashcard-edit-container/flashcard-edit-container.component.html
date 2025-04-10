@@ -6,14 +6,14 @@
   <div>
     <label for="leftLanguageSelect">Choose a language:</label>
     <select id="leftLanguageSelect" (change)="handleUpdateLeftLanguage($event)">
-      <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+      <option *ngFor="let language of flashcardLanguages" [value]="language.id" [selected]="language.id === leftLanguageId">
         {{ language.name }}
       </option>
     </select>
 
     <label for="rightLanguageSelect">Choose a language:</label>
     <select id="rightLanguageSelect" (change)="handleUpdateRightLanguage($event)">
-      <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+      <option *ngFor="let language of flashcardLanguages" [value]="language.id" [selected]="language.id === rightLanguageId">
         {{ language.name }}
       </option>
     </select>

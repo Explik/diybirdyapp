@@ -26,6 +26,24 @@ export class FlashcardEditContainerComponent {
 
   currentDragIndex: number | undefined = undefined;
 
+  get leftLanguageId(): string | undefined {
+    for (let flashcard of this.flashcardDeck!.flashcards) {
+      if (flashcard.state !== 'deleted' && flashcard.leftTextContent) {
+        return flashcard.leftTextContent.languageId;
+      }
+    }
+    return undefined;
+  }
+
+  get rightLanguageId(): string | undefined {
+    for (let flashcard of this.flashcardDeck!.flashcards) {
+      if (flashcard.state !== 'deleted' && flashcard.rightTextContent) {
+        return flashcard.rightTextContent.languageId;
+      }
+    }
+    return undefined;
+  }
+
   handleDragStart(index: number): void {
     this.currentDragIndex = index;
   }
@@ -64,23 +82,25 @@ export class FlashcardEditContainerComponent {
 
   handleUpdateLeftLanguage(event: Event): void {
     const selectedLanguageId = (event.target as HTMLSelectElement).value;
-    const selectedLanguage = this.flashcardLanguages.find(l => l.id == selectedLanguageId);
+    const selectedLanguage = this.flashcardLanguages.find(l => l.id === selectedLanguageId);
     if (!selectedLanguage) 
       return;
 
     for(let flashcard of this.flashcardDeck!.flashcards) {
-      //flashcard.leftLanguage = selectedLanguage;
+      if (flashcard.leftTextContent)
+        flashcard.leftTextContent.languageId = selectedLanguage.id;
     }
   }
 
   handleUpdateRightLanguage(event: Event): void {
     const selectedLanguageId = (event.target as HTMLSelectElement).value;
-    const selectedLanguage = this.flashcardLanguages.find(l => l.id == selectedLanguageId);
+    const selectedLanguage = this.flashcardLanguages.find(l => l.id === selectedLanguageId);
     if (!selectedLanguage) 
       return;
 
     for(let flashcard of this.flashcardDeck!.flashcards) {
-      //flashcard.rightLanguage = selectedLanguage;
+      if (flashcard.rightTextContent)
+        flashcard.rightTextContent.languageId = selectedLanguage.id;
     }
   }
 
