@@ -460,9 +460,10 @@ export class EditFlashcardVideoImpl implements EditFlashcardVideo {
     videoFile?: File;
 
     getSrc(): string {
-        if (this.videoUrl)
-            return this.videoUrl?.startsWith("http") ? this.videoUrl : environment.apiUrl + "/" + this.videoUrl;
-
+        if (this.videoUrl) {
+            const isFullyDefined = this.videoUrl.startsWith("http") || this.videoUrl.startsWith("blob:");
+            return isFullyDefined ? this.videoUrl : environment.apiUrl + "/" + this.videoUrl;
+        }
         return "";
     }
 
