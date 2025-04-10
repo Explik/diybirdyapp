@@ -324,9 +324,10 @@ export class EditFlashcardImageImpl implements EditFlashcardImage {
     imageFile?: File;
 
     getSrc(): string {
-        if (this.imageUrl)
-            return this.imageUrl?.startsWith("http") ? this.imageUrl : environment.apiUrl + "/" + this.imageUrl
-
+        if (this.imageUrl) {
+            const isFullyDefined = this.imageUrl.startsWith("http") || this.imageUrl.startsWith("blob:");
+            return isFullyDefined ? this.imageUrl : environment.apiUrl + "/" + this.imageUrl
+        }
         return URL.createObjectURL(this.imageFile!) ?? "";
     }
 
