@@ -32,6 +32,10 @@
             <ng-content *ngIf="input.optionType == 'image'">
                 <img [src]="castAsImage(option).url" alt="Option Image" class="w-16 h-16 object-cover rounded-lg" />
             </ng-content>
+
+            <ng-content *ngIf="input.optionType == 'video'">
+                <video [src]="castAsVideo(option).url" controls class="w-16 h-16 object-cover rounded-lg"></video>
+            </ng-content>
         </button>
     </div>
 </div>

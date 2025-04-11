@@ -183,6 +183,36 @@ export class ExerciseComponentsPageComponent {
     value: '1'
   };
 
+  selectVideoOptionsValue: ExerciseInputSelectOptionsDto = {
+    id: '1',
+    type: 'multiple-choice',
+    optionType: 'video',
+    options: [
+      { id: '1', text: 'Option 1', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '2', text: 'Option 2', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+      { id: '3', text: 'Option 3', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '4', text: 'Option 4', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }
+    ],
+    value: "1",
+  };
+
+  selectVideoOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = {
+    id: '1',
+    type: 'multiple-choice',
+    optionType: 'video',
+    options: [
+      { id: '1', text: 'Option 1', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '2', text: 'Option 2', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+      { id: '3', text: 'Option 3', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '4', text: 'Option 4', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }
+    ],
+    feedback: {
+      correctOptionIds: ['1'],
+      incorrectOptionIds: ['2', '3', '4']
+    },
+    value: '1'
+  };
+
   selectPlaceholdersValue: ExerciseInputSelectPlaceholdersDto = {
     id: '1',
     type: 'select-placeholders',
