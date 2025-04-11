@@ -1,18 +1,15 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextModel;
-import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseInputModelFactoryMultipleChoice implements ModelFactory<ExerciseVertex, ExerciseInputMultipleChoiceTextModel> {
+public class ExerciseInputModelFactoryMultipleChoice implements ModelFactory<ExerciseVertex, ExerciseInputSelectOptionsModel> {
     @Override
-    public ExerciseInputMultipleChoiceTextModel create(ExerciseVertex vertex) {
-        var input = new ExerciseInputMultipleChoiceTextModel();
+    public ExerciseInputSelectOptionsModel create(ExerciseVertex vertex) {
+        var input = new ExerciseInputSelectOptionsModel();
         input.setType(ExerciseInputTypes.SELECT_OPTIONS);
 
         var correctOptions = vertex.getCorrectOptions();
@@ -24,14 +21,32 @@ public class ExerciseInputModelFactoryMultipleChoice implements ModelFactory<Exe
         return input;
     }
 
-    private ExerciseInputMultipleChoiceTextModel.Option createOption(ExerciseVertex vertex, ContentVertex contentVertex) {
-        if (contentVertex instanceof TextContentVertex)
-            return createTextOption(vertex, (TextContentVertex)contentVertex);
+    private ExerciseInputSelectOptionsModel.BaseOption createOption(ExerciseVertex vertex, ContentVertex contentVertex) {
+        if (contentVertex instanceof AudioContentVertex audioContentVertex)
+            return createAudioOption(vertex, audioContentVertex);
+        if (contentVertex instanceof TextContentVertex textContentVertex)
+            return createTextOption(vertex, textContentVertex);
+        if (contentVertex instanceof ImageContentVertex imageContentVertex)
+            return createImageOption(vertex, imageContentVertex);
 
         throw new RuntimeException("Unsupported content type: " + contentVertex.getClass().getName());
     }
 
-    private ExerciseInputMultipleChoiceTextModel.Option createTextOption(ExerciseVertex vertex, TextContentVertex textContentVertex) {
-        return new ExerciseInputMultipleChoiceTextModel.Option(vertex.getId(), textContentVertex.getValue());
+    private ExerciseInputSelectOptionsModel.AudioOption createAudioOption(ExerciseVertex vertex, AudioContentVertex contentVertex) {
+        return new ExerciseInputSelectOptionsModel.AudioOption(
+                vertex.getId(),
+                contentVertex.getUrl());
+    }
+
+    private ExerciseInputSelectOptionsModel.TextOption createTextOption(ExerciseVertex vertex, TextContentVertex textContentVertex) {
+        return new ExerciseInputSelectOptionsModel.TextOption(
+                vertex.getId(),
+                textContentVertex.getValue());
+    }
+
+    private ExerciseInputSelectOptionsModel.ImageOption createImageOption(ExerciseVertex vertex, ImageContentVertex imageContentVertex) {
+        return new ExerciseInputSelectOptionsModel.ImageOption(
+                vertex.getId(),
+                imageContentVertex.getUrl());
     }
 }

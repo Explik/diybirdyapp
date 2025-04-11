@@ -5,7 +5,7 @@ import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputMultipleChoiceTextModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
@@ -27,10 +27,10 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
     public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
         if (genericAnswerModel == null)
             throw new RuntimeException("Answer model is null");
-        if (!(genericAnswerModel instanceof ExerciseInputMultipleChoiceTextModel))
+        if (!(genericAnswerModel instanceof ExerciseInputSelectOptionsModel))
             throw new RuntimeException("Answer model type is not ExerciseInputMultipleChoiceTextModel");
 
-        var answerModel = (ExerciseInputMultipleChoiceTextModel)genericAnswerModel;
+        var answerModel = (ExerciseInputSelectOptionsModel)genericAnswerModel;
 
         // Evaluate exercise
         var correctOptionVertex = exerciseVertex.getCorrectOptions().getFirst();
@@ -58,7 +58,7 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
         return createExerciseWithFeedback(correctOptionVertex, incorrectOptionVertices, answerModel);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends ContentVertex> incorrectOptionVertices, ExerciseInputMultipleChoiceTextModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends ContentVertex> incorrectOptionVertices, ExerciseInputSelectOptionsModel answerModel) {
         var correctOptionId = correctOptionVertex.getId();
         var incorrectOptionIds = incorrectOptionVertices.stream().map(ContentVertex::getId).toList();
         var isCorrect = answerModel.getValue().equals(correctOptionId);
@@ -66,11 +66,11 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
         var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isCorrect);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
-        var inputFeedback = new ExerciseInputMultipleChoiceTextModel.Feedback();
+        var inputFeedback = new ExerciseInputSelectOptionsModel.Feedback();
         inputFeedback.setCorrectOptionIds(List.of(correctOptionId));
         inputFeedback.setIncorrectOptionIds(incorrectOptionIds);
 
-        var exerciseInput = new ExerciseInputMultipleChoiceTextModel();
+        var exerciseInput = new ExerciseInputSelectOptionsModel();
         exerciseInput.setFeedback(inputFeedback);
 
         var exercise = new ExerciseModel();

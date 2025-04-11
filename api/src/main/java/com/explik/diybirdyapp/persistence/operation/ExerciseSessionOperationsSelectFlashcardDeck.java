@@ -63,22 +63,19 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
 
         // Finds first flashcard (in deck) not connected to review exercise (in session)
         // TODO Add support for non-text flashcards
-        var flashcardVertices = FlashcardVertex.findNonExercised(traversalSource, sessionId, ExerciseTypes.SELECT_FLASHCARD);
-        var textFlashcardVertex = flashcardVertices.stream()
-                .filter(f -> f.getLeftContent() instanceof TextContentVertex && f.getRightContent() instanceof TextContentVertex )
-                .findFirst()
-                .orElse(null);
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionId, ExerciseTypes.SELECT_FLASHCARD);
 
-        if (textFlashcardVertex != null) {
+        if (flashcardVertex != null) {
+            var flashcardSide = sessionVertex.getOptions().getFlashcardSide();
             var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
+            var answerContentType = flashcardVertex.getOtherSide(flashcardSide).getClass();
             var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
-                    .filter(flashcard -> !flashcard.getId().equals(textFlashcardVertex.getId()))
-                    .filter(flashcard -> flashcard.getLeftContent() instanceof TextContentVertex && flashcard.getRightContent() instanceof TextContentVertex)
+                    .filter(flashcard -> !flashcard.getId().equals(flashcardVertex.getId())) // Skips the current flashcard
+                    .filter(flashcard -> flashcard.getOtherSide(flashcardSide).getClass() == answerContentType) // Skips flashcards with different content type
                     .limit(3)
                     .collect(Collectors.toList());
 
-            var flashcardSide = sessionVertex.getOptions().getFlashcardSide();
-            var correctContentVertex = textFlashcardVertex.getSide(flashcardSide);
+            var correctContentVertex = flashcardVertex.getOtherSide(flashcardSide);
             var incorrectContentVertices = alternativeFlashcardVertices
                     .stream()
                     .map(f -> f.getOtherSide(flashcardSide))
@@ -86,7 +83,7 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
 
             var exerciseParameters = new ExerciseParameters()
                     .withSession(sessionVertex)
-                    .withContent(new ExerciseContentParameters().withFlashcardContent(textFlashcardVertex, flashcardSide))
+                    .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
                     .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
                             .withCorrectOptions(List.of(correctContentVertex))
                             .withIncorrectOptions(incorrectContentVertices)
