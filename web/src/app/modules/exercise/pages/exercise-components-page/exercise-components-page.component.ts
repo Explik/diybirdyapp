@@ -93,7 +93,7 @@ export class ExerciseComponentsPageComponent {
     }
   }
 
-  selectOptionsValue: ExerciseInputSelectOptionsDto = {
+  selectTextOptionsValue: ExerciseInputSelectOptionsDto = {
     id: '1',
     type: 'multiple-choice',
     optionType: 'text',
@@ -106,7 +106,7 @@ export class ExerciseComponentsPageComponent {
     value: "1",
   };
 
-  selectOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = { 
+  selectTextOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = { 
     id: '1',
     type: 'multiple-choice',
     optionType: 'text',
@@ -115,6 +115,66 @@ export class ExerciseComponentsPageComponent {
       { id: '2', text: 'Option 2' },
       { id: '3', text: 'Option 3' },
       { id: '4', text: 'Option 4' }
+    ],
+    feedback: {
+      correctOptionIds: ['1'],
+      incorrectOptionIds: ['2', '3', '4']
+    },
+    value: '1'
+  };
+
+  selectAudioOptionsValue: ExerciseInputSelectOptionsDto = {
+    id: '1',
+    type: 'multiple-choice',
+    optionType: 'audio',
+    options: [
+      { id: '1', text: 'Option 1', url: 'https://download.samplelib.com/mp3/sample-3s.mp3' },
+      { id: '2', text: 'Option 2', url: 'https://download.samplelib.com/mp3/sample-6s.mp3' },
+      { id: '3', text: 'Option 3', url: 'https://download.samplelib.com/mp3/sample-9s.mp3' },
+      { id: '4', text: 'Option 4', url: 'https://download.samplelib.com/mp3/sample-12s.mp3' }
+    ],
+    value: "1",
+  };
+
+  selectAudioOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = { 
+    id: '1',
+    type: 'multiple-choice',
+    optionType: 'audio',
+    options: [
+      { id: '1', text: 'Option 1', url: 'https://download.samplelib.com/mp3/sample-3s.mp3' },
+      { id: '2', text: 'Option 2', url: 'https://download.samplelib.com/mp3/sample-6s.mp3' },
+      { id: '3', text: 'Option 3', url: 'https://download.samplelib.com/mp3/sample-9s.mp3' },
+      { id: '4', text: 'Option 4', url: 'https://download.samplelib.com/mp3/sample-12s.mp3' }
+    ],
+    feedback: {
+      correctOptionIds: ['1'],
+      incorrectOptionIds: ['2', '3', '4']
+    },
+    value: '1'
+  };
+
+  selectImageOptionsValue: ExerciseInputSelectOptionsDto = {
+    id: '1',
+    type: 'multiple-choice',
+    optionType: 'image',
+    options: [
+      { id: '1', text: 'Option 1', url: 'https://picsum.photos/id/21/200/300' },
+      { id: '2', text: 'Option 2', url: 'https://picsum.photos/id/22/200/300' },
+      { id: '3', text: 'Option 3', url: 'https://picsum.photos/id/23/200/300' },
+      { id: '4', text: 'Option 4', url: 'https://picsum.photos/id/24/200/300' }
+    ],
+    value: "1",
+  };
+
+  selectImageOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = {
+    id: '1',
+    type: 'multiple-choice',
+    optionType: 'image',
+    options: [
+      { id: '1', text: 'Option 1', url: 'https://picsum.photos/id/21/200/300' },
+      { id: '2', text: 'Option 2', url: 'https://picsum.photos/id/22/200/300' },
+      { id: '3', text: 'Option 3', url: 'https://picsum.photos/id/23/200/300' },
+      { id: '4', text: 'Option 4', url: 'https://picsum.photos/id/24/200/300' }
     ],
     feedback: {
       correctOptionIds: ['1'],

@@ -18,7 +18,20 @@
             <div *ngIf="input?.feedback?.correctOptionIds?.includes(option.id) !== true && input?.feedback?.incorrectOptionIds?.includes(option.id) !== true" class="w-6 h-6">
                 <!-- Place holder element -->
             </div>
-            {{option.text}}
+
+            <div *ngIf="input.optionType == 'audio'" (click)="handleAudioPlay(option.id)">
+                <app-icon icon="mdi-volume-high" class="mr-2" tabindex="0"></app-icon>
+
+                <svg width="100" height="20" viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg" class="inline-block">
+                    <path d="M0 10 Q 10 0, 20 10 T 40 10 T 60 10 T 80 10 T 100 10" stroke="black" fill="transparent" stroke-width="3" />
+                </svg>
+            </div>
+
+            <ng-content *ngIf="input.optionType == 'text'">{{castAsText(option).text}}</ng-content>
+
+            <ng-content *ngIf="input.optionType == 'image'">
+                <img [src]="castAsImage(option).url" alt="Option Image" class="w-16 h-16 object-cover rounded-lg" />
+            </ng-content>
         </button>
     </div>
 </div>
