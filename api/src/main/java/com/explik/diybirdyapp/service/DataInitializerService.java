@@ -203,7 +203,7 @@ public class DataInitializerService {
                 .withContent(flashcardVertex1);
 
         var flashcardSideContentParameters = new ExerciseContentParameters()
-                .withContent(flashcardVertex1.getLeftContent());
+                .withFlashcardContent(flashcardVertex1, "front");
 
         var arrangeTextOptionsParameters = new ExerciseInputParametersArrangeTextOptions()
                 .withOptions(wordTextContents);

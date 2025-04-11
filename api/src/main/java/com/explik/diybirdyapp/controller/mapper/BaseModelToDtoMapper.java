@@ -19,6 +19,8 @@ public abstract class BaseModelToDtoMapper {
 
     Converter<ExerciseContentModel, ExerciseContentDto> exerciseContentConverter = new AbstractConverter<ExerciseContentModel, ExerciseContentDto>() {
         protected ExerciseContentDto convert(ExerciseContentModel source) {
+            if (source == null)
+                return null;
             if (source instanceof ExerciseContentAudioModel)
                 return modelMapper.map(source, ExerciseContentAudioDto.class);
             if (source instanceof ExerciseContentTextModel)
@@ -39,6 +41,8 @@ public abstract class BaseModelToDtoMapper {
     Converter<ExerciseInputModel, ExerciseInputDto> exerciseInputConverter = new AbstractConverter<ExerciseInputModel, ExerciseInputDto>() {
         @Override
         protected ExerciseInputDto convert(ExerciseInputModel source) {
+            if (source == null)
+                return null;
             if (source instanceof ExerciseInputArrangeTextOptionsModel)
                 return modelMapper.map(source, ExerciseInputArrangeTextOptionsDto.class);
             if (source instanceof ExerciseInputTextModel)

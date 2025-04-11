@@ -68,6 +68,6 @@ public class ExerciseAbstractModelFactory {
         if (inputType.equals(ExerciseInputTypes.PAIR_OPTIONS)) {
             return pairOptionsModelFactory.create(vertex);
         }
-        else throw new RuntimeException("Unsupported input type: " + inputType);
+        return null;
     }
 }
