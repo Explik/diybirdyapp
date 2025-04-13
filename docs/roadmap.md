@@ -6,7 +6,7 @@ This release aims to provide a basic flashcard system for language learners.
 ### Features
 - [x] Create/edit/delete flashcard decks 
 - [x] Create/edit/delete flashcards in a deck
-- [x] Import ANKI deck tool 
+- [x] Import ANKI deck tool (text-only)
 - [x] Support for text, image, and audio flashcards
 - [x] Support for vocabulary tracking across decks 
 - [x] "Select flashcards" session 
@@ -18,6 +18,9 @@ This release aims to provide a basic flashcard system for language learners.
 ### 0.1.0 - A journey of a thousand flashcards 
 
 ### Features
+- [x] Import file-based deck tool 
+- [x] Import ANKI deck tool
+- [x] Manage language tool 
 - [x] View language journey
 - [x] Support for flashcard-based language journey 
 - [x] Dynamic session with new exercises
