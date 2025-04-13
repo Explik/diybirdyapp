@@ -3,6 +3,7 @@ import requests
 import zipfile
 import tempfile
 import os
+import shared.import_client as import_client
 from shared.anki import AnkiDeck
 from shared.utils import strip_prefix_suffix
 from shared.converter_utils import create_audio_content_upload, create_flashcard, create_flashcard_deck, create_language_query, create_text_content
@@ -56,24 +57,6 @@ def format_field_values(anki_file, field_name, max_length=100):
 # Set the title of the app
 st.title("Import ANKI Flashcards")
 
-# Setup section import 
-uploaded_file = st.file_uploader("Upload ANKI file", type=["apkg"])
-anki_file = None
-
-if uploaded_file is not None:
-    # Save file to a temporary directory
-    with tempfile.TemporaryDirectory() as temp_dir:
-        file_path = os.path.join(temp_dir, uploaded_file.name)
-        with open(file_path, "wb") as f:
-            f.write(uploaded_file.getbuffer())
-
-        # Create ANKI file 
-        try:
-            anki_file = AnkiDeck.create_from_file(file_path)
-            st.success(f"Successfully loaded {anki_file.get_number_of_flashcards()} flashcard(s)!")
-        except Exception as e:
-            st.error(f"Failed to load file: {e}")
-
 # Setup section configure server in the sidebar
 st.subheader("Configure Server")
 
@@ -95,6 +78,27 @@ if st.session_state.connection_status:
     elif st.session_state.connection_status.startswith("warning"):
         st.sidebar.warning(st.session_state.connection_status.split(': ', 1)[1])
 
+anki_file = None
+uploaded_file = None
+
+if st.session_state.connection_status == "success":
+    st.subheader("Configure conversion")
+    uploaded_file = st.file_uploader("Upload ANKI file", type=["apkg"])
+
+if uploaded_file is not None:
+    # Save file to a temporary directory
+    with tempfile.TemporaryDirectory() as temp_dir:
+        file_path = os.path.join(temp_dir, uploaded_file.name)
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+
+        # Create ANKI file 
+        try:
+            anki_file = AnkiDeck.create_from_file(file_path)
+            st.success(f"Successfully loaded {anki_file.get_number_of_flashcards()} flashcard(s)!")
+        except Exception as e:
+            st.error(f"Failed to load file: {e}")
+
 # Fetch languages from session state if available
 languages = st.session_state.get("languages", [])
 
@@ -103,8 +107,6 @@ if anki_file is not None and len(languages) > 0:
     sound_fields =  [None] + anki_file.get_sound_field_names()
 
     # Section: Front Side
-    st.subheader("Configure conversion")
-
     cols = st.columns(2)
     with cols[0]:
         front_language = st.selectbox(
@@ -197,6 +199,15 @@ if anki_file is not None and len(languages) > 0:
             deck_description, 
             flashcards)
         
+        deck = import_client.create_flashcard_deck(deck_name, deck_description)
+        for flashcard in flashcards: 
+            try: 
+                import_client.create_flashcard(deck, flashcard)
+            except Exception as e:
+                st.warning("Failed to create flashcard: ", flashcard, e)
+
+        print(flashcard_deck)
+
         # TODO send to server
         
 
