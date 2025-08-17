@@ -51,7 +51,7 @@ export class FlashcardDeckEditPageComponent implements OnInit {
       this.service.updateFlashcardDeck(flashcardDeckChanges).subscribe(data => {
         console.log("Flashcard deck updated");
         console.log(data);
-      }); 
+      });
     }
 
     const updatePromises = this.flashcardDeck?.flashcards.map(async flashcard => {

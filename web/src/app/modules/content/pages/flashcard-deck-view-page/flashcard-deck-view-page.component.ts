@@ -25,7 +25,7 @@ export class FlashcardDeckViewPageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private service: FlashcardService) { }
-
+  
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -44,6 +44,10 @@ export class FlashcardDeckViewPageComponent implements OnInit {
     this.service.getFlashcardLanguages().subscribe(data => {
       this.flashcardLanguages = data;
     });
+  }
+
+  get hasFlashcards(): boolean {
+    return !!this.flashcardDeck && this.flashcardDeck.flashcards.length > 0;
   }
 
   selectFlashcards() {

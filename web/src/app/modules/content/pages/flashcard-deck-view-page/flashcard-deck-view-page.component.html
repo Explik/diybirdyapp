@@ -3,28 +3,44 @@
 
     <app-flashcard-review-container *ngIf="flashcardDeck.flashcards.length > 0" [flashcards]="flashcardDeck.flashcards"
         class="mt-8 mb-4"></app-flashcard-review-container>
+    
+    <ng-container *ngIf="hasFlashcards; else noFlashcards">
+        <button 
+            (click)="selectFlashcards()"
+            class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 mr-2 border border-blue-500 hover:border-transparent rounded">
+            Select flashcards
+        </button>
 
-    <button (click)="selectFlashcards()"
-        class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 mr-2 border border-blue-500 hover:border-transparent rounded">
-        Select flashcards
-    </button>
+        <button
+            (click)="reviewFlashcards()"
+            class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 mr-2 border border-blue-500 hover:border-transparent rounded">
+            Review flashcards
+        </button>
 
-    <button (click)="reviewFlashcards()"
-        class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 mr-2 border border-blue-500 hover:border-transparent rounded">
-        Review flashcards
-    </button>
+        <button 
+            (click)="writeFlashcards()"
+            class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 mr-2 border border-blue-500 hover:border-transparent rounded">
+            Write flashcards
+        </button>
 
-    <button (click)="writeFlashcards()"
-        class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 mr-2 border border-blue-500 hover:border-transparent rounded">
-        Write flashcards
-    </button>
+        <button
+            (click)="learnFlashcards()"
+            class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 border border-blue-500 hover:border-transparent rounded">
+            Learn flashcards
+        </button>
+        
+        <div>
+            <app-text-button [label]="'Edit'" (click)="editFlashcards()" class="float-right"></app-text-button>
+        </div>
+    </ng-container>
 
-    <button (click)="learnFlashcards()"
-        class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 my-4 border border-blue-500 hover:border-transparent rounded">
-        Learn flashcards
-    </button>
+    <ng-template #noFlashcards>
+        <div class="text-center text-gray-500 mt-8 mb-4 p-6 border border-gray-200 rounded bg-gray-50">
+            <div>No flashcards in this deck.</div>
 
-    <div>
-        <app-text-button [label]="'Edit'" (click)="editFlashcards()" class="float-right"></app-text-button>
-    </div>
+            <div class="flex justify-center mt-4">
+                <app-text-button [label]="'Add'" (click)="editFlashcards()" class=""></app-text-button>
+            </div>
+        </div>
+    </ng-template>
 </div>
