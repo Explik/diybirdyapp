@@ -8,15 +8,16 @@ import { FlashcardReviewComponent } from "../../components/flashcard-review/flas
 import { CommonModule } from '@angular/common';
 import { FlashcardReviewContainerComponent } from '../../components/flashcard-review-container/flashcard-review-container.component';
 import { EditFlashcard, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
+import { TextButtonComponent } from '../../../../shared/components/text-button/text-button.component';
 
 @Component({
-  selector: 'app-flashcard-deck-page',
+  selector: 'app-flashcard-deck-view-page',
   standalone: true,
-  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent, FlashcardReviewContainerComponent],
-  templateUrl: './flashcard-deck-page.component.html',
-  styleUrl: './flashcard-deck-page.component.css'
+  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent, FlashcardReviewContainerComponent, TextButtonComponent],
+  templateUrl: './flashcard-deck-view-page.component.html',
+  styleUrl: './flashcard-deck-view-page.component.css'
 })
-export class FlashcardDeckPageComponent implements OnInit {
+export class FlashcardDeckViewPageComponent implements OnInit {
   flashcardDeck?: EditFlashcardDeckImpl;
   flashcardLanguages: EditFlashcardLanguageImpl[] = [];
 
@@ -45,27 +46,6 @@ export class FlashcardDeckPageComponent implements OnInit {
     });
   }
 
-  saveChanges() {
-    const flashcardDeckChanges = this.flashcardDeck?.getAllChanges();
-    if (flashcardDeckChanges) {
-      this.service.updateFlashcardDeck(flashcardDeckChanges).subscribe(data => {
-        console.log("Flashcard deck updated");
-        console.log(data);
-      }); 
-    }
-
-    this.flashcardDeck?.flashcards.forEach(flashcard => {
-      const changes = flashcard.getAllChanges();
-      if (!changes)
-        return;
-
-        this.service.updateFlashcard(flashcard).subscribe(data => {
-          console.log("Flashcard updated");
-          console.log(data);
-      });
-    });
-  }
-
   selectFlashcards() {
     this.service.selectFlashcardDeck(this.flashcardDeck!.id).subscribe(data => {
       this.router.navigate(['/session/' + data.id]);
@@ -88,5 +68,9 @@ export class FlashcardDeckPageComponent implements OnInit {
     this.service.learnFlashcardDeck(this.flashcardDeck!.id).subscribe(data => {
       this.router.navigate(['/session/' + data.id]);
     });
+  }
+
+  editFlashcards() {
+    this.router.navigate(['/flashcard-deck/' + this.flashcardDeck!.id + '/edit']);
   }
 }

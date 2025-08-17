@@ -3,6 +3,7 @@ import { FlashcardService } from '../../services/flashcard.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { EditFlashcardDeck, EditFlashcardDeckImpl } from '../../models/editFlashcard.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-flashcard-decks-page',
@@ -14,7 +15,7 @@ import { EditFlashcardDeck, EditFlashcardDeckImpl } from '../../models/editFlash
 export class FlashcardDecksPageComponent implements OnInit {
   flashcardDecks: EditFlashcardDeck[] = [];
 
-  constructor(private service: FlashcardService) {}
+  constructor(private service: FlashcardService, private router: Router) {}
 
   ngOnInit(): void {
     this.service.getFlashcardDecks().subscribe(data => {
@@ -26,7 +27,8 @@ export class FlashcardDecksPageComponent implements OnInit {
     const flashcardDeck = { name: 'New deck' } as EditFlashcardDeck;
 
     this.service.createFlashcardDeck(flashcardDeck).subscribe(data => {
-      this.flashcardDecks = [...this.flashcardDecks, data];
+      //this.flashcardDecks = [...this.flashcardDecks, data];
+      this.router.navigate([`/flashcard-deck/${data.id}/edit`]);
     });
   }
 }

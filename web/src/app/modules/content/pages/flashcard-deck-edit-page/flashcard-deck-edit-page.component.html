@@ -1,0 +1,5 @@
+<div  *ngIf="flashcardDeck" class="container mx-auto p-4">
+    <h1 class="text-xl font-bold">Flashcard Deck "{{flashcardDeck!.name}}"</h1>
+
+    <app-flashcard-edit-container [flashcardDeck]="flashcardDeck!" [flashcardLanguages]="flashcardLanguages" (saveFlashcards)="saveChanges()"></app-flashcard-edit-container>
+</div>
