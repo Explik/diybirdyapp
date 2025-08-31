@@ -2,12 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FlashcardEditContainerComponent } from "../../components/flashcard-edit-container/flashcard-edit-container.component";
 import { FlashcardService } from '../../services/flashcard.service';
 import { zip } from 'rxjs';
-import { RecursivePartial } from '../../../../shared/models/util.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FlashcardReviewComponent } from "../../components/flashcard-review/flashcard-review.component";
 import { CommonModule } from '@angular/common';
 import { FlashcardReviewContainerComponent } from '../../components/flashcard-review-container/flashcard-review-container.component';
-import { EditFlashcard, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
+import { EditFlashcardDeckImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 
 @Component({
   selector: 'app-flashcard-deck-view-page',

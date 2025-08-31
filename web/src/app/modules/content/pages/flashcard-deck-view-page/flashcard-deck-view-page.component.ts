@@ -9,11 +9,12 @@ import { CommonModule } from '@angular/common';
 import { FlashcardReviewContainerComponent } from '../../components/flashcard-review-container/flashcard-review-container.component';
 import { EditFlashcard, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 import { TextButtonComponent } from '../../../../shared/components/text-button/text-button.component';
+import { FlashcardViewContainerComponent } from '../../components/flashcard-view-container/flashcard-view-container.component';
 
 @Component({
   selector: 'app-flashcard-deck-view-page',
   standalone: true,
-  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent, FlashcardReviewContainerComponent, TextButtonComponent],
+  imports: [RouterModule, CommonModule, FlashcardViewContainerComponent, FlashcardReviewContainerComponent, TextButtonComponent],
   templateUrl: './flashcard-deck-view-page.component.html',
   styleUrl: './flashcard-deck-view-page.component.css'
 })
