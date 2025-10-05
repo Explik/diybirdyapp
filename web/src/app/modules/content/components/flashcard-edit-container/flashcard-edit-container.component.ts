@@ -44,6 +44,14 @@ export class FlashcardEditContainerComponent {
     return undefined;
   }
 
+  ngOnChanges(): void {
+    if (this.flashcardDeck) {
+      // Add default flashcards if none exist to avoid empty state
+      if (!this.flashcardDeck.flashcards.length)
+        this.handleAddFlashcard()
+    }
+  }
+
   handleDragStart(index: number): void {
     this.currentDragIndex = index;
   }

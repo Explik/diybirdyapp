@@ -56,11 +56,13 @@ describe('Flashcard deck features', () => {
   describe('Flashcard deck exercises', () => {
     it ('Start exercises options are disabled when no flashcards are present', () => {
       createNewDeck();
+      deleteFlashcard();
+      saveDeckChanges();
 
-      cy.contains('Select flashcards').should('be.disabled')
-      cy.contains('Review flashcards').should('be.disabled')
-      cy.contains('Write flashcards').should('be.disabled')
-      cy.contains('Learn flashcards').should('be.disabled')
+      cy.contains('Select flashcards').should('not.exist')
+      cy.contains('Review flashcards').should('not.exist')
+      cy.contains('Write flashcards').should('not.exist')
+      cy.contains('Learn flashcards').should('not.exist')
     });
 
     it ('Start exercises options are enabled when flashcards are present', () => {
@@ -79,12 +81,18 @@ describe('Flashcard deck features', () => {
   }); 
 
   describe('Flashcard deck flashcards', () => {
+    it ('Flashcard deck is initilized with a default flashcard', () => {
+      createNewDeck()
+
+      cy.get('.flashcard-edit-item').should('have.length', 1);
+    });
+
     it ('Flashcard is added when add flashcard is clicked', () => {
       createNewDeck();
 
       createNewFlashcard(); 
       
-      cy.get('.flashcard-edit-item').should('exist'); 
+      cy.get('.flashcard-edit-item').should('have.length', 2);
     }); 
 
     it ('Flashcard is removed when remove flashcard is clicked', () => {
@@ -93,13 +101,12 @@ describe('Flashcard deck features', () => {
 
       deleteFlashcard();
 
-      cy.get('.flashcard-edit-item').should('not.exist');
+      cy.get('.flashcard-edit-item').should('have.length', 1);
     }); 
 
     it ('Flashcard is not persisted when not saved', () => {
       createNewDeck();
 
-      createNewFlashcard(); 
       setLeftTextContent('Question 1')
       setRightTextContent('Answer 1')
       cy.reload(); 
@@ -111,7 +118,6 @@ describe('Flashcard deck features', () => {
     it ('Text-text flaschards input options are available when selected', () => {
       createNewDeck(); 
 
-      createNewFlashcard();
       setLeftContentType('Text');
       setRightContentType('Text');
 
@@ -122,7 +128,6 @@ describe('Flashcard deck features', () => {
     it ('Audio-audio flaschards input options are available when selected', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftContentType('Audio');
       setRightContentType('Audio');
 
@@ -133,7 +138,6 @@ describe('Flashcard deck features', () => {
     it ('Image-image flaschards input options are available when selected', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftContentType('Image');
       setRightContentType('Image');
 
@@ -144,7 +148,6 @@ describe('Flashcard deck features', () => {
     it ('Video-video flaschards input options are available when selected', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftContentType('Video');
       setRightContentType('Video');
 
@@ -152,56 +155,51 @@ describe('Flashcard deck features', () => {
       cy.get(':nth-child(1) > .flashcard-edit-item .right-side .video-input-container').should('exist');
     }); 
 
-    it ('Text-text flascard is immidiately available for review', () => {
+    it('Text-text flascard is immidiately available for review', () => {
       createNewDeck(); 
 
-      createNewFlashcard();
       setLeftContentType('Text');
       setRightContentType('Text');
       setLeftTextContent('Question 1')
       setRightTextContent('Answer 1')
 
-      cy.get('.flashcard-review-container').contains('Question 1').should('exist');
-      cy.get('.flashcard-review-container').contains('Answer 1').should('exist');
+      cy.get('.flashcard-deck-edit-container').contains('Question 1').should('exist');
+      cy.get('.flashcard-deck-edit-container').contains('Answer 1').should('exist');
     }); 
 
     it ('Audio-audio flashcard is immidiately available for review', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftAudioContent('./cypress/files/example.mp3')
       setRightAudioContent('./cypress/files/example.mp3')
 
-      cy.get('.flashcard-review-container .flashcard-front .audio-preview-container').should('exist');
-      cy.get('.flashcard-review-container .flashcard-back .audio-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
     }); 
 
     it ('Image-image flashcard is immidiately available for review', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftImageContent('./cypress/files/example.jpg')
       setRightImageContent('./cypress/files/example.jpg')
 
-      cy.get('.flashcard-review-container .flashcard-front .image-preview-container').should('exist');
-      cy.get('.flashcard-review-container .flashcard-back .image-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-front .image-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-back .image-preview-container').should('exist');
     });
 
     it ('Video-video flashcard is immidiately available for review', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftVideoContent('./cypress/files/example.mp4')
       setRightVideoContent('./cypress/files/example.mp4')
       
-      cy.get('.flashcard-review-container .flashcard-front .video-preview-container').should('exist');
-      cy.get('.flashcard-review-container .flashcard-back .video-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-front .video-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-back .video-preview-container').should('exist');
     });
 
     it ('Text-text flashcard is persisted when saved', () => {
       createNewDeck();
 
-      createNewFlashcard(); 
       setLeftTextContent('Question 1')
       setRightTextContent('Answer 1')
       saveDeckChanges();
@@ -214,43 +212,40 @@ describe('Flashcard deck features', () => {
     it ('Audio-audio flashcard is persisted when saved', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftAudioContent('./cypress/files/example.mp3')
       setRightAudioContent('./cypress/files/example.mp3')
       saveDeckChanges();
 
       cy.reload();
 
-     cy.get('.flashcard-review-container .flashcard-front .audio-preview-container').should('exist');
-     cy.get('.flashcard-review-container .flashcard-back .audio-preview-container').should('exist');
+     cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
+     cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
     }); 
 
     it ('Image-image flashcard is persisted when saved', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftImageContent('./cypress/files/example.jpg')
       setRightImageContent('./cypress/files/example.jpg')
       saveDeckChanges();
 
       cy.reload();
 
-      cy.get('.flashcard-review-container .flashcard-front .image-preview-container').should('exist');
-      cy.get('.flashcard-review-container .flashcard-back .image-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-front .image-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-back .image-preview-container').should('exist');
     }); 
 
     it ('Video-video flashcard is persisted when saved', () => {
       createNewDeck();
 
-      createNewFlashcard();
       setLeftVideoContent('./cypress/files/example.mp4')
       setRightVideoContent('./cypress/files/example.mp4')
       saveDeckChanges();
 
       cy.reload();
 
-      cy.get('.flashcard-review-container .flashcard-front .video-preview-container').should('exist');
-      cy.get('.flashcard-review-container .flashcard-back .video-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-front .video-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-back .video-preview-container').should('exist');
     });
   });
 });
