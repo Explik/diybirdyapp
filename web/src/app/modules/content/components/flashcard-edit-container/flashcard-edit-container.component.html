@@ -1,7 +1,10 @@
 <div *ngIf="flashcardDeck" class="flashcard-deck-edit-container">
   <div>
     <label for="name">Name:</label>
-    <app-text-field [(ngModel)]="flashcardDeck!.name" (rows)="1" class="deck-name-input"></app-text-field>
+    <app-text-field [(ngModel)]="flashcardDeck!.name" (rows)="1" class="deck-name-input mb-2"></app-text-field>
+    
+    <label for="description">Description:</label>
+    <app-text-field [(ngModel)]="flashcardDeck!.description" (rows)="3" class="deck-description-input mb-2" placeholder="Description (optional)"></app-text-field>
   </div>
   <div>
     <label for="leftLanguageSelect">Choose a language:</label>

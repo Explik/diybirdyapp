@@ -83,6 +83,9 @@ export class EditFlashcardDeckImpl implements EditFlashcardDeck {
     get name(): string { return this.tracker.get(this, 'name'); }
     set name(value: string) { this.tracker.set(this, 'name', value); }
 
+    get description(): string | undefined { return this.tracker.get(this, 'description'); }
+    set description(value: string | undefined) { this.tracker.set(this, 'description', value); }
+
     get flashcards(): EditFlashcardImpl[] { return this.tracker.get(this, 'flashcards'); }
     set flashcards(value: EditFlashcardImpl[]) { this.tracker.set(this, 'flashcards', value); }
 
@@ -90,6 +93,7 @@ export class EditFlashcardDeckImpl implements EditFlashcardDeck {
         var deck = new EditFlashcardDeckImpl();
         deck.id = dto.id;
         deck.name = dto.name;
+        deck.description = dto.description;
         deck.flashcards = [];
         return deck;
     }

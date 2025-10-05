@@ -11,7 +11,7 @@ describe('Flashcard deck features', () => {
       cy.contains('Updated deck').should('exist')
 
       // Check if name is updated on overview page
-      cy.visit('/flashcard-deck/')
+      goToFlashcardDeckOverview()
       cy.contains('Updated deck').should('exist')
     }); 
 
@@ -25,9 +25,30 @@ describe('Flashcard deck features', () => {
       cy.contains('Updated deck').should('not.exist')
 
       // Check if name is not updated on overview page
-      cy.visit('/flashcard-deck/')
+      goToFlashcardDeckOverview()
       cy.contains('Updated deck').should('not.exist')
     }); 
+
+    it('Description is updated when description update is saved', () => {
+      createNewDeck();
+
+      setDeckDescription('New description');
+      saveDeckChanges(); 
+
+      // Check if description is updated on details page
+      cy.reload();
+      cy.contains('New description').should('exist')
+    });
+
+    it ('Description is not updated when description update is not saved', () => {
+      createNewDeck();
+
+      setDeckDescription('New description');
+      // Check if description is not updated on details page
+      
+      cy.reload();
+      cy.contains('New description').should('not.exist')
+    });
 
     // TODO Add test for deck languages
   }); 
@@ -234,15 +255,23 @@ describe('Flashcard deck features', () => {
   });
 });
 
+// Navigation functions
+function goToFlashcardDeckOverview() {
+  cy.visit('/flashcard-deck/')
+}
+
 // Flashcard deck functions 
 function createNewDeck() {
-  cy.visit('/flashcard-deck/')
+  goToFlashcardDeckOverview()
   cy.contains('Add deck').click()
-  cy.contains('Deck "New deck"').click()
 }
 
 function setDeckName(name: string) {
   cy.get('.deck-name-input > .border').clear().type(name); 
+}
+
+function setDeckDescription(description: string) {
+  cy.get('.deck-description-input > .border').clear().type(description);
 }
 
 function saveDeckChanges() {

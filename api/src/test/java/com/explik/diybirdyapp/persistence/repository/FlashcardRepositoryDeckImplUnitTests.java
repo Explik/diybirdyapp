@@ -101,6 +101,24 @@ public class FlashcardRepositoryDeckImplUnitTests {
         assertEquals("new-value", savedFlashCard.getName());
     }
 
+    @Test
+    void givenNewDescription_whenUpdate_thenReturnFlashcard() {
+        var flashcardDeckId = "flashcardDeck1";
+        builderFactory.createFlashcardDeckVertexBuilder()
+                .withId(flashcardDeckId)
+                .withDescription("old-value")
+                .build(traversalSource);
+
+        var flashcardDeckChanges = new FlashcardDeckModel();
+        flashcardDeckChanges.setId(flashcardDeckId);
+        flashcardDeckChanges.setDescription("new-description");
+
+        var savedFlashCard = repository.update(flashcardDeckChanges);
+
+        assertEquals(flashcardDeckId, savedFlashCard.getId());
+        assertEquals("new-description", savedFlashCard.getDescription());
+    }
+
     @TestConfiguration
     static class Configuration {
         @Bean

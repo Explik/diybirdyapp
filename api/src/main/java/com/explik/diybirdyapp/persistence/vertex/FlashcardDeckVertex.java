@@ -36,7 +36,7 @@ public class FlashcardDeckVertex extends ContentVertex {
     }
 
     public String getDescription() {
-        return getPropertyAsString(PROPERTY_DESCRIPTION);
+        return getPropertyAsString(PROPERTY_DESCRIPTION, null);
     }
 
     public void setDescription(String description) {

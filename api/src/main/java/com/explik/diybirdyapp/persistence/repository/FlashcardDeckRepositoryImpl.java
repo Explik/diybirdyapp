@@ -62,6 +62,9 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
         if (flashcardDeckModel.getName() != null) {
             vertex.setName(flashcardDeckModel.getName());
         }
+        if (flashcardDeckModel.getDescription() != null) {
+            vertex.setDescription(flashcardDeckModel.getDescription());
+        }
 
         return create(vertex);
     }
@@ -76,6 +79,10 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
     }
 
     private static FlashcardDeckModel create(FlashcardDeckVertex v) {
-        return new FlashcardDeckModel(v.getId(), v.getName());
+        var model = new FlashcardDeckModel();
+        model.setId(v.getId());
+        model.setName(v.getName());
+        model.setDescription(v.getDescription());
+        return model;
     }
 }
