@@ -7,7 +7,6 @@ describe('Flashcard deck features', () => {
       saveDeckChanges(); 
 
       // Check if name is updated on details page
-      cy.reload();
       cy.contains('Updated deck').should('exist')
 
       // Check if name is updated on overview page
@@ -15,13 +14,14 @@ describe('Flashcard deck features', () => {
       cy.contains('Updated deck').should('exist')
     }); 
 
-    it ('Name is not updated when name update is not saved', () => {
+    it('Name is not updated when name update is not saved', () => {
       createNewDeck(); 
 
       setDeckName('Updated deck');
+      cy.reload(); // Discard changes
+      saveDeckChanges();
 
       // Check if name is not updated on details page
-      cy.reload();
       cy.contains('Updated deck').should('not.exist')
 
       // Check if name is not updated on overview page
@@ -36,17 +36,17 @@ describe('Flashcard deck features', () => {
       saveDeckChanges(); 
 
       // Check if description is updated on details page
-      cy.reload();
       cy.contains('New description').should('exist')
     });
 
-    it ('Description is not updated when description update is not saved', () => {
+    it('Description is not updated when description update is not saved', () => {
       createNewDeck();
 
       setDeckDescription('New description');
-      // Check if description is not updated on details page
+      cy.reload(); // Discard changes
+      saveDeckChanges();
       
-      cy.reload();
+      // Check if description is not updated on details page
       cy.contains('New description').should('not.exist')
     });
 
