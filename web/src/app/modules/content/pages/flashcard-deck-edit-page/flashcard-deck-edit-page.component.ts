@@ -10,7 +10,7 @@ import { EditFlashcardDeckImpl, EditFlashcardLanguageImpl } from '../../models/e
 @Component({
   selector: 'app-flashcard-deck-view-page',
   standalone: true,
-  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent, FlashcardReviewContainerComponent],
+  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent],
   templateUrl: './flashcard-deck-edit-page.component.html',
   styleUrl: './flashcard-deck-edit-page.component.css'
 })
