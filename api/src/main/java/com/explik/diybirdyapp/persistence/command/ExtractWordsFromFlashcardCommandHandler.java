@@ -3,18 +3,15 @@ package com.explik.diybirdyapp.persistence.command;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.WordVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.VertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.WordVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 @Component
-public class ExtractWordsFromFlashcardCommandHandler implements CommandHandler<ExtractWordsFromFlashcardCommand> {
+public class ExtractWordsFromFlashcardCommandHandler implements AsyncCommandHandler<ExtractWordsFromFlashcardCommand> {
     @Autowired
     GraphTraversalSource traversalSource;
 
@@ -22,7 +19,7 @@ public class ExtractWordsFromFlashcardCommandHandler implements CommandHandler<E
     WordVertexFactory wordVertexFactory;
 
     @Override
-    public void handle(ExtractWordsFromFlashcardCommand command) {
+    public void handleAsync(ExtractWordsFromFlashcardCommand command) {
         var flashcardVertex = FlashcardVertex.findById(traversalSource, command.getFlashcardId());
 
         if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent)

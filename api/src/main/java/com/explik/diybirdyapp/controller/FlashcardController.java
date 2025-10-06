@@ -6,8 +6,11 @@ import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.service.FlashcardService;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,5 +95,16 @@ public class FlashcardController {
     @DeleteMapping("/flashcard/{id}")
     public void delete(@PathVariable("id") String id) {
         service.delete(id);
+    }
+
+    @PostMapping("/flashcard/{id}/text-to-speech/{side}")
+    public ResponseEntity<byte[]> generateTextToSpeech(@PathVariable("id") String id, @PathVariable("side") String side) {
+        var result = service.generateTextToSpeech(id, side);
+
+        return ResponseEntity
+                .status(HttpStatus.SC_PARTIAL_CONTENT)
+                .contentType(MediaType.parseMediaType(result.getContentType()))
+                .header("Accept-Ranges", "bytes")
+                .body(Arrays.copyOfRange(result.getContent(), 0, result.getContent().length));
     }
 }

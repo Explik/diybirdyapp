@@ -14,7 +14,7 @@ public class TextToSpeechService {
     @Autowired
     BinaryStorageService storageService;
 
-    public void generateAudioFile(Text textObject, String outputPath) throws IOException {
+    public byte[] generateAudio(Text textObject) throws IOException {
         try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
             // Build the input text
             SynthesisInput input = SynthesisInput.newBuilder()
@@ -38,9 +38,14 @@ public class TextToSpeechService {
             // Get the audio content from the response
             ByteString audioContents = response.getAudioContent();
 
-            // Write the audio content to the output file
-            storageService.set(outputPath, audioContents.toByteArray());
+            return audioContents.toByteArray();
         }
+    }
+
+    public void generateAudioFile(Text textObject, String outputPath) throws IOException {
+        // Write the audio content to the output file
+        var audioBytes = generateAudio(textObject);
+        storageService.set(outputPath, audioBytes);
     }
 
     public record Text (String text, String languageCode, String voiceName, String audioEncoding) { }

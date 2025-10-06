@@ -5,7 +5,6 @@ import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +30,7 @@ public class GenerateAudioForFlashcardCommandHandlerIntegrationTest {
         var command = new GenerateAudioForFlashcardCommand(flashcardId);
         command.setFailOnMissingVoice(true);
 
-        handler.handle(command);
+        handler.handleAsync(command);
 
         // Assertions
         var leftContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, flashcardId).getLeftContent();

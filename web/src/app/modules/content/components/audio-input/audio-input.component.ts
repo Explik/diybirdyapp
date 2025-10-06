@@ -81,6 +81,6 @@ export class AudioInputComponent {
 
   playAudio() {
     if (this.audioData) 
-      this.playService.startPlaying(this.audioData);
+      this.playService.startPlayingEditFlashcard(this.audioData);
   }
 }

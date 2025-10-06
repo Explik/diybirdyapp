@@ -2,6 +2,7 @@
     <div class="flex justify-center">
         <app-flashcard class="text-gray-500 text-sm">
             <ng-container front *ngIf="currentFlashcard.leftContentType === 'text'">
+                <app-icon icon="mdi-volume-high" class="mr-2" tabindex="0" (click)="playAudio('left'); $event.stopPropagation()"></app-icon>
                 <span class="mr-1">{{currentFlashcard.leftTextContent!.text }}</span>
             </ng-container>
 
@@ -27,6 +28,7 @@
             </ng-container>
 
             <ng-container back *ngIf="currentFlashcard.rightContentType === 'text'">
+                <app-icon icon="mdi-volume-high" class="mr-2" tabindex="0" (click)="playAudio('right'); $event.stopPropagation()"></app-icon>
                 <span class="mr-1">{{currentFlashcard.rightTextContent!.text }}</span>
             </ng-container>
 

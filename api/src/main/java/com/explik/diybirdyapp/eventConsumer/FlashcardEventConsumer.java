@@ -2,7 +2,7 @@ package com.explik.diybirdyapp.eventConsumer;
 
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
-import com.explik.diybirdyapp.persistence.command.CommandHandler;
+import com.explik.diybirdyapp.persistence.command.AsyncCommandHandler;
 import com.explik.diybirdyapp.persistence.command.ExtractWordsFromFlashcardCommand;
 import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
 import org.slf4j.Logger;
@@ -17,20 +17,20 @@ public class FlashcardEventConsumer {
     private static final Logger Logger = LoggerFactory.getLogger(FlashcardEventConsumer.class);
 
     @Autowired
-    CommandHandler<ExtractWordsFromFlashcardCommand> wordCommandHandler;
+    AsyncCommandHandler<ExtractWordsFromFlashcardCommand> wordCommandHandler;
 
     @Autowired
-    CommandHandler<GenerateAudioForFlashcardCommand> audioCommandHandler;
+    AsyncCommandHandler<GenerateAudioForFlashcardCommand> audioCommandHandler;
 
     @Async
     @EventListener
     public void handleFlashcardAddedEvent(FlashcardAddedEvent event) {
         Logger.info("Flashcard added event received: " + event.getFlashcardId());
 
-        wordCommandHandler.handle(
+        wordCommandHandler.handleAsync(
                 new ExtractWordsFromFlashcardCommand(event.getFlashcardId()));
 
-        audioCommandHandler.handle(
+        audioCommandHandler.handleAsync(
                 new GenerateAudioForFlashcardCommand(event.getFlashcardId()));
     }
 
@@ -39,10 +39,10 @@ public class FlashcardEventConsumer {
     public void handleFlashcardUpdatedEvent(FlashcardUpdatedEvent event) {
         Logger.info("Flashcard updated event received: " + event.getFlashcardId());
 
-        wordCommandHandler.handle(
+        wordCommandHandler.handleAsync(
                 new ExtractWordsFromFlashcardCommand(event.getFlashcardId()));
 
-        audioCommandHandler.handle(
+        audioCommandHandler.handleAsync(
                 new GenerateAudioForFlashcardCommand(event.getFlashcardId()));
     }
 }
