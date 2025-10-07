@@ -1,19 +1,73 @@
-<div
-  class="image-input-container border border-dashed border-gray-400 p-6 rounded-lg text-center"
-  (dragover)="allowDrop($event)"
-  (drop)="handleDrop($event)"
->
-  <i class="mdi mdi-upload text-5xl text-gray-500"></i>
-  <p class="text-gray-600 mt-2">Drag & Drop an image here</p>
+<div class="image-input-container border border-dashed border-gray-400 p-6 rounded-lg text-center" 
+    [class.border-blue-500]="visualState === 'dropping'"
+    [class.bg-blue-50]="visualState === 'dropping'"
+    (dragover)="allowDrop($event)"
+    (drop)="handleDrop($event)"
+    (dragenter)="onDragEnter($event)"
+    (dragleave)="onDragLeave($event)">
+    
+    <div class="flex items-center justify-center ">
+        <span class="flex items-center">
+            <i *ngIf="visualState == 'empty'" class="mdi mdi-cloud-arrow-up text-5xl text-gray-500 mr-2"></i>
+            <i *ngIf="visualState == 'dropping'" class="mdi mdi-cloud-arrow-down text-5xl text-blue-500 mr-2"></i>
+            
+            <!-- Live camera feed during capturing -->
+            <div *ngIf="visualState == 'capturing'" class="flex flex-col items-center">
+                <video 
+                    #liveVideoElement
+                    class="max-w-full h-32 rounded-lg mb-2"
+                    autoplay
+                    muted>
+                </video>
+            </div>
+            
+            <!-- Image preview in place of icon -->
+            <div *ngIf="visualState == 'preview'" class="flex flex-col items-center">
+                <img 
+                    [src]="imageData!.getSrc()" 
+                    alt="Preview" 
+                    class="max-w-full h-32 rounded-lg mb-2 object-cover">
+                <p *ngIf="imageFile" class="text-sm text-gray-600">{{ imageFileName }}</p>
+            </div>
+        </span>
+    </div>
+    
+    <div class="flex justify-center mt-4 space-x-4">
+        <!-- Empty state -->
+        <button *ngIf="visualState === 'empty'"
+            (click)="startCapturing()"
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+            Capture
+        </button>
 
-  <label
-    class="mt-4 block bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600"
-  >
-    Upload Image
-    <input type="file" accept="image/*" class="hidden" (change)="handleFileInput($event)" />
-  </label>
+        <label *ngIf="visualState === 'empty'" 
+            class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
+            Upload
+            <input type="file" accept="image/*" class="hidden" (change)="handleFileInput($event)" />
+        </label>
 
-  <div *ngIf="imageData" class="mt-4">
-    <img [src]="imageData.getSrc()" alt="Preview" class="max-w-full h-32 rounded-lg" />
-  </div>
+        <!-- Capturing state -->
+        <button *ngIf="visualState === 'capturing'" 
+            (click)="captureImage()" 
+            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+            Take Photo
+        </button>
+
+        <button *ngIf="visualState === 'capturing'" 
+            (click)="stopCapturing()" 
+            class="px-4 py-2 bg-blue cursor-pointer">
+            Cancel
+        </button>
+
+        <!-- Dropping state -->
+        <p *ngIf="visualState == 'dropping'" class="text-blue-600 font-semibold mx-4 my-2">Drop file here!</p>
+
+        <!-- Preview state  -->
+        <button *ngIf="visualState == 'preview'" (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
+            Clear
+        </button>
+    </div>
+
+    <!-- Hidden canvas for image capture -->
+    <canvas #canvas class="hidden"></canvas>
 </div>
