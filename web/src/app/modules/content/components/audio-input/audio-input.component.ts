@@ -23,11 +23,48 @@ export class AudioInputComponent {
     return undefined;
   }
 
+  get audioFileName(): string | undefined {
+    const MAX_FILENAME_LENGTH = 20;
+    const name = this.audioFile?.name;
+    if (!name) return undefined;
+
+    const dotIndex = name.lastIndexOf('.');
+    if (dotIndex === -1 || name.length <= MAX_FILENAME_LENGTH) return name;
+
+    const ext = name.substring(dotIndex);
+    const base = name.substring(0, dotIndex);
+    const maxBaseLength = MAX_FILENAME_LENGTH - ext.length - 3; // 3 for "..."
+    if (maxBaseLength <= 0) return '...' + ext;
+    
+    if (base.length > maxBaseLength) {
+      return base.substring(0, maxBaseLength) + '...' + ext;
+    }
+    return name;
+  }
+
+  get visualState(): 'empty' | 'preview' | 'recording' | 'dropping'  {
+    if (this.isRecording) {
+      return 'recording';
+    } else if (this.audioData) {
+      return 'preview';
+    } else if (this.isDragging) {
+      return 'dropping';
+    }
+    return 'empty';
+  }
+
   isRecording = false;
+  isPlaying = false;
+  isDropping = false;
+  isDragging = false;
 
   constructor(
     private playService: AudioPlayingService,
-    private recordingService: AudioRecordingService) {}
+    private recordingService: AudioRecordingService) {
+      this.playService.getCurrentState().subscribe(state => {
+        this.isPlaying = (state === 'playing');
+      });
+    }
 
   startRecording() {
     this.isRecording = true;
@@ -39,8 +76,13 @@ export class AudioInputComponent {
     });
   }
 
-  stopRecording() {
+  saveRecording() {
     this.recordingService.stopRecording();
+  }
+
+  cancelRecording() {
+    this.isRecording = false;
+    this.recordingService.cancelRecording();
   }
 
   handleFileInput(event: any) {
@@ -58,6 +100,7 @@ export class AudioInputComponent {
 
   handleDrop(event: DragEvent) {
     event.preventDefault();
+    this.isDragging = false;
     if (event.dataTransfer?.files.length) {
       const file = event.dataTransfer.files[0];
       if (file.type.startsWith('audio/')) {
@@ -68,7 +111,26 @@ export class AudioInputComponent {
   }
 
   allowDrop(event: DragEvent) {
+    if (this.visualState === 'empty' || this.visualState === 'dropping') {
+      event.preventDefault();
+    }
+  }
+
+  onDragEnter(event: DragEvent) {
     event.preventDefault();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    // Only set isDragging to false if we're actually leaving the drop zone
+    // Check if the related target is outside the drop zone
+    const target = event.currentTarget as HTMLElement;
+    const relatedTarget = event.relatedTarget as HTMLElement;
+    
+    if (!target.contains(relatedTarget)) {
+      this.isDragging = false;
+    }
   }
 
   createAudioUrl(file: File) {
@@ -79,8 +141,10 @@ export class AudioInputComponent {
     reader.readAsDataURL(file);
   }
 
-  playAudio() {
-    if (this.audioData) 
-      this.playService.startPlayingEditFlashcard(this.audioData);
+  toogleAudio() {
+    if (!this.audioData) 
+      return;
+
+    this.playService.startPlayingEditFlashcard(this.audioData);
   }
 }

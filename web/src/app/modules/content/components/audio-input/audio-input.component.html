@@ -1,26 +1,58 @@
-<div class="audio-input-container border border-dashed border-gray-400 p-6 rounded-lg text-center" (dragover)="allowDrop($event)"
-    (drop)="handleDrop($event)">
-    <div class="flex justify-center">
+<div class="audio-input-container border border-dashed border-gray-400 p-6 rounded-lg text-center" 
+    [class.border-blue-500]="visualState === 'dropping'"
+    [class.bg-blue-50]="visualState === 'dropping'"
+    (dragover)="allowDrop($event)"
+    (drop)="handleDrop($event)"
+    (dragenter)="onDragEnter($event)"
+    (dragleave)="onDragLeave($event)">
+    
+    <div class="flex items-center justify-center ">
         <span class="flex items-center">
-            <i class="mdi mdi-cloud-arrow-up text-5xl text-gray-500 mr-2"></i>
-            Audio input
+            <i *ngIf="visualState == 'empty'" class="mdi mdi-cloud-arrow-up text-5xl text-gray-500 mr-2"></i>
+            <i *ngIf="visualState == 'dropping'" class="mdi mdi-cloud-arrow-down text-5xl text-blue-500 mr-2"></i>
+            <i *ngIf="visualState == 'recording'" class="mdi mdi-microphone text-5xl text-red-500 mr-2 animate-pulse"></i>
+            <i *ngIf="visualState == 'preview'" class="mdi mdi-volume-high text-5xl text-gray-500 mr-2"></i>
+
+            <p *ngIf="visualState == 'preview' && audioFile" >{{ audioFileName }}</p>
         </span>
     </div>
+    
     <div class="flex justify-center mt-4 space-x-4">
-        <button (click)="isRecording ? stopRecording() : startRecording()"
+        <!-- Empty state -->
+        <button *ngIf="visualState === 'empty'"
+            (click)="startRecording()"
             class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-            {{ isRecording ? 'Stop' : 'Record' }}
+            Record
         </button>
-        <label *ngIf="!audioData" class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
+
+        <label *ngIf="visualState === 'empty'" 
+            class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
             Upload
             <input type="file" accept="audio/*" class="hidden" (change)="handleFileInput($event)" />
         </label>
-        <button *ngIf="audioData" class="px-4 py-2 bg-blue cursor-pointer hover:bg-blue-600" (click)="playAudio()">Play</button>
-        <button *ngIf="audioData" (click)="clearFileInput()" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-            Clear File
+
+        <!-- Recording state -->
+        <button *ngIf="visualState === 'recording'" 
+            (click)="saveRecording()" 
+            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+            Save
         </button>
-    </div>
-    <div *ngIf="audioFile" class="mt-4">
-        <p>File uploaded: {{ audioFile.name }}</p>
+
+        <button *ngIf="visualState === 'recording'" 
+            (click)="cancelRecording()" 
+            class="px-4 py-2 bg-blue cursor-pointer">
+            Cancel
+        </button>
+
+        <!-- Dropping starte -->
+        <p *ngIf="visualState == 'dropping'" class="text-blue-600 font-semibold mx-4 my-2">Drop file here!</p>
+
+        <!-- Preview state  -->
+        <button *ngIf="visualState == 'preview'" class="px-4 py-2 bg-gray-500 hover:bg-blue-600 text-white rounded" (click)="toogleAudio()">
+            {{ !isPlaying ? 'Play' : 'Pause '}}
+        </button>
+        <button *ngIf="visualState == 'preview'" (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
+            Clear
+        </button>
     </div>
 </div>
