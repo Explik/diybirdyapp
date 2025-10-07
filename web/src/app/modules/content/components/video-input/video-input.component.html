@@ -1,19 +1,84 @@
-<div
-  class="video-input-container border border-dashed border-gray-400 p-6 rounded-lg text-center"
-  (dragover)="allowDrop($event)"
-  (drop)="handleDrop($event)"
->
-  <i class="mdi mdi-upload text-5xl text-gray-500"></i>
-  <p class="text-gray-600 mt-2">Drag & Drop an video here</p>
+<div class="video-input-container border border-dashed border-gray-400 p-6 rounded-lg text-center" 
+    [class.border-blue-500]="visualState === 'dropping'"
+    [class.bg-blue-50]="visualState === 'dropping'"
+    (dragover)="allowDrop($event)"
+    (drop)="handleDrop($event)"
+    (dragenter)="onDragEnter($event)"
+    (dragleave)="onDragLeave($event)">
+    
+    <div class="flex items-center justify-center ">
+        <span class="flex items-center">
+            <i *ngIf="visualState == 'empty'" class="mdi mdi-cloud-arrow-up text-5xl text-gray-500 mr-2"></i>
+            <i *ngIf="visualState == 'dropping'" class="mdi mdi-cloud-arrow-down text-5xl text-blue-500 mr-2"></i>
+            
+            <!-- Live video feed during recording -->
+            <div *ngIf="visualState === 'recording' || visualState === 'saving'" class="flex flex-col items-center">
+                <video 
+                    #liveVideoElement
+                    class="max-w-full h-32 rounded-lg mb-2"
+                    autoplay
+                    muted>
+                </video>
+                <p *ngIf="visualState == 'saving'" class="text-sm text-blue-600 animate-pulse">Saving...</p>
+            </div>
 
-  <label
-    class="mt-4 block bg-blue-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-600"
-  >
-    Upload video
-    <input type="file" accept="video/*" class="hidden" (change)="handleFileInput($event)" />
-  </label>
+            <!-- Video preview in place of icon -->
+            <div *ngIf="visualState == 'preview'" class="flex flex-col items-center">
+                <video 
+                    [src]="videoData!.getSrc()" 
+                    class="max-w-full h-32 rounded-lg mb-2"
+                    (play)="isPlaying = true"
+                    (pause)="isPlaying = false"
+                    (ended)="isPlaying = false">
+                </video>
+                <p *ngIf="videoFile" class="text-sm text-gray-600">{{ videoFileName }}</p>
+            </div>
+        </span>
+    </div>
+    
+    <div class="flex justify-center mt-4 space-x-4">
+        <!-- Empty state -->
+        <button *ngIf="visualState === 'empty'"
+            (click)="startRecording()"
+            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+            Record
+        </button>
 
-  <div *ngIf="videoData" class="mt-4">
-    <video [src]="videoData.getSrc()" alt="Preview" class="max-w-full h-32 rounded-lg" controls></video>
-  </div>
+        <label *ngIf="visualState === 'empty'" 
+            class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
+            Upload
+            <input type="file" accept="video/*" class="hidden" (change)="handleFileInput($event)" />
+        </label>
+
+        <!-- Recording state -->
+        <button *ngIf="visualState === 'recording'" 
+            (click)="saveRecording()" 
+            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+            Save
+        </button>
+
+        <button *ngIf="visualState === 'recording'" 
+            (click)="cancelRecording()" 
+            class="px-4 py-2 bg-blue cursor-pointer">
+            Cancel
+        </button>
+
+        <!-- Saving state -->
+        <button *ngIf="visualState === 'saving'" 
+            disabled
+            class="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed">
+            Saving...
+        </button>
+
+        <!-- Dropping state -->
+        <p *ngIf="visualState == 'dropping'" class="text-blue-600 font-semibold mx-4 my-2">Drop file here!</p>
+
+        <!-- Preview state  -->
+        <button *ngIf="visualState == 'preview'" class="px-4 py-2 bg-gray-500 hover:bg-blue-600 text-white rounded" (click)="toggleVideo()">
+            {{ !isPlaying ? 'Play' : 'Pause '}}
+        </button>
+        <button *ngIf="visualState == 'preview'" (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
+            Clear
+        </button>
+    </div>
 </div>
