@@ -43,7 +43,44 @@ export class FlashcardDeckEditPageComponent implements OnInit {
     });
   }
 
+  validateLanguageSelection(): boolean {
+    if (!this.flashcardDeck) return false;
+    
+    const missingLanguages: string[] = [];
+    
+    for (const flashcard of this.flashcardDeck.flashcards) {
+      if (flashcard.state === 'deleted') continue;
+      
+      // Check left side text content
+      if (flashcard.leftContentType === 'text' && flashcard.leftTextContent) {
+        if (!flashcard.leftTextContent.languageId || flashcard.leftTextContent.languageId === '') {
+          missingLanguages.push(`Flashcard #${flashcard.deckOrder} left side`);
+        }
+      }
+      
+      // Check right side text content
+      if (flashcard.rightContentType === 'text' && flashcard.rightTextContent) {
+        if (!flashcard.rightTextContent.languageId || flashcard.rightTextContent.languageId === '') {
+          missingLanguages.push(`Flashcard #${flashcard.deckOrder} right side`);
+        }
+      }
+    }
+    
+    if (missingLanguages.length > 0) {
+      const message = `Please select a language for the following text content:\n\n${missingLanguages.slice(0, 3).join('\n')}\n\nAll text content must have a language selected before saving.`;
+      alert(message);
+      return false;
+    }
+    
+    return true;
+  }
+
   saveChanges() {
+    // Validate language selection before saving
+    if (!this.validateLanguageSelection()) {
+      return;
+    }
+
     const flashcardDeckChanges = this.flashcardDeck?.getAllChanges();
     if (flashcardDeckChanges) {
       this.service.updateFlashcardDeck(flashcardDeckChanges).subscribe(data => {

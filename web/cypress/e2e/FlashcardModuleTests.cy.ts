@@ -4,6 +4,8 @@ describe('Flashcard deck features', () => {
       createNewDeck(); 
 
       setDeckName('Updated deck');
+      setLeftTextContent('Question 1', 'English')
+      setRightTextContent('Answer 1', 'Danish')
       saveDeckChanges(); 
 
       // Check if name is updated on details page
@@ -85,15 +87,29 @@ describe('Flashcard deck features', () => {
       createNewDeck()
 
       cy.get('.flashcard-edit-item').should('have.length', 1);
+      cy.get('#leftLanguageSelect_0').contains('Select language').should('exist');
+      cy.get('#rightLanguageSelect_0').contains('Select language').should('exist');
     });
 
-    it ('Flashcard is added when add flashcard is clicked', () => {
+    it ('Flashcard is added when add flashcard is clicked (before language select)', () => {
       createNewDeck();
 
       createNewFlashcard(); 
       
       cy.get('.flashcard-edit-item').should('have.length', 2);
     }); 
+
+    it ('Flashcard is added when add flashcard is clicked (after language select)', () => {
+      createNewDeck(); 
+      setLeftLanguage('English');
+      setRightLanguage('Danish');
+
+      createNewFlashcard();
+
+      cy.get('.flashcard-edit-item').should('have.length', 2);
+      cy.get('#leftLanguageSelect_1').contains('English').should('exist');
+      cy.get('#rightLanguageSelect_1').contains('Danish').should('exist');
+    });
 
     it ('Flashcard is removed when remove flashcard is clicked', () => {
       createNewDeck();
@@ -103,6 +119,21 @@ describe('Flashcard deck features', () => {
 
       cy.get('.flashcard-edit-item').should('have.length', 1);
     }); 
+
+    it ('Flascard language change is reflected on all flashcards', () => {
+      createNewDeck();
+      createNewFlashcard();
+      createNewFlashcard();
+      setLeftLanguage('English');
+      setRightLanguage('Danish');
+      
+      cy.get('#leftLanguageSelect_0').contains('English').should('exist');
+      cy.get('#rightLanguageSelect_0').contains('Danish').should('exist');
+      cy.get('#leftLanguageSelect_1').contains('English').should('exist');
+      cy.get('#rightLanguageSelect_1').contains('Danish').should('exist');
+      cy.get('#leftLanguageSelect_2').contains('English').should('exist');
+      cy.get('#rightLanguageSelect_2').contains('Danish').should('exist');
+    });
 
     it ('Flashcard is not persisted when not saved', () => {
       createNewDeck();
@@ -247,6 +278,8 @@ describe('Flashcard deck features', () => {
       cy.get('.flashcard-deck-edit-container .flashcard-front .video-preview-container').should('exist');
       cy.get('.flashcard-deck-edit-container .flashcard-back .video-preview-container').should('exist');
     });
+
+
   });
 });
 
@@ -282,13 +315,15 @@ function deleteFlashcard() {
   cy.get(':nth-child(1) > .flashcard-edit-item').contains('Delete').click(); 
 }
 
-function setLeftTextContent(content: string) {
+function setLeftTextContent(content: string, languageName?: string) {
   setLeftContentType('Text'); 
+  if (languageName) setLeftLanguage(languageName);
   cy.get(':nth-child(1) > .flashcard-edit-item .left-side .text-input-container > textarea').clear().type(content);
 }
 
-function setRightTextContent(content: string) {
+function setRightTextContent(content: string, languageName?: string) {
   setRightContentType('Text');
+  if (languageName) setRightLanguage(languageName);
   cy.get(':nth-child(1) > .flashcard-edit-item .right-side .text-input-container > textarea').clear().type(content);
 } 
 
@@ -328,4 +363,12 @@ function setLeftContentType(contentType: string) {
 
 function setRightContentType(contentType: string) {
   cy.get(':nth-child(1) > .flashcard-edit-item .right-content-type-input').select(contentType); 
+}
+
+function setLeftLanguage(languageName: string) {
+  cy.get(':nth-child(1) > .flashcard-edit-item #leftLanguageSelect_0').select(languageName); 
+}
+
+function setRightLanguage(languageName: string) {
+  cy.get(':nth-child(1) > .flashcard-edit-item #rightLanguageSelect_0').select(languageName); 
 }

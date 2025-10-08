@@ -26,23 +26,7 @@ export class FlashcardEditContainerComponent {
 
   currentDragIndex: number | undefined = undefined;
 
-  get leftLanguageId(): string | undefined {
-    for (let flashcard of this.flashcardDeck!.flashcards) {
-      if (flashcard.state !== 'deleted' && flashcard.leftTextContent) {
-        return flashcard.leftTextContent.languageId;
-      }
-    }
-    return undefined;
-  }
 
-  get rightLanguageId(): string | undefined {
-    for (let flashcard of this.flashcardDeck!.flashcards) {
-      if (flashcard.state !== 'deleted' && flashcard.rightTextContent) {
-        return flashcard.rightTextContent.languageId;
-      }
-    }
-    return undefined;
-  }
 
   ngOnChanges(): void {
     if (this.flashcardDeck) {
@@ -72,9 +56,50 @@ export class FlashcardEditContainerComponent {
     newFlashcard.state = 'added';
     newFlashcard.deckId =  this.flashcardDeck!.id;
     newFlashcard.deckOrder = this.flashcardDeck!.flashcards.length + 1;
-    newFlashcard.leftTextContent!.languageId = this.flashcardLanguages[0].id;
-    newFlashcard.rightTextContent!.languageId = this.flashcardLanguages[1].id;
+    
+    // Apply already chosen languages from existing flashcards
+    this.applyExistingLanguagesToNewFlashcard(newFlashcard);
+    
     this.flashcardDeck!.flashcards.push(newFlashcard);
+  }
+
+  private applyExistingLanguagesToNewFlashcard(newFlashcard: EditFlashcardImpl): void {
+    // Find the most commonly used left language
+    const leftLanguageId = this.getMostCommonLanguage('left');
+    if (leftLanguageId && newFlashcard.leftTextContent) {
+      newFlashcard.leftTextContent.languageId = leftLanguageId;
+    }
+
+    // Find the most commonly used right language
+    const rightLanguageId = this.getMostCommonLanguage('right');
+    if (rightLanguageId && newFlashcard.rightTextContent) {
+      newFlashcard.rightTextContent.languageId = rightLanguageId;
+    }
+  }
+
+  private getMostCommonLanguage(side: 'left' | 'right'): string | undefined {
+    const languageCounts = new Map<string, number>();
+    
+    for (const flashcard of this.flashcardDeck!.flashcards) {
+      if (flashcard.state === 'deleted') continue;
+      
+      let languageId: string | undefined;
+      if (side === 'left' && flashcard.leftContentType === 'text' && flashcard.leftTextContent) {
+        languageId = flashcard.leftTextContent.languageId;
+      } else if (side === 'right' && flashcard.rightContentType === 'text' && flashcard.rightTextContent) {
+        languageId = flashcard.rightTextContent.languageId;
+      }
+      
+      if (languageId && languageId !== '') {
+        languageCounts.set(languageId, (languageCounts.get(languageId) || 0) + 1);
+      }
+    }
+    
+    // Return the most common language, or undefined if no languages found
+    if (languageCounts.size === 0) return undefined;
+    
+    return Array.from(languageCounts.entries())
+      .reduce((a, b) => a[1] > b[1] ? a : b)[0];
   }
 
   handleDeleteFlashcard(flashcard: EditFlashcardImpl): void {
@@ -88,27 +113,39 @@ export class FlashcardEditContainerComponent {
       .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
   }
 
-  handleUpdateLeftLanguage(event: Event): void {
-    const selectedLanguageId = (event.target as HTMLSelectElement).value;
+  handleLeftLanguageChange(flashcard: EditFlashcardImpl, selectedLanguageId: string): void {
     const selectedLanguage = this.flashcardLanguages.find(l => l.id === selectedLanguageId);
-    if (!selectedLanguage) 
+    if (!selectedLanguage || !flashcard.leftTextContent) 
       return;
 
-    for(let flashcard of this.flashcardDeck!.flashcards) {
-      if (flashcard.leftTextContent)
-        flashcard.leftTextContent.languageId = selectedLanguage.id;
+    // Update this flashcard's language
+    flashcard.leftTextContent.languageId = selectedLanguage.id;
+
+    // Apply to all flashcards with left text content
+    for(let otherFlashcard of this.flashcardDeck!.flashcards) {
+      if (otherFlashcard.state !== 'deleted' && 
+          otherFlashcard.leftContentType === 'text' && 
+          otherFlashcard.leftTextContent) {
+        otherFlashcard.leftTextContent.languageId = selectedLanguage.id;
+      }
     }
   }
 
-  handleUpdateRightLanguage(event: Event): void {
-    const selectedLanguageId = (event.target as HTMLSelectElement).value;
+  handleRightLanguageChange(flashcard: EditFlashcardImpl, selectedLanguageId: string): void {
     const selectedLanguage = this.flashcardLanguages.find(l => l.id === selectedLanguageId);
-    if (!selectedLanguage) 
+    if (!selectedLanguage || !flashcard.rightTextContent) 
       return;
 
-    for(let flashcard of this.flashcardDeck!.flashcards) {
-      if (flashcard.rightTextContent)
-        flashcard.rightTextContent.languageId = selectedLanguage.id;
+    // Update this flashcard's language
+    flashcard.rightTextContent.languageId = selectedLanguage.id;
+
+    // Apply to all flashcards with right text content
+    for(let otherFlashcard of this.flashcardDeck!.flashcards) {
+      if (otherFlashcard.state !== 'deleted' && 
+          otherFlashcard.rightContentType === 'text' && 
+          otherFlashcard.rightTextContent) {
+        otherFlashcard.rightTextContent.languageId = selectedLanguage.id;
+      }
     }
   }
 

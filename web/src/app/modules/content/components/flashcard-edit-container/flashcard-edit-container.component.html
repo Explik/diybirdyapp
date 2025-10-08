@@ -6,21 +6,7 @@
     <label for="description">Description:</label>
     <app-text-field [(ngModel)]="flashcardDeck!.description" (rows)="3" class="deck-description-input mb-2" placeholder="Description (optional)"></app-text-field>
   </div>
-  <div>
-    <label for="leftLanguageSelect">Choose a language:</label>
-    <select id="leftLanguageSelect" (change)="handleUpdateLeftLanguage($event)">
-      <option *ngFor="let language of flashcardLanguages" [value]="language.id" [selected]="language.id === leftLanguageId">
-        {{ language.name }}
-      </option>
-    </select>
 
-    <label for="rightLanguageSelect">Choose a language:</label>
-    <select id="rightLanguageSelect" (change)="handleUpdateRightLanguage($event)">
-      <option *ngFor="let language of flashcardLanguages" [value]="language.id" [selected]="language.id === rightLanguageId">
-        {{ language.name }}
-      </option>
-    </select>
-  </div>
 
   <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list"
     [ngClass]="{'dragging': currentDragIndex !== undefined}">
@@ -51,6 +37,18 @@
 
       <ng-container *ngIf="flashcard.leftContentType === 'text'" left>
         <app-text-input [(textData)]="flashcard.leftTextContent!" (rows)="1"></app-text-input>
+        <div class="mb-2">
+          <label for="leftLanguageSelect_{{i}}" class="text-sm text-gray-600">Language:</label>
+          <select id="leftLanguageSelect_{{i}}" 
+                  class="ml-2 text-sm border rounded px-2 py-1" 
+                  [(ngModel)]="flashcard.leftTextContent!.languageId" 
+                  (ngModelChange)="handleLeftLanguageChange(flashcard, $event)">
+            <option value="">Select language</option>
+            <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+              {{ language.name }}
+            </option>
+          </select>
+        </div>
       </ng-container>
       <ng-container *ngIf="flashcard.leftContentType === 'audio'" left>
         <app-audio-input [(audioData)]="flashcard.leftAudioContent"></app-audio-input>
@@ -64,6 +62,18 @@
 
       <ng-container *ngIf="flashcard.rightContentType === 'text'" right>
         <app-text-input [(textData)]="flashcard.rightTextContent!" (rows)="1"></app-text-input>
+        <div class="mb-2">
+          <label for="rightLanguageSelect_{{i}}" class="text-sm text-gray-600">Language:</label>
+          <select id="rightLanguageSelect_{{i}}" 
+                  class="ml-2 text-sm border rounded px-2 py-1" 
+                  [(ngModel)]="flashcard.rightTextContent!.languageId" 
+                  (ngModelChange)="handleRightLanguageChange(flashcard, $event)">
+            <option value="">Select language</option>
+            <option *ngFor="let language of flashcardLanguages" [value]="language.id">
+              {{ language.name }}
+            </option>
+          </select>
+        </div>
       </ng-container>
       <ng-container *ngIf="flashcard.rightContentType === 'audio'" right>
         <app-audio-input [(audioData)]="flashcard.rightAudioContent"></app-audio-input>
