@@ -29,10 +29,10 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
     SpeechToTextService speechToTextService;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
-        if (genericAnswerModel == null)
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+        if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(genericAnswerModel instanceof ExerciseInputAudioModel answerModel))
+        if (!(context.getInput() instanceof ExerciseInputAudioModel answerModel))
             throw new RuntimeException("Answer model type is not audio");
 
         // Transcribe answer

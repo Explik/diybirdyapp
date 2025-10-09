@@ -1,16 +1,13 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
-import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
-import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Component
 public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFactory {
@@ -28,12 +25,15 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         model.setCompleted(isCompleted);
 
         if (!isCompleted) {
-            ExerciseModel exerciseModel = createExercise(vertex);
+            var exerciseModel = createExercise(vertex);
             model.setExercise(exerciseModel);
         }
 
-        ExerciseSessionProgressModel progressModel = createProgress(vertex);
+        var progressModel = createProgress(vertex);
         model.setProgress(progressModel);
+
+        var optionsModel = createOptions(vertex);
+        model.setOptions(optionsModel);
 
         return model;
     }
@@ -55,5 +55,15 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         progressModel.setType("percentage");
         progressModel.setPercentage(90);
         return progressModel;
+    }
+
+    private ExerciseSessionOptionsModel createOptions(ExerciseSessionVertex vertex) {
+        var optionsVertex = vertex.getOptions();
+        if (optionsVertex == null)
+            return null;
+
+        var model = new ExerciseSessionOptionsModel();
+        model.setTextToSpeechEnabled(optionsVertex.getTextToSpeechEnabled());
+        return model;
     }
 }

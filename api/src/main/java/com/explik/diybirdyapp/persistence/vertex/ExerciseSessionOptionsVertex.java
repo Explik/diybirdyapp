@@ -12,6 +12,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_FLASHCARD_SIDE = "flashcardSide";
+    public final static String PROPERTY_TEXT_TO_SPEECH_ENABLED = "textToSpeechEnabled";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -27,6 +28,14 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setFlashcardSide(String flashcardSide) {
         setProperty(PROPERTY_FLASHCARD_SIDE, flashcardSide);
+    }
+
+    public boolean getTextToSpeechEnabled() {
+        return getProperty(PROPERTY_TEXT_TO_SPEECH_ENABLED, false);
+    }
+
+    public void setTextToSpeechEnabled(boolean textToSpeechEnabled) {
+        setProperty(PROPERTY_TEXT_TO_SPEECH_ENABLED, textToSpeechEnabled);
     }
 
     public static ExerciseSessionOptionsVertex create(GraphTraversalSource traversalSource) {

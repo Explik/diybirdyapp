@@ -27,13 +27,11 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
     private ExerciseAnswerVertexFactoryText answerVertexFactory;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
-        if (genericAnswerModel == null)
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+        if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(genericAnswerModel instanceof ExerciseInputTextModel))
+        if (!(context.getInput() instanceof ExerciseInputTextModel answerModel))
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
-
-        ExerciseInputTextModel answerModel = (ExerciseInputTextModel)genericAnswerModel;
 
         // Save answer
         answerVertexFactory.create(traversalSource, answerModel);

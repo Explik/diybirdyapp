@@ -6,5 +6,5 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
 public interface ExerciseEvaluationStrategy {
-    ExerciseModel evaluate(ExerciseVertex vertex, ExerciseInputModel answerModel);
+    ExerciseModel evaluate(ExerciseVertex vertex, ExerciseEvaluationContext context);
 }

@@ -24,13 +24,11 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
     private GraphTraversalSource traversalSource;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
-        if (genericAnswerModel == null)
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+        if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(genericAnswerModel instanceof ExerciseInputSelectOptionsModel))
+        if (!(context.getInput() instanceof ExerciseInputSelectOptionsModel answerModel))
             throw new RuntimeException("Answer model type is not ExerciseInputMultipleChoiceTextModel");
-
-        var answerModel = (ExerciseInputSelectOptionsModel)genericAnswerModel;
 
         // Evaluate exercise
         var correctOptionVertex = exerciseVertex.getCorrectOptions().getFirst();

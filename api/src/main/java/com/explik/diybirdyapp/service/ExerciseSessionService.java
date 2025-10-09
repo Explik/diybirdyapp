@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.service;
 
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.repository.ExerciseSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,9 @@ public class ExerciseSessionService {
 
     public ExerciseSessionModel skipExercise(String modelId) {
         return sessionRepository.nextExercise(modelId);
+    }
+
+    public ExerciseSessionModel updateConfig(String modelId, ExerciseSessionOptionsModel config) {
+        return sessionRepository.updateConfig(modelId, config);
     }
 }

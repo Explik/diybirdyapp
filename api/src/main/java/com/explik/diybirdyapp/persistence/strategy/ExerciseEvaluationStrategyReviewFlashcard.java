@@ -23,10 +23,10 @@ public class ExerciseEvaluationStrategyReviewFlashcard implements ExerciseEvalua
     ExerciseAnswerVertexFactoryRecognizabilityRating answerVertexFactory;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
-        if (genericAnswerModel == null)
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+        if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(genericAnswerModel instanceof ExerciseInputRecognizabilityRatingModel answerModel))
+        if (!(context.getInput() instanceof ExerciseInputRecognizabilityRatingModel answerModel))
             throw new RuntimeException("Answer model type is not recognizability rating");
 
         // Save answer to graph

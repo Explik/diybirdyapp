@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
+import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationContext;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -55,7 +56,8 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answer.getExerciseId());
         var exerciseType = exerciseVertex.getType();
         var strategy = evaluationStrategyProvider.get(exerciseType);
+        var strategyContext = ExerciseEvaluationContext.create(answer);
 
-        return strategy.evaluate(exerciseVertex, answer);
+        return strategy.evaluate(exerciseVertex, strategyContext);
     }
 }

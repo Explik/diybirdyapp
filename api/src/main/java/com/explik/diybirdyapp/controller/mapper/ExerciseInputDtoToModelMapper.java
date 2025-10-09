@@ -2,10 +2,17 @@ package com.explik.diybirdyapp.controller.mapper;
 
 import com.explik.diybirdyapp.controller.dto.exercise.*;
 import com.explik.diybirdyapp.model.exercise.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseInputDtoToModelMapper extends BaseDtoToModelMapper implements GenericMapper<ExerciseInputDto, ExerciseInputModel> {
+public class ExerciseInputDtoToModelMapper implements GenericMapper<ExerciseInputDto, ExerciseInputModel> {
+    private final ModelMapper modelMapper;
+
+    public ExerciseInputDtoToModelMapper() {
+        modelMapper = new ModelMapper();
+    }
+
     @Override
     public ExerciseInputModel map(ExerciseInputDto source) {
         if (source instanceof ExerciseInputArrangeTextOptionsDto)

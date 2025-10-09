@@ -1,7 +1,9 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.controller.dto.exercise.ExerciseSessionOptionsDto;
 import com.explik.diybirdyapp.controller.dto.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.controller.mapper.GenericMapper;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.service.ExerciseSessionService;
 import org.modelmapper.ModelMapper;
@@ -17,6 +19,9 @@ public class ExerciseSessionController {
 
     @Autowired
     GenericMapper<ExerciseSessionModel, ExerciseSessionDto> exerciseSessionMapper;
+
+    @Autowired
+    GenericMapper<ExerciseSessionOptionsDto, ExerciseSessionOptionsModel> exerciseOptionsMapper;
 
     @PostMapping("/exercise-session")
     public ExerciseSessionDto create(@RequestBody ExerciseSessionDto dto) {
@@ -42,5 +47,13 @@ public class ExerciseSessionController {
     public ExerciseSessionDto skipExercise(@PathVariable String id) {
         var skippedExercise = service.skipExercise(id);
         return exerciseSessionMapper.map(skippedExercise);
+    }
+
+    @PostMapping("/exercise-session/{id}/update-config")
+    public ExerciseSessionDto updateConfig(@PathVariable String id, @RequestBody ExerciseSessionOptionsDto dto) {
+        var model = exerciseOptionsMapper.map(dto);
+        var updatedModel = service.updateConfig(id, model);
+
+        return exerciseSessionMapper.map(updatedModel);
     }
 }
