@@ -26,4 +26,10 @@ export class DynamicFlashcardContentComponent {
 
     return this.data as ExerciseContentFlashcardSideDto; 
   }
+
+  get side(): 'front' | 'back' {
+    if (this.flashcardData?.initialSide === 'front') 
+      return 'front';
+    return 'back';
+  }
 }

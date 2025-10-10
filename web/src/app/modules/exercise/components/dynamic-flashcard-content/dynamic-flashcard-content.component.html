@@ -1,4 +1,4 @@
-<app-flashcard *ngIf="flashcardData && !flashcardSideData">
+<app-flashcard *ngIf="flashcardData && !flashcardSideData" [side]="side">
     <app-dynamic-content front [data]="flashcardData.front" />
     <app-dynamic-content back [data]="flashcardData.back" />
 </app-flashcard>

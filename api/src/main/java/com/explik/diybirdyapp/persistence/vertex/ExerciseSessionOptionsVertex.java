@@ -13,6 +13,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_FLASHCARD_SIDE = "flashcardSide";
     public final static String PROPERTY_TEXT_TO_SPEECH_ENABLED = "textToSpeechEnabled";
+    public final static String PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID = "initialFlashcardLanguageId";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -41,5 +42,13 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public static ExerciseSessionOptionsVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new ExerciseSessionOptionsVertex(traversalSource, vertex);
+    }
+
+    public String getInitialFlashcardLanguageId() {
+        return getPropertyAsString(PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID, null);
+    }
+
+    public void setInitialFlashcardLanguageId(String initialFlashcardLanguageId) {
+        setProperty(PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID, initialFlashcardLanguageId);
     }
 }

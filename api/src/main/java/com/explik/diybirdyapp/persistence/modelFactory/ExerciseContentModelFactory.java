@@ -31,6 +31,18 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         model.setId(vertex.getId());
         model.setFront(leftContent);
         model.setBack(rightContent);
+
+        if (context.getInitialFlashcardLanguageId() != null) {
+            if (vertex.getLeftContent() instanceof TextContentVertex leftTextContent &&
+                leftTextContent.getLanguage().getId().equals(context.getInitialFlashcardLanguageId())) {
+                model.setInitialSide("front");
+            }
+            else if (vertex.getRightContent() instanceof TextContentVertex rightTextContent &&
+                     rightTextContent.getLanguage().getId().equals(context.getInitialFlashcardLanguageId())) {
+                model.setInitialSide("back");
+            }
+        }
+
         return model;
     }
 

@@ -52,6 +52,8 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
 
         if (config.getTextToSpeechEnabled() != sessionOptions.getTextToSpeechEnabled())
             sessionOptions.setTextToSpeechEnabled(config.getTextToSpeechEnabled());
+        if (config.getInitialFlashcardLanguageId() != null && !config.getInitialFlashcardLanguageId().equals(sessionOptions.getInitialFlashcardLanguageId()))
+            sessionOptions.setInitialFlashcardLanguageId(config.getInitialFlashcardLanguageId());
 
         return sessionModelFactory.create(sessionVertex);
     }
