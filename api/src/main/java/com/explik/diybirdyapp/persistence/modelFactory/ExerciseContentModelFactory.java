@@ -2,11 +2,16 @@ package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
+import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ExerciseContentModelFactory implements ContextualModelFactory<ExerciseVertex, ExerciseContentModel, ExerciseRetrievalContext> {
+    @Autowired
+    private TextToSpeechService textToSpeechService;
+
     @Override
     public ExerciseContentModel create(ExerciseVertex exerciseVertex, ExerciseRetrievalContext context) {
         var vertex = exerciseVertex.getContent();
@@ -64,8 +69,21 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         model.setId(vertex.getId());
         model.setText(vertex.getValue());
 
-        if (vertex.hasMainPronunciation())
+        if (vertex.hasMainPronunciation()) {
             model.setPronunciationUrl(vertex.getMainPronunciation().getAudioContent().getUrl());
+        }
+        else if (context.getTextToSpeechEnabled()) {
+            var voiceConfig = generateVoiceConfig(vertex);
+            if (voiceConfig == null)
+                return model;
+
+            var filePath = vertex.getId() + ".wav";
+            try {
+                textToSpeechService.generateAudioFile(voiceConfig, filePath);
+                model.setPronunciationUrl(filePath);
+            }
+            catch (Exception e) { }
+        }
 
         return model;
     }
@@ -84,5 +102,23 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         model.setVideoUrl(vertex.getUrl());
 
         return model;
+    }
+
+    // TODO remove duplicate code
+    private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
+        var languageId = textContentVertex.getLanguage().getId();
+        var textToSpeechConfigs = TextToSpeechConfigVertex.findByLanguageId(
+                textContentVertex.getUnderlyingSource(),
+                languageId);
+        if (textToSpeechConfigs.isEmpty())
+            return null;
+
+        var textToSpeechConfig = textToSpeechConfigs.getFirst();
+        return new TextToSpeechService.Text(
+                textContentVertex.getValue(),
+                textToSpeechConfig.getLanguageCode(),
+                textToSpeechConfig.getVoiceName(),
+                "LINEAR16"
+        );
     }
 }
