@@ -47,8 +47,10 @@ public class ExerciseController {
     }
 
     @GetMapping("/exercise/{id}")
-    public ExerciseDto get(@PathVariable String id) {
-        var model = exerciseService.getExercise(id);
+    public ExerciseDto get(
+            @PathVariable String id,
+            @RequestParam(required = false) String sessionId) {
+        var model = exerciseService.getExercise(id, sessionId);
         return exerciseMapper.map(model);
     }
 

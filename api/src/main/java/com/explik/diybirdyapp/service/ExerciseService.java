@@ -20,8 +20,8 @@ public class ExerciseService {
     @Autowired
     ExerciseRepository repository;
 
-    public ExerciseModel getExercise(String id) {
-        return repository.get(id);
+    public ExerciseModel getExercise(String id, String sessionId) {
+        return repository.get(id, sessionId);
     }
 
     public ExerciseModel submitExerciseAnswer(ExerciseInputModel answer, MultipartFile[] files) {

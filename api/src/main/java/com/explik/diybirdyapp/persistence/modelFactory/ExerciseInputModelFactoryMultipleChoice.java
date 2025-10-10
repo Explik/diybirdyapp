@@ -2,13 +2,14 @@ package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseInputModelFactoryMultipleChoice implements ModelFactory<ExerciseVertex, ExerciseInputSelectOptionsModel> {
+public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelFactory<ExerciseVertex, ExerciseInputSelectOptionsModel, ExerciseRetrievalContext> {
     @Override
-    public ExerciseInputSelectOptionsModel create(ExerciseVertex vertex) {
+    public ExerciseInputSelectOptionsModel create(ExerciseVertex vertex, ExerciseRetrievalContext context) {
         var input = new ExerciseInputSelectOptionsModel();
         input.setType(ExerciseInputTypes.SELECT_OPTIONS);
 

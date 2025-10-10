@@ -1,25 +1,26 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.model.exercise.*;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex, ExerciseContentModel> {
+public class ExerciseContentModelFactory implements ContextualModelFactory<ExerciseVertex, ExerciseContentModel, ExerciseRetrievalContext> {
     @Override
-    public ExerciseContentModel create(ExerciseVertex exerciseVertex) {
+    public ExerciseContentModel create(ExerciseVertex exerciseVertex, ExerciseRetrievalContext context) {
         var vertex = exerciseVertex.getContent();
 
         if (vertex instanceof FlashcardVertex flashcardVertex) {
             var side = exerciseVertex.getFlashcardSide();
-            return (side != null) ? createFlashcardSideModel(flashcardVertex, side) : createFlashcardModel(flashcardVertex);
+            return (side != null) ? createFlashcardSideModel(flashcardVertex, side, context) : createFlashcardModel(flashcardVertex, context);
         }
-        return createBasicContentModel(vertex);
+        return createBasicContentModel(vertex, context);
     }
 
-    public ExerciseContentFlashcardModel createFlashcardModel(FlashcardVertex vertex) {
-        var leftContent = createBasicContentModel(vertex.getLeftContent());
-        var rightContent = createBasicContentModel(vertex.getRightContent());
+    public ExerciseContentFlashcardModel createFlashcardModel(FlashcardVertex vertex, ExerciseRetrievalContext context) {
+        var leftContent = createBasicContentModel(vertex.getLeftContent(), context);
+        var rightContent = createBasicContentModel(vertex.getRightContent(), context);
 
         ExerciseContentFlashcardModel model = new ExerciseContentFlashcardModel();
         model.setId(vertex.getId());
@@ -28,8 +29,8 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex,
         return model;
     }
 
-    public ExerciseContentFlashcardSideModel createFlashcardSideModel(FlashcardVertex vertex, String side) {
-        var content = createBasicContentModel(vertex.getSide(side));
+    public ExerciseContentFlashcardSideModel createFlashcardSideModel(FlashcardVertex vertex, String side, ExerciseRetrievalContext context) {
+        var content = createBasicContentModel(vertex.getSide(side), context);
 
         ExerciseContentFlashcardSideModel model = new ExerciseContentFlashcardSideModel();
         model.setId(vertex.getId());
@@ -37,20 +38,20 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex,
         return model;
     }
 
-    public ExerciseContentModel createBasicContentModel(ContentVertex contentVertex) {
+    public ExerciseContentModel createBasicContentModel(ContentVertex contentVertex, ExerciseRetrievalContext context) {
         if (contentVertex instanceof AudioContentVertex audioContentVertex)
-            return createAudioModel(audioContentVertex);
+            return createAudioModel(audioContentVertex, context);
         if (contentVertex instanceof TextContentVertex textContentVertex)
-            return createTextModel(textContentVertex);
+            return createTextModel(textContentVertex, context);
         if (contentVertex instanceof ImageContentVertex imageContentVertex)
-            return createImageModel(imageContentVertex);
+            return createImageModel(imageContentVertex, context);
         if (contentVertex instanceof VideoContentVertex videoContentVertex)
-            return createVideoModel(videoContentVertex);
+            return createVideoModel(videoContentVertex, context);
 
         throw new RuntimeException("Unknown content type " + contentVertex.getLabel());
     }
 
-    public ExerciseContentAudioModel createAudioModel(AudioContentVertex vertex) {
+    public ExerciseContentAudioModel createAudioModel(AudioContentVertex vertex, ExerciseRetrievalContext context) {
         ExerciseContentAudioModel model = new ExerciseContentAudioModel();
         model.setId(vertex.getId());
         model.setAudioUrl(vertex.getUrl());
@@ -58,7 +59,7 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex,
         return model;
     }
 
-    public ExerciseContentTextModel createTextModel(TextContentVertex vertex) {
+    public ExerciseContentTextModel createTextModel(TextContentVertex vertex, ExerciseRetrievalContext context) {
         ExerciseContentTextModel model = new ExerciseContentTextModel();
         model.setId(vertex.getId());
         model.setText(vertex.getValue());
@@ -69,7 +70,7 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex,
         return model;
     }
 
-    public ExerciseContentImageModel createImageModel(ImageContentVertex vertex) {
+    public ExerciseContentImageModel createImageModel(ImageContentVertex vertex, ExerciseRetrievalContext context) {
         ExerciseContentImageModel model = new ExerciseContentImageModel();
         model.setId(vertex.getId());
         model.setImageUrl(vertex.getUrl());
@@ -77,7 +78,7 @@ public class ExerciseContentModelFactory implements ModelFactory<ExerciseVertex,
         return model;
     }
 
-    public ExerciseContentVideoModel createVideoModel(VideoContentVertex vertex) {
+    public ExerciseContentVideoModel createVideoModel(VideoContentVertex vertex, ExerciseRetrievalContext context) {
         ExerciseContentVideoModel model = new ExerciseContentVideoModel();
         model.setId(vertex.getId());
         model.setVideoUrl(vertex.getUrl());

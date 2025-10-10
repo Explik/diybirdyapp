@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,9 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         var exerciseType = exerciseVertex.getType();
         var exerciseSchema = ExerciseSchemas.getByType(exerciseType);
         var exerciseFactory = abstractModelFactory.create(exerciseSchema);
+        var retrievalContext = new ExerciseRetrievalContextProvider().get(vertex);
 
-        return exerciseFactory.create(exerciseVertex);
+        return exerciseFactory.create(exerciseVertex, retrievalContext);
     }
 
     private ExerciseSessionProgressModel createProgress(ExerciseSessionVertex vertex) {

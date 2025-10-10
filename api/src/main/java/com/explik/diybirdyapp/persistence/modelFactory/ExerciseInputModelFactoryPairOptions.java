@@ -2,15 +2,16 @@ package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputPairOptionsModel;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.PairVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseInputModelFactoryPairOptions implements ModelFactory<ExerciseVertex, ExerciseInputPairOptionsModel> {
+public class ExerciseInputModelFactoryPairOptions implements ContextualModelFactory<ExerciseVertex, ExerciseInputPairOptionsModel, ExerciseRetrievalContext> {
     @Override
-    public ExerciseInputPairOptionsModel create(ExerciseVertex vertex) {
+    public ExerciseInputPairOptionsModel create(ExerciseVertex vertex, ExerciseRetrievalContext context) {
         var input = new ExerciseInputPairOptionsModel();
         input.setType(ExerciseInputTypes.PAIR_OPTIONS);
 
