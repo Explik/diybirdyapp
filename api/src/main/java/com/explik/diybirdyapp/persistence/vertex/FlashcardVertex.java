@@ -123,7 +123,7 @@ public class FlashcardVertex extends ContentVertex {
                 .out(FlashcardDeckVertex.EDGE_FLASHCARD)
                 .not(__.in(ExerciseVertex.EDGE_CONTENT)
                         .has(ExerciseVertex.PROPERTY_TYPE, exerciseType)
-                        .out(ExerciseVertex.EDGE_SESSION)
+                        .in(ExerciseSessionVertex.EDGE_EXERCISE)
                         .has(ExerciseSessionVertex.LABEL, ExerciseSessionVertex.PROPERTY_ID, sessionId));
 
         if (!query.hasNext())
@@ -139,7 +139,7 @@ public class FlashcardVertex extends ContentVertex {
                 .out(FlashcardDeckVertex.EDGE_FLASHCARD)
                 .not(__.in(ExerciseVertex.EDGE_CONTENT)
                         .has(ExerciseVertex.PROPERTY_TYPE, exerciseType)
-                        .out(ExerciseVertex.EDGE_SESSION)
+                        .in(ExerciseSessionVertex.EDGE_EXERCISE)
                         .has(ExerciseSessionVertex.LABEL, ExerciseSessionVertex.PROPERTY_ID, sessionId));
 
         if (!query.hasNext())

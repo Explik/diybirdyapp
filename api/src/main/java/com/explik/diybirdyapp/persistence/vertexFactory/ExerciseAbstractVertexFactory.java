@@ -30,7 +30,7 @@ public class ExerciseAbstractVertexFactory {
         vertex.setType(schema.getExerciseType());
 
         if (options.getSession() != null)
-            vertex.setSession(options.getSession());
+            options.getSession().addExercise(vertex);
 
         if (schema.getRequireTargetLanguage())
             vertex.setTargetLanguage(options.getTargetLanguage());

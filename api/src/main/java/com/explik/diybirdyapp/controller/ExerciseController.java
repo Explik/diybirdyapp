@@ -56,6 +56,7 @@ public class ExerciseController {
     public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseInputDto dto) {
         var model = exerciseInputMapper.map(dto);
         model.setExerciseId(id);
+        model.setSessionId(dto.getSessionId());
 
         var newModel = exerciseService.submitExerciseAnswer(model, null);
 
