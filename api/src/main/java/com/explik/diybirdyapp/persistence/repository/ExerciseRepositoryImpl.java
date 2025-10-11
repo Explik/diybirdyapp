@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
@@ -42,7 +43,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         if (sessionVertex == null)
             throw new IllegalArgumentException("Session with ID " + sessionId + " does not exist");
 
-        var context = generateContext(sessionVertex);
+        var context = generateRetrievalContext(sessionVertex);
         return exerciseFactory.create(vertex, context);
     }
 
@@ -66,13 +67,25 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answer.getExerciseId());
         var exerciseType = exerciseVertex.getType();
         var strategy = evaluationStrategyProvider.get(exerciseType);
-        var strategyContext = ExerciseEvaluationContext.create(answer);
+        var strategyContext = getEvaluationContext(answer);
 
         return strategy.evaluate(exerciseVertex, strategyContext);
     }
 
-    private ExerciseRetrievalContext generateContext(ExerciseSessionVertex sessionVertex) {
-        // For future use
-        return ExerciseRetrievalContext.createDefault();
+    private ExerciseRetrievalContext generateRetrievalContext(ExerciseSessionVertex sessionVertex) {
+        var provider = new ExerciseRetrievalContextProvider();
+        return provider.get(sessionVertex);
+    }
+
+    private ExerciseEvaluationContext getEvaluationContext(ExerciseInputModel answer) {
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answer.getSessionId());
+        var sessionOptionsVertex = (sessionVertex != null) ? sessionVertex.getOptions() : null;
+
+        var strategyContext = ExerciseEvaluationContext.create(answer);
+        if (sessionOptionsVertex != null) {
+            strategyContext.setRetypeCorrectAnswerEnabled(sessionOptionsVertex.getRetypeCorrectAnswer());
+        }
+
+        return strategyContext;
     }
 }

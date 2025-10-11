@@ -66,6 +66,8 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
 
         var model = new ExerciseSessionOptionsModel();
         model.setTextToSpeechEnabled(optionsVertex.getTextToSpeechEnabled());
+        model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
+        model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
         return model;
     }
 }

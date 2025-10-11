@@ -14,6 +14,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_FLASHCARD_SIDE = "flashcardSide";
     public final static String PROPERTY_TEXT_TO_SPEECH_ENABLED = "textToSpeechEnabled";
     public final static String PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID = "initialFlashcardLanguageId";
+    public final static String PROPERTY_RETYPE_CORRECT_ANSWER = "retypeCorrectAnswer";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -37,6 +38,14 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setTextToSpeechEnabled(boolean textToSpeechEnabled) {
         setProperty(PROPERTY_TEXT_TO_SPEECH_ENABLED, textToSpeechEnabled);
+    }
+
+    public boolean getRetypeCorrectAnswer() {
+        return getProperty(PROPERTY_RETYPE_CORRECT_ANSWER, false);
+    }
+
+    public void setRetypeCorrectAnswer(boolean retypeCorrectAnswer) {
+        setProperty(PROPERTY_RETYPE_CORRECT_ANSWER, retypeCorrectAnswer);
     }
 
     public static ExerciseSessionOptionsVertex create(GraphTraversalSource traversalSource) {

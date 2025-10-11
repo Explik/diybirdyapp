@@ -54,6 +54,8 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             sessionOptions.setTextToSpeechEnabled(config.getTextToSpeechEnabled());
         if (config.getInitialFlashcardLanguageId() != null && !config.getInitialFlashcardLanguageId().equals(sessionOptions.getInitialFlashcardLanguageId()))
             sessionOptions.setInitialFlashcardLanguageId(config.getInitialFlashcardLanguageId());
+        if (config.getRetypeCorrectAnswerEnabled() != sessionOptions.getRetypeCorrectAnswer())
+            sessionOptions.setRetypeCorrectAnswer(config.getRetypeCorrectAnswerEnabled());
 
         return sessionModelFactory.create(sessionVertex);
     }
