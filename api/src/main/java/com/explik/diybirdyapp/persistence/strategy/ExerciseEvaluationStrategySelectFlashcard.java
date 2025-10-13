@@ -53,10 +53,10 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
         exerciseAnswerVertex.setContent(selectedOptionVertex);
 
         // Generate feedback
-        return createExerciseWithFeedback(correctOptionVertex, incorrectOptionVertices, answerModel);
+        return createExerciseWithFeedback(correctOptionVertex, incorrectOptionVertices, answerModel, context);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends ContentVertex> incorrectOptionVertices, ExerciseInputSelectOptionsModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends ContentVertex> incorrectOptionVertices, ExerciseInputSelectOptionsModel answerModel, ExerciseEvaluationContext context) {
         var correctOptionId = correctOptionVertex.getId();
         var incorrectOptionIds = incorrectOptionVertices.stream().map(ContentVertex::getId).toList();
         var isCorrect = answerModel.getValue().equals(correctOptionId);
@@ -67,6 +67,9 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
         var inputFeedback = new ExerciseInputSelectOptionsModel.Feedback();
         inputFeedback.setCorrectOptionIds(List.of(correctOptionId));
         inputFeedback.setIncorrectOptionIds(incorrectOptionIds);
+
+        if (context.getRetypeCorrectAnswerEnabled())
+            inputFeedback.setIsRetypeAnswerEnabled(!isCorrect);
 
         var exerciseInput = new ExerciseInputSelectOptionsModel();
         exerciseInput.setFeedback(inputFeedback);

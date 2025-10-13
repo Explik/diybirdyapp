@@ -151,6 +151,12 @@ public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
         @NotNull
         private List<String> incorrectOptionIds = List.of();
 
+        private boolean isRetypeAnswerEnabled = false;
+
+        public boolean getIsRetypeAnswerEnabled() { return isRetypeAnswerEnabled; }
+
+        public void setIsRetypeAnswerEnabled(boolean retypeAnswerEnabled) { isRetypeAnswerEnabled = retypeAnswerEnabled; }
+
         public List<String> getCorrectOptionIds() { return correctOptionIds; }
 
         public void setCorrectOptionIds(List<String> correctOptionIds) { this.correctOptionIds = correctOptionIds; }

@@ -17,6 +17,11 @@ public class ExerciseInputTextModel extends ExerciseInputModel {
     public static class Feedback {
         private List<String> correctValues;
         private List<String> incorrectValues;
+        private boolean isRetypeAnswerEnabled;
+
+        public boolean getIsRetypeAnswerEnabled() { return isRetypeAnswerEnabled; }
+
+        public void setIsRetypeAnswerEnabled(boolean isRetypeAnswerEnabled) { this.isRetypeAnswerEnabled = isRetypeAnswerEnabled; }
 
         public List<String> getCorrectValues() { return correctValues; }
 

@@ -37,10 +37,10 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
         answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
-        return createExerciseWithFeedback(exerciseVertex, answerModel);
+        return createExerciseWithFeedback(exerciseVertex, answerModel, context);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputTextModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputTextModel answerModel, ExerciseEvaluationContext context) {
         // Compare correct options and answer (CASE INSENSITIVE)
         var correctOptions = exerciseVertex.getCorrectOptions().stream().map(v -> (TextContentVertex)v).toList();
         var correctOptionValues = correctOptions.stream().map(TextContentVertex::getValue).toList();
@@ -51,6 +51,9 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
         var inputFeedback = new ExerciseInputTextModel.Feedback();
         inputFeedback.setCorrectValues(correctOptionValues);
         if (!isAnswerCorrect) inputFeedback.setIncorrectValues(List.of(answerModel.getText()));
+
+        if (context.getRetypeCorrectAnswerEnabled())
+            inputFeedback.setIsRetypeAnswerEnabled(!isAnswerCorrect);
 
         var input = new ExerciseInputTextModel();
         input.setFeedback(inputFeedback);

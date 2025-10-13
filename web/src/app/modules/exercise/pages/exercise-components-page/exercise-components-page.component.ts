@@ -64,6 +64,20 @@ export class ExerciseComponentsPageComponent {
     feedback: { correctValues: ['Hello, world!'], incorrectValues: ['Goodbye, World!'] } 
   };
 
+  textValueWithCorrectFeedbackAndRetype: ExerciseInputWriteTextDto = { 
+    id: '1',
+    type: 'text',
+    text: 'Hello, World!', 
+    feedback: { correctValues: ['Hello, World!'], incorrectValues: [], isRetypeAnswerEnabled: true } 
+  };
+
+  textValueWithIncorrectFeedbackAndRetype: ExerciseInputWriteTextDto = { 
+    id: '1',
+    type: 'text',
+    text: 'Hello, ', 
+    feedback: { correctValues: ['Hello, world!'], incorrectValues: ['Goodbye, World!'], isRetypeAnswerEnabled: true } 
+  };
+
   writePlaceholdersValue: ExerciseInputWritePlaceholdersDto = {
     id: '1',
     type: 'write-placeholders',
@@ -119,6 +133,24 @@ export class ExerciseComponentsPageComponent {
     feedback: {
       correctOptionIds: ['1'],
       incorrectOptionIds: ['2', '3', '4']
+    },
+    value: '1'
+  };
+
+  selectTextOptionsValueWithFeedbackAndRetype: ExerciseInputSelectOptionsDto = { 
+    id: '1',
+    type: 'multiple-choice',
+    optionType: 'text',
+    options: [
+      { id: '1', text: 'Option 1' },
+      { id: '2', text: 'Option 2' },
+      { id: '3', text: 'Option 3' },
+      { id: '4', text: 'Option 4' }
+    ],
+    feedback: {
+      correctOptionIds: ['1'],
+      incorrectOptionIds: ['2', '3', '4'],
+      isRetypeAnswerEnabled: true
     },
     value: '1'
   };

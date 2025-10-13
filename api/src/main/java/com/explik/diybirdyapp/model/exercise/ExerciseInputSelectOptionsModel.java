@@ -106,8 +106,17 @@ public class ExerciseInputSelectOptionsModel extends ExerciseInputModel {
     }
 
     public static class Feedback {
+        private boolean isRetypeAnswerEnabled;
         private List<String> correctOptionIds;
         private List<String> incorrectOptionIds;
+
+        public boolean getIsRetypeAnswerEnabled() {
+            return isRetypeAnswerEnabled;
+        }
+
+        public void setIsRetypeAnswerEnabled(boolean isRetypeAnswerEnabled) {
+            this.isRetypeAnswerEnabled = isRetypeAnswerEnabled;
+        }
 
         public List<String> getCorrectOptionIds() { return correctOptionIds; }
 

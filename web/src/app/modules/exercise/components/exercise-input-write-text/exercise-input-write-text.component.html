@@ -1,10 +1,5 @@
 <div class="w-full max-w-xl">
-  <ng-container *ngIf="!input.feedback; else resultTemplate">
-    <textarea [(ngModel)]="input.text" onchange="onUpdatedValue" class="border border-gray-300 rounded px-4 py-2 w-full"
-      rows="3"></textarea>
-  </ng-container>
-
-  <ng-template #resultTemplate>
+  <ng-container *ngIf="input.feedback">
     @for(feedbackValue of feedbackValues; track feedbackValue) {
     <div class="flex items-center space-x-2 w-full mb-2">
       <span *ngIf="feedbackValue!.state === 'success'" class="text-green-500">
@@ -20,5 +15,10 @@
       <span class="text-gray-800">{{ feedbackValue.value }}</span>
     </div>
     }
-  </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="input.feedback == undefined || input.feedback.isRetypeAnswerEnabled">
+    <textarea [(ngModel)]="input.text" onchange="onUpdatedValue" class="border border-gray-300 rounded px-4 py-2 w-full"
+      rows="3"></textarea>
+  </ng-container>
 </div>

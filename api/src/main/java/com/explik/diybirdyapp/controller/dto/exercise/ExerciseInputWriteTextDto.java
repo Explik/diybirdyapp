@@ -30,6 +30,12 @@ public class ExerciseInputWriteTextDto extends ExerciseInputDto {
         @NotNull
         private List<String> incorrectValues = List.of();
 
+        private boolean isRetypeAnswerEnabled = false;
+
+        public boolean getIsRetypeAnswerEnabled() { return isRetypeAnswerEnabled; }
+
+        public void setIsRetypeAnswerEnabled(boolean retypeAnswerEnabled) { isRetypeAnswerEnabled = retypeAnswerEnabled; }
+
         public List<String> getCorrectValues() { return correctValues; }
 
         public void setCorrectValues(List<String> correctValues) { this.correctValues = correctValues; }
