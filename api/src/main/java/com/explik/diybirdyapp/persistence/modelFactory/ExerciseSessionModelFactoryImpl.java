@@ -7,6 +7,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,6 +69,12 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         model.setTextToSpeechEnabled(optionsVertex.getTextToSpeechEnabled());
         model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
+        model.setAnswerLanguageIds(
+                optionsVertex.getAnswerLanguages().stream()
+                        .map(LanguageVertex::getId)
+                        .toArray(String[]::new)
+        );
+
         return model;
     }
 }

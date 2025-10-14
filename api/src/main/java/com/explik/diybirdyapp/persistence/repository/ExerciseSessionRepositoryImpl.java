@@ -2,10 +2,12 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +31,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         var sessionType = model.getType();
         var sessionManager = sessionOperationProvider.get(sessionType);
 
-        return sessionManager.init(traversalSource, model);
+        return sessionManager.init(traversalSource, ExerciseCreationContext.createDefault(model));
     }
 
     @Override
@@ -43,7 +45,9 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         var sessionType = sessionVertex.getType();
         var sessionManager = sessionOperationProvider.get(sessionType);
 
-        return sessionManager.nextExercise(traversalSource, modelId);
+        var context = ExerciseCreationContext.createDefault(sessionModelFactory.create(sessionVertex));
+
+        return sessionManager.nextExercise(traversalSource, context);
     }
 
     public ExerciseSessionModel updateConfig(String modelId, ExerciseSessionOptionsModel config) {
@@ -56,6 +60,17 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             sessionOptions.setInitialFlashcardLanguageId(config.getInitialFlashcardLanguageId());
         if (config.getRetypeCorrectAnswerEnabled() != sessionOptions.getRetypeCorrectAnswer())
             sessionOptions.setRetypeCorrectAnswer(config.getRetypeCorrectAnswerEnabled());
+        if (config.getAnswerLanguageIds() != null && config.getAnswerLanguageIds().length > 0) {
+            for(var langVertex : sessionOptions.getAnswerLanguages())
+                sessionOptions.removeAnswerLanguage(langVertex);
+
+            for (var langId : config.getAnswerLanguageIds()) {
+                var langVertex = LanguageVertex.findById(traversalSource, langId);
+                if (langVertex == null)
+                    throw new IllegalArgumentException("No language with id " + langId);
+                sessionOptions.addAnswerLanguage(langVertex);
+            }
+        }
 
         return sessionModelFactory.create(sessionVertex);
     }

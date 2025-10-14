@@ -3,6 +3,9 @@ package com.explik.diybirdyapp.persistence.vertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public ExerciseSessionOptionsVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
@@ -11,10 +14,11 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String LABEL = "exerciseSessionOptions";
 
     public final static String PROPERTY_ID = "id";
-    public final static String PROPERTY_FLASHCARD_SIDE = "flashcardSide";
     public final static String PROPERTY_TEXT_TO_SPEECH_ENABLED = "textToSpeechEnabled";
     public final static String PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID = "initialFlashcardLanguageId";
     public final static String PROPERTY_RETYPE_CORRECT_ANSWER = "retypeCorrectAnswer";
+
+    public final static String EDGE_ANSWER_LANGUAGE = "hasAnswerLanguage";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -22,14 +26,6 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setId(String id) {
         setProperty(PROPERTY_ID, id);
-    }
-
-    public String getFlashcardSide() {
-        return getPropertyAsString(PROPERTY_FLASHCARD_SIDE, null);
-    }
-
-    public void setFlashcardSide(String flashcardSide) {
-        setProperty(PROPERTY_FLASHCARD_SIDE, flashcardSide);
     }
 
     public boolean getTextToSpeechEnabled() {
@@ -59,5 +55,17 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setInitialFlashcardLanguageId(String initialFlashcardLanguageId) {
         setProperty(PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID, initialFlashcardLanguageId);
+    }
+
+    public List<LanguageVertex> getAnswerLanguages() {
+        return VertexHelper.getOutgoingModels(this, EDGE_ANSWER_LANGUAGE, LanguageVertex::new);
+    }
+
+    public void addAnswerLanguage(LanguageVertex language) {
+        addEdgeOneToMany(EDGE_ANSWER_LANGUAGE, language);
+    }
+
+    public void removeAnswerLanguage(LanguageVertex language) {
+        removeEdge(EDGE_ANSWER_LANGUAGE, language);
     }
 }

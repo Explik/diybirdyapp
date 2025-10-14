@@ -7,6 +7,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
@@ -22,13 +23,15 @@ import java.util.UUID;
 @Component(ExerciseSessionTypes.REVIEW_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSessionOperations {
     @Autowired
-    ExerciseAbstractVertexFactory abstractVertexFactory;
+    private ExerciseAbstractVertexFactory abstractVertexFactory;
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Override
-    public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseSessionModel options) {
+    public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+        var options = context.getSessionModel();
+
         // Resolve neighboring vertices
         var flashcardDeckVertex = FlashcardDeckVertex.findById(traversalSource, options.getFlashcardDeckId());
         if (flashcardDeckVertex == null)
@@ -45,24 +48,32 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
 
         var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
         optionVertex.setId(UUID.randomUUID().toString());
-        optionVertex.setFlashcardSide("front"); // Start with this side
         vertex.setOptions(optionVertex);
 
         // Generate first exercise
-        nextExercise(traversalSource, sessionId);
+        nextExerciseVertex(traversalSource, vertex);
         vertex.reload();
 
         return sessionModelFactory.create(vertex);
     }
 
     @Override
-    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, String modelId) {
+    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+        var modelId = context.getSessionModel().getId();
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
         if (sessionVertex == null)
             throw new RuntimeException("Session with " + modelId +" not found");
 
+        // Generate next exercise
+        nextExerciseVertex(traversalSource, sessionVertex);
+        sessionVertex.reload();
+
+        return sessionModelFactory.create(sessionVertex);
+    }
+
+    private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         // Finds first flashcard (in deck) not connected to review exercise (in session)
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, modelId, ExerciseTypes.REVIEW_FLASHCARD);
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.REVIEW_FLASHCARD);
 
         if (flashcardVertex != null) {
             var exerciseParameters = new ExerciseParameters()
@@ -70,12 +81,12 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
                     .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
             var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
 
-            exerciseFactory.create(traversalSource, exerciseParameters);
-            sessionVertex.reload();
+            return exerciseFactory.create(traversalSource, exerciseParameters);
         } else {
             // If no flashcards are found, the session is complete
             sessionVertex.setCompleted(true);
         }
-        return sessionModelFactory.create(sessionVertex);
+
+        return null;
     }
 }

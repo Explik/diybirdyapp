@@ -4,6 +4,7 @@ public class ExerciseSessionOptionsDto {
     private boolean textToSpeechEnabled;
     private boolean retypeCorrectAnswerEnabled;
     private String initialFlashcardLanguageId;
+    private String[] answerLanguageIds = new String[0];
 
     public boolean getTextToSpeechEnabled() {
         return textToSpeechEnabled;
@@ -27,5 +28,13 @@ public class ExerciseSessionOptionsDto {
 
     public void setInitialFlashcardLanguageId(String initialFlashcardLanguageId) {
         this.initialFlashcardLanguageId = initialFlashcardLanguageId;
+    }
+
+    public String[] getAnswerLanguageIds() {
+        return answerLanguageIds;
+    }
+
+    public void setAnswerLanguageIds(String[] answerLanguageIds) {
+        this.answerLanguageIds = answerLanguageIds;
     }
 }

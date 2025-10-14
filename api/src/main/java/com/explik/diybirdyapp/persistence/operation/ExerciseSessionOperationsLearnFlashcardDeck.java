@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -26,7 +27,9 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Override
-    public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseSessionModel options) {
+    public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+        var options = context.getSessionModel();
+
         // Resolve neighboring vertices
         var flashcardDeckVertex = FlashcardDeckVertex.findById(traversalSource, options.getFlashcardDeckId());
         if (flashcardDeckVertex == null)
@@ -43,7 +46,6 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
         var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
         optionVertex.setId(UUID.randomUUID().toString());
-        optionVertex.setFlashcardSide("front");
         vertex.setOptions(optionVertex);
 
         // Generate first exercise
@@ -54,7 +56,8 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
     }
 
     @Override
-    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, String modelId) {
+    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+        var modelId = context.getSessionModel().getId();
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
         if (sessionVertex == null)
             throw new RuntimeException("Session with " + modelId +" not found");
@@ -81,7 +84,7 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
         flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
         if (flashcardVertex != null) {
-            var flashcardSide = sessionVertex.getOptions().getFlashcardSide();
+            var flashcardSide = "front";
             var questionContentVertex = flashcardVertex.getSide(flashcardSide);
             var answerContentVertex = flashcardVertex.getOtherSide(flashcardSide);
 

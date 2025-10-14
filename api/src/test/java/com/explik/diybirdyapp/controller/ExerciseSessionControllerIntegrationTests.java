@@ -75,6 +75,9 @@ public class ExerciseSessionControllerIntegrationTests {
         assertEquals(false, sessionConfig.getTextToSpeechEnabled());
         assertEquals(false, sessionConfig.getRetypeCorrectAnswerEnabled());
         assertEquals(null, sessionConfig.getInitialFlashcardLanguageId());
+
+        assertNotNull(sessionConfig.getAnswerLanguageIds());
+        assertEquals(0, sessionConfig.getAnswerLanguageIds().length);
     }
 
     @Test
@@ -111,6 +114,21 @@ public class ExerciseSessionControllerIntegrationTests {
 
         assertNotNull(updatedSessionConfig);
         assertEquals("FlashcardLanguage", updatedSessionConfig.getInitialFlashcardLanguageId());
+    }
+
+    @Test
+    void givenAnswerLanguageIds_whenUpdateConfig_thenUpdateSessionConfig() {
+        var sessionConfig = new ExerciseSessionOptionsDto();
+        sessionConfig.setAnswerLanguageIds(new String[] { "langVertex1", "langVertex2" });
+
+        createSession("new-id");
+        var updatedSessionConfig = updateConfig("new-id", sessionConfig);
+
+        assertNotNull(updatedSessionConfig);
+        assertNotNull(updatedSessionConfig.getAnswerLanguageIds());
+        assertEquals(2, updatedSessionConfig.getAnswerLanguageIds().length);
+        assertEquals("langVertex1", updatedSessionConfig.getAnswerLanguageIds()[0]);
+        assertEquals("langVertex2", updatedSessionConfig.getAnswerLanguageIds()[1]);
     }
 
     ExerciseSessionDto createSession(String id) {
