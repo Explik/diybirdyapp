@@ -2,6 +2,13 @@
 <div header class="flex items-center">
   <app-exit-icon-button class="pl-2 pr-0 flex-none" (click)="handleExit()"></app-exit-icon-button>
   <app-progress-bar [progress]="(sessionProgress$ | async) || 0" class="flex-grow"></app-progress-bar>
+  <button 
+    class="p-2 flex-none hover:bg-gray-100 rounded-full transition-colors"
+    (click)="openSettingsModal()"
+    title="Settings"
+  >
+    <app-icon icon="mdi-cog" size="text-xl" color="text-gray-600"></app-icon>
+  </button>
 </div>
 
 <!-- Content -->
@@ -29,3 +36,17 @@
     </svg>
   </button>
 </div>
+
+<!-- Settings Modal -->
+<app-modal 
+  [isOpen]="isSettingsModalOpen" 
+  title="Session Settings"
+  (close)="closeSettingsModal()"
+>
+  <!-- Dynamic settings component based on session type -->
+  <ng-container *ngIf="settingsComponent$ | async as settingsComponent">
+    <ng-container 
+      *ngComponentOutlet="settingsComponent"
+    ></ng-container>
+  </ng-container>
+</app-modal>

@@ -65,4 +65,9 @@ export class ExerciseSessionDataService {
         // TODO Add error handling
         return this.http.post<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${sessionId}/skip-exercise`, {});
     }
+
+    updateConfig(sessionId: string, config: any): Observable<ExerciseSessionDto> {
+        // TODO Add error handling
+        return this.http.post<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${sessionId}/update-config`, config);
+    }
 }
