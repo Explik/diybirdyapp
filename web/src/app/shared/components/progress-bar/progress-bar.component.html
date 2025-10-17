@@ -1,5 +1,12 @@
 <div class="flex items-center justify-between p-4">
-    <div class="w-full h-2 bg-gray-300 rounded-full">
-      <div class="h-full bg-fuchsia-500 rounded-full" [style.width.%]="progress"></div>
+    <div class="w-full bg-white border border-black">
+      <div class="border-2 border-white overflow-hidden">
+        <div class="h-4" 
+          [class]="getProgressBarColor()"
+          [style.width.%]="progress + 3"
+          style="-webkit-clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);">
+        </div>
+      </div>
     </div>
 </div>
+

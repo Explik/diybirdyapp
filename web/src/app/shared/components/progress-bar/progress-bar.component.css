@@ -1,0 +1,15 @@
+.bg-red-600 {
+  position: relative;
+}
+
+.bg-red-600::after, 
+.bg-yellow-400::after, 
+.bg-green-600::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 8px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3));
+}
