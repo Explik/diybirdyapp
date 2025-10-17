@@ -1,0 +1,18 @@
+<div class="relative w-full min-w-[120px] border border-black bg-white cursor-pointer select-none" 
+    [class.bg-gray-100]="disabled" 
+    [class.opacity-70]="disabled"
+    [class.ring-2]="isOpen"
+    [class.ring-blue-300]="isOpen">
+  <div class="px-3 py-2 flex items-center overflow-hidden text-ellipsis whitespace-nowrap">
+    {{ displayValue }}
+  </div>
+  <div class="absolute top-1/2 right-2 transform -translate-y-1/2 transition-transform duration-200"
+       [class.rotate-180]="isOpen">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </div>
+  <div *ngIf="isOpen" class="absolute top-full left-0 w-full max-h-[200px] overflow-y-auto bg-white border border-gray-300 border-t-0 rounded-b-md z-10 shadow-md">
+    <ng-content></ng-content>
+  </div>
+</div>

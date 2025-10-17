@@ -12,14 +12,15 @@ import { VideoInputComponent } from "../video-input/video-input.component";
 import { TextInputComponent } from "../text-input/text-input.component";
 import { LabelComponent } from "../../../../shared/components/label/label.component";
 import { FormFieldComponent } from "../../../../shared/components/form-field/form-field.component";
-import { Dir } from "../../../../../../node_modules/@angular/cdk/bidi/index";
+import { SelectComponent } from "../../../../shared/components/select/select.component";
+import { OptionComponent } from "../../../../shared/components/option/option.component";
 
 @Component({
     selector: 'app-flashcard-edit-container',
     standalone: true,
     templateUrl: './flashcard-edit-container.component.html',
     styleUrl: './flashcard-edit-container.component.css',
-    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent, LabelComponent, FormFieldComponent, Dir]
+    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
@@ -28,8 +29,6 @@ export class FlashcardEditContainerComponent {
   @Output() saveFlashcards = new EventEmitter<void>();
 
   currentDragIndex: number | undefined = undefined;
-
-
 
   ngOnChanges(): void {
     if (this.flashcardDeck) {

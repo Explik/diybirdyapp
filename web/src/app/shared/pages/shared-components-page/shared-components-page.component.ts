@@ -5,11 +5,13 @@ import { ProgressBarComponent } from "../../components/progress-bar/progress-bar
 import { FormFieldComponent } from "../../components/form-field/form-field.component";
 import { LabelComponent } from "../../components/label/label.component";
 import { TextFieldComponent } from "../../components/text-field/text-field.component";
+import { SelectComponent } from "../../components/select/select.component";
+import { OptionComponent } from "../../components/option/option.component";
 
 @Component({
   selector: 'app-shared-components-page',
   standalone: true,
-  imports: [FlashcardComponent, IconComponent, ProgressBarComponent, FormFieldComponent, LabelComponent, TextFieldComponent],
+  imports: [FlashcardComponent, IconComponent, ProgressBarComponent, FormFieldComponent, LabelComponent, TextFieldComponent, SelectComponent, OptionComponent],
   templateUrl: './shared-components-page.component.html'
 })
 export class SharedComponentsPageComponent { }
