@@ -1,16 +1,35 @@
-<div class="flashcard w-96 h-64 perspective cursor-pointer" tabindex="0">
+<div class="flashcard w-96 h-64 perspective" [class.cursor-pointer]="isFlippable" [attr.tabindex]="isFlippable ? 0 : null">
     <div class="flashcard-inner absolute w-full h-full transition-transform duration-500"
         [ngClass]="{ 'rotate-y-180': side === 'back' }">
         <!-- Front Side -->
         <div
-            class="flashcard-front absolute w-full h-full bg-white shadow-md flex items-center justify-center backface-hidden rounded-lg overflow-hidden">
+            class="flashcard-front absolute w-full h-full bg-white shadow-md flex items-center justify-center backface-hidden rounded-[20px] overflow-hidden border border-black"
+            style="box-shadow: 3px 3px;">
             <ng-content select="[front]"></ng-content>
         </div>
 
         <!-- Back Side -->
         <div
-            class="flashcard-back absolute w-full h-full bg-gray-100 shadow-md flex items-center justify-center backface-hidden rotate-y-180 rounded-lg overflow-hidden">
+            class="flashcard-back absolute w-full h-full bg-gray-100 shadow-md flex items-center justify-center backface-hidden rotate-y-180 rounded-[20px] overflow-hidden border border-black"
+            style="box-shadow: 3px 3px;">
             <ng-content select="[back]"></ng-content>
+        </div>
+
+        <!-- Scrool-->
+        <div *ngIf="isFlippable" class="absolute right-[-14px] top-1/2 transform -translate-y-1/2 border border-black rounded-[4px] bg-white">
+            <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-6 h-6"
+                preserveAspectRatio="none">
+                <path
+                    d="M12.5 6.25C15.9517 6.25 18.75 9.04822 18.75 12.5C18.75 15.9517 15.9517 18.75 12.5 18.75C9.04822 18.75 6.25 15.9517 6.25 12.5C6.25 12.1863 6.2731 11.8782 6.31769 11.5769C6.37371 11.1985 6.09674 10.8333 5.71423 10.8333C5.40519 10.8333 5.13417 11.0468 5.08726 11.3523C5.0298 11.7265 5 12.1097 5 12.5C5 16.6422 8.35787 20 12.5 20C16.6422 20 20 16.6422 20 12.5C20 8.35787 16.6422 5 12.5 5C10.5791 5 8.82689 5.72213 7.5 6.90973V6.04167C7.5 5.69649 7.22017 5.41667 6.875 5.41667C6.52982 5.41667 6.25 5.69649 6.25 6.04167V8.54167C6.25 8.88684 6.52982 9.16667 6.875 9.16667H9.375C9.72017 9.16667 10 8.88684 10 8.54167C10 8.19649 9.72017 7.91667 9.375 7.91667H8.25077C9.36589 6.88236 10.8591 6.25 12.5 6.25Z"
+                    fill="#212121">
+                </path>
+            </svg>
         </div>
     </div>
 </div>

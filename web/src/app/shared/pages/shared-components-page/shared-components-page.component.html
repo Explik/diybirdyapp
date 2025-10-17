@@ -1,16 +1,34 @@
 <section class="p-2">
-    <h1 class="text-lg">Overall visual components</h1>
+    <h1 class="text-lg font-black">Overall visual components</h1>
 
-    <app-flashcard side="front" class="mb-4">
-        <p front>Front shown first</p>
-        <p back>Back shown second</p>
-    </app-flashcard>
+    <h2 class="font-black">Button</h2>
 
-    <app-flashcard side="back">
-        <p front>Front shown second</p>
-        <p back>Back shown first</p>
-    </app-flashcard>
-    
+    <h2 class="font-black">Flashcard</h2>
+    <p>Flippable flashcard (front & back) </p>
+    <div class="flex flex-col sm:flex-row gap-4 items-start mb-4">
+        <app-flashcard side="front" class="flex-1 sm:mb-0">
+            <p front>Front shown first</p>
+            <p back>Back shown second</p>
+        </app-flashcard>
+
+        <app-flashcard side="back" class="flex-1 sm:mb-0">
+            <p front>Front shown second</p>
+            <p back>Back shown first</p>
+        </app-flashcard>
+    </div>
+
+    <p>Non-flippable flashcard (front & back) </p>
+    <div class="flex flex-col sm:flex-row gap-4 items-start mb-4">
+        <app-flashcard side="front" [isFlippable]="false" class="flex-1 sm:mb-0">
+            <p front>Only front is shown</p>
+        </app-flashcard>
+
+        <app-flashcard side="back" [isFlippable]="false" class="flex-1 sm:mb-0">
+            <p back>Only back is shown</p>
+        </app-flashcard>
+    </div>
+
+    <p>Flashcard with complex content</p>
     <app-flashcard>
         <ng-content front>
             <app-icon icon="mdi-volume-high" />
@@ -21,4 +39,11 @@
             Hej verden
         </ng-content >
     </app-flashcard>
+
+    <h2>Progress bar</h2>
+    <app-progress-bar [progress]="0" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="25" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="50" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="75" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="100" class="mb-4"></app-progress-bar>
 </section>
