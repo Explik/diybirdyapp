@@ -73,7 +73,13 @@
       </ng-container>
 
       <ng-container *ngIf="flashcard.leftContentType === 'text'" left>
-        <app-text-input [(textData)]="flashcard.leftTextContent!" (rows)="1"></app-text-input>
+        <app-form-field>
+          <app-text-input [(textData)]="flashcard.leftTextContent!" (rows)="1"></app-text-input>
+          <div class="flex items-center justify-between w-full">
+            <app-label>Front</app-label>
+            <span *ngIf="frontLanguageId">{{frontLanguageId}}</span>
+          </div>
+        </app-form-field>
       </ng-container>
       <ng-container *ngIf="flashcard.leftContentType === 'audio'" left>
         <app-audio-input [(audioData)]="flashcard.leftAudioContent"></app-audio-input>
@@ -86,7 +92,13 @@
       </ng-container>
 
       <ng-container *ngIf="flashcard.rightContentType === 'text'" right>
-        <app-text-input [(textData)]="flashcard.rightTextContent!" (rows)="1"></app-text-input>
+        <app-form-field>
+          <app-text-input [(textData)]="flashcard.rightTextContent!" (rows)="1"></app-text-input>
+          <div class="flex items-center justify-between w-full">
+            <app-label>Back</app-label>
+            <span *ngIf="backLanguageId" class="text-right">{{backLanguageId}}</span>
+          </div>
+        </app-form-field>
       </ng-container>
       <ng-container *ngIf="flashcard.rightContentType === 'audio'" right>
         <app-audio-input [(audioData)]="flashcard.rightAudioContent"></app-audio-input>
