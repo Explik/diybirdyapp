@@ -1,12 +1,15 @@
 <div *ngIf="flashcardDeck" class="flashcard-deck-edit-container">
-  <div>
-    <label for="name">Name:</label>
-    <app-text-field [(ngModel)]="flashcardDeck!.name" (rows)="1" class="deck-name-input mb-2"></app-text-field>
-    
-    <label for="description">Description:</label>
-    <app-text-field [(ngModel)]="flashcardDeck!.description" (rows)="3" class="deck-description-input mb-2" placeholder="Description (optional)"></app-text-field>
-  </div>
+  <div class="mb-8">
+    <app-form-field>
+      <app-label>Name</app-label>
+      <app-text-field [(ngModel)]="flashcardDeck!.name" class="deck-name-input mb-2"></app-text-field>
+    </app-form-field>
 
+    <app-form-field>
+      <app-label>Description</app-label>
+      <app-text-field [(ngModel)]="flashcardDeck!.description" [rows]="3" class="deck-description-input" placeholder="Description (optional)"></app-text-field>
+    </app-form-field>
+  </div>
 
   <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list"
     [ngClass]="{'dragging': currentDragIndex !== undefined}">

@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { AppFormFieldControl } from '../../models/form.interface';
 
 @Component({
   selector: 'app-text-field',
   standalone: true,
   templateUrl: './text-field.component.html',
-  styleUrl: './text-field.component.css',
   imports: [CommonModule, FormsModule],
   providers: [
     {
@@ -16,7 +16,8 @@ import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
     }
   ]
 })
-export class TextFieldComponent {
+export class TextFieldComponent implements AppFormFieldControl {
+  @Input() id: string | undefined;
   @Input() rows: number = 1;
 
   value: string = '';

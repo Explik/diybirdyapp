@@ -3,6 +3,17 @@
 
     <h2 class="font-black">Button</h2>
 
+    <h2 class="font-black">Form fields</h2>
+    <app-form-field>
+      <app-label>Text field (single line)</app-label>
+      <app-text-field></app-text-field>
+    </app-form-field>
+
+    <app-form-field>
+      <app-label>Text field (multi line)</app-label>
+      <app-text-field [rows]="3"></app-text-field>
+    </app-form-field>
+
     <h2 class="font-black">Flashcard</h2>
     <p>Flippable flashcard (front & back) </p>
     <div class="flex flex-col sm:flex-row gap-4 items-start mb-4">

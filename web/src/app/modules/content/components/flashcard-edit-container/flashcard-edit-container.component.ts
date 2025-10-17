@@ -10,13 +10,16 @@ import { AudioInputComponent } from "../audio-input/audio-input.component";
 import { ImageInputComponent } from "../image-input/image-input.component";
 import { VideoInputComponent } from "../video-input/video-input.component";
 import { TextInputComponent } from "../text-input/text-input.component";
+import { LabelComponent } from "../../../../shared/components/label/label.component";
+import { FormFieldComponent } from "../../../../shared/components/form-field/form-field.component";
+import { Dir } from "../../../../../../node_modules/@angular/cdk/bidi/index";
 
 @Component({
     selector: 'app-flashcard-edit-container',
     standalone: true,
     templateUrl: './flashcard-edit-container.component.html',
     styleUrl: './flashcard-edit-container.component.css',
-    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent]
+    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent, LabelComponent, FormFieldComponent, Dir]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
