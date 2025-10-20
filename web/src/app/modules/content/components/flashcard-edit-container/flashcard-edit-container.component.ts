@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
 import { CommonModule } from '@angular/common';
 import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.component";
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
@@ -14,13 +13,14 @@ import { LabelComponent } from "../../../../shared/components/label/label.compon
 import { FormFieldComponent } from "../../../../shared/components/form-field/form-field.component";
 import { SelectComponent } from "../../../../shared/components/select/select.component";
 import { OptionComponent } from "../../../../shared/components/option/option.component";
+import { ButtonComponent } from "../../../../shared/components/button/button.component";
 
 @Component({
     selector: 'app-flashcard-edit-container',
     standalone: true,
     templateUrl: './flashcard-edit-container.component.html',
     styleUrl: './flashcard-edit-container.component.css',
-    imports: [TextButtonComponent, CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent]
+    imports: [CommonModule, FormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;

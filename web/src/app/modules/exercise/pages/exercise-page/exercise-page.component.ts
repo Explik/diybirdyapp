@@ -4,7 +4,6 @@ import { ExitIconButtonComponent } from "../../../../shared/components/exit-icon
 import { InstructionComponent } from '../../components/instruction/instruction.component';
 import { ExerciseInputWriteTextComponent } from "../../components/exercise-input-write-text/exercise-input-write-text.component";
 import { FormControl, FormGroup, FormsModule } from '@angular/forms';
-import { TextButtonComponent } from "../../../../shared/components/text-button/text-button.component";
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { TextQuoteComponent } from "../../../../shared/components/text-quote/text-quote.component";
 import { ActivatedRoute } from '@angular/router';

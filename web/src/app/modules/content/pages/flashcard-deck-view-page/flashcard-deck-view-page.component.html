@@ -31,7 +31,7 @@
         <app-flashcard-view-container [flashcardDeck]="flashcardDeck!"></app-flashcard-view-container>
         
         <div>
-            <app-text-button [label]="'Edit'" (click)="editFlashcards()" class="float-right"></app-text-button>
+            <app-button variant="primary" (click)="editFlashcards()" class="float-right">Edit</app-button>
         </div>
     </ng-container>
 
@@ -40,7 +40,7 @@
             <div>No flashcards in this deck.</div>
 
             <div class="flex justify-center mt-4">
-                <app-text-button [label]="'Add'" (click)="editFlashcards()" class=""></app-text-button>
+                <app-button variant="primary" (click)="editFlashcards()" class="">Add</app-button>
             </div>
         </div>
     </ng-template>
