@@ -1,24 +1,28 @@
-<button 
-  class="h-9 px-4 relative transition-all duration-100 ease-in-out cursor-pointer shadow-[3px_3px_rgba(0,0,0,1)] hover:shadow-[2px_2px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] disabled:opacity-60 disabled:cursor-not-allowed border border-black"
-  [ngClass]="{
-    'hover:translate-x-0 hover:translate-y-0 hover:shadow-[3px_3px_rgba(0,0,0,1)]': disabled,
-    'bg-white text-black': variant === 'secondary',
-    'bg-black text-white': variant === 'primary'
-  }"
-  [type]="type"
-  [disabled]="disabled"
-  [attr.aria-label]="ariaLabel"
-  [attr.title]="title"
-  [attr.name]="name"
-  [attr.value]="value"
-  [attr.tabindex]="tabindex"
-  [attr.autofocus]="autofocus || null"
-  [attr.form]="form"
-  [attr.formaction]="formaction"
-  [attr.formenctype]="formenctype"
-  [attr.formmethod]="formmethod"
-  [attr.formnovalidate]="formnovalidate || null"
-  [attr.formtarget]="formtarget"
-  (click)="onClick($event)">
-  <ng-content></ng-content>
-</button>
+<div class="inline-block">
+    <button 
+    class="h-9 px-4 relative transition-all duration-100 ease-in-out cursor-pointer shadow-[3px_3px_rgba(0,0,0,1)] hover:shadow-[2px_2px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] disabled:opacity-60 disabled:cursor-not-allowed border border-black"
+    [ngClass]="{
+        'hover:translate-x-0 hover:translate-y-0 hover:shadow-[3px_3px_rgba(0,0,0,1)]': disabled,
+        'bg-black text-white': variant === 'primary',
+        'bg-white text-black': variant === 'secondary',
+        'bg-white text-black rounded-full p-2 w-10 h-10 flex items-center justify-center': variant === 'round'
+    }"
+    [type]="type"
+    [disabled]="disabled"
+    [attr.aria-label]="ariaLabel"
+    [attr.title]="title"
+    [attr.name]="name"
+    [attr.value]="value"
+    [attr.tabindex]="tabindex"
+    [attr.autofocus]="autofocus || null"
+    [attr.form]="form"
+    [attr.formaction]="formaction"
+    [attr.formenctype]="formenctype"
+    [attr.formmethod]="formmethod"
+    [attr.formnovalidate]="formnovalidate || null"
+    [attr.formtarget]="formtarget"
+    (click)="onClick($event)">
+    <ng-content></ng-content>
+    </button>
+</div>
+

@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './button.component.html'
 })
 export class ButtonComponent {
-  @Input() variant: 'primary' | 'secondary' = 'secondary';
+  @Input() variant: 'primary' | 'secondary' | 'round' = 'secondary';
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled = false;
   @Input() ariaLabel: string | null = null;

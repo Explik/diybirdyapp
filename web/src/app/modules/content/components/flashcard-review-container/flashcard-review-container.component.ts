@@ -6,13 +6,14 @@ import { ImagePreviewComponent } from "../image-preview/image-preview.component"
 import { VideoPreviewComponent } from "../video-preview/video-preview.component";
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { AudioPlayingService } from '../../services/audioPlaying.service';
+import { ButtonComponent } from '../../../../shared/components/button/button.component';
 
 @Component({
   selector: 'app-flashcard-review-container',
   templateUrl: './flashcard-review-container.component.html',
   styleUrls: ['./flashcard-review-container.component.css'],
   standalone: true,
-  imports: [CommonModule, FlashcardComponent, FlashcardComponent, AudioPreviewComponent, ImagePreviewComponent, VideoPreviewComponent, IconComponent]
+  imports: [CommonModule, FlashcardComponent, FlashcardComponent, AudioPreviewComponent, ImagePreviewComponent, VideoPreviewComponent, IconComponent, ButtonComponent]
 })
 export class FlashcardReviewContainerComponent {
   @Input() flashcards: any[] = [];
