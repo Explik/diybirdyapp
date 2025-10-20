@@ -7,11 +7,12 @@ import { LabelComponent } from "../../components/label/label.component";
 import { TextFieldComponent } from "../../components/text-field/text-field.component";
 import { SelectComponent } from "../../components/select/select.component";
 import { OptionComponent } from "../../components/option/option.component";
+import { ButtonComponent } from "../../components/button/button.component";
 
 @Component({
   selector: 'app-shared-components-page',
   standalone: true,
-  imports: [FlashcardComponent, IconComponent, ProgressBarComponent, FormFieldComponent, LabelComponent, TextFieldComponent, SelectComponent, OptionComponent],
+  imports: [FlashcardComponent, IconComponent, ProgressBarComponent, FormFieldComponent, LabelComponent, TextFieldComponent, SelectComponent, OptionComponent, ButtonComponent],
   templateUrl: './shared-components-page.component.html'
 })
 export class SharedComponentsPageComponent { }
