@@ -23,6 +23,7 @@ export class RowButtonComponent {
   @Input() formmethod: string | null = null;
   @Input() formnovalidate: boolean | null = null;
   @Input() formtarget: string | null = null;
+  @Input({ required: true }) layout: 'single' | 'double' = 'single';
   
   @Output() buttonClick = new EventEmitter<MouseEvent>();
   

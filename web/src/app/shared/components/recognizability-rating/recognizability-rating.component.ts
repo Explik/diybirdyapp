@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { RowButtonComponent } from '../row-button/row-button.component';
 import { IconComponent } from '../icon/icon.component';
+import { RowButtonComponent } from '../row-button/row-button.component';
 
 @Component({
   selector: 'app-recognizability-rating',

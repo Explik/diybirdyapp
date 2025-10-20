@@ -8,7 +8,7 @@ import { TextFieldComponent } from "../../components/text-field/text-field.compo
 import { SelectComponent } from "../../components/select/select.component";
 import { OptionComponent } from "../../components/option/option.component";
 import { ButtonComponent } from "../../components/button/button.component";
-import { RowButtonComponent } from "../../components/row-button/row-button.component";
+import { RowButtonComponent } from '../../components/row-button/row-button.component';
 
 @Component({
   selector: 'app-shared-components-page',

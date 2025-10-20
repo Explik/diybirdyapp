@@ -11,13 +11,13 @@ describe('RowButtonComponent', () => {
       imports: [RowButtonComponent]
     })
     .compileComponents();
-
+    
     fixture = TestBed.createComponent(RowButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(component).toBeDefined();
   });
 });

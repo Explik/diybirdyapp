@@ -1,7 +1,9 @@
 <div class="w-full">
     <button 
-        class="w-full h-9 px-4 flex items-center justify-between relative transition-all duration-100 ease-in-out cursor-pointer shadow-[3px_3px_rgba(0,0,0,1)] hover:shadow-[2px_2px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] disabled:opacity-60 disabled:cursor-not-allowed border border-black bg-white text-black"
+        class="w-full h-9 px-4 flex items-center relative transition-all duration-100 ease-in-out cursor-pointer shadow-[3px_3px_rgba(0,0,0,1)] hover:shadow-[2px_2px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] disabled:opacity-60 disabled:cursor-not-allowed border border-black bg-white text-black"
         [ngClass]="{
+            'justify-center': layout === 'single',
+            'justify-between': layout === 'double',
             'hover:translate-x-0 hover:translate-y-0 hover:shadow-[3px_3px_rgba(0,0,0,1)]': disabled
         }"
         [type]="type"
@@ -19,11 +21,20 @@
         [attr.formnovalidate]="formnovalidate || null"
         [attr.formtarget]="formtarget"
         (click)="onClick($event)">
-        <div class="flex items-center">
-            <ng-content select="[left]"></ng-content>
-        </div>
-        <div class="flex items-center">
-            <ng-content select="[right]"></ng-content>
-        </div>
+        
+        <!-- Single layout -->
+        <ng-container *ngIf="layout === 'single'">
+            <ng-content></ng-content>
+        </ng-container>
+        
+        <!-- Double layout -->
+        <ng-container *ngIf="layout === 'double'">
+            <div class="flex items-center">
+                <ng-content select="[left]"></ng-content>
+            </div>
+            <div class="flex items-center">
+                <ng-content select="[right]"></ng-content>
+            </div>
+        </ng-container>
     </button>
 </div>
