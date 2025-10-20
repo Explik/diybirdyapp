@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { RowButtonComponent } from '../row-button/row-button.component';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-recognizability-rating',
   standalone: true,
-  imports: [],
+  imports: [RowButtonComponent, IconComponent],
   templateUrl: './recognizability-rating.component.html',
   styleUrl: './recognizability-rating.component.css'
 })

@@ -1,0 +1,6 @@
+<ng-container *ngIf="isKeyIcon; else regularIcon">
+  <span class="key-icon {{size}} {{color}}" [attr.data-key]="keyValue"></span>
+</ng-container>
+<ng-template #regularIcon>
+  <span [class]="'mdi ' + icon + ' ' + size + ' ' + color"></span>
+</ng-template>
