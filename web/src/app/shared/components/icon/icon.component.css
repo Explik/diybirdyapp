@@ -16,3 +16,18 @@
 .key-icon::after {
   content: attr(data-key);
 }
+
+.mark-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+}
+
+.mark-correct, .mark-incorrect {
+  /* Base styles for mark icons */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

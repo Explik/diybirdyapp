@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ExerciseInputSelectOptionsDto, SelectOptionInputAudioOption, SelectOptionInputImageOption, SelectOptionInputOption, SelectOptionInputTextOption } from '../../../../shared/api-client';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { AudioPlayingService } from '../../services/audioPlaying.service';
+import { RowButtonComponent } from "../../../../shared/components/row-button/row-button.component";
 
 @Component({
   selector: 'app-exercise-input-select-options',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [CommonModule, FormsModule, IconComponent, RowButtonComponent],
   templateUrl: './exercise-input-select-options.component.html',
   styleUrl: './exercise-input-select-options.component.css'
 })
