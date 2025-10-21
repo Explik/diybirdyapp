@@ -1,0 +1,18 @@
+<div class="p-6 border border-black rounded-lg bg-white" [ngClass]="{'space-x-4': layout === 'single'}" style="box-shadow: 3px 3px;">
+    <!-- Single layout -->
+    <ng-container *ngIf="layout === 'single'">
+        <ng-content></ng-content>
+    </ng-container>
+    
+    <!-- Double layout -->
+    <ng-container *ngIf="layout === 'double'">
+        <div class="flex">
+            <div class="flex-1 pr-3">
+                <ng-content select="[left]"></ng-content>
+            </div>
+            <div class="flex-1 pl-3">
+                <ng-content select="[right]"></ng-content>
+            </div>
+        </div>
+    </ng-container>
+</div>

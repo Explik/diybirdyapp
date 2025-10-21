@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { EditFlashcardDeck, EditFlashcardDeckImpl } from '../../models/editFlashcard.model';
 import { Router } from '@angular/router';
+import { ContainerComponent } from "../../../../shared/components/container/container.component";
 
 @Component({
   selector: 'app-flashcard-decks-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ContainerComponent],
   templateUrl: './flashcard-decks-page.component.html',
   styleUrl: './flashcard-decks-page.component.css'
 })
