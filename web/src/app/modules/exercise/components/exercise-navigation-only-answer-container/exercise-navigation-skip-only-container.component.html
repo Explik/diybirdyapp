@@ -1,10 +1,10 @@
 <div class="fixed bottom-16 max-w-lg mx-auto w-full">
     <div class="float-left max-w-lg mx-auto w-full">
     @if(showSkipExercise) {
-        <app-button variant="secondary" label="Skip" class="float-left" (click)="handleSkipExercise()"></app-button>
+        <app-button variant="secondary" class="float-left" (click)="handleSkipExercise()">Skip</app-button>
     }
     @else {
-        <app-button variant="primary" label="Next" class="float-right" (click)="handleNextExercise()"></app-button>
+        <app-button variant="primary" class="float-right" (click)="handleNextExercise()">Next</app-button>
     }
     </div>
 </div>
