@@ -19,7 +19,7 @@
                     autoplay
                     muted>
                 </video>
-                <p *ngIf="visualState == 'saving'" class="text-sm text-blue-600 animate-pulse">Saving...</p>
+                <p *ngIf="visualState == 'saving'" i18n class="text-sm text-blue-600 animate-pulse">Saving...</p>
             </div>
 
             <!-- Video preview in place of icon -->
@@ -31,7 +31,7 @@
                     (pause)="isPlaying = false"
                     (ended)="isPlaying = false">
                 </video>
-                <p *ngIf="videoFile" class="text-sm text-gray-600">{{ videoFileName }}</p>
+                <p *ngIf="videoFile" i18n class="text-sm text-gray-600">{{ videoFileName }}</p>
             </div>
         </span>
     </div>
@@ -39,12 +39,14 @@
     <div class="flex justify-center mt-4 space-x-4">
         <!-- Empty state -->
         <button *ngIf="visualState === 'empty'"
+            i18n
             (click)="startRecording()"
             class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
             Record
         </button>
 
         <label *ngIf="visualState === 'empty'" 
+            i18n
             class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
             Upload
             <input type="file" accept="video/*" class="hidden" (change)="handleFileInput($event)" />
@@ -52,12 +54,14 @@
 
         <!-- Recording state -->
         <button *ngIf="visualState === 'recording'" 
+            i18n
             (click)="saveRecording()" 
             class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
             Save
         </button>
 
         <button *ngIf="visualState === 'recording'" 
+            i18n
             (click)="cancelRecording()" 
             class="px-4 py-2 bg-blue cursor-pointer">
             Cancel
@@ -65,19 +69,21 @@
 
         <!-- Saving state -->
         <button *ngIf="visualState === 'saving'" 
+            i18n
             disabled
             class="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed">
             Saving...
         </button>
 
         <!-- Dropping state -->
-        <p *ngIf="visualState == 'dropping'" class="text-blue-600 font-semibold mx-4 my-2">Drop file here!</p>
+        <p *ngIf="visualState == 'dropping'" i18n class="text-blue-600 font-semibold mx-4 my-2">Drop file here!</p>
 
         <!-- Preview state  -->
         <button *ngIf="visualState == 'preview'" class="px-4 py-2 bg-gray-500 hover:bg-blue-600 text-white rounded" (click)="toggleVideo()">
-            {{ !isPlaying ? 'Play' : 'Pause '}}
+            <ng-container *ngIf="isPlaying" i18n>Pause</ng-container>
+            <ng-container *ngIf="!isPlaying" i18n>Play</ng-container>
         </button>
-        <button *ngIf="visualState == 'preview'" (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
+        <button *ngIf="visualState == 'preview'" (click)="clearFileInput()" i18n class="px-4 py-2 bg-blue cursor-pointer">
             Clear
         </button>
     </div>

@@ -9,10 +9,10 @@ import { FormsModule } from '@angular/forms';
   template: `
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label i18n class="block text-sm font-medium text-gray-700 mb-2">
           Settings for {{ sessionType }}
         </label>
-        <p class="text-sm text-gray-500">
+        <p i18n class="text-sm text-gray-500">
           Settings configuration will be available soon.
         </p>
       </div>
@@ -20,6 +20,7 @@ import { FormsModule } from '@angular/forms';
       <div class="flex justify-end space-x-2 pt-4 border-t">
         <button 
           type="button"
+          i18n
           class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
           (click)="onCancel()"
         >
@@ -27,6 +28,7 @@ import { FormsModule } from '@angular/forms';
         </button>
         <button 
           type="button"
+          i18n
           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           (click)="onSave()"
         >

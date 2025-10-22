@@ -4,6 +4,12 @@
   "newProjectRoot": "projects",
   "projects": {
     "diy-birdy-app": {
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "zh-CN": "src/locale/messages.zh-CN.xlf"
+        }
+      },
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,11 +19,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "localize": ["zh-CN"],
             "outputPath": "dist/diy-birdy-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -76,7 +84,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [

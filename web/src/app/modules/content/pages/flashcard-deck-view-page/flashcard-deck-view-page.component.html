@@ -7,31 +7,31 @@
     
     <ng-container *ngIf="hasFlashcards; else noFlashcards">
         <div class="my-4">   
-            <app-button (click)="selectFlashcards()" class="mr-2">
+            <app-button i18n (click)="selectFlashcards()" class="mr-2">
                 Select flashcards
             </app-button>
 
-            <app-button (click)="reviewFlashcards()" class="mr-2">
+            <app-button i18n (click)="reviewFlashcards()" class="mr-2">
                 Review flashcards
             </app-button>
 
-            <app-button (click)="writeFlashcards()" class="mr-2">
+            <app-button i18n (click)="writeFlashcards()" class="mr-2">
                 Write flashcards
             </app-button>
 
-            <app-button (click)="learnFlashcards()" class="mr-2">
+            <app-button i18n (click)="learnFlashcards()" class="mr-2">
                 Learn flashcards
             </app-button>
         </div>
         
         <div class="flex justify-end items-center w-full mb-2">
-            <span *ngIf="flashcardDeck.flashcards?.length" class="block">{{ flashcardDeck.flashcards.length }} flashcard(s)</span>
+            <span *ngIf="flashcardDeck.flashcards?.length" i18n class="block">{{ flashcardDeck.flashcards.length }} flashcard(s)</span>
         </div>
 
         <app-flashcard-view-container [flashcardDeck]="flashcardDeck!"></app-flashcard-view-container>
         
         <div>
-            <app-button variant="primary" (click)="editFlashcards()" class="float-right">Edit</app-button>
+            <app-button variant="primary" i18n (click)="editFlashcards()" class="float-right">Edit</app-button>
         </div>
     </ng-container>
 
@@ -40,7 +40,7 @@
             <div>No flashcards in this deck.</div>
 
             <div class="flex justify-center mt-4">
-                <app-button variant="secondary" (click)="editFlashcards()" class="">Add</app-button>
+                <app-button variant="secondary" i18n (click)="editFlashcards()" class="">Add</app-button>
             </div>
         </div>
     </ng-template>

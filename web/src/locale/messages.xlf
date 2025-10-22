@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="1000721677219018261" datatype="html">
+        <source>Flashcard decks</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="944648237574839715" datatype="html">
+        <source>Vocabulary</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="640022366211466001" datatype="html">
+        <source> Record </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/audio-input/audio-input.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4145613654643195862" datatype="html">
+        <source> Upload <x id="TAG_INPUT" ctype="x-input" equiv-text="&lt;input type=&quot;file&quot; accept=&quot;audio/*&quot; class=&quot;hidden&quot; (change)=&quot;handleFileInput($event)&quot; /&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/audio-input/audio-input.component.html</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/image-input/image-input.component.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">51,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3620188369327429839" datatype="html">
+        <source> Save </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/audio-input/audio-input.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2330577642930707695" datatype="html">
+        <source> Cancel </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/audio-input/audio-input.component.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/image-input/image-input.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">67</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">121</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9042260521669277115" datatype="html">
+        <source>Pause</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/audio-input/audio-input.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8564202903947049539" datatype="html">
+        <source>Play</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/audio-input/audio-input.component.html</context>
+          <context context-type="linenumber">57</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1238583382012712938" datatype="html">
+        <source> Clear </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/audio-input/audio-input.component.html</context>
+          <context context-type="linenumber">60</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/image-input/image-input.component.html</context>
+          <context context-type="linenumber">71</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8953033926734869941" datatype="html">
+        <source>Name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4902817035128594900" datatype="html">
+        <source>Description</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="731925390013146558" datatype="html">
+        <source>Front language</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2790731688415188796" datatype="html">
+        <source>Back language</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6162693758764653365" datatype="html">
+        <source>Text</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="347407180135731058" datatype="html">
+        <source>Audio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3012906865384504293" datatype="html">
+        <source>Image</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6549265851868599441" datatype="html">
+        <source>Video</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7932418406121526154" datatype="html">
+        <source>Front</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5400008088761774752" datatype="html">
+        <source>＋ Add flashcard</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">118</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7000649363168371045" datatype="html">
+        <source>Save changes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-edit-container/flashcard-edit-container.component.html</context>
+          <context context-type="linenumber">119</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5287160686307897821" datatype="html">
+        <source>Sorry, no audio available...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-review-container/flashcard-review-container.component.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-review-container/flashcard-review-container.component.html</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4696169588006831639" datatype="html">
+        <source>Sorry, no image available...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-review-container/flashcard-review-container.component.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-review-container/flashcard-review-container.component.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7517843024264586777" datatype="html">
+        <source>Sorry, no video available...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-review-container/flashcard-review-container.component.html</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/flashcard-review-container/flashcard-review-container.component.html</context>
+          <context context-type="linenumber">52,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6937487774449859784" datatype="html">
+        <source> Capture </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/image-input/image-input.component.html</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6482533902179295107" datatype="html">
+        <source> Take Photo </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/image-input/image-input.component.html</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4731994751572162082" datatype="html">
+        <source>Drop file here!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/image-input/image-input.component.html</context>
+          <context context-type="linenumber">67,69</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3407061818321766940" datatype="html">
+        <source>Saving...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="187187500641108332" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ videoFileName }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">34,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6824153702034385011" datatype="html">
+        <source> Saving... </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/components/video-input/video-input.component.html</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4802797471688346406" datatype="html">
+        <source>Flashcard Deck &quot;<x id="INTERPOLATION" equiv-text="{{flashcardDeck!.name}}"/>&quot;</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-edit-page/flashcard-deck-edit-page.component.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2074765697102534563" datatype="html">
+        <source> Select flashcards </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-view-page/flashcard-deck-view-page.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4231579898819081530" datatype="html">
+        <source> Review flashcards </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-view-page/flashcard-deck-view-page.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3625467006145381655" datatype="html">
+        <source> Write flashcards </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-view-page/flashcard-deck-view-page.component.html</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3711910719356311601" datatype="html">
+        <source> Learn flashcards </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-view-page/flashcard-deck-view-page.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3258426571324988968" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ flashcardDeck.flashcards.length }}"/> flashcard(s)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-view-page/flashcard-deck-view-page.component.html</context>
+          <context context-type="linenumber">28,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7585826646011739428" datatype="html">
+        <source>Edit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-view-page/flashcard-deck-view-page.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3249513483374643425" datatype="html">
+        <source>Add</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-deck-view-page/flashcard-deck-view-page.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9053146932205778183" datatype="html">
+        <source>Deck &quot;<x id="INTERPOLATION" equiv-text="{{deck.name}}"/>&quot;</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-decks-page/flashcard-decks-page.component.html</context>
+          <context context-type="linenumber">6,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2273349591264536401" datatype="html">
+        <source>Add deck</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/flashcard-decks-page/flashcard-decks-page.component.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1825959736738076806" datatype="html">
+        <source>Your vocabulary</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/vocabulary-page/vocabulary-page.component.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4816498739926901006" datatype="html">
+        <source>Your words</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/content/pages/vocabulary-page/vocabulary-page.component.html</context>
+          <context context-type="linenumber">4,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3240565872946638643" datatype="html">
+        <source> Text to Speech </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6023083677122467269" datatype="html">
+        <source> Enable audio pronunciation for text content </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7807846372323790828" datatype="html">
+        <source> Retype Correct Answer </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5789454908610484120" datatype="html">
+        <source> Require typing correct answers after incorrect attempts </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5962450935325805075" datatype="html">
+        <source> Initial Flashcard Language </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8472863718601085299" datatype="html">
+        <source> Default language to show on flashcards </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="763874197462628538" datatype="html">
+        <source><x id="START_TAG_OPTION" ctype="x-option" equiv-text="&lt;option value=&quot;&quot;&gt;"/>Select a language...<x id="CLOSE_TAG_OPTION" ctype="x-option" equiv-text="&lt;/option&gt;"/><x id="START_TAG_OPTION_1" ctype="x-option_1" equiv-text="&lt;option 
+              *ngFor=&quot;let language of availableLanguages&quot; 
+              [value]=&quot;language.id&quot;
+            &gt;"/> <x id="INTERPOLATION" equiv-text="{{ language.name }}"/> (<x id="INTERPOLATION_1" equiv-text="{{ language.abbreviation }}"/>) <x id="CLOSE_TAG_OPTION" ctype="x-option" equiv-text="&lt;/option&gt;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">72,79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5041933620851283410" datatype="html">
+        <source> Answer Languages </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="411380230803676002" datatype="html">
+        <source> Languages that can be used for answers </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2816598180195572994" datatype="html">
+        <source> No languages selected. All languages will be available. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8373757540042473919" datatype="html">
+        <source> Save Settings </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/default-session-settings/default-session-settings.component.ts</context>
+          <context context-type="linenumber">129</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5577695529316127130" datatype="html">
+        <source>Unknown content type <x id="INTERPOLATION" equiv-text="{{data!.type}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/dynamic-content/dynamic-content.component.html</context>
+          <context context-type="linenumber">14,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1706359744269491088" datatype="html">
+        <source><x id="TAG_SOURCE" ctype="x-source" equiv-text="&lt;source [src]=&quot;data.videoUrl&quot; type=&quot;video/mp4&quot;&gt;"/> Your browser does not support the video tag.
+</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/dynamic-video-content/dynamic-video-content.component.html</context>
+          <context context-type="linenumber">2,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5162850870994656934" datatype="html">
+        <source>Start Recording</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/exercise-input-record-audio/exercise-input-record-audio.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="666946311550883384" datatype="html">
+        <source>Stop Recording</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/exercise-input-record-audio/exercise-input-record-audio.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4563965495368336177" datatype="html">
+        <source>Skip</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/exercise-navigation-check-answer-container/exercise-navigation-check-answer-container.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/exercise-navigation-only-answer-container/exercise-navigation-skip-only-container.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5966497596405354077" datatype="html">
+        <source>Check Answer</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/exercise-navigation-check-answer-container/exercise-navigation-check-answer-container.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3885497195825665706" datatype="html">
+        <source>Next</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/exercise-navigation-check-answer-container/exercise-navigation-check-answer-container.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/components/exercise-navigation-only-answer-container/exercise-navigation-skip-only-container.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7392314506470901607" datatype="html">
+        <source>Loading exercise...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/modules/exercise/container-components/exercise-content-loading/exercise-content-loading.component.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

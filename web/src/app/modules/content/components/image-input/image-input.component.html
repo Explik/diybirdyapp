@@ -35,12 +35,14 @@
     <div class="flex justify-center mt-4 space-x-4">
         <!-- Empty state -->
         <button *ngIf="visualState === 'empty'"
+            i18n
             (click)="startCapturing()"
             class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
             Capture
         </button>
 
         <label *ngIf="visualState === 'empty'" 
+            i18n
             class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
             Upload
             <input type="file" accept="image/*" class="hidden" (change)="handleFileInput($event)" />
@@ -48,22 +50,24 @@
 
         <!-- Capturing state -->
         <button *ngIf="visualState === 'capturing'" 
+            i18n
             (click)="captureImage()" 
             class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
             Take Photo
         </button>
 
         <button *ngIf="visualState === 'capturing'" 
+            i18n
             (click)="stopCapturing()" 
             class="px-4 py-2 bg-blue cursor-pointer">
             Cancel
         </button>
 
         <!-- Dropping state -->
-        <p *ngIf="visualState == 'dropping'" class="text-blue-600 font-semibold mx-4 my-2">Drop file here!</p>
+        <p *ngIf="visualState == 'dropping'" i18n class="text-blue-600 font-semibold mx-4 my-2">Drop file here!</p>
 
         <!-- Preview state  -->
-        <button *ngIf="visualState == 'preview'" (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
+        <button *ngIf="visualState == 'preview'" i18n (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
             Clear
         </button>
     </div>

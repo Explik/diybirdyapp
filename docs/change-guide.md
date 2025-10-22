@@ -37,3 +37,8 @@ This document describes how to make common changes to the application.
 4. Add new vertex factory on backend component
 5. Add new vertex to model on backend component 
 6. Add a sample of the exercise in DataInitializer in backend component
+
+## I18n changes
+### Generate translation source file
+1. Update angular.json to include i18n configuration if not already present
+2. Run `ng extract-i18n --output-path src/locale` to generate the source translation file (messages.xlf)

@@ -20,12 +20,14 @@
     <div class="flex justify-center mt-4 space-x-4">
         <!-- Empty state -->
         <button *ngIf="visualState === 'empty'"
+            i18n
             (click)="startRecording()"
             class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
             Record
         </button>
 
         <label *ngIf="visualState === 'empty'" 
+            i18n    
             class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
             Upload
             <input type="file" accept="audio/*" class="hidden" (change)="handleFileInput($event)" />
@@ -33,12 +35,14 @@
 
         <!-- Recording state -->
         <button *ngIf="visualState === 'recording'" 
+            i18n
             (click)="saveRecording()" 
             class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
             Save
         </button>
 
         <button *ngIf="visualState === 'recording'" 
+            i18n
             (click)="cancelRecording()" 
             class="px-4 py-2 bg-blue cursor-pointer">
             Cancel
@@ -49,9 +53,10 @@
 
         <!-- Preview state  -->
         <button *ngIf="visualState == 'preview'" class="px-4 py-2 bg-gray-500 hover:bg-blue-600 text-white rounded" (click)="toogleAudio()">
-            {{ !isPlaying ? 'Play' : 'Pause '}}
+            <ng-container *ngIf="isPlaying" i18n>Pause</ng-container>
+            <ng-container *ngIf="!isPlaying" i18n>Play</ng-container> 
         </button>
-        <button *ngIf="visualState == 'preview'" (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
+        <button *ngIf="visualState == 'preview'" i18n (click)="clearFileInput()" class="px-4 py-2 bg-blue cursor-pointer">
             Clear
         </button>
     </div>

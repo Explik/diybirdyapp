@@ -1,12 +1,12 @@
 <div *ngIf="flashcardDeck" class="flashcard-deck-edit-container">
   <div class="mb-8">
     <app-form-field>
-      <app-label>Name</app-label>
+      <app-label i18n>Name</app-label>
       <app-text-field [(ngModel)]="flashcardDeck!.name" class="deck-name-input mb-2"></app-text-field>
     </app-form-field>
 
     <app-form-field>
-      <app-label>Description</app-label>
+      <app-label i18n>Description</app-label>
       <app-text-field [(ngModel)]="flashcardDeck!.description" [rows]="3" class="deck-description-input"
         placeholder="Description (optional)"></app-text-field>
     </app-form-field>
@@ -14,7 +14,7 @@
     <!-- Global language selection -->
     <div class="mt-4 flex gap-4">
       <app-form-field class="w-1/2">
-        <app-label>Front language</app-label>
+        <app-label i18n>Front language</app-label>
         <app-select class="global-left-language-input" 
           [(ngModel)]="frontLanguageId"
           (ngModelChange)="handleGlobalLeftLanguageChange($event)">
@@ -26,7 +26,7 @@
       </app-form-field>
       
       <app-form-field class="w-1/2">
-        <app-label>Back language</app-label>
+        <app-label i18n>Back language</app-label>
         <app-select class="global-right-language-input"
           [(ngModel)]="backLanguageId"
           (ngModelChange)="handleGlobalRightLanguageChange($event)">
@@ -50,19 +50,19 @@
 
           <div class="inline-block mr-4">
             <app-select class="left-content-type-input" [(ngModel)]="flashcard.leftContentType">
-              <app-option value="text">Text</app-option>
-              <app-option value="audio">Audio</app-option>
-              <app-option value="image">Image</app-option>
-              <app-option value="video">Video</app-option>
+              <app-option value="text" i18n>Text</app-option>
+              <app-option value="audio" i18n>Audio</app-option>
+              <app-option value="image" i18n>Image</app-option>
+              <app-option value="video" i18n>Video</app-option>
             </app-select>
           </div>
           
           <div class="inline-block">
             <app-select class="right-content-type-input" [(ngModel)]="flashcard.rightContentType">
-              <app-option value="text">Text</app-option>
-              <app-option value="audio">Audio</app-option>
-              <app-option value="image">Image</app-option>
-              <app-option value="video">Video</app-option>
+              <app-option value="text" i18n>Text</app-option>
+              <app-option value="audio" i18n>Audio</app-option>
+              <app-option value="image" i18n>Image</app-option>
+              <app-option value="video" i18n>Video</app-option>
             </app-select>
           </div>
         </div>
@@ -76,7 +76,7 @@
         <app-form-field>
           <app-text-input [(textData)]="flashcard.leftTextContent!" (rows)="1"></app-text-input>
           <div class="flex items-center justify-between w-full">
-            <app-label>Front</app-label>
+            <app-label i18n>Front</app-label>
             <span *ngIf="frontLanguageId">{{frontLanguageId}}</span>
           </div>
         </app-form-field>
@@ -115,7 +115,7 @@
   </div>
 
   <div>
-    <app-button variant="secondary" (click)="handleAddFlashcard()">＋ Add flashcard</app-button>
-    <app-button variant="primary" (click)="handleSaveFlashcards()" class="float-right">Save changes</app-button>
+    <app-button variant="secondary" i18n (click)="handleAddFlashcard()">＋ Add flashcard</app-button>
+    <app-button variant="primary" i18n (click)="handleSaveFlashcards()" class="float-right">Save changes</app-button>
   </div>
 </div>

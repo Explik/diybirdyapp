@@ -19,10 +19,10 @@ import { SettingsDataService } from '../../services/settingsData.service';
         <!-- Text to Speech -->
         <div class="flex items-center justify-between py-3">
           <div>
-            <label class="text-sm font-medium text-gray-700">
+            <label i18n class="text-sm font-medium text-gray-700">
               Text to Speech
             </label>
-            <p class="text-xs text-gray-500">
+            <p i18n class="text-xs text-gray-500">
               Enable audio pronunciation for text content
             </p>
           </div>
@@ -39,10 +39,10 @@ import { SettingsDataService } from '../../services/settingsData.service';
         <!-- Retype Correct Answer -->
         <div class="flex items-center justify-between py-3 border-t border-gray-200">
           <div>
-            <label class="text-sm font-medium text-gray-700">
+            <label i18n class="text-sm font-medium text-gray-700">
               Retype Correct Answer
             </label>
-            <p class="text-xs text-gray-500">
+            <p i18n class="text-xs text-gray-500">
               Require typing correct answers after incorrect attempts
             </p>
           </div>
@@ -58,13 +58,14 @@ import { SettingsDataService } from '../../services/settingsData.service';
 
         <!-- Initial Flashcard Language -->
         <div class="py-3 border-t border-gray-200">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label i18n class="block text-sm font-medium text-gray-700 mb-2">
             Initial Flashcard Language
           </label>
-          <p class="text-xs text-gray-500 mb-3">
+          <p i18n class="text-xs text-gray-500 mb-3">
             Default language to show on flashcards
           </p>
           <select 
+            i18n
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             [(ngModel)]="localConfig.initialFlashcardLanguageId"
           >
@@ -80,10 +81,10 @@ import { SettingsDataService } from '../../services/settingsData.service';
 
         <!-- Answer Languages -->
         <div class="py-3 border-t border-gray-200">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label i18n class="block text-sm font-medium text-gray-700 mb-2">
             Answer Languages
           </label>
-          <p class="text-xs text-gray-500 mb-3">
+          <p i18n class="text-xs text-gray-500 mb-3">
             Languages that can be used for answers
           </p>
           
@@ -103,7 +104,7 @@ import { SettingsDataService } from '../../services/settingsData.service';
             </label>
           </div>
           
-          <div *ngIf="localConfig.answerLanguageIds.length === 0" class="text-xs text-orange-600 mt-2">
+          <div *ngIf="localConfig.answerLanguageIds.length === 0" i18n class="text-xs text-orange-600 mt-2">
             No languages selected. All languages will be available.
           </div>
         </div>
@@ -113,6 +114,7 @@ import { SettingsDataService } from '../../services/settingsData.service';
       <div class="flex justify-end space-x-2 pt-4 border-t border-gray-200">
         <button 
           type="button"
+          i18n
           class="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
           (click)="onCancel()"
         >
@@ -120,6 +122,7 @@ import { SettingsDataService } from '../../services/settingsData.service';
         </button>
         <button 
           type="button"
+          i18n
           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           (click)="onSave()"
         >

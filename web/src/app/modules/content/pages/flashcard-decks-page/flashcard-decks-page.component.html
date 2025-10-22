@@ -3,14 +3,14 @@
   <p class="text-lg font-semibold mb-2">Flashcard sets:</p>
 
   <app-container layout="double" *ngFor="let deck of flashcardDecks" [routerLink]="['/flashcard-deck', deck.id]" class="cursor-pointer block mb-2">
-    <span left class="flex-grow">Deck "{{deck.name}}"</span>
+    <span left i18n class="flex-grow">Deck "{{deck.name}}"</span>
     <span right>
       <i class="ml-2">📄</i>
     </span>
   </app-container>
 
   <app-container layout="double" (click)="addFlashcardDeck()" class="cursor-pointer block">
-    <span left class="flex-grow">Add deck</span>
+    <span left i18n class="flex-grow">Add deck</span>
     <span right>
       <i class="ml-2">➕</i>
     </span>
