@@ -4,7 +4,7 @@ import com.explik.diybirdyapp.ExerciseInputTypes;
 import jakarta.validation.constraints.NotNull;
 
 public class ExerciseInputRecordVideoDto extends ExerciseInputDto {
-    @NotNull
+    @NotNull(message = "videoUrl.required")
     private String url;
 
     public ExerciseInputRecordVideoDto() {

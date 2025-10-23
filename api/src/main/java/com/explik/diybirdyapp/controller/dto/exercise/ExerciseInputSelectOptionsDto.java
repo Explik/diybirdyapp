@@ -6,10 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
-    @NotNull
     private List<SelectOptionInputBaseOption> options;
 
-    @NotNull
     private String optionType;
 
     private String value;
@@ -53,7 +51,6 @@ public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
     }
 
     public static class SelectOptionInputBaseOption {
-        @NotNull
         private String id;
 
         public SelectOptionInputBaseOption() {
@@ -127,7 +124,7 @@ public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
     }
 
     public static class SelectOptionInputVideoOption extends SelectOptionInputBaseOption {
-        @NotNull
+        @NotNull(message = "url.required")
         private String url;
 
         public SelectOptionInputVideoOption() {
@@ -145,10 +142,10 @@ public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
     }
 
     public static class SelectOptionsInputFeedbackDto {
-        @NotNull
+        @NotNull(message = "correctOptionIds.required")
         private List<String> correctOptionIds = List.of();
 
-        @NotNull
+        @NotNull(message = "incorrectOptionIds.required")
         private List<String> incorrectOptionIds = List.of();
 
         private boolean isRetypeAnswerEnabled = false;

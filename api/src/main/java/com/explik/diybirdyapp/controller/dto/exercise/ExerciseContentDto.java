@@ -23,10 +23,10 @@ public abstract class ExerciseContentDto {
         this.type = type;
     }
 
-    @NotNull
+    @NotNull(message = "id.required")
     private String id;
 
-    @NotNull
+    @NotNull(message = "type.required")
     private String type;
 
     public String getId() { return id; }

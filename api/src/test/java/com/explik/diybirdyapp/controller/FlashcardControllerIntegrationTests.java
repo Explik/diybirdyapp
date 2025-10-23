@@ -173,6 +173,20 @@ public class FlashcardControllerIntegrationTests {
                 .hasFieldOrPropertyWithValue("flashcardId", created.getId());
     }
 
+    @Test
+    void givenNewlyCreatedFlashcard_whenUpdateContent_thenPublishFlashcardUpdatedEvent2() {
+        var flashcard = createTextFlashcard();
+        var created = controller.create(flashcard);
+
+        var flashcardChange = createTextFlashcardChange(created.getId());
+        flashcardChange.setId(null);
+        controller.update(flashcardChange);
+
+        assertThat(flashcardUpdatedEventTestEventListener.getEvents())
+                .last()
+                .hasFieldOrPropertyWithValue("flashcardId", created.getId());
+    }
+
     // PUT /api/flashcard/rich tests
     @Test
     void givenNewlyCreatedFlashcard_whenUpdateContentRich_thenPublishFlashcardUpdatedEvent() {

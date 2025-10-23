@@ -4,10 +4,9 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
 import jakarta.validation.constraints.NotNull;
 
 public class ExerciseSessionDto {
-    @NotNull
     private String id;
 
-    @NotNull
+    @NotNull(message = "type.required")
     private String type;
 
     private boolean completed;

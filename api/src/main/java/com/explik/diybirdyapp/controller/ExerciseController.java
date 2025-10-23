@@ -8,6 +8,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import com.explik.diybirdyapp.service.ExerciseService;
 import com.explik.diybirdyapp.service.ExerciseTypeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +56,7 @@ public class ExerciseController {
     }
 
     @PostMapping("/exercise/{id}/answer")
-    public ExerciseDto submitAnswer(@PathVariable String id, @RequestBody ExerciseInputDto dto) {
+    public ExerciseDto submitAnswer(@PathVariable String id, @Valid @RequestBody ExerciseInputDto dto) {
         var model = exerciseInputMapper.map(dto);
         model.setExerciseId(id);
         model.setSessionId(dto.getSessionId());
@@ -75,7 +76,7 @@ public class ExerciseController {
     @PostMapping("/exercise/{id}/answer/rich")
     public ExerciseDto submitAnswerRich(
             @PathVariable String id,
-            @RequestPart("answer") ExerciseInputDto dto,
+            @Valid @RequestPart("answer") ExerciseInputDto dto,
             @RequestPart(value = "files", required = false) MultipartFile[] files) {
         var model = exerciseInputMapper.map(dto);
         model.setExerciseId(id);

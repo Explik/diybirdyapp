@@ -22,13 +22,11 @@ import jakarta.validation.constraints.NotNull;
         @JsonSubTypes.Type(value = ExerciseInputWriteTextDto.class, name = ExerciseInputTypes.WRITE_TEXT)
 })
 public class ExerciseInputDto {
-    @NotNull
     private String id;
 
-    @NotNull
     private String type;
 
-    @NotNull
+    @NotNull(message = "sessionId.required")
     private String sessionId;
 
     public String getId() { return id; }

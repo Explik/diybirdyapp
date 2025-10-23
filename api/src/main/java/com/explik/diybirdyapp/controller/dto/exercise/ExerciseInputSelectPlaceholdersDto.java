@@ -6,10 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class ExerciseInputSelectPlaceholdersDto extends ExerciseInputDto {
-    @NotNull
+    @NotNull(message = "parts.required")
     private List<SelectPlaceholdersInputPart> parts = List.of();
 
-    @NotNull
+    @NotNull(message = "options.required")
     private List<SelectPlaceholdersInputOption> options = List.of();
 
     public ExerciseInputSelectPlaceholdersDto() {
@@ -33,7 +33,7 @@ public class ExerciseInputSelectPlaceholdersDto extends ExerciseInputDto {
     }
 
     public static class SelectPlaceholdersInputPart {
-        @NotNull
+        @NotNull(message = "type.required")
         private String type;
 
         private String value;
@@ -56,10 +56,10 @@ public class ExerciseInputSelectPlaceholdersDto extends ExerciseInputDto {
     }
 
     public static class SelectPlaceholdersInputOption {
-        @NotNull
+        @NotNull(message = "id.required")
         private String id;
 
-        @NotNull
+        @NotNull(message = "text.required")
         private String text;
 
         public String getId() {

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class ExerciseInputWriteTextDto extends ExerciseInputDto {
-    @NotNull
+    @NotNull(message = "text.required")
     private String text;
 
     private ExerciseInputFeedbackTextDto feedback;
@@ -24,10 +24,10 @@ public class ExerciseInputWriteTextDto extends ExerciseInputDto {
     public void setFeedback(ExerciseInputFeedbackTextDto feedback) { this.feedback = feedback; }
 
     public static class ExerciseInputFeedbackTextDto {
-        @NotNull
+        @NotNull(message = "correctValues.required")
         private List<String> correctValues = List.of();
 
-        @NotNull
+        @NotNull(message = "incorrectValues.required")
         private List<String> incorrectValues = List.of();
 
         private boolean isRetypeAnswerEnabled = false;

@@ -6,6 +6,7 @@ import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.service.FlashcardService;
+import jakarta.validation.Valid;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,7 +33,7 @@ public class FlashcardController {
     ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/flashcard")
-    public FlashcardDto create(@RequestBody FlashcardDto dto) {
+    public FlashcardDto create(@Valid @RequestBody FlashcardDto dto) {
         var model = ingoingMapper.map(dto);
         var newModel = service.add(model, null);
 
@@ -43,7 +44,7 @@ public class FlashcardController {
 
     @PostMapping("/flashcard/rich")
     public FlashcardDto createRich(
-            @RequestPart("flashcard") FlashcardDto dto,
+            @Valid @RequestPart("flashcard") FlashcardDto dto,
             @RequestPart(value = "files", required = false)MultipartFile[] file) {
         var model = ingoingMapper.map(dto);
         var newModel = service.add(model, file);
@@ -54,7 +55,7 @@ public class FlashcardController {
     }
 
     @PutMapping("/flashcard")
-    public FlashcardDto update(@RequestBody FlashcardDto dto) {
+    public FlashcardDto update(@Valid @RequestBody FlashcardDto dto) {
         var model = ingoingMapper.map(dto);
         var newModel = service.update(model, null);
 
@@ -65,7 +66,7 @@ public class FlashcardController {
 
     @PutMapping("/flashcard/rich")
     public FlashcardDto update(
-            @RequestPart("flashcard") FlashcardDto dto,
+            @Valid @RequestPart("flashcard") FlashcardDto dto,
             @RequestPart(value = "files", required = false)MultipartFile[] files) {
         var model = ingoingMapper.map(dto);
         var newModel = service.update(model, files);

@@ -13,10 +13,10 @@ public class ExerciseInputWritePlaceholdersDto extends ExerciseInputDto {
     public void setFeedback(WritePlaceholdersFeedbackDto feedback) { this.feedback = feedback; }
 
     public static class WritePlaceholdersPartDto {
-        @NotNull
+        @NotNull(message = "id.required")
         private String id;
 
-        @NotNull
+        @NotNull(message = "type.required")
         private String type;
 
         private String value;
@@ -37,10 +37,10 @@ public class ExerciseInputWritePlaceholdersDto extends ExerciseInputDto {
     }
 
     public static class WritePlaceholdersFeedbackDto {
-        @NotNull
+        @NotNull(message = "correctPlaceholdersIds.required")
         private String[] correctPlaceholdersIds = new String[0];
 
-        @NotNull
+        @NotNull(message = "incorrectPlaceholdersIds.required")
         private String[] incorrectPlaceholdersIds = new String[0];
 
         public String[] getCorrectPlaceholdersIds() { return correctPlaceholdersIds; }

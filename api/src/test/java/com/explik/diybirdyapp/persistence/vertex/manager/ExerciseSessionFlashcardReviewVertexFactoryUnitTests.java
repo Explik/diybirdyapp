@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertex.manager;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
@@ -33,8 +34,10 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         model.setType("flashcard-review");
         model.setFlashcardDeckId(InMemoryGraphTestConfiguration.EMPTY_FLASHCARD_DECK_ID);
 
+        var context = ExerciseCreationContext.createDefault(model);
+
         assertThrows(IllegalArgumentException.class, () -> {
-            factory.init(traversalSource, model);
+            factory.init(traversalSource, context);
         });
     }
 
@@ -45,7 +48,9 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         model.setType("flashcard-review");
         model.setFlashcardDeckId(InMemoryGraphTestConfiguration.ONE_CARD_FLASHCARD_DECK_ID);
 
-        var vertex = factory.init(traversalSource, model);
+        var context = ExerciseCreationContext.createDefault(model);
+
+        var vertex = factory.init(traversalSource, context);
 
         assertNotNull(vertex);
         assertNotNull(vertex.getExercise());
@@ -58,8 +63,10 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         model.setType("flashcard-review");
         model.setFlashcardDeckId(InMemoryGraphTestConfiguration.TWO_CARD_FLASHCARD_DECK_ID);
 
-        factory.init(traversalSource, model); // Initializes session and reviews 1/2 cards
-        var nextExercise = factory.nextExercise(traversalSource, model.getId()); // Reviews 2/2 cards
+        var context = ExerciseCreationContext.createDefault(model);
+
+        factory.init(traversalSource, context); // Initializes session and reviews 1/2 cards
+        var nextExercise = factory.nextExercise(traversalSource, context); // Reviews 2/2 cards
 
         assertNotNull(nextExercise);
     }
@@ -71,9 +78,11 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         model.setType("flashcard-review");
         model.setFlashcardDeckId(InMemoryGraphTestConfiguration.TWO_CARD_FLASHCARD_DECK_ID);
 
-        factory.init(traversalSource, model); // Initializes session and reviews 1/2 cards
-        factory.nextExercise(traversalSource, model.getId()); // Reviews 2/2 cards
-        var newSessionState = factory.nextExercise(traversalSource, model.getId()); // No more cards to review
+        var context = ExerciseCreationContext.createDefault(model);
+
+        factory.init(traversalSource, context); // Initializes session and reviews 1/2 cards
+        factory.nextExercise(traversalSource, context); // Reviews 2/2 cards
+        var newSessionState = factory.nextExercise(traversalSource, context); // No more cards to review
 
         assertTrue(newSessionState.getCompleted());
     }
@@ -85,10 +94,12 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         model.setType("flashcard-review");
         model.setFlashcardDeckId(InMemoryGraphTestConfiguration.MULTI_CARD_FLASHCARD_DECK_ID);
 
-        var nextExercise0 = factory.init(traversalSource, model).getExercise(); // Initializes session and reviews 1/x cards
-        var nextExercise1 = factory.nextExercise(traversalSource, model.getId()).getExercise(); // Reviews 2/x cards
-        var nextExercise2 = factory.nextExercise(traversalSource, model.getId()).getExercise(); // Reviews 3/x cards
-        var nextExercise3 = factory.nextExercise(traversalSource, model.getId()).getExercise(); // Reviews 4/x cards
+        var context = ExerciseCreationContext.createDefault(model);
+
+        var nextExercise0 = factory.init(traversalSource, context).getExercise(); // Initializes session and reviews 1/x cards
+        var nextExercise1 = factory.nextExercise(traversalSource, context).getExercise(); // Reviews 2/x cards
+        var nextExercise2 = factory.nextExercise(traversalSource, context).getExercise(); // Reviews 3/x cards
+        var nextExercise3 = factory.nextExercise(traversalSource, context).getExercise(); // Reviews 4/x cards
 
         assertNotEquals(nextExercise0.getContent().getId(), nextExercise1.getContent().getId());
         assertNotEquals(nextExercise1.getContent().getId(), nextExercise2.getContent().getId());

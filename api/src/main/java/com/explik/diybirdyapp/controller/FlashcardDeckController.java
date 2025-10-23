@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.controller;
 import com.explik.diybirdyapp.controller.dto.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
 import com.explik.diybirdyapp.service.FlashcardDeckService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class FlashcardDeckController {
     FlashcardDeckService service;
 
     @PostMapping("/flashcard-deck")
-    public FlashcardDeckDto create(@RequestBody FlashcardDeckDto dto) {
+    public FlashcardDeckDto create(@Valid @RequestBody FlashcardDeckDto dto) {
         var model = modelMapper.map(dto, FlashcardDeckModel.class);
         var persistedModel = service.add(model);
 
@@ -41,7 +42,7 @@ public class FlashcardDeckController {
     }
 
     @PutMapping("flashcard-deck")
-    public FlashcardDeckDto update(@RequestBody FlashcardDeckDto dto) {
+    public FlashcardDeckDto update(@Valid @RequestBody FlashcardDeckDto dto) {
         var model = modelMapper.map(dto, FlashcardDeckModel.class);
         var persistedModel = service.update(model);
 

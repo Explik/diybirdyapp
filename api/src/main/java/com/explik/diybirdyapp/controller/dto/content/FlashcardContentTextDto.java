@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
 import com.explik.diybirdyapp.ContentTypes;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class FlashcardContentTextDto extends FlashcardContentDto {
@@ -8,10 +9,10 @@ public class FlashcardContentTextDto extends FlashcardContentDto {
         super(ContentTypes.TEXT);
     }
 
-    @NotNull
+    @NotBlank(message = "text.required")
     private String text;
 
-    @NotNull
+    @NotBlank(message = "languageId.required")
     private String languageId;
 
     public String getText() {

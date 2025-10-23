@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.controller.dto.exercise;
 import jakarta.validation.constraints.NotNull;
 
 public class ExerciseInputSelectReviewOptionsDto extends ExerciseInputDto {
-    @NotNull
+    @NotNull(message = "rating.required")
     private String rating;
 
     public String getRating() { return rating; }

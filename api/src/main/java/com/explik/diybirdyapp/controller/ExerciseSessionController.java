@@ -6,6 +6,7 @@ import com.explik.diybirdyapp.controller.mapper.GenericMapper;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.service.ExerciseSessionService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class ExerciseSessionController {
     GenericMapper<ExerciseSessionOptionsDto, ExerciseSessionOptionsModel> exerciseOptionsMapper;
 
     @PostMapping("/exercise-session")
-    public ExerciseSessionDto create(@RequestBody ExerciseSessionDto dto) {
+    public ExerciseSessionDto create(@Valid @RequestBody ExerciseSessionDto dto) {
         var model = modelMapper.map(dto, ExerciseSessionModel.class);
         var newModel = service.add(model);
 
@@ -50,7 +51,7 @@ public class ExerciseSessionController {
     }
 
     @PostMapping("/exercise-session/{id}/update-config")
-    public ExerciseSessionDto updateConfig(@PathVariable String id, @RequestBody ExerciseSessionOptionsDto dto) {
+    public ExerciseSessionDto updateConfig(@PathVariable String id, @Valid @RequestBody ExerciseSessionOptionsDto dto) {
         var model = exerciseOptionsMapper.map(dto);
         var updatedModel = service.updateConfig(id, model);
 
