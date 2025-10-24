@@ -10,6 +10,7 @@ import { ExerciseInputSelectPlaceholdersComponent } from "../../components/exerc
 import { ExerciseInputPairOptionsComponent } from '../../components/exercise-input-pair-options/exercise-input-pair-options.component';
 import { ExerciseInputRecordVideoComponent } from "../../components/exercise-input-record-video/exercise-input-record-video.component";
 import { ExerciseInputArrangeTextOptionsDto, ExerciseInputPairOptionsDto, ExerciseInputRecordAudioDto, ExerciseInputRecordVideoDto, ExerciseInputSelectOptionsDto, ExerciseInputSelectPlaceholdersDto, ExerciseInputWritePlaceholdersDto, ExerciseInputWriteTextDto } from '../../../../shared/api-client';
+import { SelectOptionInputAudioOption, SelectOptionInputImageOption, SelectOptionInputTextOption, SelectOptionInputVideoOption } from '../../../../shared/api-client/model/select-option-input-text-option';
 
 @Component({
   selector: 'app-exercise-components-page',
@@ -21,18 +22,21 @@ export class ExerciseComponentsPageComponent {
 
   audioValue: ExerciseInputRecordAudioDto = {
     id: '1',
+    sessionId: '1',
     type: 'audio',
     url: ''
   }
 
   videoValue: ExerciseInputRecordVideoDto = {
     id: '1',
+    sessionId: '1',
     type: 'video',
     url: ''
   }
 
   arrangeTextValue: ExerciseInputArrangeTextOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'arrange-text',
     options: [
       { id: '1', text: 'a' }, 
@@ -45,6 +49,7 @@ export class ExerciseComponentsPageComponent {
 
   textValue: ExerciseInputWriteTextDto = {
     id: '1',
+    sessionId: '1',
     type: 'text',
     text: 'Hello, World!',
     feedback: undefined
@@ -52,6 +57,7 @@ export class ExerciseComponentsPageComponent {
 
   textValueWithCorrectFeedback: ExerciseInputWriteTextDto = { 
     id: '1',
+    sessionId: '1',
     type: 'text',
     text: 'Hello, World!', 
     feedback: { correctValues: ['Hello, World!'], incorrectValues: [] } 
@@ -59,6 +65,7 @@ export class ExerciseComponentsPageComponent {
 
   textValueWithIncorrectFeedback: ExerciseInputWriteTextDto = { 
     id: '1',
+    sessionId: '1',
     type: 'text',
     text: 'Hello, ', 
     feedback: { correctValues: ['Hello, world!'], incorrectValues: ['Goodbye, World!'] } 
@@ -66,6 +73,7 @@ export class ExerciseComponentsPageComponent {
 
   textValueWithCorrectFeedbackAndRetype: ExerciseInputWriteTextDto = { 
     id: '1',
+    sessionId: '1',
     type: 'text',
     text: 'Hello, World!', 
     feedback: { correctValues: ['Hello, World!'], incorrectValues: [], isRetypeAnswerEnabled: true } 
@@ -73,6 +81,7 @@ export class ExerciseComponentsPageComponent {
 
   textValueWithIncorrectFeedbackAndRetype: ExerciseInputWriteTextDto = { 
     id: '1',
+    sessionId: '1',
     type: 'text',
     text: 'Hello, ', 
     feedback: { correctValues: ['Hello, world!'], incorrectValues: ['Goodbye, World!'], isRetypeAnswerEnabled: true } 
@@ -80,6 +89,7 @@ export class ExerciseComponentsPageComponent {
 
   writePlaceholdersValue: ExerciseInputWritePlaceholdersDto = {
     id: '1',
+    sessionId: '1',
     type: 'write-placeholders',
     parts: [
       { id: '1', type: 'text', value: 'This is a' },
@@ -93,6 +103,7 @@ export class ExerciseComponentsPageComponent {
 
   writePlaceholdersValueWithFeedback: ExerciseInputWritePlaceholdersDto = {
     id: '1',
+    sessionId: '1',
     type: 'write-placeholders',
     parts: [
       { id: '1', type: 'text', value: 'This is a' },
@@ -109,6 +120,7 @@ export class ExerciseComponentsPageComponent {
 
   selectTextOptionsValue: ExerciseInputSelectOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'text',
     options: [
@@ -116,12 +128,13 @@ export class ExerciseComponentsPageComponent {
       { id: '2', text: 'Option 2' },
       { id: '3', text: 'Option 3' },
       { id: '4', text: 'Option 4' }
-    ],
+    ] as SelectOptionInputTextOption[],
     value: "1",
   };
 
   selectTextOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = { 
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'text',
     options: [
@@ -129,7 +142,7 @@ export class ExerciseComponentsPageComponent {
       { id: '2', text: 'Option 2' },
       { id: '3', text: 'Option 3' },
       { id: '4', text: 'Option 4' }
-    ],
+    ] as SelectOptionInputTextOption[],
     feedback: {
       correctOptionIds: ['1'],
       incorrectOptionIds: ['2', '3', '4']
@@ -139,6 +152,7 @@ export class ExerciseComponentsPageComponent {
 
   selectTextOptionsValueWithFeedbackAndRetype: ExerciseInputSelectOptionsDto = { 
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'text',
     options: [
@@ -146,7 +160,7 @@ export class ExerciseComponentsPageComponent {
       { id: '2', text: 'Option 2' },
       { id: '3', text: 'Option 3' },
       { id: '4', text: 'Option 4' }
-    ],
+    ] as SelectOptionInputTextOption[],
     feedback: {
       correctOptionIds: ['1'],
       incorrectOptionIds: ['2', '3', '4'],
@@ -157,27 +171,29 @@ export class ExerciseComponentsPageComponent {
 
   selectAudioOptionsValue: ExerciseInputSelectOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'audio',
     options: [
-      { id: '1', text: 'Option 1', url: 'https://download.samplelib.com/mp3/sample-3s.mp3' },
-      { id: '2', text: 'Option 2', url: 'https://download.samplelib.com/mp3/sample-6s.mp3' },
-      { id: '3', text: 'Option 3', url: 'https://download.samplelib.com/mp3/sample-9s.mp3' },
-      { id: '4', text: 'Option 4', url: 'https://download.samplelib.com/mp3/sample-12s.mp3' }
-    ],
+      { id: '1', url: 'https://download.samplelib.com/mp3/sample-3s.mp3' },
+      { id: '2', url: 'https://download.samplelib.com/mp3/sample-6s.mp3' },
+      { id: '3', url: 'https://download.samplelib.com/mp3/sample-9s.mp3' },
+      { id: '4', url: 'https://download.samplelib.com/mp3/sample-12s.mp3' }
+    ] as SelectOptionInputAudioOption[],
     value: "1",
   };
 
   selectAudioOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = { 
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'audio',
     options: [
-      { id: '1', text: 'Option 1', url: 'https://download.samplelib.com/mp3/sample-3s.mp3' },
-      { id: '2', text: 'Option 2', url: 'https://download.samplelib.com/mp3/sample-6s.mp3' },
-      { id: '3', text: 'Option 3', url: 'https://download.samplelib.com/mp3/sample-9s.mp3' },
-      { id: '4', text: 'Option 4', url: 'https://download.samplelib.com/mp3/sample-12s.mp3' }
-    ],
+      { id: '1', url: 'https://download.samplelib.com/mp3/sample-3s.mp3' },
+      { id: '2', url: 'https://download.samplelib.com/mp3/sample-6s.mp3' },
+      { id: '3', url: 'https://download.samplelib.com/mp3/sample-9s.mp3' },
+      { id: '4', url: 'https://download.samplelib.com/mp3/sample-12s.mp3' }
+    ] as SelectOptionInputAudioOption[],
     feedback: {
       correctOptionIds: ['1'],
       incorrectOptionIds: ['2', '3', '4']
@@ -187,27 +203,29 @@ export class ExerciseComponentsPageComponent {
 
   selectImageOptionsValue: ExerciseInputSelectOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'image',
     options: [
-      { id: '1', text: 'Option 1', url: 'https://picsum.photos/id/21/200/300' },
-      { id: '2', text: 'Option 2', url: 'https://picsum.photos/id/22/200/300' },
-      { id: '3', text: 'Option 3', url: 'https://picsum.photos/id/23/200/300' },
-      { id: '4', text: 'Option 4', url: 'https://picsum.photos/id/24/200/300' }
-    ],
+      { id: '1', url: 'https://picsum.photos/id/21/200/300' },
+      { id: '2', url: 'https://picsum.photos/id/22/200/300' },
+      { id: '3', url: 'https://picsum.photos/id/23/200/300' },
+      { id: '4', url: 'https://picsum.photos/id/24/200/300' }
+    ] as SelectOptionInputImageOption[],
     value: "1",
   };
 
   selectImageOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'image',
     options: [
-      { id: '1', text: 'Option 1', url: 'https://picsum.photos/id/21/200/300' },
-      { id: '2', text: 'Option 2', url: 'https://picsum.photos/id/22/200/300' },
-      { id: '3', text: 'Option 3', url: 'https://picsum.photos/id/23/200/300' },
-      { id: '4', text: 'Option 4', url: 'https://picsum.photos/id/24/200/300' }
-    ],
+      { id: '1', url: 'https://picsum.photos/id/21/200/300' },
+      { id: '2', url: 'https://picsum.photos/id/22/200/300' },
+      { id: '3', url: 'https://picsum.photos/id/23/200/300' },
+      { id: '4', url: 'https://picsum.photos/id/24/200/300' }
+    ] as SelectOptionInputImageOption[],
     feedback: {
       correctOptionIds: ['1'],
       incorrectOptionIds: ['2', '3', '4']
@@ -217,27 +235,29 @@ export class ExerciseComponentsPageComponent {
 
   selectVideoOptionsValue: ExerciseInputSelectOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'video',
     options: [
-      { id: '1', text: 'Option 1', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
-      { id: '2', text: 'Option 2', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
-      { id: '3', text: 'Option 3', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
-      { id: '4', text: 'Option 4', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }
-    ],
+      { id: '1', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '2', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+      { id: '3', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '4', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }
+    ] as SelectOptionInputVideoOption[],
     value: "1",
   };
 
   selectVideoOptionsValueWithFeedback: ExerciseInputSelectOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'multiple-choice',
     optionType: 'video',
     options: [
-      { id: '1', text: 'Option 1', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
-      { id: '2', text: 'Option 2', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
-      { id: '3', text: 'Option 3', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
-      { id: '4', text: 'Option 4', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }
-    ],
+      { id: '1', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '2', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+      { id: '3', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+      { id: '4', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' }
+    ] as SelectOptionInputVideoOption[],
     feedback: {
       correctOptionIds: ['1'],
       incorrectOptionIds: ['2', '3', '4']
@@ -247,6 +267,7 @@ export class ExerciseComponentsPageComponent {
 
   selectPlaceholdersValue: ExerciseInputSelectPlaceholdersDto = {
     id: '1',
+    sessionId: '1',
     type: 'select-placeholders',
     parts: [
       { type: 'text', value: 'This is a' },
@@ -260,6 +281,7 @@ export class ExerciseComponentsPageComponent {
 
   pairOptionsValue: ExerciseInputPairOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'pair-options',
     leftOptionType: 'text',
     rightOptionType: 'text',
@@ -277,6 +299,7 @@ export class ExerciseComponentsPageComponent {
 
   pairOptionsValueWithCorrectFeedback: ExerciseInputPairOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'pair-options',
     leftOptionType: 'text',
     rightOptionType: 'text',
@@ -298,6 +321,7 @@ export class ExerciseComponentsPageComponent {
 
   pairOptionsValueWithIncorrectFeedback: ExerciseInputPairOptionsDto = {
     id: '1',
+    sessionId: '1',
     type: 'pair-options',
     leftOptionType: 'text',
     rightOptionType: 'text',

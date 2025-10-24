@@ -92,7 +92,7 @@ export class EditFlashcardDeckImpl implements EditFlashcardDeck {
     static createFromDto(dto: FlashcardDeckDto): EditFlashcardDeckImpl {
         var deck = new EditFlashcardDeckImpl();
         deck.id = dto.id;
-        deck.name = dto.name;
+        deck.name = dto.name || "";
         deck.description = dto.description;
         deck.flashcards = [];
         return deck;
@@ -188,7 +188,7 @@ export class EditFlashcardImpl implements EditFlashcard {
         flashcard.frontContent = dto.frontContent;
         flashcard.backContent = dto.backContent;
 
-        switch (dto.frontContent.type) {
+        switch (dto.frontContent!.type) {
             case "audio":
                 flashcard.leftContentType = "audio";
                 flashcard.leftAudioContent = EditFlashcardAudioImpl.createFromDto(<FlashcardContentAudioDto>dto.frontContent);
@@ -207,7 +207,7 @@ export class EditFlashcardImpl implements EditFlashcard {
                 break;
         }
 
-        switch (dto.backContent.type) {
+        switch (dto.backContent!.type) {
             case "audio":
                 flashcard.rightContentType = "audio";
                 flashcard.rightAudioContent = EditFlashcardAudioImpl.createFromDto(<FlashcardContentAudioDto>dto.backContent);
@@ -273,8 +273,8 @@ export class EditFlashcardImpl implements EditFlashcard {
                 id: this.id,
                 deckId: this.state === 'added' ? this.deckId : undefined,
                 deckOrder: this.deckOrder,
-                frontContent: leftChanges?.content,
-                backContent: rightChanges?.content
+                frontContent: leftChanges?.content as any,
+                backContent: rightChanges?.content as any
             },
             files: [...(leftChanges?.files ?? []), ...(rightChanges?.files ?? [])]
         };

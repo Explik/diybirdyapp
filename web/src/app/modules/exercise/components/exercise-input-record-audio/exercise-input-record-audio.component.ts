@@ -48,7 +48,7 @@ export class ExerciseInputRecordAudioComponent {
 
         if (this.input) {
           this.input.url = 'audio.webm'; 
-          this.input.files = [new File(this.audioChunks, 'audio.webm')]; 
+          (this.input as any).files = [new File(this.audioChunks, 'audio.webm')]; 
         }
       };
       this.mediaRecorder.start();

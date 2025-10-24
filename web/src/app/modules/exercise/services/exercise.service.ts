@@ -96,7 +96,7 @@ export class ExerciseService {
         if (!session) 
             throw new Error("No session found");
         
-        const newSession = await this.service.nextExercise(session.id).toPromise();
+        const newSession = await this.service.nextExercise(session.id!).toPromise();
         this.setExerciseSession(newSession);
         
         if (newSession?.exercise)
@@ -108,7 +108,7 @@ export class ExerciseService {
         if (!session) 
             throw new Error("No session found");
 
-        const newSession = await this.service.skipExercise(session.id).toPromise();
+        const newSession = await this.service.skipExercise(session.id!).toPromise();
         this.setExerciseSession(newSession);
 
         if (newSession?.exercise)
