@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ExerciseInputSelectOptionsDto } from '../../../../shared/api-client';
+import { ExerciseInputSelectOptionsDto, SelectOptionInputBaseOption } from '../../../../shared/api-client';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { AudioPlayingService } from '../../services/audioPlaying.service';
 import { RowButtonComponent } from "../../../../shared/components/row-button/row-button.component";
@@ -20,19 +20,19 @@ export class ExerciseInputSelectOptionsComponent {
 
   constructor(private audioService: AudioPlayingService) { }
 
-  castAsAudio(option: SelectOptionInputOption): SelectOptionInputAudioOption {
+  castAsAudio(option: SelectOptionInputBaseOption): SelectOptionInputAudioOption {
     return option as SelectOptionInputAudioOption;
   }
 
-  castAsText(option: SelectOptionInputOption): SelectOptionInputTextOption {
+  castAsText(option: SelectOptionInputBaseOption): SelectOptionInputTextOption {
     return option as SelectOptionInputTextOption;
   }
 
-  castAsImage(option: SelectOptionInputOption): SelectOptionInputImageOption {
+  castAsImage(option: SelectOptionInputBaseOption): SelectOptionInputImageOption {
     return option as SelectOptionInputImageOption;
   }
 
-  castAsVideo(option: SelectOptionInputOption): SelectOptionInputAudioOption {
+  castAsVideo(option: SelectOptionInputBaseOption): SelectOptionInputAudioOption {
     return option as SelectOptionInputAudioOption;
   }
 
