@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.component";
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 import { AudioInputComponent } from "../audio-input/audio-input.component";
@@ -14,13 +14,15 @@ import { SelectComponent } from "../../../../shared/components/select/select.com
 import { OptionComponent } from "../../../../shared/components/option/option.component";
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
 import { TextInputComponent } from '../text-input/text-input.component';
+import { FormErrorComponent } from "../../../../shared/components/form-error/form-error.component";
+import { Dir } from "../../../../../../node_modules/@angular/cdk/bidi/index";
 
 @Component({
     selector: 'app-flashcard-edit-container',
   standalone: true,
   templateUrl: './flashcard-edit-container.component.html',
   styleUrl: './flashcard-edit-container.component.css',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, TextInputComponent, VideoInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, TextInputComponent, VideoInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent, FormErrorComponent, Dir]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
@@ -92,7 +94,10 @@ export class FlashcardEditContainerComponent {
     // Also add to the reactive form array if available
     if (this.form) {
       const fa = this.getFlashcardsFormArray();
-      fa.push(this.buildFlashcardFormGroup(newFlashcard));
+      const fg = this.buildFlashcardFormGroup(newFlashcard);
+      // attach per-flashcard validator
+      fg.setValidators(this.flashcardValidator());
+      fa.push(fg);
     }
   }
 
@@ -155,15 +160,25 @@ export class FlashcardEditContainerComponent {
     if (!this.flashcardDeck) return;
 
     this.form = this.fb.group({
-      name: [this.flashcardDeck.name],
+      name: [this.flashcardDeck.name, [Validators.required]],
       description: [this.flashcardDeck.description],
       frontLanguageId: [this.getMostCommonLanguage('left')],
       backLanguageId: [this.getMostCommonLanguage('right')],
-      flashcards: this.fb.array(this.flashcardDeck.flashcards.map(f => this.buildFlashcardFormGroup(f)))
+      flashcards: this.fb.array(this.flashcardDeck.flashcards.map(f => {
+        const fg = this.buildFlashcardFormGroup(f);
+        fg.setValidators(this.flashcardValidator());
+        return fg;
+      }))
     });
+
+    // attach deck-level validator (e.g., require language selects when text exists)
+    this.form.setValidators(this.deckValidator());
 
     // Snapshot original ids for add/delete detection on save
     this.originalFlashcardIds = new Set(this.flashcardDeck.flashcards.map(f => f.id));
+
+    // Ensure validators run at least once after building
+    this.form.updateValueAndValidity({ onlySelf: false, emitEvent: false });
   }
 
   private buildFlashcardFormGroup(f: EditFlashcardImpl) {
@@ -206,6 +221,13 @@ export class FlashcardEditContainerComponent {
   }
 
   handleSaveFlashcards() {
+    // Trigger validators and mark touched so template shows errors. Abort save if invalid.
+    if (this.form) {
+      this.form.markAllAsTouched();
+      this.form.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+      if (!this.form.valid) return;
+    }
+
     // Before saving, apply the globally selected languages to individual flashcards
     const front = this.form?.get('frontLanguageId')?.value;
     const back = this.form?.get('backLanguageId')?.value;
@@ -249,5 +271,126 @@ export class FlashcardEditContainerComponent {
     }
 
     this.saveFlashcards?.emit();
+  }
+
+  /**
+   * Validator for an individual flashcard FormGroup. Ensures the selected content type
+   * has corresponding content present for left/right sides. Sets errors on child controls
+   * so the template can show field-level messages.
+   */
+  private flashcardValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control) return null;
+
+      let hasError = false;
+
+      const leftType = control.get('leftContentType')?.value;
+      const rightType = control.get('rightContentType')?.value;
+
+      const leftText = control.get('leftTextContent');
+      const rightText = control.get('rightTextContent');
+      const leftImage = control.get('leftImageContent');
+      const rightImage = control.get('rightImageContent');
+      const leftAudio = control.get('leftAudioContent');
+      const rightAudio = control.get('rightAudioContent');
+      const leftVideo = control.get('leftVideoContent');
+      const rightVideo = control.get('rightVideoContent');
+
+      // clear prior child errors
+      [leftText, rightText, leftImage, rightImage, leftAudio, rightAudio, leftVideo, rightVideo].forEach(c => {
+        if (c) c.setErrors(null);
+      });
+
+      if (leftType === 'text') {
+        const val = leftText?.value?.text;
+        if (!val || (typeof val === 'string' && val.trim() === '')) {
+          leftText?.setErrors({ 'text.required': true });
+          hasError = true;
+        }
+      } else if (leftType === 'image') {
+        const v = leftImage?.value;
+        if (!v || (!(v.imageFile) && !(v.imageUrl))) {
+          leftImage?.setErrors({ 'image.required': true });
+          hasError = true;
+        }
+      } else if (leftType === 'audio') {
+        const v = leftAudio?.value;
+        if (!v) { leftAudio?.setErrors({ 'audio.required': true }); hasError = true; }
+      } else if (leftType === 'video') {
+        const v = leftVideo?.value;
+        if (!v || (!(v.videoFile) && !(v.videoUrl))) { leftVideo?.setErrors({ 'video.required': true }); hasError = true; }
+      }
+
+      if (rightType === 'text') {
+        const val = rightText?.value?.text;
+        if (!val || (typeof val === 'string' && val.trim() === '')) {
+          rightText?.setErrors({ 'text.required': true });
+          hasError = true;
+        }
+      } else if (rightType === 'image') {
+        const v = rightImage?.value;
+        if (!v || (!(v.imageFile) && !(v.imageUrl))) {
+          rightImage?.setErrors({ 'image.required': true });
+          hasError = true;
+        }
+      } else if (rightType === 'audio') {
+        const v = rightAudio?.value;
+        if (!v) { rightAudio?.setErrors({ 'audio.required': true }); hasError = true; }
+      } else if (rightType === 'video') {
+        const v = rightVideo?.value;
+        if (!v || (!(v.videoFile) && !(v.videoUrl))) { rightVideo?.setErrors({ 'video.required': true }); hasError = true; }
+      }
+
+      return hasError ? { flashcardInvalid: true } : null;
+    }
+  }
+
+  /**
+   * Deck-level validator: if any flashcard has text content on either side, require the
+   * corresponding global language selector to be set.
+   */
+  private deckValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control) return null;
+
+      const frontCtrl = control.get('frontLanguageId');
+      const backCtrl = control.get('backLanguageId');
+
+      if (frontCtrl) frontCtrl.setErrors(null);
+      if (backCtrl) backCtrl.setErrors(null);
+
+      const fa = control.get('flashcards') as FormArray | null;
+      let anyLeftText = false;
+      let anyRightText = false;
+
+      if (fa) {
+        for (let i = 0; i < fa.length; i++) {
+          const fg = fa.at(i);
+          const leftType = fg.get('leftContentType')?.value;
+          const rightType = fg.get('rightContentType')?.value;
+
+          if (leftType === 'text') {
+            const val = fg.get('leftTextContent')?.value?.text;
+            if (val && typeof val === 'string' && val.trim() !== '') anyLeftText = true;
+          }
+          if (rightType === 'text') {
+            const val = fg.get('rightTextContent')?.value?.text;
+            if (val && typeof val === 'string' && val.trim() !== '') anyRightText = true;
+          }
+        }
+      }
+
+      let hasError = false;
+      if (anyLeftText) {
+        const front = frontCtrl?.value;
+        if (!front || front === '') { frontCtrl?.setErrors({ 'language.required': true }); hasError = true; }
+      }
+      if (anyRightText) {
+        const back = backCtrl?.value;
+        if (!back || back === '') { backCtrl?.setErrors({ 'language.required': true }); hasError = true; }
+      }
+
+      return hasError ? { languagesMissing: true } : null;
+    }
   }
 }

@@ -3,6 +3,7 @@
     <app-form-field>
       <app-label i18n>Name</app-label>
       <app-text-field formControlName="name" class="deck-name-input mb-2"></app-text-field>
+      <app-form-error *ngIf="form.get('name')?.errors?.['required']" class="text-red-600 text-sm">Title is required</app-form-error>
     </app-form-field>
 
     <app-form-field>
@@ -21,6 +22,7 @@
             {{ language.name }}
           </app-option>
         </app-select>
+        <app-form-error *ngIf="form.get('frontLanguageId')?.errors?.['language.required']">Front language required when text content exists</app-form-error>
       </app-form-field>
 
       <app-form-field class="w-1/2">
@@ -31,6 +33,7 @@
             {{ language.name }}
           </app-option>
         </app-select>
+        <app-form-error *ngIf="form.get('backLanguageId')?.errors?.['language.required']">Back language required when text content exists</app-form-error>
       </app-form-field>
     </div>
   </div>
@@ -68,44 +71,53 @@
             </div>
           </ng-container>
 
-          <ng-container *ngIf="fc.get('leftContentType')?.value === 'text'" left>
-            <app-form-field>
+          <app-form-field *ngIf="fc.get('leftContentType')?.value === 'text'" left>
               <app-text-input formControlName="leftTextContent" (rows)="1"></app-text-input>
               <div class="flex items-center justify-between w-full">
-                  <app-label i18n>Front</app-label>
+                  <app-form-error *ngIf="fc.get('leftTextContent')?.errors?.['text.required'] else noLeftTextError" class="text-red-600 text-sm">Front text required</app-form-error>
+                  <ng-template #noLeftTextError><app-label i18n>Front</app-label></ng-template>
                   <span *ngIf="form?.get('frontLanguageId')?.value">{{ getLanguageName(form.get('frontLanguageId')?.value) }}</span>
-                </div>
-            </app-form-field>
-          </ng-container>
-          <ng-container *ngIf="fc.get('leftContentType')?.value === 'audio'" left>
+              </div>
+          </app-form-field>
+          <app-form-field *ngIf="fc.get('leftContentType')?.value === 'audio'" left>
             <app-audio-input formControlName="leftAudioContent"></app-audio-input>
-          </ng-container>
-          <ng-container *ngIf="fc.get('leftContentType')?.value === 'image'" left>
+          </app-form-field>
+          <app-form-field *ngIf="fc.get('leftContentType')?.value === 'image'" left>
             <app-image-input formControlName="leftImageContent"></app-image-input>
-          </ng-container>
-          <ng-container *ngIf="fc.get('leftContentType')?.value === 'video'" left>
+            <app-form-error *ngIf="fc.get('leftImageContent')?.errors?.['image.required']" class="text-red-600 text-sm">Front image required</app-form-error>
+          </app-form-field>
+          <app-form-field *ngIf="fc.get('leftContentType')?.value === 'video'" left>
             <app-video-input formControlName="leftVideoContent"></app-video-input>
-          </ng-container>
+            <app-form-error *ngIf="fc.get('leftVideoContent')?.errors?.['video.required']" class="text-red-600 text-sm">Front video required</app-form-error>
+          </app-form-field>
+          <app-form-field *ngIf="fc.get('leftContentType')?.value === 'audio'" left>
+            <app-audio-input formControlName="leftAudioContent"></app-audio-input>
+            <app-form-error *ngIf="fc.get('leftAudioContent')?.errors?.['audio.required']" class="text-red-600 text-sm">Front audio required</app-form-error>
+          </app-form-field>
 
-          <ng-container *ngIf="fc.get('rightContentType')?.value === 'text'" right>
-            <app-form-field>
+          <app-form-field *ngIf="fc.get('rightContentType')?.value === 'text'" right>
               <app-text-input formControlName="rightTextContent" (rows)="1"></app-text-input>
               <div class="flex items-center justify-between w-full">
-                <app-label>Back</app-label>
-                <span *ngIf="form?.get('backLanguageId')?.value"
-                  class="text-right">{{ getLanguageName(form.get('backLanguageId')?.value) }}</span>
+                <app-form-error *ngIf="fc.get('rightTextContent')?.errors?.['text.required']; else noRightTextError">Back text required</app-form-error>
+                <ng-template #noRightTextError><app-label>Back</app-label></ng-template>
+                <span 
+                  *ngIf="form?.get('backLanguageId')?.value"
+                  class="text-right">
+                  {{ getLanguageName(form.get('backLanguageId')?.value) }}</span>
               </div>
-            </app-form-field>
-          </ng-container>
-          <ng-container *ngIf="fc.get('rightContentType')?.value === 'audio'" right>
+          </app-form-field>
+          <app-form-field *ngIf="fc.get('rightContentType')?.value === 'audio'" right>
             <app-audio-input formControlName="rightAudioContent"></app-audio-input>
-          </ng-container>
-          <ng-container *ngIf="fc.get('rightContentType')?.value === 'image'" right>
+            <app-form-error *ngIf="fc.get('rightAudioContent')?.errors?.['audio.required']">Back audio required</app-form-error>
+          </app-form-field>
+          <app-form-field *ngIf="fc.get('rightContentType')?.value === 'image'" right>
             <app-image-input formControlName="rightImageContent"></app-image-input>
-          </ng-container>
-          <ng-container *ngIf="fc.get('rightContentType')?.value === 'video'" right>
+            <app-form-error *ngIf="fc.get('rightImageContent')?.errors?.['image.required']">Back image required</app-form-error>
+          </app-form-field>
+          <app-form-field *ngIf="fc.get('rightContentType')?.value === 'video'" right>
             <app-video-input formControlName="rightVideoContent"></app-video-input>
-          </ng-container>
+            <app-form-error *ngIf="fc.get('rightVideoContent')?.errors?.['video.required']">Back video required</app-form-error>
+          </app-form-field>
 
         </app-flashcard-edit>
       </div>

@@ -1,9 +1,6 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
-import jakarta.validation.constraints.NotBlank;
-
 public class FlashcardDeckDto {
-    @NotBlank(message = "id.required")
     private String id;
 
     private String name;
