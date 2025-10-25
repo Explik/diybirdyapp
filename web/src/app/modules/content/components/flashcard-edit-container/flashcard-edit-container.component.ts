@@ -8,19 +8,19 @@ import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardI
 import { AudioInputComponent } from "../audio-input/audio-input.component";
 import { ImageInputComponent } from "../image-input/image-input.component";
 import { VideoInputComponent } from "../video-input/video-input.component";
-import { TextInputComponent } from "../text-input/text-input.component";
 import { LabelComponent } from "../../../../shared/components/label/label.component";
 import { FormFieldComponent } from "../../../../shared/components/form-field/form-field.component";
 import { SelectComponent } from "../../../../shared/components/select/select.component";
 import { OptionComponent } from "../../../../shared/components/option/option.component";
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
+import { TextInputComponent } from '../text-input/text-input.component';
 
 @Component({
     selector: 'app-flashcard-edit-container',
   standalone: true,
   templateUrl: './flashcard-edit-container.component.html',
   styleUrl: './flashcard-edit-container.component.css',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, VideoInputComponent, TextInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, TextInputComponent, VideoInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
@@ -157,25 +157,13 @@ export class FlashcardEditContainerComponent {
     this.form = this.fb.group({
       name: [this.flashcardDeck.name],
       description: [this.flashcardDeck.description],
-      frontLanguageId: [this.frontLanguageId],
-      backLanguageId: [this.backLanguageId],
+      frontLanguageId: [this.getMostCommonLanguage('left')],
+      backLanguageId: [this.getMostCommonLanguage('right')],
       flashcards: this.fb.array(this.flashcardDeck.flashcards.map(f => this.buildFlashcardFormGroup(f)))
     });
 
     // Snapshot original ids for add/delete detection on save
     this.originalFlashcardIds = new Set(this.flashcardDeck.flashcards.map(f => f.id));
-
-    // Keep component-level quick access vars in sync
-    const fl = this.form.get('frontLanguageId');
-    const br = this.form.get('backLanguageId');
-    if (fl) {
-      this.frontLanguageId = fl.value || '';
-      fl.valueChanges?.subscribe(v => this.frontLanguageId = v || '');
-    }
-    if (br) {
-      this.backLanguageId = br.value || '';
-      br.valueChanges?.subscribe(v => this.backLanguageId = v || '');
-    }
   }
 
   private buildFlashcardFormGroup(f: EditFlashcardImpl) {
@@ -183,7 +171,7 @@ export class FlashcardEditContainerComponent {
       id: [f.id],
       deckId: [f.deckId],
       deckOrder: [f.deckOrder],
-      state: [f.state],
+      // TODO correctly initialize content types and contents
       leftContentType: [f.leftContentType],
       rightContentType: [f.rightContentType],
       leftTextContent: [f.leftTextContent],
@@ -204,6 +192,17 @@ export class FlashcardEditContainerComponent {
   // Template-friendly accessor for the form array controls
   get flashcardsControls() {
     return (this.form?.get('flashcards') as FormArray)?.controls || [];
+  }
+
+  /**
+   * Return the language name for a given language id using the provided
+   * flashcardLanguages input. If no match is found, return the id as a
+   * fallback so the UI still shows something.
+   */
+  getLanguageName(id?: string | null): string | undefined {
+    if (!id) return undefined;
+    const lang = this.flashcardLanguages?.find(l => l.id === id);
+    return lang ? lang.name : id;
   }
 
   handleSaveFlashcards() {

@@ -1,18 +1,29 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, forwardRef } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { EditFlashcardVideo, EditFlashcardVideoImpl } from '../../models/editFlashcard.model';
 
 @Component({
   standalone: true,
   imports: [CommonModule],
   selector: 'app-video-input',
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => VideoInputComponent),
+    multi: true
+  }],
   templateUrl: './video-input.component.html',
-  styleUrl: './video-input.component.css'
+  styleUrls: ['./video-input.component.css']
 })
-export class VideoInputComponent {
+export class VideoInputComponent implements ControlValueAccessor {
   @Input() videoData: EditFlashcardVideo | undefined;
   @Output() videoDataChange = new EventEmitter<EditFlashcardVideo | undefined>();
   @ViewChild('liveVideoElement') liveVideoElement!: ElementRef<HTMLVideoElement>;
+
+  // ControlValueAccessor callbacks
+  private onChange: (value: EditFlashcardVideo | undefined) => void = () => {};
+  private onTouched: () => void = () => {};
+  isDisabled = false;
 
   get videoFile(): EditFlashcardVideoImpl | undefined {
     if (this.videoData instanceof EditFlashcardVideoImpl && this.videoData.videoFile) {
@@ -66,6 +77,8 @@ export class VideoInputComponent {
     if (file && file.type.startsWith('video/')) {
       this.videoData = EditFlashcardVideoImpl.createFromFile(file);
       this.videoDataChange.emit(this.videoData);
+      this.onChange(this.videoData);
+      this.onTouched();
     }
   }
 
@@ -95,6 +108,8 @@ export class VideoInputComponent {
         const file = new File([blob], `recorded-video-${Date.now()}.mp4`, { type: 'video/mp4' });
         this.videoData = EditFlashcardVideoImpl.createFromFile(file);
         this.videoDataChange.emit(this.videoData);
+        this.onChange(this.videoData);
+        this.onTouched();
         this.isRecording = false;
         this.isSaving = false;
         
@@ -127,6 +142,8 @@ export class VideoInputComponent {
       this.recordedChunks = [];
       this.videoData = undefined;
       this.videoDataChange.emit(undefined);
+      this.onChange(undefined);
+      this.onTouched();
     }
     
     if (this.mediaStream) {
@@ -141,6 +158,8 @@ export class VideoInputComponent {
   clearFileInput() {
     this.videoData = undefined;
     this.videoDataChange.emit(undefined);
+    this.onChange(undefined);
+    this.onTouched();
   }
 
   handleDrop(event: DragEvent) {
@@ -151,6 +170,8 @@ export class VideoInputComponent {
       if (file.type.startsWith('video/')) {
         this.videoData = EditFlashcardVideoImpl.createFromFile(file);
         this.videoDataChange.emit(this.videoData);
+        this.onChange(this.videoData);
+        this.onTouched();
       }
     }
   }
@@ -192,6 +213,32 @@ export class VideoInputComponent {
         videoElement.pause();
         this.isPlaying = false;
       }
+    }
+  }
+
+  // ControlValueAccessor implementation
+  writeValue(obj: EditFlashcardVideo | undefined): void {
+    this.videoData = obj;
+  }
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+  setDisabledState?(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
+    if (isDisabled) {
+      // if disabling, ensure any ongoing recording/streams are stopped
+      if (this.mediaRecorder && this.isRecording) {
+        try { this.mediaRecorder.stop(); } catch {}
+      }
+      if (this.mediaStream) {
+        this.mediaStream.getTracks().forEach(track => track.stop());
+        this.mediaStream = null;
+      }
+      this.isRecording = false;
+      this.isSaving = false;
     }
   }
 }

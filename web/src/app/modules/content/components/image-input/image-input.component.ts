@@ -1,19 +1,30 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, forwardRef } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { EditFlashcardImage, EditFlashcardImageImpl } from '../../models/editFlashcard.model';
 
 @Component({
   standalone: true,
   imports: [CommonModule],
   selector: 'app-image-input',
+  providers: [{
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => ImageInputComponent),
+    multi: true
+  }],
   templateUrl: './image-input.component.html',
   styleUrls: ['./image-input.component.css']
 })
-export class ImageInputComponent {
+export class ImageInputComponent implements ControlValueAccessor {
   @Input() imageData: EditFlashcardImage | undefined;
   @Output() imageDataChange = new EventEmitter<EditFlashcardImage | undefined>();
   @ViewChild('liveVideoElement') liveVideoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('canvas') canvasElement!: ElementRef<HTMLCanvasElement>;
+
+  // ControlValueAccessor callbacks
+  private onChange: (value: EditFlashcardImage | undefined) => void = () => {};
+  private onTouched: () => void = () => {};
+  isDisabled = false;
 
   get imageFile(): EditFlashcardImageImpl | undefined {
     if (this.imageData instanceof EditFlashcardImageImpl && this.imageData.imageFile) {
@@ -61,6 +72,8 @@ export class ImageInputComponent {
     if (file && file.type.startsWith('image/')) {
       this.imageData = EditFlashcardImageImpl.createFromFile(file);
       this.imageDataChange.emit(this.imageData);
+      this.onChange(this.imageData);
+      this.onTouched();
     }
   }
 
@@ -104,6 +117,8 @@ export class ImageInputComponent {
         const file = new File([blob], `captured-image-${Date.now()}.png`, { type: 'image/png' });
         this.imageData = EditFlashcardImageImpl.createFromFile(file);
         this.imageDataChange.emit(this.imageData);
+        this.onChange(this.imageData);
+        this.onTouched();
         this.stopCapturing();
       }
     }, 'image/png');
@@ -120,6 +135,8 @@ export class ImageInputComponent {
   clearFileInput() {
     this.imageData = undefined;
     this.imageDataChange.emit(undefined);
+    this.onChange(undefined);
+    this.onTouched();
   }
 
   handleDrop(event: DragEvent) {
@@ -130,6 +147,8 @@ export class ImageInputComponent {
       if (file.type.startsWith('image/')) {
         this.imageData = EditFlashcardImageImpl.createFromFile(file);
         this.imageDataChange.emit(this.imageData);
+        this.onChange(this.imageData);
+        this.onTouched();
       }
     }
   }
@@ -154,6 +173,24 @@ export class ImageInputComponent {
     
     if (!target.contains(relatedTarget)) {
       this.isDragging = false;
+    }
+  }
+
+  // ControlValueAccessor implementation
+  writeValue(obj: EditFlashcardImage | undefined): void {
+    this.imageData = obj;
+  }
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+  setDisabledState?(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
+    if (isDisabled) {
+      // if disabling, ensure any capture/streams are stopped
+      this.stopCapturing();
     }
   }
 }
