@@ -15,19 +15,18 @@ import { OptionComponent } from "../../../../shared/components/option/option.com
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
 import { TextInputComponent } from '../text-input/text-input.component';
 import { FormErrorComponent } from "../../../../shared/components/form-error/form-error.component";
-import { Dir } from "../../../../../../node_modules/@angular/cdk/bidi/index";
 
 @Component({
-    selector: 'app-flashcard-edit-container',
+  selector: 'app-flashcard-edit-container',
   standalone: true,
   templateUrl: './flashcard-edit-container.component.html',
   styleUrl: './flashcard-edit-container.component.css',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, TextInputComponent, VideoInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent, FormErrorComponent, Dir]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, TextInputComponent, VideoInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent, FormErrorComponent]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
   @Input() flashcardLanguages: EditFlashcardLanguageImpl[] = [];
-  
+
   @Output() saveFlashcards = new EventEmitter<void>();
 
   currentDragIndex: number | undefined = undefined;
@@ -40,24 +39,24 @@ export class FlashcardEditContainerComponent {
   // Snapshot of original flashcard ids to detect adds/deletes on save
   private originalFlashcardIds: Set<string> | undefined = undefined;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) { }
 
   ngOnChanges(): void {
     if (this.flashcardDeck) {
       // Initialize global language selectors with most common values
       // Do this before adding default flashcards to avoid undefined issues
       this.initializeGlobalLanguages();
-      
+
       // Add default flashcards if none exist to avoid empty state
       if (!this.flashcardDeck.flashcards.length) {
         this.handleAddFlashcard();
       }
-      
+
       // Build reactive form from the deck
       this.buildFormFromDeck();
     }
   }
-  
+
   private initializeGlobalLanguages(): void {
     // Set the initial values for the global language selectors
     var frontLanguageId = this.getMostCommonLanguage('left') || '';
@@ -86,7 +85,7 @@ export class FlashcardEditContainerComponent {
     var newFlashcard = EditFlashcardImpl.createDefault();
     // Assign a unique id for change detection (temporary if needed)
     newFlashcard.id = this.generateUniqueId();
-    newFlashcard.deckId =  this.flashcardDeck!.id;
+    newFlashcard.deckId = this.flashcardDeck!.id;
     newFlashcard.deckOrder = this.flashcardDeck!.flashcards.length + 1;
 
     // Push into the UI model (but don't mark as 'added' yet) — detection happens on save
@@ -102,30 +101,30 @@ export class FlashcardEditContainerComponent {
   }
 
   private generateUniqueId(): string {
-    return `tmp-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+    return `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   }
 
   private getMostCommonLanguage(side: 'left' | 'right'): string | undefined {
     const languageCounts = new Map<string, number>();
-    
+
     for (const flashcard of this.flashcardDeck!.flashcards) {
       if (flashcard.state === 'deleted') continue;
-      
+
       let languageId: string | undefined;
       if (side === 'left' && flashcard.leftContentType === 'text' && flashcard.leftTextContent) {
         languageId = flashcard.leftTextContent.languageId;
       } else if (side === 'right' && flashcard.rightContentType === 'text' && flashcard.rightTextContent) {
         languageId = flashcard.rightTextContent.languageId;
       }
-      
+
       if (languageId && languageId !== '') {
         languageCounts.set(languageId, (languageCounts.get(languageId) || 0) + 1);
       }
     }
-    
+
     // Return the most common language, or undefined if no languages found
     if (languageCounts.size === 0) return undefined;
-    
+
     return Array.from(languageCounts.entries())
       .reduce((a, b) => a[1] > b[1] ? a : b)[0];
   }
