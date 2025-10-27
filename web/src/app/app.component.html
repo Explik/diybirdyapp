@@ -1,24 +1,19 @@
 <style>
-  
+
 </style>
 
-<nav class="bg-blue-500 p-4">
-  <h1 class="text-white text-2xl">DIY birdy app</h1>
+<nav class="bg-slate-500 p-4 flex items-center justify-between border-b border-black">
+    <div>
+      <a i18n class="text-2xl text-white hover:text-gray-300 " [routerLink]="['/']">DIY birdy app</a>
+    </div>
 
-  <ul class="flex space-x-4 mt-2">
-    <li>
-      <a i18n class="text-white hover:text-gray-300" [routerLink]="['/flashcard-deck']">Flashcard decks</a>
-    </li>
-    <li>
-      <a i18n class="text-white hover:text-gray-300" [routerLink]="['/vocabulary']">Vocabulary</a>
-    </li>
-    <li *ngIf="isLoggedIn">
-      <button class="text-white hover:text-gray-300 bg-transparent border-0 cursor-pointer" (click)="logout()">Logout</button>
-    </li>
-    <li *ngIf="!isLoggedIn">
-      <a i18n class="text-white hover:text-gray-300" [routerLink]="['/login']">Login</a>
-    </li>
-  </ul>
+    <div class="flex items-center space-x-4">
+      <button *ngIf="isLoggedIn" type="button"
+        class="text-white hover:text-gray-300 bg-transparent border-0 cursor-pointer"
+        (click)="logout()">Logout</button>
+
+      <a *ngIf="!isLoggedIn" i18n class="text-white hover:text-gray-300" [routerLink]="['/login']">Login</a>
+    </div>
 </nav>
 
 <router-outlet />
