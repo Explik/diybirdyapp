@@ -84,6 +84,7 @@ export class FlashcardEditContainerComponent {
   handleAddFlashcard() {
     var newFlashcard = EditFlashcardImpl.createDefault();
     // Assign a unique id for change detection (temporary if needed)
+    newFlashcard.state = 'added';
     newFlashcard.id = this.generateUniqueId();
     newFlashcard.deckId = this.flashcardDeck!.id;
     newFlashcard.deckOrder = this.flashcardDeck!.flashcards.length + 1;
