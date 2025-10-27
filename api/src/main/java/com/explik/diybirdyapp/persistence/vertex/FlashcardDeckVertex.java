@@ -14,6 +14,7 @@ public class FlashcardDeckVertex extends ContentVertex {
 
     public static final String EDGE_FLASHCARD = "hasFlashcard";
     public static final String EDGE_FLASHCARD_PROPERTY_ORDER = "order";
+    public static final String EDGE_OWNER = "ownedBy";
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_NAME = "name";
@@ -65,6 +66,17 @@ public class FlashcardDeckVertex extends ContentVertex {
 
     public List<? extends FlashcardVertex> getFlashcards() {
         return VertexHelper.getOrderedOutgoingModels(this, EDGE_FLASHCARD, "order", FlashcardVertex::new);
+    }
+
+    public UserVertex getOwner() {
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_OWNER, UserVertex::new);
+    }
+
+    public void setOwner(UserVertex userVertex) {
+        if (userVertex != null) {
+            addEdgeOneToOne(EDGE_OWNER, userVertex);
+        }
+        else removeEdges(EDGE_OWNER);
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {

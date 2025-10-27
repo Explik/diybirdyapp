@@ -111,7 +111,7 @@ public class DataInitializerService {
         // Flashcard deck 1
         builderFactory.createFlashcardDeckVertexBuilder()
                 .withId("flashcardDeckVertex1")
-                .withName("First ever flashcard deck")
+                .withName("First ever flashcard deck (public)")
                 .withDefaultLanguages(langVertex1, langVertex2)
                 .addFlashcard(new FlashcardVertexBuilder()
                         .withFrontText("Hej verden")
@@ -121,7 +121,7 @@ public class DataInitializerService {
         // Flashcard deck 2
         builderFactory.createFlashcardDeckVertexBuilder()
                 .withId("flashcardDeckVertex2")
-                .withName("Second ever flashcard deck")
+                .withName("Second ever flashcard deck (public)")
                 .withDefaultLanguages(langVertex1, langVertex2)
                 .addFlashcard(new FlashcardVertexBuilder()
                         .withFrontText("Hej John")
@@ -140,7 +140,7 @@ public class DataInitializerService {
         // Flashcard deck 3
         builderFactory.createFlashcardDeckVertexBuilder()
                 .withId("textOnlyFlashcardDeck")
-                .withName("Text only flashcard deck")
+                .withName("Text only flashcard deck (public)")
                 .withDefaultLanguages(langVertex1, langVertex2)
                 .addFlashcard(new FlashcardVertexBuilder()
                         .withFrontText("Hej")

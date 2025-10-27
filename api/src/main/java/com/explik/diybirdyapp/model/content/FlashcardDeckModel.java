@@ -4,6 +4,7 @@ public class FlashcardDeckModel {
     private String id;
     private String name;
     private String description;
+    private String ownerUserId;
 
     public FlashcardDeckModel() {}
 
@@ -38,5 +39,13 @@ public class FlashcardDeckModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getOwnerUserId() {
+        return ownerUserId;
+    }
+
+    public void setOwnerUserId(String ownerUserId) {
+        this.ownerUserId = ownerUserId;
     }
 }

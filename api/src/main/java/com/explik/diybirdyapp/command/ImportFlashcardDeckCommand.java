@@ -53,7 +53,7 @@ public class ImportFlashcardDeckCommand implements Runnable {
             populateFlashcards(flashcardDeck, flashcards);
 
             // Save to database
-            flashcardDeckRepository.add(flashcardDeck);
+            flashcardDeckRepository.add(null, flashcardDeck);
             for (var flashcard : flashcards)
                 flashcardCardRepository.add(flashcard);
         } catch (IOException e) {
