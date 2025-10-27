@@ -19,6 +19,7 @@ import { AppFormFieldControl } from '../../models/form.interface';
 export class TextFieldComponent implements AppFormFieldControl {
   @Input() id: string | undefined;
   @Input() rows: number = 1;
+  @Input() type: 'text' | 'password' | 'email' | 'number' = 'text';
 
   value: string = '';
   touched = false;

@@ -9,9 +9,13 @@ import { SharedComponentsPageComponent } from './shared/pages/shared-components-
 import { ContentComponentsPageComponent } from './modules/content/pages/content-components-page/content-components-page.component';
 import { ExerciseComponentsPageComponent } from './modules/exercise/pages/exercise-components-page/exercise-components-page.component';
 import { ExerciseSamplesPageComponent } from './modules/exercise/pages/exercise-samples-page/exercise-samples-page.component';
+import { LoginPageComponent } from './shared/pages/login-page/login-page.component';
+import { SignupPageComponent } from './shared/pages/signup-page/signup-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/flashcard-deck', pathMatch: 'full' },
+  { path: 'login', component: LoginPageComponent },
+  { path: 'signup', component: SignupPageComponent },
   { path: 'flashcard-deck', component: FlashcardDecksPageComponent },
   { path: 'flashcard-deck/:id', component: FlashcardDeckViewPageComponent },
   { path: 'flashcard-deck/:id/edit', component: FlashcardDeckEditPageComponent },
