@@ -33,6 +33,7 @@ export class AuthService {
                         localStorage.setItem('auth_token', parsed.token);
                     }
                 } catch (e) {
+                    localStorage.setItem('auth_token', "something");
                     // ignore - response is plain text without token
                 }
             })

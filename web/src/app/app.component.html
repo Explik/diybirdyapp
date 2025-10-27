@@ -12,6 +12,12 @@
     <li>
       <a i18n class="text-white hover:text-gray-300" [routerLink]="['/vocabulary']">Vocabulary</a>
     </li>
+    <li *ngIf="isLoggedIn">
+      <button class="text-white hover:text-gray-300 bg-transparent border-0 cursor-pointer" (click)="logout()">Logout</button>
+    </li>
+    <li *ngIf="!isLoggedIn">
+      <a i18n class="text-white hover:text-gray-300" [routerLink]="['/login']">Login</a>
+    </li>
   </ul>
 </nav>
 

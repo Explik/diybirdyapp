@@ -1,9 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import { GenericExercise, MultipleChoiceOption } from './modules/exercise/models/exercise.interface';
 import { CommonModule } from '@angular/common';
 import { ExerciseService } from './modules/exercise/services/exercise.service';
+import { AuthService } from './shared/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,26 @@ export class AppComponent {
 
   constructor(
     private exerciseService: ExerciseService,
+    private auth: AuthService,
+    private router: Router,
   ) {}
+
+  get isLoggedIn(): boolean {
+    return this.auth.isLoggedIn();
+  }
+
+  logout(): void {
+    // Attempt server logout; on success redirect. On error, still clear local token and redirect.
+    this.auth.logout().subscribe({
+      next: () => {
+        try { this.router.navigate(['/login']); } catch (e) { /* ignore navigation errors */ }
+      },
+      error: () => {
+        localStorage.removeItem('auth_token');
+        try { this.router.navigate(['/login']); } catch (e) { /* ignore navigation errors */ }
+      }
+    });
+  }
 
   ngOnInit(): void {
       // this.exerciseService.getExercises().subscribe(data => {
