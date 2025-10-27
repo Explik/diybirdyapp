@@ -228,6 +228,12 @@ export class FlashcardEditContainerComponent {
       if (!this.form.valid) return;
     }
 
+    // Apply flashcard deck changes to the model
+    if (this.form) {
+      this.flashcardDeck!.name = this.form.get('name')?.value;
+      this.flashcardDeck!.description = this.form.get('description')?.value;
+    }
+
     // Before saving, apply the globally selected languages to individual flashcards
     const front = this.form?.get('frontLanguageId')?.value;
     const back = this.form?.get('backLanguageId')?.value;
