@@ -19,7 +19,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "localize": ["zh-CN"],
+            "localize": ["en-US"],
             "outputPath": "dist/diy-birdy-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
