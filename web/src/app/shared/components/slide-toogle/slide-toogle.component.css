@@ -1,0 +1,102 @@
+/* Neobrutalist slide toggle styles */
+:host {
+	display: inline-block;
+}
+
+.neo-toggle {
+	--track-width: 32px;
+	--track-height: 14px;
+	--knob-size: 20px; /* intentionally larger than track-height */
+	--border-width: 1px;
+
+	display: inline-block;
+	position: relative;
+	width: var(--track-width);
+	height: var(--track-height);
+	padding: 0;
+	margin: 0;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.neo-toggle .track {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 100%;
+	height: var(--track-height);
+	background: #f5f5f5;
+	border: var(--border-width) solid #111;
+	border-radius: calc(var(--track-height) / 2);
+	box-shadow: none;
+	transition: background 180ms ease, border-color 180ms ease;
+}
+
+.neo-toggle .knob {
+	/* knob is larger than track and sits in the foreground */
+	position: absolute;
+	top: 50%;
+	left: calc( -1 * ((var(--knob-size) - var(--track-height)) / 2) );
+	transform: translate(0, -50%);
+	width: var(--knob-size);
+	height: var(--knob-size);
+	background: #fff;
+	border: var(--border-width) solid #111;
+	border-radius: 50%;
+	box-shadow: none;
+	z-index: 3;
+	transition: transform 240ms cubic-bezier(.2,.9,.3,1), left 240ms cubic-bezier(.2,.9,.3,1), box-shadow 180ms ease;
+	will-change: transform, left;
+}
+
+.neo-toggle.checked .track {
+	background: #ffef00; /* bold accent color */
+	border-color: #111;
+	box-shadow: none;
+}
+
+.neo-toggle.checked .knob {
+	/* Move knob to the right. Because the knob is larger, move to slightly beyond the track edge to look foregrounded */
+	left: calc(100% - var(--knob-size) + ((var(--knob-size) - var(--track-height)) / 2));
+	transform: translate(0, -50%);
+	box-shadow: none;
+}
+
+.neo-toggle:focus-visible {
+	outline: none;
+}
+
+.neo-toggle:focus-visible .track {
+	box-shadow: none;
+}
+
+.neo-toggle:active .knob {
+	transform: translate(0, -50%) scale(0.98);
+}
+
+.neo-toggle.disabled,
+.neo-toggle:disabled {
+	cursor: default;
+	opacity: 0.6;
+}
+
+/* make sure the oversized knob isn't clipped by any parent */
+.neo-toggle,
+.neo-toggle * {
+	box-sizing: border-box;
+}
+
+/* small responsive tweak */
+@media (max-width: 340px) {
+	.neo-toggle {
+		--track-width: 52px;
+		--track-height: 24px;
+		--knob-size: 36px;
+		--border-width: 3px;
+	}
+}
+

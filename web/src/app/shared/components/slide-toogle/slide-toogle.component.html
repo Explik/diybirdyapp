@@ -1,0 +1,14 @@
+<!-- Neobrutalist slide toggle (no label). Accessible role="switch" and keyboard support. -->
+<button
+	type="button"
+	class="neo-toggle"
+	role="switch"
+	[attr.aria-checked]="checked"
+	[disabled]="disabled"
+	[class.checked]="checked"
+	(click)="toggle()"
+	(keydown)="handleKey($event)"
+>
+	<span class="track" aria-hidden="true"></span>
+	<span class="knob" aria-hidden="true"></span>
+</button>
