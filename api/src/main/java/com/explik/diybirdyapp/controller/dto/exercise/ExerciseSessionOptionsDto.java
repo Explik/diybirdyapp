@@ -1,10 +1,35 @@
 package com.explik.diybirdyapp.controller.dto.exercise;
 
-public class ExerciseSessionOptionsDto {
+import com.explik.diybirdyapp.ExerciseSessionTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ExerciseSessionOptionsLearnFlashcardsDto.class, name = ExerciseSessionTypes.LEARN_FLASHCARD),
+        @JsonSubTypes.Type(value = ExerciseSessionOptionsReviewFlashcardsDto.class, name = ExerciseSessionTypes.REVIEW_FLASHCARD),
+        @JsonSubTypes.Type(value = ExerciseSessionOptionsSelectFlashcardsDto.class, name = ExerciseSessionTypes.SELECT_FLASHCARD_DECK),
+        @JsonSubTypes.Type(value = ExerciseSessionOptionsWriteFlashcardsDto.class, name = ExerciseSessionTypes.WRITE_FLASHCARD)
+})
+public abstract class ExerciseSessionOptionsDto {
+    private String type;
     private boolean textToSpeechEnabled;
-    private boolean retypeCorrectAnswerEnabled;
-    private String initialFlashcardLanguageId;
-    private String[] answerLanguageIds = new String[0];
+
+    public ExerciseSessionOptionsDto(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public boolean getTextToSpeechEnabled() {
         return textToSpeechEnabled;
@@ -12,29 +37,5 @@ public class ExerciseSessionOptionsDto {
 
     public void setTextToSpeechEnabled(boolean textToSpeechEnabled) {
         this.textToSpeechEnabled = textToSpeechEnabled;
-    }
-
-    public boolean getRetypeCorrectAnswerEnabled() {
-        return retypeCorrectAnswerEnabled;
-    }
-
-    public void setRetypeCorrectAnswerEnabled(boolean retypeCorrectAnswerEnabled) {
-        this.retypeCorrectAnswerEnabled = retypeCorrectAnswerEnabled;
-    }
-
-    public String getInitialFlashcardLanguageId() {
-        return initialFlashcardLanguageId;
-    }
-
-    public void setInitialFlashcardLanguageId(String initialFlashcardLanguageId) {
-        this.initialFlashcardLanguageId = initialFlashcardLanguageId;
-    }
-
-    public String[] getAnswerLanguageIds() {
-        return answerLanguageIds;
-    }
-
-    public void setAnswerLanguageIds(String[] answerLanguageIds) {
-        this.answerLanguageIds = answerLanguageIds;
     }
 }

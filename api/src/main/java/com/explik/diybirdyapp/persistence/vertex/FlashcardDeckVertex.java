@@ -3,6 +3,8 @@ package com.explik.diybirdyapp.persistence.vertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FlashcardDeckVertex extends ContentVertex {
@@ -77,6 +79,27 @@ public class FlashcardDeckVertex extends ContentVertex {
             addEdgeOneToOne(EDGE_OWNER, userVertex);
         }
         else removeEdges(EDGE_OWNER);
+    }
+
+    public String[] getFlashcardLanguageIds() {
+        return Arrays
+                .stream(getFlashcardLanguages())
+                .map(LanguageVertex::getId)
+                .toArray(String[]::new);
+    }
+
+    public LanguageVertex[] getFlashcardLanguages() {
+        var languages = new ArrayList<LanguageVertex>();
+        for (var flashcard : this.getFlashcards()) {
+            var leftContent = flashcard.getLeftContent();
+            if (leftContent instanceof TextContentVertex leftTextContent)
+                languages.add(leftTextContent.getLanguage());
+
+            var rightContent = flashcard.getRightContent();
+            if (rightContent instanceof TextContentVertex rightTextContent)
+                languages.add(rightTextContent.getLanguage());
+        }
+        return languages.stream().distinct().toArray(LanguageVertex[]::new);
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {

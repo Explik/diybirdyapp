@@ -27,6 +27,10 @@ public class ExerciseSessionService {
         return sessionRepository.nextExercise(modelId);
     }
 
+    public ExerciseSessionOptionsModel getConfig(String modelId) {
+        return sessionRepository.getConfig(modelId);
+    }
+
     public ExerciseSessionModel updateConfig(String modelId, ExerciseSessionOptionsModel config) {
         return sessionRepository.updateConfig(modelId, config);
     }

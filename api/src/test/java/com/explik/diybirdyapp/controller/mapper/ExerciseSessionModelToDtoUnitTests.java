@@ -52,16 +52,4 @@ public class ExerciseSessionModelToDtoUnitTests {
         assertNotNull(progressDto);
         assertEquals(ExerciseSessionProgressDto.class, progressDto.getClass());
     }
-
-    @Test
-    void givenOptions_whenMap_mapsToDto() {
-        var model = new ExerciseSessionModel();
-        model.setOptions(new ExerciseSessionOptionsModel());
-
-        var dto = mapper.map(model);
-        var optionsDto = dto.getOptions();
-
-        assertNotNull(optionsDto);
-        assertEquals(ExerciseSessionOptionsDto.class, optionsDto.getClass());
-    }
 }

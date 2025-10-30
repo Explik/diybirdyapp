@@ -46,8 +46,12 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
         vertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
         vertex.setFlashcardDeck(flashcardDeckVertex);
 
+        var flashcardLanguages = flashcardDeckVertex.getFlashcardLanguages();
         var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
         optionVertex.setId(UUID.randomUUID().toString());
+        optionVertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
+        optionVertex.setTextToSpeechEnabled(false);
+        optionVertex.setInitialFlashcardLanguageId(flashcardLanguages[0].getId());
         vertex.setOptions(optionVertex);
 
         // Generate first exercise

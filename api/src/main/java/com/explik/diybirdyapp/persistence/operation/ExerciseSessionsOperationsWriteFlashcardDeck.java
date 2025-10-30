@@ -45,6 +45,10 @@ public class ExerciseSessionsOperationsWriteFlashcardDeck implements ExerciseSes
 
         var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
         optionVertex.setId(UUID.randomUUID().toString());
+        optionVertex.setType(ExerciseSessionTypes.WRITE_FLASHCARD);
+        optionVertex.setTextToSpeechEnabled(false);
+        optionVertex.addAnswerLanguage( flashcardDeckVertex.getFlashcardLanguages()[0] );
+        optionVertex.setRetypeCorrectAnswer(false);
         vertex.setOptions(optionVertex);
 
         // Generate first exercise

@@ -34,9 +34,6 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         var progressModel = createProgress(vertex);
         model.setProgress(progressModel);
 
-        var optionsModel = createOptions(vertex);
-        model.setOptions(optionsModel);
-
         return model;
     }
 
@@ -58,23 +55,5 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         progressModel.setType("percentage");
         progressModel.setPercentage(90);
         return progressModel;
-    }
-
-    private ExerciseSessionOptionsModel createOptions(ExerciseSessionVertex vertex) {
-        var optionsVertex = vertex.getOptions();
-        if (optionsVertex == null)
-            return null;
-
-        var model = new ExerciseSessionOptionsModel();
-        model.setTextToSpeechEnabled(optionsVertex.getTextToSpeechEnabled());
-        model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
-        model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
-        model.setAnswerLanguageIds(
-                optionsVertex.getAnswerLanguages().stream()
-                        .map(LanguageVertex::getId)
-                        .toArray(String[]::new)
-        );
-
-        return model;
     }
 }

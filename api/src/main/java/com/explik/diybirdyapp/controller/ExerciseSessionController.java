@@ -22,7 +22,10 @@ public class ExerciseSessionController {
     GenericMapper<ExerciseSessionModel, ExerciseSessionDto> exerciseSessionMapper;
 
     @Autowired
-    GenericMapper<ExerciseSessionOptionsDto, ExerciseSessionOptionsModel> exerciseOptionsMapper;
+    GenericMapper<ExerciseSessionOptionsDto, ExerciseSessionOptionsModel> exerciseOptionsDtoToModelMapper;
+
+    @Autowired
+    GenericMapper<ExerciseSessionOptionsModel, ExerciseSessionOptionsDto> exerciseOptionsModelToDtoMapper;
 
     @PostMapping("/exercise-session")
     public ExerciseSessionDto create(@Valid @RequestBody ExerciseSessionDto dto) {
@@ -50,9 +53,15 @@ public class ExerciseSessionController {
         return exerciseSessionMapper.map(skippedExercise);
     }
 
-    @PostMapping("/exercise-session/{id}/update-config")
+    @GetMapping("/exercise-session/{id}/options")
+    public ExerciseSessionOptionsDto getConfig(@PathVariable String id) {
+        var model = service.getConfig(id);
+        return exerciseOptionsModelToDtoMapper.map(model);
+    }
+
+    @PostMapping("/exercise-session/{id}/apply-options")
     public ExerciseSessionDto updateConfig(@PathVariable String id, @Valid @RequestBody ExerciseSessionOptionsDto dto) {
-        var model = exerciseOptionsMapper.map(dto);
+        var model = exerciseOptionsDtoToModelMapper.map(dto);
         var updatedModel = service.updateConfig(id, model);
 
         return exerciseSessionMapper.map(updatedModel);

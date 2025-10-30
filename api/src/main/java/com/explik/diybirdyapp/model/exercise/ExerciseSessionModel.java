@@ -7,7 +7,6 @@ public class ExerciseSessionModel {
     private String flashcardDeckId;
     private ExerciseModel exercise;
     private ExerciseSessionProgressModel progress;
-    private ExerciseSessionOptionsModel options;
 
     public String getId() {
         return id;
@@ -55,13 +54,5 @@ public class ExerciseSessionModel {
 
     public void setProgress(ExerciseSessionProgressModel progress) {
         this.progress = progress;
-    }
-
-    public ExerciseSessionOptionsModel getOptions() {
-        return options;
-    }
-
-    public void setOptions(ExerciseSessionOptionsModel options) {
-        this.options = options;
     }
 }

@@ -4,7 +4,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public ExerciseSessionOptionsVertex(GraphTraversalSource traversalSource, Vertex vertex) {
@@ -14,6 +13,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String LABEL = "exerciseSessionOptions";
 
     public final static String PROPERTY_ID = "id";
+    public final static String PROPERTY_TYPE = "type";
     public final static String PROPERTY_TEXT_TO_SPEECH_ENABLED = "textToSpeechEnabled";
     public final static String PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID = "initialFlashcardLanguageId";
     public final static String PROPERTY_RETYPE_CORRECT_ANSWER = "retypeCorrectAnswer";
@@ -26,6 +26,14 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setId(String id) {
         setProperty(PROPERTY_ID, id);
+    }
+
+    public String getType() {
+        return getPropertyAsString(PROPERTY_TYPE);
+    }
+
+    public void setType(String type) {
+        setProperty(PROPERTY_TYPE, type);
     }
 
     public boolean getTextToSpeechEnabled() {
@@ -67,5 +75,9 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void removeAnswerLanguage(LanguageVertex language) {
         removeEdge(EDGE_ANSWER_LANGUAGE, language);
+    }
+
+    public ExerciseSessionVertex getSession() {
+        return VertexHelper.getIngoingModel(this, ExerciseSessionVertex.EDGE_OPTIONS, ExerciseSessionVertex::new);
     }
 }

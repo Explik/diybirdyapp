@@ -2,8 +2,10 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
@@ -18,6 +20,9 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
+
+    @Autowired
+    ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsModel> sessionOptionsModelFactory;
 
     @Autowired
     GenericProvider<ExerciseSessionOperations> sessionOperationProvider;
@@ -50,27 +55,35 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         return sessionManager.nextExercise(traversalSource, context);
     }
 
+    @Override
+    public ExerciseSessionOptionsModel getConfig(String sessionId) {
+        var sessionVertex = getSessionVertex(sessionId);
+        var optionsVertex = sessionVertex.getOptions();
+
+        return sessionOptionsModelFactory.create(optionsVertex);
+    }
+
     public ExerciseSessionModel updateConfig(String modelId, ExerciseSessionOptionsModel config) {
         var sessionVertex = getSessionVertex(modelId);
         var sessionOptions = sessionVertex.getOptions();
 
         if (config.getTextToSpeechEnabled() != sessionOptions.getTextToSpeechEnabled())
             sessionOptions.setTextToSpeechEnabled(config.getTextToSpeechEnabled());
-        if (config.getInitialFlashcardLanguageId() != null && !config.getInitialFlashcardLanguageId().equals(sessionOptions.getInitialFlashcardLanguageId()))
-            sessionOptions.setInitialFlashcardLanguageId(config.getInitialFlashcardLanguageId());
-        if (config.getRetypeCorrectAnswerEnabled() != sessionOptions.getRetypeCorrectAnswer())
-            sessionOptions.setRetypeCorrectAnswer(config.getRetypeCorrectAnswerEnabled());
-        if (config.getAnswerLanguageIds() != null && config.getAnswerLanguageIds().length > 0) {
-            for(var langVertex : sessionOptions.getAnswerLanguages())
-                sessionOptions.removeAnswerLanguage(langVertex);
-
-            for (var langId : config.getAnswerLanguageIds()) {
-                var langVertex = LanguageVertex.findById(traversalSource, langId);
-                if (langVertex == null)
-                    throw new IllegalArgumentException("No language with id " + langId);
-                sessionOptions.addAnswerLanguage(langVertex);
-            }
-        }
+//        if (config.getInitialFlashcardLanguageId() != null && !config.getInitialFlashcardLanguageId().equals(sessionOptions.getInitialFlashcardLanguageId()))
+//            sessionOptions.setInitialFlashcardLanguageId(config.getInitialFlashcardLanguageId());
+//        if (config.getRetypeCorrectAnswerEnabled() != sessionOptions.getRetypeCorrectAnswer())
+//            sessionOptions.setRetypeCorrectAnswer(config.getRetypeCorrectAnswerEnabled());
+//        if (config.getAnswerLanguageIds() != null && config.getAnswerLanguageIds().length > 0) {
+//            for(var langVertex : sessionOptions.getAnswerLanguages())
+//                sessionOptions.removeAnswerLanguage(langVertex);
+//
+//            for (var langId : config.getAnswerLanguageIds()) {
+//                var langVertex = LanguageVertex.findById(traversalSource, langId);
+//                if (langVertex == null)
+//                    throw new IllegalArgumentException("No language with id " + langId);
+//                sessionOptions.addAnswerLanguage(langVertex);
+//            }
+        // }
 
         return sessionModelFactory.create(sessionVertex);
     }
