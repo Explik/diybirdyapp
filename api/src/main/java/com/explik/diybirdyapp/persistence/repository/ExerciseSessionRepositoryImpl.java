@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
@@ -13,6 +12,9 @@ import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository {
@@ -67,23 +69,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         var sessionVertex = getSessionVertex(modelId);
         var sessionOptions = sessionVertex.getOptions();
 
-        if (config.getTextToSpeechEnabled() != sessionOptions.getTextToSpeechEnabled())
-            sessionOptions.setTextToSpeechEnabled(config.getTextToSpeechEnabled());
-//        if (config.getInitialFlashcardLanguageId() != null && !config.getInitialFlashcardLanguageId().equals(sessionOptions.getInitialFlashcardLanguageId()))
-//            sessionOptions.setInitialFlashcardLanguageId(config.getInitialFlashcardLanguageId());
-//        if (config.getRetypeCorrectAnswerEnabled() != sessionOptions.getRetypeCorrectAnswer())
-//            sessionOptions.setRetypeCorrectAnswer(config.getRetypeCorrectAnswerEnabled());
-//        if (config.getAnswerLanguageIds() != null && config.getAnswerLanguageIds().length > 0) {
-//            for(var langVertex : sessionOptions.getAnswerLanguages())
-//                sessionOptions.removeAnswerLanguage(langVertex);
-//
-//            for (var langId : config.getAnswerLanguageIds()) {
-//                var langVertex = LanguageVertex.findById(traversalSource, langId);
-//                if (langVertex == null)
-//                    throw new IllegalArgumentException("No language with id " + langId);
-//                sessionOptions.addAnswerLanguage(langVertex);
-//            }
-        // }
+        updateSessionOptions(sessionOptions, config);
 
         return sessionModelFactory.create(sessionVertex);
     }
@@ -93,5 +79,81 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         if (sessionVertex == null)
             throw new IllegalArgumentException("No session with id " + modelId);
         return sessionVertex;
+    }
+
+    private void updateSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsModel model) {
+        switch (model) {
+            case ExerciseSessionOptionsLearnFlashcardModel learnModel ->
+                    updateLearnSessionOptions(vertex, learnModel);
+            case ExerciseSessionOptionsReviewFlashcardsModel reviewModel ->
+                    updateReviewSessionOptions(vertex, reviewModel);
+            case ExerciseSessionOptionsSelectFlashcardsModel selectModel ->
+                    updateSelectSessionOptions(vertex, selectModel);
+            case ExerciseSessionOptionsWriteFlashcardsModel writeModel ->
+                    updateSelectWriteOptions(vertex, writeModel);
+            default ->
+                    throw new IllegalArgumentException("Unsupported ExerciseSessionOptionsModel type: " + model.getClass().getName());
+        }
+
+        updateCommonOptions(vertex, model);
+    }
+
+    private void updateLearnSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsLearnFlashcardModel model) {
+        if (model.getAnswerLanguageIds() != null && model.getAnswerLanguageIds().length > 0) {
+            var languages = getLanguagesByIds(model.getAnswerLanguageIds());
+
+            vertex.getAnswerLanguages().forEach(vertex::removeAnswerLanguage);
+            languages.forEach(vertex::addAnswerLanguage);
+        }
+
+        if (model.getRetypeCorrectAnswerEnabled() != vertex.getRetypeCorrectAnswer())
+            vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
+    }
+
+    private void updateReviewSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsReviewFlashcardsModel model) {
+        if (model.getInitialFlashcardLanguageId() != null)
+            vertex.setInitialFlashcardLanguageId(model.getInitialFlashcardLanguageId());
+    }
+
+    private void updateSelectSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsSelectFlashcardsModel model) {
+        if (model.getInitialFlashcardLanguageId() != null)
+            vertex.setInitialFlashcardLanguageId(model.getInitialFlashcardLanguageId());
+        if (model.getTextToSpeechEnabled() != vertex.getTextToSpeechEnabled())
+            vertex.setTextToSpeechEnabled(model.getTextToSpeechEnabled());
+    }
+
+    private void updateSelectWriteOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsWriteFlashcardsModel model) {
+        if (model.getAnswerLanguageId() != null) {
+            var language = getLanguageById(model.getAnswerLanguageId());
+
+            vertex.getAnswerLanguages().forEach(vertex::removeAnswerLanguage);
+            vertex.addAnswerLanguage(language);
+        }
+
+        if (model.getRetypeCorrectAnswerEnabled() != vertex.getRetypeCorrectAnswer())
+            vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
+    }
+
+    private void updateCommonOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsModel model) {
+        if (model.getTextToSpeechEnabled() != vertex.getTextToSpeechEnabled())
+            vertex.setTextToSpeechEnabled(model.getTextToSpeechEnabled());
+    }
+
+    private LanguageVertex getLanguageById(String languageId) {
+        var vertex = LanguageVertex.findById(traversalSource, languageId);
+        if (vertex == null)
+            throw new IllegalArgumentException("No language with id " + languageId);
+        return vertex;
+    }
+
+    private List<LanguageVertex> getLanguagesByIds(String[] languageIds) {
+        var buffer = new ArrayList<LanguageVertex>();
+        for (var languageId : languageIds) {
+            var vertex = LanguageVertex.findById(traversalSource, languageId);
+            if (vertex == null)
+                throw new IllegalArgumentException("No language with id " + languageId);
+            buffer.add(vertex);
+        }
+        return buffer;
     }
 }
