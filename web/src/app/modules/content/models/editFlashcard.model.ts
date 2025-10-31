@@ -91,7 +91,7 @@ export class EditFlashcardDeckImpl implements EditFlashcardDeck {
 
     static createFromDto(dto: FlashcardDeckDto): EditFlashcardDeckImpl {
         var deck = new EditFlashcardDeckImpl();
-        deck.id = dto.id;
+        deck.id = dto.id!;
         deck.name = dto.name || "";
         deck.description = dto.description;
         deck.flashcards = [];

@@ -33,6 +33,7 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "reset-graph").permitAll()
                                 .requestMatchers("/ping").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("v3/api-docs").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
