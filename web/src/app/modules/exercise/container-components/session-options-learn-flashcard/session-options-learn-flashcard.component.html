@@ -1,0 +1,27 @@
+<form [formGroup]="form" class="session-options-learn-flashcard" class="min-h-48">
+	<div class="mb-4">
+		<app-form-field>
+			<app-label i18n>Answer languages</app-label>
+			<div formArrayName="answerLanguageIds">
+				<div *ngFor="let lang of availableAnswerLanguages; let i = index" class="flex items-center mb-2">
+					<input type="checkbox" [formControlName]="i" id="ans-{{i}}" />
+					<label for="ans-{{i}}" class="ml-2">{{ lang }}</label>
+				</div>
+			</div>
+		</app-form-field>
+	</div>
+
+	<div>
+		<app-form-field>
+			<app-label i18n>Text to speech</app-label>
+			<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
+		</app-form-field>
+	</div>
+
+	<div>
+		<app-form-field>
+			<app-label i18n>Retype correct answer</app-label>
+			<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
+		</app-form-field>
+	</div>
+</form>

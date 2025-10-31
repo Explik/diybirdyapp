@@ -40,13 +40,9 @@
 <!-- Settings Modal -->
 <app-modal 
   [isOpen]="isSettingsModalOpen" 
-  title="Session Settings"
-  (close)="closeSettingsModal()"
->
-  <!-- Dynamic settings component based on session type -->
-  <ng-container *ngIf="settingsComponent$ | async as settingsComponent">
-    <ng-container 
-      *ngComponentOutlet="settingsComponent"
-    ></ng-container>
+  title="Edit settings"
+  (close)="closeSettingsModal()">
+  <ng-container *ngIf="sessionOptionsComponent$ | async">
+    <ng-container *ngComponentOutlet="sessionOptionsComponent$ | async"></ng-container>
   </ng-container>
 </app-modal>

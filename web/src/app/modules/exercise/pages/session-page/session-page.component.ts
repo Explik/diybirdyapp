@@ -15,12 +15,10 @@ import { ExerciseContentMultipleTextChoiceContainerComponent } from '../../conta
 import { ExerciseContentReviewFlashcardContainerComponent } from '../../container-components/exercise-content-review-flashcard-container/exercise-content-review-flashcard-container.component';
 import { ExerciseComponentService } from '../../services/exerciseComponent.service';
 import { ExerciseService } from '../../services/exercise.service';
-import { SettingsComponentService } from '../../services/settingsComponent.service';
-import { SettingsDataService } from '../../services/settingsData.service';
-import { SettingsModalContentComponent } from '../../components/settings-modal-content/settings-modal-content.component';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { Observable, map } from 'rxjs';
+import { SessionOptionsComponentService } from '../../services/sessionOptionsComponent.service';
 
 @Component({
     selector: 'app-session-page',
@@ -39,21 +37,19 @@ export class SessionPageComponent {
     sessionProgress$: Observable<number>;
     exerciseComponent$: Observable<Type<any>>;
     exerciseNavigationComponent$: Observable<Type<any>|null>;
-    settingsComponent$: Observable<Type<any>|null>;
+    sessionOptionsComponent$: Observable<Type<any>|null>;
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private exerciseService: ExerciseService,
         private exerciseComponentService: ExerciseComponentService,
-        private settingsComponentService: SettingsComponentService,
-        private settingsDataService: SettingsDataService,
-        private exerciseSessionDataService: ExerciseSessionDataService,
+        private sessionOptionsComponent: SessionOptionsComponentService
         ) {
             this.sessionProgress$ = this.exerciseService.getProgress().pipe(map(progress => progress || 0));
             this.exerciseComponent$ = this.exerciseComponentService.getComponent();
             this.exerciseNavigationComponent$ = this.exerciseComponentService.getNavigationComponent();
-            this.settingsComponent$ = this.settingsComponentService.getComponent();
+            this.sessionOptionsComponent$ = this.sessionOptionsComponent.getComponent();
         }
 
     ngOnInit(): void {
@@ -74,20 +70,6 @@ export class SessionPageComponent {
                 this.exerciseService.setExerciseSession(undefined);
                 this.router.navigate(['/']);
             }
-
-            // Update session type and setup settings component when session changes
-            if (session) {
-                this.currentSessionType = session.type;
-                // TODO: Add options.type support when available
-                // this.currentSessionType = session.options?.type || session.type;
-                
-                // Dispatch the appropriate settings component
-                const settingsComponent = this.settingsComponentService.dispatchComponentByType(this.currentSessionType);
-                this.settingsComponentService.setComponent(settingsComponent);
-                
-                // TODO: Load current config from session.options when available
-                this.currentConfig = {};
-            }
         });
     }
 
@@ -96,34 +78,10 @@ export class SessionPageComponent {
     }
 
     openSettingsModal() {
-        // Set up the settings data and callbacks
-        this.settingsDataService.setData(this.currentSessionType, this.currentConfig);
-        this.settingsDataService.setCallbacks(
-            (config) => this.onSettingsSave(config),
-            () => this.onSettingsCancel()
-        );
-        
         this.isSettingsModalOpen = true;
     }
 
     closeSettingsModal() {
         this.isSettingsModalOpen = false;
-    }
-
-    async onSettingsSave(config: any) {
-        if (this.sessionId) {
-            try {
-                await this.exerciseSessionDataService.updateConfig(this.sessionId, config).toPromise();
-                this.currentConfig = config;
-                this.closeSettingsModal();
-            } catch (error) {
-                console.error('Failed to update config:', error);
-                // TODO: Show error message to user
-            }
-        }
-    }
-
-    onSettingsCancel() {
-        this.closeSettingsModal();
     }
 }
