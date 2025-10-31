@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom } from 'rxjs';
+import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom, take } from 'rxjs';
 import { Exercise, ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
 import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto, ExerciseSessionOptionsDto } from "../../../shared/api-client";
@@ -38,7 +38,7 @@ export class ExerciseService {
     }
 
     getExerciseSessionOptions(): Observable<ExerciseSessionOptionsDto|undefined> {
-        return this.session$.pipe(
+        return this.session$.pipe(take(1)).pipe(
             switchMap(session => {
                 if (!session)
                     return of(undefined);
@@ -47,6 +47,20 @@ export class ExerciseService {
             })
         );
     }
+
+    applyExerciseSessionOptions(options: ExerciseSessionOptionsDto): Observable<void> { 
+        return this.session$.pipe(take(1)).pipe(
+            switchMap(session => {
+            if (!session)
+                throw new Error("No session found");
+            return this.service.applyOptions(session.id!, options);
+            }),
+            map(newSession => {
+                this.setExerciseSession(newSession);
+            })
+        );
+    }
+
 
     getExercise(): Observable<ExerciseDto | undefined> {
         return this.exercise$.asObservable();

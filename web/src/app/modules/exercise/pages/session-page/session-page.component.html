@@ -42,7 +42,5 @@
   [isOpen]="isSettingsModalOpen" 
   title="Edit settings"
   (close)="closeSettingsModal()">
-  <ng-container *ngIf="sessionOptionsComponent$ | async">
-    <ng-container *ngComponentOutlet="sessionOptionsComponent$ | async"></ng-container>
-  </ng-container>
+  <ng-template #optionsHost></ng-template>
 </app-modal>

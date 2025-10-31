@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { SelectComponent } from '../../../../shared/components/select/select.component';
@@ -7,8 +7,9 @@ import { OptionComponent } from '../../../../shared/components/option/option.com
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { LabelComponent } from '../../../../shared/components/label/label.component';
 import { SlideToogleComponent } from "../../../../shared/components/slide-toogle/slide-toogle.component";
-import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseSessionOptionsWriteFlashcardsDto } from '../../../../shared/api-client';
+import { SessionOptionsComponent } from '../../models/component.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-session-options-write-flashcard',
@@ -16,11 +17,15 @@ import { ExerciseSessionOptionsWriteFlashcardsDto } from '../../../../shared/api
   imports: [CommonModule, ReactiveFormsModule, SelectComponent, OptionComponent, FormFieldComponent, LabelComponent, SlideToogleComponent],
   templateUrl: './session-options-write-flashcard.component.html'
 })
-export class SessionOptionsWriteFlashcardComponent implements OnInit {
+export class SessionOptionsWriteFlashcardComponent implements OnInit, OnChanges, OnDestroy, SessionOptionsComponent<ExerciseSessionOptionsWriteFlashcardsDto> {
+  @Input() options?: ExerciseSessionOptionsWriteFlashcardsDto;
+  @Output() optionsChange: EventEmitter<ExerciseSessionOptionsWriteFlashcardsDto> = new EventEmitter();
+
   form: FormGroup;
   availableAnswerLanguages: Array<string> = [];
+  private sub: Subscription | undefined = undefined;
 
-  constructor(private fb: FormBuilder, private exerciseService: ExerciseService) {
+  constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
       answerLanguageId: [''],
       retypeCorrectAnswerEnabled: [false],
@@ -29,17 +34,39 @@ export class SessionOptionsWriteFlashcardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.exerciseService.getExerciseSessionOptions().subscribe(data => {
-      if (!data) return;
-
-      let options = <ExerciseSessionOptionsWriteFlashcardsDto><any>data || {};
-      this.availableAnswerLanguages = options.availableAnswerLanguageIds || [];
-
-      this.form.patchValue({
-        answerLanguageId: options.answerLanguageId || '',
-        retypeCorrectAnswerEnabled: options.retypeCorrectAnswerEnabled || false,
-        textToSpeechEnabled: options.textToSpeechEnabled || false
-      });
+    this.sub = this.form.valueChanges.subscribe(_ => {
+      if (!this.options) return;
+      this.optionsChange.emit(this.buildDtoFromForm());
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['options']) {
+      this.patchFormFromOptions();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  private patchFormFromOptions() {
+    const options = this.options || ({} as ExerciseSessionOptionsWriteFlashcardsDto);
+    this.availableAnswerLanguages = options.availableAnswerLanguageIds || [];
+
+    this.form.patchValue({
+      answerLanguageId: options.answerLanguageId || '',
+      retypeCorrectAnswerEnabled: options.retypeCorrectAnswerEnabled || false,
+      textToSpeechEnabled: options.textToSpeechEnabled || false
+    }, { emitEvent: false });
+  }
+
+  private buildDtoFromForm(): ExerciseSessionOptionsWriteFlashcardsDto {
+    return {
+      type: this.options?.type,
+      answerLanguageId: this.form.get('answerLanguageId')?.value || '',
+      retypeCorrectAnswerEnabled: !!this.form.get('retypeCorrectAnswerEnabled')?.value,
+      textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
+    } as ExerciseSessionOptionsWriteFlashcardsDto;
   }
 }
