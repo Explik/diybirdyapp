@@ -52,6 +52,7 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
         optionVertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
         optionVertex.setTextToSpeechEnabled(false);
         optionVertex.setInitialFlashcardLanguageId(flashcardLanguages[0].getId());
+        optionVertex.setAlgorithm("SuperMemo2");
         vertex.setOptions(optionVertex);
 
         // Generate first exercise
@@ -78,19 +79,28 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
     private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         // Finds first flashcard (in deck) not connected to review exercise (in session)
         var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.REVIEW_FLASHCARD);
+        if (flashcardVertex != null)
+            return createReviewExercise(traversalSource, sessionVertex, flashcardVertex);
 
-        if (flashcardVertex != null) {
-            var exerciseParameters = new ExerciseParameters()
-                    .withSession(sessionVertex)
-                    .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
-            var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
+        // Finds next flashcard according to spaced repetition algorithm
+        var states = sessionVertex.getStatesWithType("SuperMemo2");
+        var firstDueState = states.stream()
+                .sorted((a, b) -> {
+                    var nextShowA = (long)a.getPropertyValue("next_show");
+                    var nextShowB = (long)b.getPropertyValue("next_show");
+                    return Long.compare(nextShowA, nextShowB);
+                })
+                .findFirst();
+        var firstDueFlashcard = (FlashcardVertex) firstDueState.map(state -> state.getContent()).orElse(null);
+        return createReviewExercise(traversalSource, sessionVertex, firstDueFlashcard);
+    }
 
-            return exerciseFactory.create(traversalSource, exerciseParameters);
-        } else {
-            // If no flashcards are found, the session is complete
-            sessionVertex.setCompleted(true);
-        }
+    private ExerciseVertex createReviewExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex, FlashcardVertex flashcardVertex) {
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
+        var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
 
-        return null;
+        return exerciseFactory.create(traversalSource, exerciseParameters);
     }
 }

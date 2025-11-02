@@ -17,6 +17,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_TEXT_TO_SPEECH_ENABLED = "textToSpeechEnabled";
     public final static String PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID = "initialFlashcardLanguageId";
     public final static String PROPERTY_RETYPE_CORRECT_ANSWER = "retypeCorrectAnswer";
+    public final static String PROPERTY_ALGORITHM = "algorithm";
 
     public final static String EDGE_ANSWER_LANGUAGE = "hasAnswerLanguage";
 
@@ -63,6 +64,14 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setInitialFlashcardLanguageId(String initialFlashcardLanguageId) {
         setProperty(PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID, initialFlashcardLanguageId);
+    }
+
+    public String getAlgorithm() {
+        return getPropertyAsString(PROPERTY_ALGORITHM, null);
+    }
+
+    public void setAlgorithm(String algorithm) {
+        setProperty(PROPERTY_ALGORITHM, algorithm);
     }
 
     public List<LanguageVertex> getAnswerLanguages() {

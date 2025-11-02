@@ -84,6 +84,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         var strategyContext = ExerciseEvaluationContext.create(answer);
         if (sessionOptionsVertex != null) {
             strategyContext.setRetypeCorrectAnswerEnabled(sessionOptionsVertex.getRetypeCorrectAnswer());
+            strategyContext.setAlgorithm(sessionOptionsVertex.getAlgorithm());
         }
 
         return strategyContext;
