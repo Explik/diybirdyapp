@@ -45,6 +45,12 @@ public class GraphConfig {
     @Value("${tinkerpop.server.port:}")
     private Integer tinkerPopPort;
 
+    @Value("${tinkerpop.server.username:}")
+    private String tinkerPopUsername;
+
+    @Value("${tinkerpop.server.password:}")
+    private String tinkerPopPassword;
+
     @Bean
     public GraphTraversalSource traversalSource() {
         boolean isDefault = databaseType.equalsIgnoreCase("default");
@@ -80,6 +86,7 @@ public class GraphConfig {
                 .build(tinkerPopHost)
                 .protocol(tinkerPopProtocol)
                 .port(tinkerPopPort)
+                .credentials(tinkerPopUsername, tinkerPopPassword)
                 .serializer(Serializers.GRAPHSON_V3)
                 .create();
 
