@@ -1,4 +1,11 @@
 describe('Flashcard deck features', () => {
+  beforeEach(() => {
+    cy.visit('/login');
+    cy.get('input[type="email"], input[type="text"]').type('john@doe.com');
+    cy.get('input[type="password"]').type('password');
+    cy.get('button[type="submit"], button').contains(/login|sign in/i).click();
+  });
+
   describe('Flashcard deck data', () => {
     it('Name is updated when name update is saved', () => {
       createNewDeck(); 
