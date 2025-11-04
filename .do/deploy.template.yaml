@@ -75,7 +75,7 @@ spec:
   - name: gremlin-server
     image:
       registry_type: DOCKER_HUB
-      repository: tinkerpop
+      registry: tinkerpop
       repository: gremlin-server
       tag: "3.7.0"
     instance_count: 1
