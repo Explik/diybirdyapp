@@ -14,7 +14,6 @@ spec:
       deploy_on_push: true
       repo: Explik/diybirdyapp
     
-    build_command: npm install && npm run build
     output_dir: dist/diy-birdy-app/browser
     
     index_document: index.html
