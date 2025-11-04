@@ -23,7 +23,7 @@ spec:
       - key: NODE_ENV
         value: production
         scope: BUILD_TIME
-        type: general
+        type: GENERAL
     
   services:
   - name: backend
