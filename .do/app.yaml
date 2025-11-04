@@ -1,9 +1,7 @@
 # DigitalOcean App Platform Specification
 # Based on the latest App Spec format
 # https://docs.digitalocean.com/products/app-platform/reference/app-spec/
-
 name: diy-birdy-app
-region: nyc
 
 # Alerts for monitoring deployment and domain issues
 alerts:
@@ -16,7 +14,7 @@ services:
     dockerfile_path: Dockerfile
     source_dir: api
     github:
-      branch: release-2025-11-04
+      branch: master
       deploy_on_push: true
       repo: Explik/diybirdyapp
     http_port: 8080
@@ -91,15 +89,14 @@ workers:
 # Static Sites: Frontend (Angular Application)
 static_sites:
   - name: frontend
-    dockerfile_path: Dockerfile
     source_dir: web
     github:
-      branch: release-2025-11-04
+      branch: master
       deploy_on_push: true
       repo: Explik/diybirdyapp
     
     # Build configuration
-    build_command: npm run build
+    build_command: npm install && npm run build
     output_dir: dist/diy-birdy-app/browser
     
     # Static site configuration
