@@ -1,8 +1,12 @@
 name: diy-birdy-app
+
+# Services: Backend API (Spring Boot)
 services:
-- dockerfile_path: api/Dockerfile
+- name: backend 
+  source_dir: api
+  dockerfile_path: Dockerfile
   github:
     branch: master
     deploy_on_push: true
     repo: Explik/diybirdyapp
-  name: diy-birdy-app
+  
