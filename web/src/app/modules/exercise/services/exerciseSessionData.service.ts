@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ExerciseAnswer } from '../models/exercise.interface';
-import { ExerciseDto, ExerciseSessionDto } from '../../../shared/api-client';
+import { ExerciseDto, ExerciseSessionDto, ExerciseSessionOptionsDto } from '../../../shared/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -64,5 +64,15 @@ export class ExerciseSessionDataService {
     skipExercise(sessionId: string): Observable<ExerciseSessionDto> {
         // TODO Add error handling
         return this.http.post<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${sessionId}/skip-exercise`, {});
+    }
+
+    getOptions(sessionId: string): Observable<ExerciseSessionOptionsDto> {
+        // TODO Add error handling
+        return this.http.get<any>(`${environment.apiUrl}/exercise-session/${sessionId}/options`);
+    }
+
+    applyOptions(sessionId: string, config: ExerciseSessionOptionsDto): Observable<ExerciseSessionDto> {
+        // TODO Add error handling
+        return this.http.post<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${sessionId}/apply-options`, config);
     }
 }

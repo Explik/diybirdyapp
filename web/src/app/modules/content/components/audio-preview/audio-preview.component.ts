@@ -19,7 +19,7 @@ export class AudioPreviewComponent {
 
   async playAsync() {
     this.isPlaying = true;
-    await this.service.startPlaying(this.data);
+    await this.service.startPlayingEditFlashcard(this.data);
     this.isPlaying = false;
   }
 

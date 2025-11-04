@@ -7,6 +7,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
@@ -22,13 +23,15 @@ import java.util.UUID;
 @Component(ExerciseSessionTypes.REVIEW_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSessionOperations {
     @Autowired
-    ExerciseAbstractVertexFactory abstractVertexFactory;
+    private ExerciseAbstractVertexFactory abstractVertexFactory;
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Override
-    public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseSessionModel options) {
+    public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+        var options = context.getSessionModel();
+
         // Resolve neighboring vertices
         var flashcardDeckVertex = FlashcardDeckVertex.findById(traversalSource, options.getFlashcardDeckId());
         if (flashcardDeckVertex == null)
@@ -43,39 +46,61 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
         vertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
         vertex.setFlashcardDeck(flashcardDeckVertex);
 
+        var flashcardLanguages = flashcardDeckVertex.getFlashcardLanguages();
         var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
         optionVertex.setId(UUID.randomUUID().toString());
-        optionVertex.setFlashcardSide("front"); // Start with this side
+        optionVertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
+        optionVertex.setTextToSpeechEnabled(false);
+        optionVertex.setInitialFlashcardLanguageId(flashcardLanguages[0].getId());
+        optionVertex.setAlgorithm("SuperMemo2");
         vertex.setOptions(optionVertex);
 
         // Generate first exercise
-        nextExercise(traversalSource, sessionId);
+        nextExerciseVertex(traversalSource, vertex);
         vertex.reload();
 
         return sessionModelFactory.create(vertex);
     }
 
     @Override
-    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, String modelId) {
+    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+        var modelId = context.getSessionModel().getId();
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
         if (sessionVertex == null)
             throw new RuntimeException("Session with " + modelId +" not found");
 
-        // Finds first flashcard (in deck) not connected to review exercise (in session)
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, modelId, ExerciseTypes.REVIEW_FLASHCARD);
+        // Generate next exercise
+        nextExerciseVertex(traversalSource, sessionVertex);
+        sessionVertex.reload();
 
-        if (flashcardVertex != null) {
-            var exerciseParameters = new ExerciseParameters()
-                    .withSession(sessionVertex)
-                    .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
-            var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
-
-            exerciseFactory.create(traversalSource, exerciseParameters);
-            sessionVertex.reload();
-        } else {
-            // If no flashcards are found, the session is complete
-            sessionVertex.setCompleted(true);
-        }
         return sessionModelFactory.create(sessionVertex);
+    }
+
+    private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        // Finds first flashcard (in deck) not connected to review exercise (in session)
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.REVIEW_FLASHCARD);
+        if (flashcardVertex != null)
+            return createReviewExercise(traversalSource, sessionVertex, flashcardVertex);
+
+        // Finds next flashcard according to spaced repetition algorithm
+        var states = sessionVertex.getStatesWithType("SuperMemo2");
+        var firstDueState = states.stream()
+                .sorted((a, b) -> {
+                    var nextShowA = (long)a.getPropertyValue("next_show");
+                    var nextShowB = (long)b.getPropertyValue("next_show");
+                    return Long.compare(nextShowA, nextShowB);
+                })
+                .findFirst();
+        var firstDueFlashcard = (FlashcardVertex) firstDueState.map(state -> state.getContent()).orElse(null);
+        return createReviewExercise(traversalSource, sessionVertex, firstDueFlashcard);
+    }
+
+    private ExerciseVertex createReviewExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex, FlashcardVertex flashcardVertex) {
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
+        var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
+
+        return exerciseFactory.create(traversalSource, exerciseParameters);
     }
 }

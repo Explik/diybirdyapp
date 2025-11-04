@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { TextButtonComponent } from '../../../../shared/components/text-button/text-button.component';
 import { CommonModule } from '@angular/common';
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseStates } from '../../models/exercise.interface';
+import { ButtonComponent } from "../../../../shared/components/button/button.component";
 
 @Component({
   selector: 'app-exercise-navigation-check-answer-container',
   standalone: true,
-  imports: [TextButtonComponent, CommonModule],
+  imports: [CommonModule, ButtonComponent],
   templateUrl: './exercise-navigation-check-answer-container.component.html'
 })
 export class ExerciseNavigationCheckAnswerContainerComponent {

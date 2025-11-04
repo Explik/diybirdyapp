@@ -138,15 +138,4 @@ public class ExerciseVertexUnitTest {
         var correctOptions = exerciseVertex.getCorrectOptions();
         assertEquals(correctOptions.size(), 0);
     }
-
-    @Test
-    public void givenVertexWithExerciseSession_whenGetSession_thenReturnsExerciseSession() {
-        var sessionVertex = ExerciseSessionVertex.create(traversalSource);
-        sessionVertex.setId("session-id");
-
-        var vertex = ExerciseVertex.create(traversalSource);
-        vertex.setSession(sessionVertex);
-
-        assertEquals("session-id", vertex.getSession().getId());
-    }
 }

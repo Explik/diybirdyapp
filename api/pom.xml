@@ -14,11 +14,13 @@
 	<name>diybirdyapp</name>
 	<description>DIY Birdy App</description>
 	<properties>
-		<java.version>22</java.version>
+		<java.version>21</java.version>
 		<tinkerpop.version>3.7.2</tinkerpop.version>
 		<springboot.version>3.3.0</springboot.version>
 		<reflections.version>0.10.2</reflections.version>
-		<maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
+		<maven-compiler-plugin-version>3.13.0</maven-compiler-plugin-version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
 	<dependencyManagement>
@@ -48,7 +50,18 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -56,6 +69,11 @@
     		<groupId>org.springdoc</groupId>
     		<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
     		<version>2.5.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
 		<!-- Tinkerpop dependencies -->
@@ -121,7 +139,11 @@
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-speech</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

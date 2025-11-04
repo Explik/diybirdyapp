@@ -8,16 +8,16 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class ExerciseInputPairOptionsDto extends ExerciseInputDto {
-    @NotNull
+    @NotNull(message = "leftOptionType.required")
     private String leftOptionType = "text";
 
-    @NotNull
+    @NotNull(message = "rightOptionType.required")
     private String rightOptionType = "text";
 
-    @NotNull
+    @NotNull(message = "leftOptions.required")
     private List<PairOptionsInputOptionDto> leftOptions = List.of();
 
-    @NotNull
+    @NotNull(message = "rightOptions.required")
     private List<PairOptionsInputOptionDto> rightOptions = List.of();
 
     private PairOptionsInputFeedback feedback;
@@ -70,7 +70,7 @@ public class ExerciseInputPairOptionsDto extends ExerciseInputDto {
             @JsonSubTypes.Type(value = PairOptionsInputTextOptionDto.class, name = "text")
     })
     public static abstract class PairOptionsInputOptionDto {
-        @NotNull
+        @NotNull(message = "id.required")
         private String id;
 
         public String getId() {
@@ -83,7 +83,7 @@ public class ExerciseInputPairOptionsDto extends ExerciseInputDto {
     }
 
     public static class PairOptionsInputTextOptionDto extends PairOptionsInputOptionDto {
-        @NotNull
+        @NotNull(message = "text.required")
         private String text;
 
         public String getText() {
@@ -96,10 +96,10 @@ public class ExerciseInputPairOptionsDto extends ExerciseInputDto {
     }
 
     public static class PairOptionsInputFeedback {
-        @NotNull
+        @NotNull(message = "correctPairs.required")
         private List<PairOptionFeedbackPair> correctPairs = List.of();
 
-        @NotNull
+        @NotNull(message = "incorrectPairs.required")
         private List<PairOptionFeedbackPair> incorrectPairs = List.of();
 
         public List<PairOptionFeedbackPair> getCorrectPairs() {
@@ -119,10 +119,10 @@ public class ExerciseInputPairOptionsDto extends ExerciseInputDto {
         }
 
         public static class PairOptionFeedbackPair {
-            @NotNull
+            @NotNull(message = "leftId.required")
             public String leftId;
 
-            @NotNull
+            @NotNull(message = "rightId.required")
             public String rightId;
 
             public String getLeftId() {

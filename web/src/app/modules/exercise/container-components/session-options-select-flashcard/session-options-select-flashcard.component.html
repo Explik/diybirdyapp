@@ -1,0 +1,17 @@
+<form [formGroup]="form" class="session-options-select-flashcard" class="min-h-48">
+	<div class="mb-4">
+		<app-form-field>
+			<app-label i18n>Initial flashcard language</app-label>
+			<app-select formControlName="initialFlashcardLanguageId">
+				<app-option *ngFor="let lang of availableLanguages" [value]="lang">{{ lang }}</app-option>
+			</app-select>
+		</app-form-field>
+	</div>
+
+	<div>
+		<app-form-field>
+			<app-label i18n>Text to speech</app-label>
+			<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
+		</app-form-field>
+	</div>
+</form>

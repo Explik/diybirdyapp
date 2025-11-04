@@ -3,6 +3,8 @@ package com.explik.diybirdyapp.persistence.vertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FlashcardDeckVertex extends ContentVertex {
@@ -14,6 +16,7 @@ public class FlashcardDeckVertex extends ContentVertex {
 
     public static final String EDGE_FLASHCARD = "hasFlashcard";
     public static final String EDGE_FLASHCARD_PROPERTY_ORDER = "order";
+    public static final String EDGE_OWNER = "ownedBy";
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_NAME = "name";
@@ -36,7 +39,7 @@ public class FlashcardDeckVertex extends ContentVertex {
     }
 
     public String getDescription() {
-        return getPropertyAsString(PROPERTY_DESCRIPTION);
+        return getPropertyAsString(PROPERTY_DESCRIPTION, null);
     }
 
     public void setDescription(String description) {
@@ -65,6 +68,38 @@ public class FlashcardDeckVertex extends ContentVertex {
 
     public List<? extends FlashcardVertex> getFlashcards() {
         return VertexHelper.getOrderedOutgoingModels(this, EDGE_FLASHCARD, "order", FlashcardVertex::new);
+    }
+
+    public UserVertex getOwner() {
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_OWNER, UserVertex::new);
+    }
+
+    public void setOwner(UserVertex userVertex) {
+        if (userVertex != null) {
+            addEdgeOneToOne(EDGE_OWNER, userVertex);
+        }
+        else removeEdges(EDGE_OWNER);
+    }
+
+    public String[] getFlashcardLanguageIds() {
+        return Arrays
+                .stream(getFlashcardLanguages())
+                .map(LanguageVertex::getId)
+                .toArray(String[]::new);
+    }
+
+    public LanguageVertex[] getFlashcardLanguages() {
+        var languages = new ArrayList<LanguageVertex>();
+        for (var flashcard : this.getFlashcards()) {
+            var leftContent = flashcard.getLeftContent();
+            if (leftContent instanceof TextContentVertex leftTextContent)
+                languages.add(leftTextContent.getLanguage());
+
+            var rightContent = flashcard.getRightContent();
+            if (rightContent instanceof TextContentVertex rightTextContent)
+                languages.add(rightTextContent.getLanguage());
+        }
+        return languages.stream().distinct().toArray(LanguageVertex[]::new);
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {

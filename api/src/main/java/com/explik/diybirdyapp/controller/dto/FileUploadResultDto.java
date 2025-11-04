@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.controller.dto;
 import jakarta.validation.constraints.NotNull;
 
 public class FileUploadResultDto {
-    @NotNull
+    @NotNull(message = "url.required")
     private String url;
 
     public String getUrl() { return url; }

@@ -1,12 +1,12 @@
 <div class="fixed bottom-16 max-w-lg mx-auto w-full">
     <div class="relative float-left max-w-lg mx-auto w-full">
-        <app-text-button state="secondary" label="Skip" class="float-left" (click)="handleSkipExercise()"></app-text-button>
+        <app-button variant="secondary" i18n class="float-left" (click)="handleSkipExercise()">Skip</app-button>
 
     @if(showCheckAnswer) {
-        <app-text-button state="primary" label="Check Answer" class="float-right" (click)="handleCheckAnswer()"></app-text-button>
+        <app-button variant="primary" i18n class="float-right" (click)="handleCheckAnswer()">Check Answer</app-button>
     }
     @else {
-        <app-text-button state="primary" label="Next" class="float-right" (click)="handleNextExercise()"></app-text-button>
+        <app-button variant="primary" i18n class="float-right" (click)="handleNextExercise()">Next</app-button>
     }
     </div>
 </div>

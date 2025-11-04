@@ -4,7 +4,7 @@ import com.explik.diybirdyapp.ExerciseInputTypes;
 import jakarta.validation.constraints.NotNull;
 
 public class ExerciseInputRecordAudioDto extends ExerciseInputDto {
-    @NotNull
+    @NotNull(message = "url.required")
     private String url;
 
     public ExerciseInputRecordAudioDto() {

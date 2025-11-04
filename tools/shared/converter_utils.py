@@ -12,7 +12,7 @@ def create_text_content(text, language):
     return {
         "type": "text",
         "text": text,
-        "language": language
+        "languageId": language["id"]
     }
 
 def create_image_content(image_url):

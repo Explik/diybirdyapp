@@ -2,14 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
+import { IconComponent } from "../../../../shared/components/icon/icon.component";
+import { TextFieldComponent } from '../../../../shared/components/text-field/text-field.component';
 
 @Component({
   selector: 'app-exercise-input-write-text',
   standalone: true,
   templateUrl: './exercise-input-write-text.component.html',
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, IconComponent, TextFieldComponent]
 })
-export class ExerciseInputWriteTextComponent {
+export class ExerciseInputWriteTextComponent implements OnInit {
   @Input({required: true}) input!: ExerciseInputWriteTextDto;
   feedbackValues: { state: string, value: string}[] = []; 
 

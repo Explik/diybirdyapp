@@ -12,19 +12,23 @@ public class FlashcardDeckService {
     @Autowired
     FlashcardDeckRepository repository;
 
-    public FlashcardDeckModel add(FlashcardDeckModel model) {
-        return repository.add(model);
+    public FlashcardDeckModel add(String userId, FlashcardDeckModel model) {
+        return repository.add(userId, model);
     }
 
-    public FlashcardDeckModel get(String id) {
-        return repository.get(id);
+    public FlashcardDeckModel get(String userId, String id) {
+        return repository.get(userId, id);
     }
 
-    public List<FlashcardDeckModel> getAll() {
-        return repository.getAll();
+    public List<FlashcardDeckModel> getAll(String userId) {
+        return repository.getAll(userId);
     }
 
-    public FlashcardDeckModel update(FlashcardDeckModel model) {
-        return repository.update(model);
+    public FlashcardDeckModel update(String userId, FlashcardDeckModel model) {
+        return repository.update(userId, model);
+    }
+
+    public void delete(String userId, String id) {
+        repository.delete(userId, id);
     }
 }

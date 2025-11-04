@@ -3,13 +3,13 @@ package com.explik.diybirdyapp.controller.dto.content;
 import jakarta.validation.constraints.NotNull;
 
 public class FlashcardLanguageDto {
-    @NotNull
+    @NotNull(message = "id.required")
     private String id;
 
-    @NotNull
+    @NotNull(message = "abbreviation.required")
     private String abbreviation;
 
-    @NotNull
+    @NotNull(message = "name.required")
     private String name;
 
     public FlashcardLanguageDto() {}

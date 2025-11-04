@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Dictionary;
 
 public class ExerciseDto {
-    @NotNull
+    @NotNull(message = "id.required")
     private String id;
 
-    @NotNull
+    @NotNull(message = "type.required")
     private String type;
 
     private ExerciseContentDto content;

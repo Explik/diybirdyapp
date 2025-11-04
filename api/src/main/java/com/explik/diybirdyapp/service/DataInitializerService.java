@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.builder.*;
+import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
@@ -49,6 +50,9 @@ public class DataInitializerService {
     @Autowired
     private ExerciseAbstractVertexFactory exerciseAbstractVertexFactory;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
         appendInitialData();
@@ -58,6 +62,7 @@ public class DataInitializerService {
         addInitialLanguageData();
         addInitialContentAndConcepts();
         addInitialExerciseData();
+        addInitialUserData();
     }
 
     public void addInitialLanguageData() {
@@ -106,7 +111,7 @@ public class DataInitializerService {
         // Flashcard deck 1
         builderFactory.createFlashcardDeckVertexBuilder()
                 .withId("flashcardDeckVertex1")
-                .withName("First ever flashcard deck")
+                .withName("First ever flashcard deck (public)")
                 .withDefaultLanguages(langVertex1, langVertex2)
                 .addFlashcard(new FlashcardVertexBuilder()
                         .withFrontText("Hej verden")
@@ -116,7 +121,7 @@ public class DataInitializerService {
         // Flashcard deck 2
         builderFactory.createFlashcardDeckVertexBuilder()
                 .withId("flashcardDeckVertex2")
-                .withName("Second ever flashcard deck")
+                .withName("Second ever flashcard deck (public)")
                 .withDefaultLanguages(langVertex1, langVertex2)
                 .addFlashcard(new FlashcardVertexBuilder()
                         .withFrontText("Hej John")
@@ -135,7 +140,7 @@ public class DataInitializerService {
         // Flashcard deck 3
         builderFactory.createFlashcardDeckVertexBuilder()
                 .withId("textOnlyFlashcardDeck")
-                .withName("Text only flashcard deck")
+                .withName("Text only flashcard deck (public)")
                 .withDefaultLanguages(langVertex1, langVertex2)
                 .addFlashcard(new FlashcardVertexBuilder()
                         .withFrontText("Hej")
@@ -203,7 +208,7 @@ public class DataInitializerService {
                 .withContent(flashcardVertex1);
 
         var flashcardSideContentParameters = new ExerciseContentParameters()
-                .withContent(flashcardVertex1.getLeftContent());
+                .withFlashcardContent(flashcardVertex1, "front");
 
         var arrangeTextOptionsParameters = new ExerciseInputParametersArrangeTextOptions()
                 .withOptions(wordTextContents);
@@ -283,5 +288,10 @@ public class DataInitializerService {
         exerciseAbstractVertexFactory
                 .create(ExerciseSchemas.TAP_PAIRS_EXERCISE)
                 .create(traversalSource, tapPairsExerciseParameters);
+    }
+
+    public void addInitialUserData() {
+        // Create user role "ROLE_USER"
+        userRepository.createUserRole("ROLE_USER");
     }
 }

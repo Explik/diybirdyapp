@@ -38,6 +38,7 @@ public class ExerciseSchemas {
     public static final ExerciseSchema WRITE_FLASHCARD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.WRITE_FLASHCARD)
             .withContentType(ContentTypes.FLASHCARD_SIDE)
+            .withInputType(ExerciseInputTypes.WRITE_TEXT)
             .withEvaluationType(ExerciseEvaluationTypes.CORRECT_TEXT);
 
     public static final ExerciseSchema WRITE_SENTENCE_USING_WORD_EXERCISE = new ExerciseSchema()

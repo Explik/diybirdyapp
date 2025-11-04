@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -15,7 +14,6 @@ public class ExerciseVertex extends AbstractVertex {
 
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_CONTENT_PROPERTY_FLASHCARD_SIDE = "flashcardSide";
-    public final static String EDGE_SESSION = "hasSession";
     public final static String EDGE_OPTION = "hasOption";
     public final static String EDGE_OPTION_PAIR = "hasOptionPair";
     public final static String EDGE_OPTION_PROPERTY_ORDER = "order";
@@ -123,16 +121,6 @@ public class ExerciseVertex extends AbstractVertex {
                 this,
                 EDGE_OPTION_PAIR,
                 PairVertex::new);
-    }
-
-    public ExerciseSessionVertex getSession() {
-        return VertexHelper.getOptionalOutgoingModel(this, EDGE_SESSION, ExerciseSessionVertex::new);
-    }
-
-    public void setSession(AbstractVertex session) {
-        if (session == null)
-            return;
-        addEdgeOneToMany(EDGE_SESSION, session);
     }
 
     @Override

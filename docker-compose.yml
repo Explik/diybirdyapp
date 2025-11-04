@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  gremlin-server:
+    image: tinkerpop/gremlin-server:3.7.0
+    ports:
+      - "8182:8182"
+    volumes:
+      - ./data/gremlin:/data
+    environment:
+      - GREMLIN_SERVER_USER=gremlin
+      - GREMLIN_SERVER_PASSWORD=gremlin
+
+  backend:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - gremlin-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - GREMLIN_HOST=gremlin-server
+      - GREMLIN_PORT=8182
+      - GREMLIN_USERNAME=gremlin
+      - GREMLIN_PASSWORD=gremlin
+
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+
+volumes:
+  gremlin-data:
+    driver: local

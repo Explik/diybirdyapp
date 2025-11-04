@@ -1,0 +1,35 @@
+<div class="max-w-md mx-auto p-4">
+	<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+		<app-form-field>
+			<app-label for="name" class="block mb-1" i18n>Name</app-label>
+			<app-text-field id="name" formControlName="name"></app-text-field>
+			<app-form-error *ngIf="form.get('name')?.touched && form.get('name')?.invalid" i18n>Name is required</app-form-error>
+		</app-form-field>
+
+		<app-form-field>
+			<app-label for="email" class="block mb-1" i18n>Email</app-label>
+			<app-text-field id="email" formControlName="email" [type]="'email'"></app-text-field>
+			<app-form-error *ngIf="form.get('email')?.touched && form.get('email')?.invalid" i18n>Please enter a valid email</app-form-error>
+		</app-form-field>
+
+		<app-form-field>
+			<app-label for="password" class="block mb-1" i18n>Password</app-label>
+			<app-text-field id="password" formControlName="password" [type]="'password'"></app-text-field>
+			<app-form-error *ngIf="form.get('password')?.touched && form.get('password')?.invalid" i18n>Password is required (min 6 chars)</app-form-error>
+		</app-form-field>
+
+		<app-form-field>
+			<app-label for="repeatPassword" class="block mb-1" i18n>Repeat Password</app-label>
+			<app-text-field id="repeatPassword" formControlName="repeatPassword" [type]="'password'"></app-text-field>
+			<app-form-error *ngIf="form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid" i18n>Please repeat your password</app-form-error>
+		</app-form-field>
+
+		<app-form-error *ngIf="form.hasError('passwordMismatch')" i18n>Passwords do not match</app-form-error>
+
+		<div>
+			<app-button type="submit" [disabled]="loading || form.invalid" variant="primary" i18n>Sign up</app-button>
+		</div>
+
+		<div *ngIf="error" class="text-red-600" i18n>Login failed</div>
+	</form>
+</div>

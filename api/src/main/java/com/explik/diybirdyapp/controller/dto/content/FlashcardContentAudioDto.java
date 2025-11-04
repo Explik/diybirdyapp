@@ -1,10 +1,11 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
 import com.explik.diybirdyapp.ContentTypes;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class FlashcardContentAudioDto extends FlashcardContentDto {
-    @NotNull
+    @NotBlank(message = "audioUrl.required")
     private String audioUrl;
 
     public FlashcardContentAudioDto() {

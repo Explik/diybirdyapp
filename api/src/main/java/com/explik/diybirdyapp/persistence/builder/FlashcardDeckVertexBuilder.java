@@ -12,6 +12,7 @@ import java.util.UUID;
 public class FlashcardDeckVertexBuilder extends VertexBuilderBase<FlashcardDeckVertex> {
     private String id;
     private String name;
+    private String description;
     private LanguageVertex defaultFrontLanguage;
     private LanguageVertex defaultBackLanguage;
     private List<FlashcardVertex> flashcardVertices = new ArrayList<>();
@@ -24,6 +25,11 @@ public class FlashcardDeckVertexBuilder extends VertexBuilderBase<FlashcardDeckV
 
     public FlashcardDeckVertexBuilder withName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public FlashcardDeckVertexBuilder withDescription(String description) {
+        this.description = description;
         return this;
     }
 

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { ExerciseInputPairOptionsDto, PairOptionFeedbackPair, SelectOptionInputTextOption } from '../../../../shared/api-client';
+import { ExerciseInputPairOptionsDto, PairOptionFeedbackPair } from '../../../../shared/api-client';
+import { SelectOptionInputTextOption } from '../../../../shared/api-client/model/select-option-input-text-option';
 
 @Component({
   selector: 'app-exercise-input-pair-options',

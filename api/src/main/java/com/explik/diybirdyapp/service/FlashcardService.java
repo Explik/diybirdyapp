@@ -2,8 +2,13 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.content.FileUploadModel;
 import com.explik.diybirdyapp.model.content.FlashcardModel;
+import com.explik.diybirdyapp.persistence.command.FileContentCommandResult;
+import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
+import com.explik.diybirdyapp.persistence.command.SyncCommandHandler;
 import com.explik.diybirdyapp.persistence.repository.FlashcardRepository;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
+import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +25,9 @@ public class FlashcardService {
 
     @Autowired
     FlashcardRepository repository;
+
+    @Autowired
+    SyncCommandHandler<GenerateAudioForFlashcardCommand, FileContentCommandResult> generateAudioCommandHandler;
 
     public FlashcardModel add(FlashcardModel model, MultipartFile[] files) {
         validateFiles(model, files);
@@ -39,8 +47,17 @@ public class FlashcardService {
         repository.delete(id);
     }
 
+    public FlashcardModel get(String id) {
+        return repository.get(id);
+    }
+
     public List<FlashcardModel> getAll(@Nullable String setId) {
         return repository.getAll(setId);
+    }
+
+    public FileContentCommandResult generateTextToSpeech(String text, String languageCode) {
+        var command = new GenerateAudioForFlashcardCommand(text, languageCode);
+        return generateAudioCommandHandler.handle(command);
     }
 
     private void validateFiles(FlashcardModel model, MultipartFile[] files) {

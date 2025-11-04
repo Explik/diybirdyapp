@@ -12,8 +12,10 @@ public class ExerciseSessionVertex extends AbstractVertex {
 
     public final static String LABEL = "exerciseSession";
 
+    public final static String EDGE_EXERCISE = "hasExercise";
     public final static String EDGE_FLASHCARD_DECK = "hasFlashcardDeck";
     public final static String EDGE_OPTIONS = "hasOptions";
+    public final static String EDGE_STATE = "hasState";
 
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TYPE = "type";
@@ -44,11 +46,19 @@ public class ExerciseSessionVertex extends AbstractVertex {
     }
 
     public ExerciseVertex getCurrentExercise() {
-        return VertexHelper.getOptionalIngoingModel(this, ExerciseVertex.EDGE_SESSION, ExerciseVertex::new);
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_EXERCISE, ExerciseVertex::new);
     }
 
     public List<ExerciseVertex> getExercises() {
-        return VertexHelper.getIngoingModels(this, ExerciseVertex.EDGE_SESSION, ExerciseVertex::new);
+        return VertexHelper.getOutgoingModels(this, EDGE_EXERCISE, ExerciseVertex::new);
+    }
+
+    public void addExercise(ExerciseVertex exerciseVertex) {
+        addEdgeOneToMany(EDGE_EXERCISE, exerciseVertex);
+    }
+
+    public void removeExercise(ExerciseVertex exerciseVertex) {
+        removeEdge(EDGE_EXERCISE, exerciseVertex);
     }
 
     public void setFlashcardDeck(FlashcardDeckVertex flashcardDeckVertex) {
@@ -65,6 +75,28 @@ public class ExerciseSessionVertex extends AbstractVertex {
 
     public ExerciseSessionOptionsVertex getOptions() {
         return VertexHelper.getOptionalOutgoingModel(this, EDGE_OPTIONS, ExerciseSessionOptionsVertex::new);
+    }
+
+    public List<ExerciseSessionStateVertex> getStates() {
+        return VertexHelper.getOutgoingModels(this, EDGE_STATE, ExerciseSessionStateVertex::new);
+    }
+
+    public List<ExerciseSessionStateVertex> getStatesWithType(String type) {
+        return VertexHelper.getOutgoingModels(this, EDGE_STATE, ExerciseSessionStateVertex::new).stream()
+                .filter(state -> state.getType().equals(type))
+                .toList();
+    }
+
+    public void addState(ExerciseSessionStateVertex stateVertex) {
+        addEdgeOneToMany(EDGE_STATE, stateVertex);
+    }
+
+    public void removeState(ExerciseSessionStateVertex stateVertex) {
+        removeEdge(EDGE_STATE, stateVertex);
+    }
+
+    public void removeStates() {
+        removeEdges(EDGE_STATE);
     }
 
     @Override

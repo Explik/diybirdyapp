@@ -2,12 +2,3 @@ nav {
     margin-bottom: 20px;
   }
   
-  nav a {
-    text-decoration: none;
-    color: blue;
-    margin-right: 10px;
-  }
-  
-  nav a:hover {
-    text-decoration: underline;
-  }

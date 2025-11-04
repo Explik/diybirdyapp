@@ -37,3 +37,14 @@ This document describes how to make common changes to the application.
 4. Add new vertex factory on backend component
 5. Add new vertex to model on backend component 
 6. Add a sample of the exercise in DataInitializer in backend component
+
+## I18n changes
+### Generate translation source file
+1. Update angular.json to include i18n configuration if not already present
+2. Run `ng extract-i18n --output-path src/locale` to generate the source translation file (messages.xlf)
+
+## Add new DTO class/property
+1. Add new DTO class in /controller/dto/[...] package
+2. Use the new DTO class in a controller in the /controller package
+3. Recompile and open the OpenAPI specification at `http://localhost:8080/v3/api-docs` to verify the new DTO is included
+4. Regenerate API client in web component by running `npm run generate-api-client` (while backend is running)

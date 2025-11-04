@@ -26,13 +26,13 @@ public class ExerciseSessionOptionsVertexUnitTest {
     @Test
     void givenNewlyCreatedVertex_whenGetFlashcardSide_thenReturnsNull() {
         var vertex = ExerciseSessionOptionsVertex.create(traversalSource);
-        assertNull(vertex.getFlashcardSide());
+        assertNull(vertex.getInitialFlashcardLanguageId());
     }
 
     @Test
     void givenVertex_whenSetFlashcardSide_thenUpdatedFlashcardSide() {
         var vertex = ExerciseSessionOptionsVertex.create(traversalSource);
-        vertex.setFlashcardSide("new-side");
-        assertEquals("new-side", vertex.getFlashcardSide());
+        vertex.setInitialFlashcardLanguageId("new-side");
+        assertEquals("new-side", vertex.getInitialFlashcardLanguageId());
     }
 }

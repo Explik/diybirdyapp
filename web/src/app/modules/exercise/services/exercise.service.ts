@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom } from 'rxjs';
-import { ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
+import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom, take } from 'rxjs';
+import { Exercise, ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
-import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto } from "../../../shared/api-client";
+import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto, ExerciseSessionOptionsDto } from "../../../shared/api-client";
 
 @Injectable({
     providedIn: 'root'
@@ -36,6 +36,31 @@ export class ExerciseService {
             this.setExercise(session.exercise);
         }
     }
+
+    getExerciseSessionOptions(): Observable<ExerciseSessionOptionsDto|undefined> {
+        return this.session$.pipe(take(1)).pipe(
+            switchMap(session => {
+                if (!session)
+                    return of(undefined);
+                
+                return this.service.getOptions(session.id!);
+            })
+        );
+    }
+
+    applyExerciseSessionOptions(options: ExerciseSessionOptionsDto): Observable<void> { 
+        return this.session$.pipe(take(1)).pipe(
+            switchMap(session => {
+            if (!session)
+                throw new Error("No session found");
+            return this.service.applyOptions(session.id!, options);
+            }),
+            map(newSession => {
+                this.setExerciseSession(newSession);
+            })
+        );
+    }
+
 
     getExercise(): Observable<ExerciseDto | undefined> {
         return this.exercise$.asObservable();
@@ -96,7 +121,7 @@ export class ExerciseService {
         if (!session) 
             throw new Error("No session found");
         
-        const newSession = await this.service.nextExercise(session.id).toPromise();
+        const newSession = await this.service.nextExercise(session.id!).toPromise();
         this.setExerciseSession(newSession);
         
         if (newSession?.exercise)
@@ -108,7 +133,7 @@ export class ExerciseService {
         if (!session) 
             throw new Error("No session found");
 
-        const newSession = await this.service.skipExercise(session.id).toPromise();
+        const newSession = await this.service.skipExercise(session.id!).toPromise();
         this.setExerciseSession(newSession);
 
         if (newSession?.exercise)

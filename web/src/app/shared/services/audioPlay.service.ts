@@ -5,14 +5,14 @@ import { environment } from "../../../environments/environment";
     providedIn: 'root'
 })
 export class AudioPlayService {
-    private baseUrl = environment.apiUrl + "/file/";
+    private baseUrl = environment.apiUrl;
 
     private audio?: HTMLAudioElement;
     private audioUrl?: string;
 
     play(audioUrl: string) {
         this.audioUrl = audioUrl;
-        this.audio = new Audio(this.baseUrl + audioUrl);
+        this.audio = new Audio(this.baseUrl + "/" + audioUrl);
         this.audio.play();
     }
 

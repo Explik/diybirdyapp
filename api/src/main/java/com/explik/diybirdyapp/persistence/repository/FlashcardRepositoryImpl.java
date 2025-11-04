@@ -222,15 +222,16 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     private TextContentVertex updateTextContent(TextContentVertex vertex, FlashcardContentTextModel model) {
-        if (vertex.isStatic()) {
-            var newVertex = textContentVertexFactory.copy(vertex);
-            newVertex.setValue(model.getText());
-            return newVertex;
+        var updateVertex = vertex.isStatic() ? textContentVertexFactory.copy(vertex) : vertex;
+
+        if (model.getLanguageId() != null) {
+            var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
+            updateVertex.setLanguage(languageVertex);
         }
-        else {
-            vertex.setValue(model.getText());
-            return vertex;
+        if (model.getText() != null) {
+            updateVertex.setValue(model.getText());
         }
+        return updateVertex;
     }
 
     private VideoContentVertex createVideoContent(FlashcardContentUploadVideoModel model) {

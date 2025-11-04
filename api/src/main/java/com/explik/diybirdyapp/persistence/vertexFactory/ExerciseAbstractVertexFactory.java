@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ContentTypes;
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class ExerciseAbstractVertexFactory {
         vertex.setType(schema.getExerciseType());
 
         if (options.getSession() != null)
-            vertex.setSession(options.getSession());
+            options.getSession().addExercise(vertex);
 
         if (schema.getRequireTargetLanguage())
             vertex.setTargetLanguage(options.getTargetLanguage());
@@ -49,7 +50,9 @@ public class ExerciseAbstractVertexFactory {
             vertex.setContent(options.getContent().getVertex());
         }
         else if (contentType.equals(ContentTypes.FLASHCARD_SIDE)) {
-            vertex.setContent(options.getContent().getVertex());
+            vertex.setFlashcardContent(
+                    (FlashcardVertex)options.getContent().getVertex(),
+                    options.getContent().getFlashcardSide());
         }
         else if (contentType.equals(ContentTypes.AUDIO)) {
             vertex.setContent(options.getContent().getVertex());

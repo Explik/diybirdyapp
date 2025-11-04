@@ -1,29 +1,36 @@
-<div class="flex flex-col space-y-2 w-full">
+<div class="flex flex-col w-full">
     <!-- Again Button -->
-    <button class="bg-red-500 text-white px-4 py-2 rounded flex justify-between hover:bg-red-600"
-      (click)="selectRating('again')">
-      <span>Again</span>
-      <span class="ml-auto">&lt; 10 min</span>
-    </button>
+    <app-row-button layout="double" (buttonClick)="selectRating('again')" class="mb-2">
+      <div left class="flex items-center">
+        <app-icon icon="key-1" class="mr-2"></app-icon>
+        <span>Again</span>
+      </div>
+      <span right>&lt; 10 min</span>
+    </app-row-button>
     
-    <!-- Hard Button -->
-    <button class="bg-yellow-500 text-white px-4 py-2 rounded flex justify-between hover:bg-yellow-600"
-      (click)="selectRating('hard')">
-      <span>Hard</span>
-      <span class="ml-auto">2 days</span>
-    </button>
+    <app-row-button layout="double" (buttonClick)="selectRating('hard')" class="mb-2">
+      <div left class="flex items-center">
+        <app-icon icon="key-2" class="mr-2"></app-icon>
+        <span>Hard</span>
+      </div>
+      <span right>2 days</span>
+    </app-row-button>
     
     <!-- Good Button -->
-    <button class="bg-green-500 text-white px-4 py-2 rounded flex justify-between hover:bg-green-600"
-      (click)="selectRating('good')">
-      <span>Good</span>
-      <span class="ml-auto">4 months</span>
-    </button>
+    <app-row-button layout="double" (buttonClick)="selectRating('good')" class="mb-2">
+      <div left class="flex items-center">
+        <app-icon icon="key-3" class="mr-2"></app-icon>
+        <span>Good</span>
+      </div>
+      <span right>4 months</span>
+    </app-row-button>
     
     <!-- Easy Button -->
-    <button class="bg-blue-500 text-white px-4 py-2 rounded flex justify-between hover:bg-blue-600"
-      (click)="selectRating('easy')">
-      <span>Easy</span>
-      <span class="ml-auto">6 months</span>
-    </button>
+    <app-row-button layout="double" (buttonClick)="selectRating('easy')">
+      <div left class="flex items-center">
+        <app-icon icon="key-4" class="mr-2"></app-icon>
+        <span>Easy</span>
+      </div>
+      <span right>6 months</span>
+    </app-row-button>
 </div>

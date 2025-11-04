@@ -52,7 +52,7 @@ public class ExerciseRepositoryUnitTest {
     @Test
     void givenNonExistentExerciseId_whenGet_thenThrowException() {
         var id = "non-existent-id";
-        assertThrows(RuntimeException.class, () -> repository.get(id));
+        assertThrows(RuntimeException.class, () -> repository.get(id, null));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ExerciseRepositoryUnitTest {
         when(exerciseModelFactoryProvider.get(eq(exerciseType))).thenReturn(exerciseModelFactory);
         when(exerciseModelFactory.create(eq(vertex))).thenReturn(model);
 
-        var actualModel = repository.get(exerciseId);
+        var actualModel = repository.get(exerciseId, null);
 
         assertEquals(model, actualModel);
     }

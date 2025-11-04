@@ -6,8 +6,12 @@ import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.service.FlashcardService;
+import jakarta.validation.Valid;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +33,7 @@ public class FlashcardController {
     ApplicationEventPublisher eventPublisher;
 
     @PostMapping("/flashcard")
-    public FlashcardDto create(@RequestBody FlashcardDto dto) {
+    public FlashcardDto create(@Valid @RequestBody FlashcardDto dto) {
         var model = ingoingMapper.map(dto);
         var newModel = service.add(model, null);
 
@@ -40,7 +44,7 @@ public class FlashcardController {
 
     @PostMapping("/flashcard/rich")
     public FlashcardDto createRich(
-            @RequestPart("flashcard") FlashcardDto dto,
+            @Valid @RequestPart("flashcard") FlashcardDto dto,
             @RequestPart(value = "files", required = false)MultipartFile[] file) {
         var model = ingoingMapper.map(dto);
         var newModel = service.add(model, file);
@@ -51,7 +55,7 @@ public class FlashcardController {
     }
 
     @PutMapping("/flashcard")
-    public FlashcardDto update(@RequestBody FlashcardDto dto) {
+    public FlashcardDto update(@Valid @RequestBody FlashcardDto dto) {
         var model = ingoingMapper.map(dto);
         var newModel = service.update(model, null);
 
@@ -62,7 +66,7 @@ public class FlashcardController {
 
     @PutMapping("/flashcard/rich")
     public FlashcardDto update(
-            @RequestPart("flashcard") FlashcardDto dto,
+            @Valid @RequestPart("flashcard") FlashcardDto dto,
             @RequestPart(value = "files", required = false)MultipartFile[] files) {
         var model = ingoingMapper.map(dto);
         var newModel = service.update(model, files);
@@ -72,8 +76,15 @@ public class FlashcardController {
         return outgoingMapper.map(newModel);
     }
 
+    @GetMapping("/flashcard/{id}")
+    public FlashcardDto get(@PathVariable("id") String id) {
+        var model = service.get(id);
+
+        return outgoingMapper.map(model);
+    }
+
     @GetMapping("/flashcard")
-    public List<FlashcardDto> getAll(@RequestParam(required = false) String deckId) {
+    public List<FlashcardDto> getAll(@RequestParam(name = "deckId", required = false) String deckId) {
         var models = service.getAll(deckId);
 
         return models.stream()
@@ -83,7 +94,18 @@ public class FlashcardController {
     }
 
     @DeleteMapping("/flashcard/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable("id") String id) {
         service.delete(id);
+    }
+
+    @PostMapping("/flashcard/{id}/text-to-speech/{side}")
+    public ResponseEntity<byte[]> generateTextToSpeech(@PathVariable("id") String id, @PathVariable("side") String side) {
+        var result = service.generateTextToSpeech(id, side);
+
+        return ResponseEntity
+                .status(HttpStatus.SC_PARTIAL_CONTENT)
+                .contentType(MediaType.parseMediaType(result.getContentType()))
+                .header("Accept-Ranges", "bytes")
+                .body(Arrays.copyOfRange(result.getContent(), 0, result.getContent().length));
     }
 }

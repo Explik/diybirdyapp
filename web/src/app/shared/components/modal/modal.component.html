@@ -1,0 +1,27 @@
+<!-- Modal backdrop -->
+<div 
+  *ngIf="isOpen" 
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  (click)="onBackdropClick($event)"
+>
+  <!-- Modal content -->
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-96 overflow-auto">
+    <!-- Modal header -->
+    <div class="flex justify-between items-center p-4 border-b">
+      <h3 class="text-lg font-semibold">{{ title }}</h3>
+      <button 
+        class="text-gray-400 hover:text-gray-600 focus:outline-none"
+        (click)="closeModal()"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Modal body -->
+    <div class="p-4">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

@@ -1,16 +1,87 @@
 <section class="p-2">
-    <h1 class="text-lg">Overall visual components</h1>
+    <h1 class="text-lg font-black">Overall visual components</h1>
 
-    <app-flashcard side="front" class="mb-4">
-        <p front>Front shown first</p>
-        <p back>Back shown second</p>
-    </app-flashcard>
+    <h2 class="font-black">Button</h2>
+    <app-button variant="primary" class="mb-4 mr-2">Primary button</app-button>
+    <app-button variant="secondary" class="mb-4 mr-2">Secondary button</app-button>
+    <app-button variant="round" class="mb-4 mr-2">+</app-button>
+    <app-button class="mb-4">Default button</app-button>
 
-    <app-flashcard side="back">
-        <p front>Front shown second</p>
-        <p back>Back shown first</p>
-    </app-flashcard>
-    
+    <h2 class="font-black">(Row) button</h2>
+    <app-row-button layout="single" class="mb-4 mr-2">
+        Single button
+    </app-row-button>
+    <app-row-button layout="double" class="mb-4 mr-2">
+        <span left>Left</span>
+        <span right>Right</span>
+    </app-row-button>
+
+    <h2 class="font-black">Container</h2>
+    <app-container layout="single" class="block mb-2">
+        This is a single layout container.
+    </app-container>
+
+    <app-container layout="double" class="block mb-2">
+        <div left>
+            This is the left side of a double layout container.
+        </div>
+        <div right>
+            This is the right side of a double layout container.
+        </div>
+    </app-container>
+
+    <h2 class="font-black">Form fields</h2>
+    <app-form-field>
+      <app-label>Select dropdown (single option)</app-label>
+      <app-select placeholder="Placeholder">
+        <app-option value="1">Option 1</app-option>
+        <app-option value="2">Option 2</app-option>
+        <app-option value="3">Option 3</app-option>
+      </app-select>
+    </app-form-field>
+
+    <h2 class="font-black">Icons</h2>
+    <app-icon icon="mdi-home" class="mr-2"></app-icon>
+    <app-icon icon="mdi-account" class="mr-2"></app-icon>
+    <app-icon icon="key-2" class="mr-2"></app-icon>
+    <app-icon icon="key-a" class="mr-2"></app-icon>
+
+    <app-form-field>
+      <app-label>Text field (single line)</app-label>
+      <app-text-field></app-text-field>
+    </app-form-field>
+
+    <app-form-field>
+      <app-label>Text field (multi line)</app-label>
+      <app-text-field [rows]="3"></app-text-field>
+    </app-form-field>
+
+    <h2 class="font-black">Flashcard</h2>
+    <p>Flippable flashcard (front & back) </p>
+    <div class="flex flex-col sm:flex-row gap-4 items-start mb-4">
+        <app-flashcard side="front" class="flex-1 sm:mb-0">
+            <p front>Front shown first</p>
+            <p back>Back shown second</p>
+        </app-flashcard>
+
+        <app-flashcard side="back" class="flex-1 sm:mb-0">
+            <p front>Front shown second</p>
+            <p back>Back shown first</p>
+        </app-flashcard>
+    </div>
+
+    <p>Non-flippable flashcard (front & back) </p>
+    <div class="flex flex-col sm:flex-row gap-4 items-start mb-4">
+        <app-flashcard side="front" [isFlippable]="false" class="flex-1 sm:mb-0">
+            <p front>Only front is shown</p>
+        </app-flashcard>
+
+        <app-flashcard side="back" [isFlippable]="false" class="flex-1 sm:mb-0">
+            <p back>Only back is shown</p>
+        </app-flashcard>
+    </div>
+
+    <p>Flashcard with complex content</p>
     <app-flashcard>
         <ng-content front>
             <app-icon icon="mdi-volume-high" />
@@ -21,4 +92,14 @@
             Hej verden
         </ng-content >
     </app-flashcard>
+
+    <h2>Slide toogle</h2>
+    <app-slide-toogle class="mb-4"></app-slide-toogle>
+
+    <h2>Progress bar</h2>
+    <app-progress-bar [progress]="0" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="25" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="50" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="75" class="mb-4"></app-progress-bar>
+    <app-progress-bar [progress]="100" class="mb-4"></app-progress-bar>
 </section>

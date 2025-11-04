@@ -1,24 +1,15 @@
 <div class="w-full max-w-xl">
-  <ng-container *ngIf="!input.feedback; else resultTemplate">
-    <textarea [(ngModel)]="input.text" onchange="onUpdatedValue" class="border border-gray-300 rounded px-4 py-2 w-full"
-      rows="3"></textarea>
-  </ng-container>
-
-  <ng-template #resultTemplate>
+  <ng-container *ngIf="input.feedback">
     @for(feedbackValue of feedbackValues; track feedbackValue) {
     <div class="flex items-center space-x-2 w-full mb-2">
-      <span *ngIf="feedbackValue!.state === 'success'" class="text-green-500">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-      </span>
-      <span *ngIf="feedbackValue!.state === 'failure'" class="text-red-500">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </span>
+      <app-icon *ngIf="feedbackValue!.state === 'success'" icon="mark-correct"></app-icon>
+      <app-icon *ngIf="feedbackValue!.state === 'failure'" icon="mark-incorrect"></app-icon>
       <span class="text-gray-800">{{ feedbackValue.value }}</span>
     </div>
     }
-  </ng-template>
+  </ng-container>
+
+  <ng-container *ngIf="input.feedback == undefined || input.feedback.isRetypeAnswerEnabled">
+    <app-text-field [rows]="3" [(ngModel)]="input.text"></app-text-field>
+  </ng-container>
 </div>

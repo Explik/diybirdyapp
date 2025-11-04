@@ -1,13 +1,11 @@
 package com.explik.diybirdyapp.controller.dto.content;
 
-import jakarta.validation.constraints.NotNull;
-
 public class FlashcardDeckDto {
-    @NotNull
     private String id;
 
-    @NotNull
     private String name;
+
+    private String description;
 
     public FlashcardDeckDto() {}
 
@@ -25,5 +23,13 @@ public class FlashcardDeckDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

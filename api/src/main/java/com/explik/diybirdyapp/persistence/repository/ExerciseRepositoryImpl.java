@@ -2,8 +2,12 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseModel;
-import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
+import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
+import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
+import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationContext;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -17,7 +21,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     private final GraphTraversalSource traversalSource;
 
     @Autowired
-    private GenericProvider<ModelFactory<ExerciseVertex, ExerciseModel>> exerciseModelFactoryProvider;
+    private GenericProvider<ContextualModelFactory<ExerciseVertex, ExerciseModel, ExerciseRetrievalContext>> exerciseModelFactoryProvider;
 
     @Autowired
     private GenericProvider<ExerciseEvaluationStrategy> evaluationStrategyProvider;
@@ -27,12 +31,20 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
-    public ExerciseModel get(String id) {
+    public ExerciseModel get(String id, String sessionId) {
         var vertex = ExerciseVertex.getById(traversalSource, id);
         var exerciseType = vertex.getType();
         var exerciseFactory = exerciseModelFactoryProvider.get(exerciseType);
 
-        return exerciseFactory.create(vertex);
+        if (sessionId == null)
+            return exerciseFactory.create(vertex, ExerciseRetrievalContext.createDefault());
+
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+        if (sessionVertex == null)
+            throw new IllegalArgumentException("Session with ID " + sessionId + " does not exist");
+
+        var context = generateRetrievalContext(sessionVertex);
+        return exerciseFactory.create(vertex, context);
     }
 
     @Override
@@ -43,7 +55,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
 
         return vertices
                 .stream()
-                .map(factory::create)
+                .map(e -> factory.create(e, ExerciseRetrievalContext.createDefault()))
                 .toList();
     }
 
@@ -55,7 +67,26 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answer.getExerciseId());
         var exerciseType = exerciseVertex.getType();
         var strategy = evaluationStrategyProvider.get(exerciseType);
+        var strategyContext = getEvaluationContext(answer);
 
-        return strategy.evaluate(exerciseVertex, answer);
+        return strategy.evaluate(exerciseVertex, strategyContext);
+    }
+
+    private ExerciseRetrievalContext generateRetrievalContext(ExerciseSessionVertex sessionVertex) {
+        var provider = new ExerciseRetrievalContextProvider();
+        return provider.get(sessionVertex);
+    }
+
+    private ExerciseEvaluationContext getEvaluationContext(ExerciseInputModel answer) {
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answer.getSessionId());
+        var sessionOptionsVertex = (sessionVertex != null) ? sessionVertex.getOptions() : null;
+
+        var strategyContext = ExerciseEvaluationContext.create(answer);
+        if (sessionOptionsVertex != null) {
+            strategyContext.setRetypeCorrectAnswerEnabled(sessionOptionsVertex.getRetypeCorrectAnswer());
+            strategyContext.setAlgorithm(sessionOptionsVertex.getAlgorithm());
+        }
+
+        return strategyContext;
     }
 }

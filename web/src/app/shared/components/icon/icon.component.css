@@ -1,0 +1,33 @@
+.key-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  padding: 1px 6px;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  text-align: center;
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.key-icon::after {
+  content: attr(data-key);
+}
+
+.mark-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+}
+
+.mark-correct, .mark-incorrect {
+  /* Base styles for mark icons */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

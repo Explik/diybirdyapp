@@ -27,24 +27,20 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
     private ExerciseAnswerVertexFactoryText answerVertexFactory;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseInputModel genericAnswerModel) {
-        if (genericAnswerModel == null)
+    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+        if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(genericAnswerModel instanceof ExerciseInputTextModel))
+        if (!(context.getInput() instanceof ExerciseInputTextModel answerModel))
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
-
-        // Evaluate answer
-        ExerciseInputTextModel answerModel = (ExerciseInputTextModel)genericAnswerModel;
-        var textContent = exerciseVertex.getTextContent();
 
         // Save answer
         answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
-        return createExerciseWithFeedback(exerciseVertex, answerModel);
+        return createExerciseWithFeedback(exerciseVertex, answerModel, context);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputTextModel answerModel) {
+    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputTextModel answerModel, ExerciseEvaluationContext context) {
         // Compare correct options and answer (CASE INSENSITIVE)
         var correctOptions = exerciseVertex.getCorrectOptions().stream().map(v -> (TextContentVertex)v).toList();
         var correctOptionValues = correctOptions.stream().map(TextContentVertex::getValue).toList();
@@ -55,6 +51,9 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
         var inputFeedback = new ExerciseInputTextModel.Feedback();
         inputFeedback.setCorrectValues(correctOptionValues);
         if (!isAnswerCorrect) inputFeedback.setIncorrectValues(List.of(answerModel.getText()));
+
+        if (context.getRetypeCorrectAnswerEnabled())
+            inputFeedback.setIsRetypeAnswerEnabled(!isAnswerCorrect);
 
         var input = new ExerciseInputTextModel();
         input.setFeedback(inputFeedback);

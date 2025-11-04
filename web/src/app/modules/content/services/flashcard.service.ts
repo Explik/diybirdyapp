@@ -54,6 +54,10 @@ export class FlashcardService {
     }
   }
 
+  pronounceFlashcardContent(id: string, side: 'left' | 'right'): Observable<Blob> {
+    return this.http.post(`${this.flashcardBaseUrl}/${id}/text-to-speech/${side}`, {}, { responseType: 'blob' });
+  }
+
   getFlashcards(deckId: string | null): Observable<EditFlashcardImpl[]> {
     return this.http.get<FlashcardDto[]>(this.flashcardBaseUrl + "?deckId=" + deckId)
       .pipe(map((arr) => arr.map(EditFlashcardImpl.createFromDto)));

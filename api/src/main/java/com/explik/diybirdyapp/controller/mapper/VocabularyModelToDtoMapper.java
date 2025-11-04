@@ -6,13 +6,15 @@ import com.explik.diybirdyapp.model.content.VocabularyModel;
 import com.explik.diybirdyapp.model.content.VocabularyTextContentModel;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VocabularyModelToDtoMapper extends BaseModelToDtoMapper implements GenericMapper<VocabularyModel, VocabularyDto> {
-    public VocabularyModelToDtoMapper() {
-        super();
+public class VocabularyModelToDtoMapper implements GenericMapper<VocabularyModel, VocabularyDto> {
+    private final ModelMapper modelMapper;
 
+    public VocabularyModelToDtoMapper() {
+        modelMapper = new ModelMapper();
         modelMapper.addConverter(vocabularyContentConverter);
     }
 

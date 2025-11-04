@@ -83,13 +83,17 @@ export class EditFlashcardDeckImpl implements EditFlashcardDeck {
     get name(): string { return this.tracker.get(this, 'name'); }
     set name(value: string) { this.tracker.set(this, 'name', value); }
 
-    get flashcards(): EditFlashcard[] { return this.tracker.get(this, 'flashcards'); }
-    set flashcards(value: EditFlashcard[]) { this.tracker.set(this, 'flashcards', value); }
+    get description(): string | undefined { return this.tracker.get(this, 'description'); }
+    set description(value: string | undefined) { this.tracker.set(this, 'description', value); }
+
+    get flashcards(): EditFlashcardImpl[] { return this.tracker.get(this, 'flashcards'); }
+    set flashcards(value: EditFlashcardImpl[]) { this.tracker.set(this, 'flashcards', value); }
 
     static createFromDto(dto: FlashcardDeckDto): EditFlashcardDeckImpl {
         var deck = new EditFlashcardDeckImpl();
-        deck.id = dto.id;
-        deck.name = dto.name;
+        deck.id = dto.id!;
+        deck.name = dto.name || "";
+        deck.description = dto.description;
         deck.flashcards = [];
         return deck;
     }
@@ -184,7 +188,7 @@ export class EditFlashcardImpl implements EditFlashcard {
         flashcard.frontContent = dto.frontContent;
         flashcard.backContent = dto.backContent;
 
-        switch (dto.frontContent.type) {
+        switch (dto.frontContent!.type) {
             case "audio":
                 flashcard.leftContentType = "audio";
                 flashcard.leftAudioContent = EditFlashcardAudioImpl.createFromDto(<FlashcardContentAudioDto>dto.frontContent);
@@ -203,7 +207,7 @@ export class EditFlashcardImpl implements EditFlashcard {
                 break;
         }
 
-        switch (dto.backContent.type) {
+        switch (dto.backContent!.type) {
             case "audio":
                 flashcard.rightContentType = "audio";
                 flashcard.rightAudioContent = EditFlashcardAudioImpl.createFromDto(<FlashcardContentAudioDto>dto.backContent);
@@ -269,8 +273,8 @@ export class EditFlashcardImpl implements EditFlashcard {
                 id: this.id,
                 deckId: this.state === 'added' ? this.deckId : undefined,
                 deckOrder: this.deckOrder,
-                frontContent: leftChanges?.content,
-                backContent: rightChanges?.content
+                frontContent: leftChanges?.content as any,
+                backContent: rightChanges?.content as any
             },
             files: [...(leftChanges?.files ?? []), ...(rightChanges?.files ?? [])]
         };
@@ -324,9 +328,10 @@ export class EditFlashcardImageImpl implements EditFlashcardImage {
     imageFile?: File;
 
     getSrc(): string {
-        if (this.imageUrl)
-            return this.imageUrl?.startsWith("http") ? this.imageUrl : environment.apiUrl + "/" + this.imageUrl
-
+        if (this.imageUrl) {
+            const isFullyDefined = this.imageUrl.startsWith("http") || this.imageUrl.startsWith("blob:");
+            return isFullyDefined ? this.imageUrl : environment.apiUrl + "/" + this.imageUrl
+        }
         return URL.createObjectURL(this.imageFile!) ?? "";
     }
 
@@ -459,9 +464,10 @@ export class EditFlashcardVideoImpl implements EditFlashcardVideo {
     videoFile?: File;
 
     getSrc(): string {
-        if (this.videoUrl)
-            return this.videoUrl?.startsWith("http") ? this.videoUrl : environment.apiUrl + "/" + this.videoUrl;
-
+        if (this.videoUrl) {
+            const isFullyDefined = this.videoUrl.startsWith("http") || this.videoUrl.startsWith("blob:");
+            return isFullyDefined ? this.videoUrl : environment.apiUrl + "/" + this.videoUrl;
+        }
         return "";
     }
 

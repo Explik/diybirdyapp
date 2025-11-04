@@ -50,10 +50,11 @@ public class ExerciseSessionVertexUnitTests {
 
     @Test
     void givenVertexWithExercise_whenGetCurrentExercise_thenReturnsExercise() {
-        var vertex = ExerciseSessionVertex.create(traversalSource);
         var exerciseVertex = ExerciseVertex.create(traversalSource);
         exerciseVertex.setId("exercise-id");
-        exerciseVertex.setSession(vertex);
+
+        var vertex = ExerciseSessionVertex.create(traversalSource);
+        vertex.addExercise(exerciseVertex);
 
         assertEquals("exercise-id", vertex.getCurrentExercise().getId());
     }
@@ -62,6 +63,19 @@ public class ExerciseSessionVertexUnitTests {
     void givenNewlyCreatedVertex_whenGetFlashcardDeck_thenReturnsNull() {
         var vertex = ExerciseSessionVertex.create(traversalSource);
         assertNull(vertex.getFlashcardDeck());
+    }
+
+    @Test
+    void givenVertexWithExercise_whenRemoveExercise_thenExerciseRemoved() {
+        var exerciseVertex = ExerciseVertex.create(traversalSource);
+        exerciseVertex.setId("exercise-id");
+
+        var vertex = ExerciseSessionVertex.create(traversalSource);
+        vertex.addExercise(exerciseVertex);
+        assertEquals(1, vertex.getExercises().size());
+
+        vertex.removeExercise(exerciseVertex);
+        assertEquals(0, vertex.getExercises().size());
     }
 
     @Test

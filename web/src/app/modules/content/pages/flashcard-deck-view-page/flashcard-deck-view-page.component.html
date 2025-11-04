@@ -1,0 +1,47 @@
+<div *ngIf="flashcardDeck" class="container mx-auto p-4 max-w-3xl">
+    <h1 class="text-xl font-bold mb-4">Flashcard Deck "{{flashcardDeck!.name}}"</h1>
+    <p *ngIf="flashcardDeck!.description">{{flashcardDeck!.description}}</p>
+
+    <app-flashcard-review-container *ngIf="flashcardDeck.flashcards.length > 0" [flashcards]="flashcardDeck.flashcards"
+        class="mt-8 mb-4"></app-flashcard-review-container>
+    
+    <ng-container *ngIf="hasFlashcards; else noFlashcards">
+        <div class="my-4">   
+            <app-button i18n (click)="selectFlashcards()" class="mr-2">
+                Select flashcards
+            </app-button>
+
+            <app-button i18n (click)="reviewFlashcards()" class="mr-2">
+                Review flashcards
+            </app-button>
+
+            <app-button i18n (click)="writeFlashcards()" class="mr-2">
+                Write flashcards
+            </app-button>
+
+            <app-button i18n (click)="learnFlashcards()" class="mr-2">
+                Learn flashcards
+            </app-button>
+        </div>
+        
+        <div class="flex justify-end items-center w-full mb-2">
+            <span *ngIf="flashcardDeck.flashcards?.length" i18n class="block">{{ flashcardDeck.flashcards.length }} flashcard(s)</span>
+        </div>
+
+        <app-flashcard-view-container [flashcardDeck]="flashcardDeck!"></app-flashcard-view-container>
+        
+        <div>
+            <app-button variant="primary" i18n (click)="editFlashcards()" class="float-right">Edit</app-button>
+        </div>
+    </ng-container>
+
+    <ng-template #noFlashcards>
+        <div class="text-center text-gray-500 mt-8 mb-4 p-6 border border-gray-200 rounded bg-gray-50">
+            <div>No flashcards in this deck.</div>
+
+            <div class="flex justify-center mt-4">
+                <app-button variant="secondary" i18n (click)="editFlashcards()" class="">Add</app-button>
+            </div>
+        </div>
+    </ng-template>
+</div>

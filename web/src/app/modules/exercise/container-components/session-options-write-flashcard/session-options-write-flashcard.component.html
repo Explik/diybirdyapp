@@ -1,0 +1,24 @@
+<form [formGroup]="form" class="session-options-write-flashcard" class="min-h-48">
+	<div class="mb-4">
+		<app-form-field>
+			<app-label i18n>Answer language</app-label>
+			<app-select formControlName="answerLanguageId">
+				<app-option *ngFor="let lang of availableAnswerLanguages" [value]="lang">{{ lang }}</app-option>
+			</app-select>
+		</app-form-field>
+	</div>
+
+	<div>
+		<app-form-field>
+			<app-label i18n>Text to speech</app-label>
+			<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
+		</app-form-field>
+	</div>
+
+	<div>
+		<app-form-field>
+			<app-label i18n>Retype correct answer</app-label>
+			<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
+		</app-form-field>
+	</div>
+</form>

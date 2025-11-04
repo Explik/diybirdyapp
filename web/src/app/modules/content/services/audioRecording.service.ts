@@ -21,13 +21,26 @@ export class AudioRecordingService {
 
           this.mediaRecorder.onstop = () => {
             const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-            resolve(new BlobAudioContent('recording.webm', audioBlob));
+            const audioBlobContent = new BlobAudioContent('recording.webm', audioBlob);
+
+            // Release recording resources to "free" the microphone
+            stream.getTracks().forEach(track => track.stop());
+
+            resolve(audioBlobContent);
           };
 
           this.mediaRecorder.start();
         })
         .catch(reject);
     });
+  }
+
+  cancelRecording() {
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
+      this.mediaRecorder = null;
+      this.audioChunks = [];
+    } 
   }
 
   stopRecording() {

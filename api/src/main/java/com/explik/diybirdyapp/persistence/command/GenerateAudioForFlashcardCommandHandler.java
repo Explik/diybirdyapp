@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class GenerateAudioForFlashcardCommandHandler implements CommandHandler<GenerateAudioForFlashcardCommand> {
+public class GenerateAudioForFlashcardCommandHandler implements SyncCommandHandler<GenerateAudioForFlashcardCommand, FileContentCommandResult>, AsyncCommandHandler<GenerateAudioForFlashcardCommand> {
     @Autowired
     private GraphTraversalSource traversalSource;
 
@@ -26,36 +26,77 @@ public class GenerateAudioForFlashcardCommandHandler implements CommandHandler<G
     @Autowired
     private TextToSpeechService textToSpeechService;
 
-    public void handle(GenerateAudioForFlashcardCommand command) {
-        FlashcardVertex flashcardVertex = FlashcardVertex.findById(traversalSource, command.getFlashcardId());
-        if (flashcardVertex == null)
-            throw new RuntimeException("Flashcard not found: " + command.getFlashcardId());
+    @Override
+    public FileContentCommandResult handle(GenerateAudioForFlashcardCommand command) {
+        var flashcardVertex = getFlashcardVertex(command.getFlashcardId());
 
-        var failOnMissingVoice = command.getFailOnMissingVoice();
-        addAudioContent((TextContentVertex)flashcardVertex.getLeftContent(), failOnMissingVoice);
-        addAudioContent((TextContentVertex)flashcardVertex.getRightContent(), failOnMissingVoice);
+        var flashcardSideVertex = flashcardVertex.getSide(command.getFlashcardSide());
+        if (flashcardSideVertex == null)
+            throw new RuntimeException("Flashcard side not found: " + command.getFlashcardSide());
+        if (!(flashcardSideVertex instanceof TextContentVertex textContentVertex))
+            throw new RuntimeException("Flashcard side is not text content: " + command.getFlashcardSide());
+
+        byte[] audioContent = fetchAudioContent(textContentVertex);
+        return new FileContentCommandResult(audioContent, "audio/wav");
     }
 
-    private void addAudioContent(TextContentVertex textContentVertex, boolean failOnMissingVoice) {
+    @Override
+    public void handleAsync(GenerateAudioForFlashcardCommand command) {
+        var flashcardVertex = getFlashcardVertex(command.getFlashcardId());
+
+        boolean failOnMissingVoice = command.getFailOnMissingVoice();
+        if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent)
+            saveAudioContent(leftTextContent, failOnMissingVoice);
+        if (flashcardVertex.getRightContent() instanceof TextContentVertex rightTextContent)
+            saveAudioContent(rightTextContent, failOnMissingVoice);
+    }
+
+    private FlashcardVertex getFlashcardVertex(String flashcardId) {
+        var flashcardVertex = FlashcardVertex.findById(traversalSource, flashcardId);
+        if (flashcardVertex == null)
+            throw new RuntimeException("Flashcard not found: " + flashcardId);
+        return flashcardVertex;
+    }
+
+    private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
         var languageId = textContentVertex.getLanguage().getId();
         var textToSpeechConfigs = TextToSpeechConfigVertex.findByLanguageId(traversalSource, languageId);
-        if (textToSpeechConfigs.isEmpty()) {
-            if (failOnMissingVoice)
-                throw new RuntimeException("No text to speech config found for language: " + languageId);
-            else return;
-        }
+        if (textToSpeechConfigs.isEmpty())
+            return null;
 
         var textToSpeechConfig = textToSpeechConfigs.getFirst();
-        var textObject = new TextToSpeechService.Text(
+        return new TextToSpeechService.Text(
                 textContentVertex.getValue(),
                 textToSpeechConfig.getLanguageCode(),
                 textToSpeechConfig.getVoiceName(),
                 "LINEAR16"
         );
+    }
+
+    private byte[] fetchAudioContent(TextContentVertex textContentVertex) {
+        var voiceConfig = generateVoiceConfig(textContentVertex);
+        if (voiceConfig == null)
+            throw new RuntimeException("No text to speech config found for text content: " + textContentVertex.getId());
+
+        try {
+            return textToSpeechService.generateAudio(voiceConfig);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Failed to generate audio for text content: " + textContentVertex.getId(), e);
+        }
+    }
+
+    private void saveAudioContent(TextContentVertex textContentVertex, boolean failOnMissingVoice) {
+        var voiceConfig = generateVoiceConfig(textContentVertex);
+        if (voiceConfig == null) {
+            if (failOnMissingVoice)
+                throw new RuntimeException("No text to speech config found for text content: " + textContentVertex.getId());
+            else return;
+        }
 
         var filePath = textContentVertex.getId() + ".wav";
         try {
-            textToSpeechService.generateAudioFile(textObject, filePath);
+            textToSpeechService.generateAudioFile(voiceConfig, filePath);
         }
         catch (Exception e) {
             throw new RuntimeException("Failed to generate audio for text content: " + textContentVertex.getId(), e);

@@ -1,24 +1,41 @@
 <div class="max-w-xl w-full mt-2 mb-2" *ngIf="input">
     <div class="grid grid-cols-2 gap-4">
-        <button
-            *ngFor="let option of input!.options"
-            (click)="handleOptionSelected(option.id)"
-            class="option-btn bg-white p-4 rounded-lg shadow-md border border-gray-200 hover:bg-purple-100 hover:border-purple-500 focus:ring-2 focus:ring-purple-500 flex items-center">
+        <app-row-button
+            layout="single"
+            *ngFor="let option of input!.options; let i = index"
+            [disabled]="!!(input.feedback && !input.feedback.isRetypeAnswerEnabled)"
+            (click)="handleOptionSelected(option.id!)">
             
-            <svg *ngIf="input?.feedback?.correctOptionIds?.includes(option.id) ||  false" class="w-6 h-6 text-green-500 mr-3" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <!-- Success element -->
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <svg *ngIf="input?.feedback?.incorrectOptionIds?.includes(option.id) ||  false" class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <!-- Failure element -->
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-            <div *ngIf="input?.feedback?.correctOptionIds?.includes(option.id) !== true && input?.feedback?.incorrectOptionIds?.includes(option.id) !== true" class="w-6 h-6">
-                <!-- Place holder element -->
+            <app-icon *ngIf="input?.feedback?.correctOptionIds?.includes(option.id!)" 
+                     icon="mark-correct" 
+                     class="mr-3">
+            </app-icon>
+            <app-icon *ngIf="input?.feedback?.incorrectOptionIds?.includes(option.id!)" 
+                     icon="mark-incorrect" 
+                     class="mr-3">
+            </app-icon>
+            <app-icon *ngIf="input?.feedback?.correctOptionIds?.includes(option.id!) !== true && input?.feedback?.incorrectOptionIds?.includes(option.id!) !== true" 
+                     [icon]="'key-' + (i + 1)"
+                     class="mr-3">
+            </app-icon>
+
+            <div *ngIf="input.optionType == 'audio'" (click)="handleAudioPlay(option.id!)">
+                <app-icon icon="mdi-volume-high" class="mr-2" tabindex="0"></app-icon>
+
+                <svg width="100" height="20" viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg" class="inline-block">
+                    <path d="M0 10 Q 10 0, 20 10 T 40 10 T 60 10 T 80 10 T 100 10" stroke="black" fill="transparent" stroke-width="3" />
+                </svg>
             </div>
-            {{option.text}}
-        </button>
+
+            <ng-content *ngIf="input.optionType == 'text'">{{castAsText(option).text}}</ng-content>
+
+            <ng-content *ngIf="input.optionType == 'image'">
+                <img [src]="castAsImage(option).url" alt="Option Image" class="w-16 h-16 object-cover rounded-lg" />
+            </ng-content>
+
+            <ng-content *ngIf="input.optionType == 'video'">
+                <video [src]="castAsVideo(option).url" controls class="w-16 h-16 object-cover rounded-lg"></video>
+            </ng-content>
+        </app-row-button>
     </div>
 </div>

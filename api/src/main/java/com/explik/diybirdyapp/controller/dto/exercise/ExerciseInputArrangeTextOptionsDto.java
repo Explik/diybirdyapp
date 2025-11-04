@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 public class ExerciseInputArrangeTextOptionsDto extends ExerciseInputDto {
     private String value;
 
-    @NotNull
+    @NotNull(message = "options.required")
     private ArrangeTextOption[] options;
 
     public ExerciseInputArrangeTextOptionsDto() {
@@ -30,10 +30,10 @@ public class ExerciseInputArrangeTextOptionsDto extends ExerciseInputDto {
     }
 
     public static class ArrangeTextOption {
-        @NotNull
+        @NotNull(message = "id.required")
         private String id;
 
-        @NotNull
+        @NotNull(message = "text.required")
         private String text;
 
         public ArrangeTextOption() {
