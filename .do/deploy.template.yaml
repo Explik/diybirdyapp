@@ -6,3 +6,23 @@ spec:
       branch: main
       repo_clone_url: https://github.com/Explik/diybirdyapp.git
     name: diy-birdy-app
+
+  workers:
+  - name: gremlin-server
+    image:
+      registry_type: DOCKER_HUB
+      repository: tinkerpop/gremlin-server
+      tag: "3.7.0"
+    
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+
+    envs:
+      - key: GREMLIN_SERVER_USER
+        value: gremlin
+        scope: RUN_TIME
+        type: general
+      - key: GREMLIN_SERVER_PASSWORD
+        value: gremlin
+        scope: RUN_TIME
+        type: secret
