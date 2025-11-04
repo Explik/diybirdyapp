@@ -38,6 +38,8 @@ services:
         value: ${gremlin-server.GREMLIN_SERVER_PASSWORD}
         type: SECRET
     http_port: 8080
+    routes:
+      - path: /api
     instance_count: 1
     instance_size_slug: basic-xs
 
@@ -56,6 +58,7 @@ services:
         value: ${APP_URL}/api
     routes:
       - path: /
+      - path: /*
     instance_count: 1
     instance_size_slug: static
 
