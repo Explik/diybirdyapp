@@ -14,3 +14,12 @@ spec:
       repository: tinkerpop/gremlin-server
       tag: "3.7.0"
     
+    envs:
+      - key: GREMLIN_SERVER_USER
+        value: gremlin
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_SERVER_PASSWORD
+        value: gremlin
+        scope: RUN_TIME
+        type: SECRET
