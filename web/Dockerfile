@@ -1,8 +1,5 @@
 # =========================================
-# Stage 1: Build the Angular Application
-# =========================================
-# =========================================
-# Stage 1: Build the Angular Application
+# Build the Angular Application
 # =========================================
 ARG NODE_VERSION=24.7.0-alpine
 ARG NGINX_VERSION=alpine3.22
@@ -23,27 +20,4 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 
 # Build the Angular application
-RUN npm run build 
-
-# =========================================
-# Stage 2: Prepare Nginx to Serve Static Files
-# =========================================
-
-FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS runner
-
-# Use a built-in non-root user for security best practices
-USER nginx
-
-# Copy custom Nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copy the static build output from the build stage to Nginx's default HTML serving directory
-COPY --chown=nginx:nginx --from=builder /app/dist/*/browser /usr/share/nginx/html
-
-# Expose port 4200 to allow HTTP traffic
-# Note: The default NGINX container now listens on port 4200 instead of 80 
-EXPOSE 4200
-
-# Start Nginx directly with custom config
-ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf"]
-CMD ["-g", "daemon off;"]
+RUN npm run build
