@@ -75,7 +75,8 @@ spec:
   - name: gremlin-server
     image:
       registry_type: DOCKER_HUB
-      repository: tinkerpop/gremlin-server
+      repository: tinkerpop
+      repository: gremlin-server
       tag: "3.7.0"
     instance_count: 1
     instance_size_slug: apps-s-1vcpu-1gb
@@ -88,7 +89,7 @@ spec:
         value: gremlin
         scope: RUN_TIME
         type: SECRET
-        
+
   ingress:
     rules:
       - match:
