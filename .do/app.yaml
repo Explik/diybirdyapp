@@ -39,7 +39,7 @@ services:
         type: SECRET
     http_port: 8080
     routes:
-      - path: /api/
+      - path: /api/*
         preserve_path_prefix: true
     instance_count: 1
     instance_size_slug: basic-xs
