@@ -88,11 +88,7 @@ spec:
         value: gremlin
         scope: RUN_TIME
         type: SECRET
-
-    volumes:
-      - name: gremlin-data
-        mount_path: /data
-
+        
   ingress:
     rules:
       - match:
@@ -107,8 +103,3 @@ spec:
             prefix: /
         component:
           name: frontend
-
-  volumes:
-  - name: gremlin-data
-    fs_type: ext4
-    size_gb: 5
