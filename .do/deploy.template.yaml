@@ -18,9 +18,10 @@ spec:
   services:
   - name: backend
     dockerfile_path: api/Dockerfile
-    git:
-      branch: main
-      repo_clone_url: https://github.com/Explik/diybirdyapp.git
+    github:
+      branch: master
+      deploy_on_push: true
+      repo: Explik/diybirdyapp
 
   workers:
   - name: gremlin-server
