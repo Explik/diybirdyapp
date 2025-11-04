@@ -1,8 +1,8 @@
 spec:
-  name: sample-springboot
+  name: diy-birdy-app
   services:
-  - dockerfile_path: Dockerfile
+  - dockerfile_path: api/Dockerfile
     git:
       branch: main
-      repo_clone_url: https://github.com/digitalocean/sample-spring-boot.git
-    name: sample-springboot
+      repo_clone_url: https://github.com/Explik/diybirdyapp.git
+    name: diy-birdy-app

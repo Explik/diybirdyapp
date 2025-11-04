@@ -1,8 +1,8 @@
-name: sample-springboot
+name: diy-birdy-app
 services:
-- dockerfile_path: /Dockerfile
+- dockerfile_path: api/Dockerfile
   github:
-    branch: main
+    branch: master
     deploy_on_push: true
-    repo: digitalocean/sample-spring-boot
-  name: sample-springboot
+    repo: Explik/diybirdyapp
+  name: diy-birdy-app
