@@ -29,6 +29,14 @@ spec:
     instance_count: 1
     instance_size_slug: apps-s-1vcpu-1gb
 
+    health_check:
+      http_path: /actuator/health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
     envs:
       - key: SPRING_PROFILES_ACTIVE
         value: dev
