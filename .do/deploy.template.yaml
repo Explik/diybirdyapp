@@ -23,6 +23,28 @@ spec:
       deploy_on_push: true
       repo: Explik/diybirdyapp
 
+    envs:
+      - key: SPRING_PROFILES_ACTIVE
+        value: dev
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_HOST
+        value: ${gremlin-server.HOSTNAME}
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_PORT
+        value: "8182"
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_USERNAME
+        value: gremlin
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_PASSWORD
+        value: gremlin
+        scope: RUN_TIME
+        type: SECRET
+
   workers:
   - name: gremlin-server
     image:
