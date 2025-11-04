@@ -16,11 +16,11 @@ spec:
     error_document: index.html
     
   services:
-  - dockerfile_path: api/Dockerfile
+  - name: backend
+    dockerfile_path: api/Dockerfile
     git:
       branch: main
       repo_clone_url: https://github.com/Explik/diybirdyapp.git
-    name: diy-birdy-app
 
   workers:
   - name: gremlin-server
@@ -38,3 +38,18 @@ spec:
         value: gremlin
         scope: RUN_TIME
         type: SECRET
+
+  ingress:
+    rules:
+      - match:
+          path:
+            prefix: /api
+        component:
+          name: backend
+          preserve_path_prefix: true
+      
+      - match:
+          path:
+            prefix: /
+        component:
+          name: frontend
