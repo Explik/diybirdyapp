@@ -39,15 +39,15 @@ services:
         type: SECRET
     http_port: 8080
     routes:
-      - path: /api
+      - path: /api/
+        preserve_path_prefix: true
     instance_count: 1
     instance_size_slug: basic-xs
 
   - name: frontend
     source_dir: web
-    environment_slug: node-js
+    environment_slug: static
     build_command: npm install && npm run build
-    run_command: npm start
     output_dir: dist/web
     github:
       branch: ${APP_BRANCH}
@@ -56,9 +56,7 @@ services:
     envs:
       - key: API_URL
         value: ${APP_URL}/api
-    routes:
-      - path: /
-      - path: /*
+    catchall_document: index.html
     instance_count: 1
     instance_size_slug: static
 
