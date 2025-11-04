@@ -1,0 +1,14 @@
+spec:
+  name: diy-birdy-app
+  services:
+    - name: backend
+      git:
+        branch: ${APP_BRANCH}
+        repo_clone_url: https://github.com/Explik/diybirdyapp.git
+      source_dir: api
+
+    - name: frontend
+      git:
+        branch: ${APP_BRANCH}
+        repo_clone_url: https://github.com/Explik/diybirdyapp.git
+      source_dir: web
