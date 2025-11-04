@@ -44,22 +44,6 @@ services:
     instance_count: 1
     instance_size_slug: basic-xs
 
-  - name: frontend
-    source_dir: web
-    environment_slug: static
-    build_command: npm install && npm run build
-    output_dir: dist/web
-    github:
-      branch: ${APP_BRANCH}
-      deploy_on_push: true
-      repo: Explik/diybirdyapp
-    envs:
-      - key: API_URL
-        value: ${APP_URL}/api
-    catchall_document: index.html
-    instance_count: 1
-    instance_size_slug: static
-
 volumes:
   - name: gremlin-data
     fs_type: ext4
