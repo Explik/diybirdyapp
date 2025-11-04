@@ -1,6 +1,10 @@
 spec:
   name: diy-birdy-app
 
+  alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
   static_sites:
   - name: frontend
     source_dir: web
