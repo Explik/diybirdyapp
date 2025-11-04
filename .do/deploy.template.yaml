@@ -1,0 +1,123 @@
+spec:
+  name: diy-birdy-app
+  
+  # Alerts for monitoring deployment and domain issues
+  alerts:
+    - rule: DEPLOYMENT_FAILED
+    - rule: DOMAIN_FAILED
+  
+  # Services: Backend API (Spring Boot)
+  services:
+    - name: backend
+      dockerfile_path: Dockerfile
+      source_dir: api
+      git:
+        branch: master
+        repo_clone_url: https://github.com/Explik/diybirdyapp.git
+      http_port: 8080
+      instance_count: 1
+      instance_size_slug: apps-s-1vcpu-1gb
+      
+      # Environment variables for the backend
+      envs:
+        - key: SPRING_PROFILES_ACTIVE
+          value: dev
+          scope: RUN_TIME
+          type: general
+        - key: GREMLIN_HOST
+          value: ${gremlin-server.HOSTNAME}
+          scope: RUN_TIME
+          type: general
+        - key: GREMLIN_PORT
+          value: "8182"
+          scope: RUN_TIME
+          type: general
+        - key: GREMLIN_USERNAME
+          value: gremlin
+          scope: RUN_TIME
+          type: general
+        - key: GREMLIN_PASSWORD
+          value: gremlin
+          scope: RUN_TIME
+          type: SECRET
+      
+      # Health check configuration
+      health_check:
+        http_path: /actuator/health
+        initial_delay_seconds: 30
+        period_seconds: 10
+        timeout_seconds: 5
+        success_threshold: 1
+        failure_threshold: 3
+      
+      # Resource alerts
+      alerts:
+        - rule: CPU_UTILIZATION
+          operator: GREATER_THAN
+          value: 80
+          window: FIVE_MINUTES
+  
+  # Workers: Gremlin Graph Database Server
+  workers:
+    - name: gremlin-server
+      # Use the official Gremlin Server image
+      image:
+        registry_type: DOCKER_HUB
+        repository: tinkerpop/gremlin-server
+        tag: "3.7.0"
+      
+      instance_count: 1
+      instance_size_slug: apps-s-1vcpu-1gb
+      
+      # Environment variables for Gremlin
+      envs:
+        - key: GREMLIN_SERVER_USER
+          value: gremlin
+          scope: RUN_TIME
+          type: general
+        - key: GREMLIN_SERVER_PASSWORD
+          value: gremlin
+          scope: RUN_TIME
+          type: SECRET
+  
+  # Static Sites: Frontend (Angular Application)
+  static_sites:
+    - name: frontend
+      source_dir: web
+      git:
+        branch: master
+        repo_clone_url: https://github.com/Explik/diybirdyapp.git
+      
+      # Build configuration
+      build_command: npm install && npm run build
+      output_dir: dist/diy-birdy-app/browser
+      
+      # Static site configuration
+      index_document: index.html
+      error_document: index.html
+      catchall_document: index.html
+      
+      # Environment variables available during build
+      envs:
+        - key: NODE_ENV
+          value: production
+          scope: BUILD_TIME
+          type: general
+  
+  # Ingress routing configuration
+  ingress:
+    rules:
+      # Route API requests to backend
+      - match:
+          path:
+            prefix: /api
+        component:
+          name: backend
+          preserve_path_prefix: true
+      
+      # Route all other requests to frontend
+      - match:
+          path:
+            prefix: /
+        component:
+          name: frontend
