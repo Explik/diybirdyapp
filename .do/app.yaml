@@ -1,0 +1,63 @@
+name: diy-birdy-app
+services:
+  - name: gremlin-server
+    image:
+      registry_type: DOCKER_HUB
+      repository: tinkerpop/gremlin-server
+      tag: 3.7.0
+    envs:
+      - key: GREMLIN_SERVER_USER
+        value: gremlin
+      - key: GREMLIN_SERVER_PASSWORD
+        value: gremlin
+        type: SECRET
+    volumes:
+      - name: gremlin-data
+        mount_path: /data
+    internal_ports:
+      - 8182
+
+  - name: backend
+    dockerfile_path: api/Dockerfile
+    source_dir: api
+    github:
+      branch: ${APP_BRANCH}
+      deploy_on_push: true
+      repo: Explik/diybirdyapp
+    envs:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: GREMLIN_HOST
+        value: ${gremlin-server.PRIVATE_HOST}
+      - key: GREMLIN_PORT
+        value: "8182"
+      - key: GREMLIN_USERNAME
+        value: ${gremlin-server.GREMLIN_SERVER_USER}
+      - key: GREMLIN_PASSWORD
+        value: ${gremlin-server.GREMLIN_SERVER_PASSWORD}
+        type: SECRET
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xs
+
+  - name: frontend
+    source_dir: web
+    environment_slug: node-js
+    build_command: npm run build
+    output_dir: dist/web
+    github:
+      branch: ${APP_BRANCH}
+      deploy_on_push: true
+      repo: Explik/diybirdyapp
+    envs:
+      - key: API_URL
+        value: ${APP_URL}/api
+    routes:
+      - path: /
+    instance_count: 1
+    instance_size_slug: static
+
+volumes:
+  - name: gremlin-data
+    fs_type: ext4
+    size_gb: 5
