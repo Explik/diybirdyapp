@@ -18,12 +18,13 @@ services:
       - 8182
 
   - name: backend
-    dockerfile_path: api/Dockerfile
+    dockerfile_path: Dockerfile
     source_dir: api
     github:
       branch: ${APP_BRANCH}
       deploy_on_push: true
       repo: Explik/diybirdyapp
+    build_command: mvn clean package
     envs:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
@@ -43,7 +44,8 @@ services:
   - name: frontend
     source_dir: web
     environment_slug: node-js
-    build_command: npm run build
+    build_command: npm install && npm run build
+    run_command: npm start
     output_dir: dist/web
     github:
       branch: ${APP_BRANCH}
