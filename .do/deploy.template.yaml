@@ -27,7 +27,8 @@ spec:
     
   services:
   - name: backend
-    dockerfile_path: api/Dockerfile
+    source_dir: api
+    dockerfile_path: Dockerfile
     github:
       branch: master
       deploy_on_push: true
