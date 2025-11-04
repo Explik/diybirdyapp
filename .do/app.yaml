@@ -27,7 +27,7 @@ static_sites:
 services:
 - name: backend
   source_dir: api
-  dockerfile_path: Dockerfile
+  dockerfile_path: api/Dockerfile
   github:
     branch: master
     deploy_on_push: true
