@@ -18,6 +18,12 @@ spec:
     
     index_document: index.html
     error_document: index.html
+
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: BUILD_TIME
+        type: general
     
   services:
   - name: backend
