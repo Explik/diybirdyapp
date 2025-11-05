@@ -95,7 +95,6 @@ spec:
             prefix: /api
         component:
           name: backend
-          preserve_path_prefix: true
       
       - match:
           path:
