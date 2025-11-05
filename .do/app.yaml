@@ -49,7 +49,7 @@ services:
       scope: RUN_TIME
       type: GENERAL
     - key: GREMLIN_HOST
-      value: ${gremlin-server.HOSTNAME}
+      value: ${gremlin-server.PRIVATE_HOST}
       scope: RUN_TIME
       type: GENERAL
     - key: GREMLIN_PORT
@@ -71,7 +71,6 @@ services:
       value: 80
       window: FIVE_MINUTES
 
-workers:
 - name: gremlin-server
   image:
     registry_type: DOCKER_HUB
@@ -89,6 +88,7 @@ workers:
       value: gremlin
       scope: RUN_TIME
       type: SECRET
+  internal_ports: [8182]
 
 ingress:
   rules:
