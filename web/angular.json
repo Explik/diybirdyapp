@@ -54,7 +54,9 @@
                   "maximumError": "4kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "localize": ["en-US", "zh-CN"],
+              "baseHref": "/"
             },
             "development": {
               "optimization": false,

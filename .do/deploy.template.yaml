@@ -1,0 +1,103 @@
+spec:
+  name: diy-birdy-app
+
+  alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
+  static_sites:
+  - name: frontend
+    source_dir: web
+    dockerfile_path: web/Dockerfile
+    github:
+      branch: master
+      deploy_on_push: true
+      repo: Explik/diybirdyapp
+    
+    output_dir: /app/dist/diy-birdy-app/browser
+
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: BUILD_TIME
+        type: GENERAL
+    
+  services:
+  - name: backend
+    source_dir: api
+    dockerfile_path: api/Dockerfile
+    github:
+      branch: master
+      deploy_on_push: true
+      repo: Explik/diybirdyapp
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+
+    health_check:
+      http_path: /actuator/health
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+    envs:
+      - key: SPRING_PROFILES_ACTIVE
+        value: dev
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_HOST
+        value: ${gremlin-server.PRIVATE_DOMAIN}
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_PORT
+        value: "8182"
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_USERNAME
+        value: gremlin
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_PASSWORD
+        value: gremlin
+        scope: RUN_TIME
+        type: SECRET
+
+    alerts:
+      - rule: CPU_UTILIZATION
+        operator: GREATER_THAN
+        value: 80
+        window: FIVE_MINUTES
+
+  - name: gremlin-server
+    image:
+      registry_type: DOCKER_HUB
+      registry: tinkerpop
+      repository: gremlin-server
+      tag: "3.7.0"
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    envs:
+      - key: GREMLIN_SERVER_USER
+        value: gremlin
+        scope: RUN_TIME
+        type: GENERAL
+      - key: GREMLIN_SERVER_PASSWORD
+        value: gremlin
+        scope: RUN_TIME
+        type: SECRET
+    internal_ports: [8182]
+
+  ingress:
+    rules:
+      - match:
+          path:
+            prefix: /api
+        component:
+          name: backend
+      
+      - match:
+          path:
+            prefix: /
+        component:
+          name: frontend
