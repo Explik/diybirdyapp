@@ -34,6 +34,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/ping").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("v3/api-docs").permitAll()
+                                .requestMatchers("/actuator/health").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .logout(logout -> logout

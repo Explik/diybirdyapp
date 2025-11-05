@@ -49,7 +49,7 @@ services:
       scope: RUN_TIME
       type: GENERAL
     - key: GREMLIN_HOST
-      value: ${gremlin-server.PRIVATE_HOST}
+      value: ${gremlin-server.PRIVATE_DOMAIN}
       scope: RUN_TIME
       type: GENERAL
     - key: GREMLIN_PORT
