@@ -14,7 +14,7 @@ spec:
       deploy_on_push: true
       repo: Explik/diybirdyapp
     
-    output_dir: dist/diy-birdy-app/browser
+    output_dir: /app/dist/diy-birdy-app/browser/en-US
     
     index_document: index.html
     error_document: index.html

@@ -21,7 +21,3 @@ COPY . .
 
 # Build the Angular application
 RUN npm run build
-
-# Log the file tree after build for debugging
-RUN find /app -type f -name "*.js" -o -name "*.html" -o -name "*.css" | head -20
-RUN ls -la /app/dist/
