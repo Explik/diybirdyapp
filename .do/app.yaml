@@ -13,7 +13,7 @@ static_sites:
     deploy_on_push: true
     repo: Explik/diybirdyapp
   
-  output_dir: /app/dist/diy-birdy-app/browser/en-US
+  output_dir: /app/dist/diy-birdy-app/browser
   
   index_document: index.html
   error_document: index.html
@@ -23,6 +23,12 @@ static_sites:
       value: production
       scope: BUILD_TIME
       type: GENERAL
+
+  routes: 
+    - path: /*/
+      preserve_path_prefix: false
+    - path: /
+      preserve_path_prefix: false
   
 services:
 - name: backend
