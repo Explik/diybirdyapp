@@ -14,9 +14,6 @@ static_sites:
     repo: Explik/diybirdyapp
   
   output_dir: /app/dist/diy-birdy-app/browser
-  
-  index_document: index.html
-  error_document: index.html
 
   envs:
     - key: NODE_ENV
