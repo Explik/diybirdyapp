@@ -60,9 +60,11 @@ public class ExerciseEvaluationStrategyReviewFlashcard implements ExerciseEvalua
             throw new IllegalArgumentException("Exercise content is null");
 
         var algorithm = sessionVertex.getOptions().getAlgorithm();
-        if (algorithm.equals("SuperMemo2")) {
+        if (algorithm == null)
+            return;
+        if (algorithm.equals("SuperMemo2"))
             updateSuperMemo2Data(sessionVertex, contentVertex, answerModel);
-        }
+
     }
 
     private void updateSuperMemo2Data(ExerciseSessionVertex sessionVertex, ContentVertex contentVertex, ExerciseInputRecognizabilityRatingModel inputModel) {
