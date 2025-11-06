@@ -21,12 +21,14 @@ import { Observable, map, take, Subscription } from 'rxjs';
 import { SessionOptionsComponentService } from '../../services/sessionOptionsComponent.service';
 import { SessionOptionsLearnFlashcardComponent } from '../../container-components/session-options-learn-flashcard/session-options-learn-flashcard.component';
 import { ExerciseSessionOptionsDto, ExerciseSessionOptionsLearnFlashcardsDto } from '../../../../shared/api-client';
+import { HotkeyService } from '../../../../shared/services/hotKey.service';
 
 @Component({
     selector: 'app-session-page',
     standalone: true,
     templateUrl: './session-page.component.html',
-    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, ModalComponent, IconComponent]
+    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, ModalComponent, IconComponent],
+    providers: [HotkeyService]
 })
 export class SessionPageComponent {
     sessionId: string | undefined = undefined;
