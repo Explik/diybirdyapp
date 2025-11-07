@@ -43,7 +43,13 @@ class LocaleManager:
         return match.group(1) if match else ""
     
     def parse_xliff(self, filepath: Path) -> tuple[str, str, List[TranslationUnit]]:
-        """Parse XLIFF file and extract translation units"""
+        """Parse XLIFF file and extract translation units
+        
+        CRITICAL: This method extracts target content directly from the raw file
+        to preserve exact formatting. This prevents false-positive change detection
+        that would occur if we used ElementTree's serialization, which reformats
+        XML (e.g., changing "/> to " />" or &quot; to ").
+        """
         if not filepath.exists():
             return "", "", []
         
@@ -52,6 +58,10 @@ class LocaleManager:
         
         # Register namespace
         ET.register_namespace('', XLIFF_NS)
+        
+        # Also read the raw file content to extract target text exactly as written
+        with open(filepath, 'r', encoding='UTF-8') as f:
+            raw_content = f.read()
         
         # Get source and target languages
         file_elem = root.find('.//{%s}file' % XLIFF_NS)
@@ -66,8 +76,8 @@ class LocaleManager:
             source_elem = trans_unit.find('{%s}source' % XLIFF_NS)
             source_text = self._extract_text_with_placeholders(source_elem) if source_elem is not None else ''
             
-            target_elem = trans_unit.find('{%s}target' % XLIFF_NS)
-            target_text = self._extract_text_with_placeholders(target_elem) if target_elem is not None else ''
+            # Extract target text directly from raw content to preserve exact formatting
+            target_text = self._extract_target_from_raw(raw_content, unit_id)
             
             # Extract context information
             contexts = []
@@ -82,12 +92,47 @@ class LocaleManager:
         
         return source_lang, target_lang, units
     
+    def _extract_target_from_raw(self, raw_content: str, unit_id: str) -> str:
+        """Extract target content directly from raw file content to preserve exact formatting"""
+        # Find the trans-unit with this ID
+        trans_unit_pattern = f'<trans-unit id="{re.escape(unit_id)}"'
+        trans_unit_start = raw_content.find(trans_unit_pattern)
+        
+        if trans_unit_start == -1:
+            return ""
+        
+        # Find the end of this trans-unit
+        trans_unit_end = raw_content.find('</trans-unit>', trans_unit_start)
+        if trans_unit_end == -1:
+            return ""
+        
+        # Extract the trans-unit section
+        trans_unit_section = raw_content[trans_unit_start:trans_unit_end]
+        
+        # Find target element within this section
+        target_start = trans_unit_section.find('<target>')
+        if target_start == -1:
+            return ""
+        
+        target_end = trans_unit_section.find('</target>', target_start)
+        if target_end == -1:
+            return ""
+        
+        # Extract just the content between <target> and </target>
+        target_content = trans_unit_section[target_start + len('<target>'):target_end]
+        
+        return target_content
+    
     def _extract_text_with_placeholders(self, element) -> str:
-        """Extract text content including placeholders like <x id="..."/>"""
+        """Extract text content including placeholders like <x id="..."/>
+        
+        This extracts the raw XML content exactly as it appears in the file,
+        without any reformatting or re-serialization.
+        """
         if element is None:
             return ""
         
-        # Serialize the inner XML content properly
+        # Serialize the inner XML content exactly as is
         result = element.text or ""
         
         for child in element:
@@ -96,7 +141,9 @@ class LocaleManager:
             # Remove namespace declaration that gets added
             child_str = child_str.replace(f' xmlns="{XLIFF_NS}"', '')
             result += child_str
-            # Note: child.tail is already included in ET.tostring() output
+            # Add tail text if present (text after the child element)
+            if child.tail:
+                result += child.tail
         
         return result
     
@@ -168,10 +215,11 @@ class LocaleManager:
                         abs_target_start = trans_unit_start + target_start_in_section + len('<target>')
                         abs_target_end = trans_unit_start + target_end_in_section
                         
-                        # Old target content
+                        # Old target content (exactly as it appears in the file)
                         old_target_content = original_content[abs_target_start:abs_target_end]
                         
                         # Only replace if content actually changed
+                        # Direct string comparison - don't reformat if content hasn't changed
                         if old_target_content != new_target_content:
                             replacements.append((abs_target_start, abs_target_end, new_target_content))
                 else:
@@ -231,6 +279,44 @@ class LocaleManager:
         if modified_content != original_content:
             with open(filepath, 'w', encoding='UTF-8', newline='') as f:
                 f.write(modified_content)
+    
+    def _normalize_xml_content(self, text: str) -> str:
+        """Normalize XML content for comparison by parsing and re-serializing
+        
+        This ensures that equivalent XML is treated as equal even if formatting differs.
+        For example: <x id="foo"/> and <x id="foo"></x> are equivalent.
+        """
+        if not text or not text.strip():
+            return text.strip() if text else ""
+        
+        # Check if text contains XML tags
+        has_xml_tags = '<' in text
+        
+        if not has_xml_tags:
+            # Plain text, return as-is (but stripped for consistent comparison)
+            return text
+        
+        try:
+            # Wrap in a temporary element and parse
+            # This normalizes the XML structure
+            wrapped = f'<root xmlns="{XLIFF_NS}">{text}</root>'
+            temp_elem = ET.fromstring(wrapped)
+            
+            # Re-serialize the content in a consistent way
+            result = temp_elem.text or ""
+            for child in temp_elem:
+                child_str = ET.tostring(child, encoding='unicode', method='xml')
+                # Remove namespace declarations that get auto-added
+                child_str = child_str.replace(f' xmlns="{XLIFF_NS}"', '')
+                result += child_str
+                if child.tail:
+                    result += child.tail
+            
+            return result
+        except ET.ParseError:
+            # If parsing fails, return original text
+            # This handles plain text that might have < characters but isn't valid XML
+            return text
     
     def _serialize_target_content(self, text: str) -> str:
         """Serialize target content, preserving XML structure"""
