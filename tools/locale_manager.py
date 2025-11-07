@@ -552,6 +552,7 @@ def main():
                                     st.text(f"{key}: {value}")
                 
                 with col2:
+                    st.text("-")
                     st.markdown(f"**Target ({target_lang}):**")
                     
                     new_target = st.text_area(
