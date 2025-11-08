@@ -1,0 +1,8 @@
+# Flashcard Import Tool - Requirements
+
+streamlit>=1.28.0
+requests>=2.31.0
+google-cloud-translate==2.0.1
+
+# Note: The shared modules depend on the OpenAPI client
+# Make sure to install it from ../shared/api_client/
