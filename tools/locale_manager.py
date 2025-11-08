@@ -418,6 +418,110 @@ class LocaleManager:
         self.save_xliff(new_filepath, source_lang, language_code, new_units)
         
         return new_filepath
+    
+    def bulk_translate(self, filepath: Path, source_lang: str, target_lang: str, 
+                      units: List[TranslationUnit], progress_callback=None) -> int:
+        """Translate all untranslated units in bulk
+        
+        Args:
+            filepath: Path to the XLIFF file to update
+            source_lang: Source language code
+            target_lang: Target language code
+            units: List of TranslationUnit objects to process
+            progress_callback: Optional callback function(current, total, message) for progress updates
+        
+        Returns:
+            Number of units successfully translated
+        """
+        import re
+        
+        # Filter to only untranslated units
+        untranslated_units = [u for u in units if not u.target.strip()]
+        
+        if not untranslated_units:
+            return 0
+        
+        total_to_translate = len(untranslated_units)
+        translated_count = 0
+        failed_count = 0
+        
+        # Extract base language codes (e.g., 'zh-CN' -> 'zh', 'en-US' -> 'en')
+        source_base = source_lang.split('-')[0] if source_lang else None
+        target_base = target_lang.split('-')[0] if target_lang else None
+        
+        # Translate in batches to avoid API limits
+        batch_size = 10
+        
+        for i in range(0, len(untranslated_units), batch_size):
+            batch = untranslated_units[i:i + batch_size]
+            
+            # Prepare texts for translation (remove XML tags)
+            texts_to_translate = []
+            for unit in batch:
+                plain_text = re.sub(r'<[^>]+>', '', unit.source)
+                texts_to_translate.append(plain_text)
+            
+            try:
+                # Call translate API with batch
+                results = translate_text(
+                    text=texts_to_translate,
+                    target_language=target_base,
+                    source_language=source_base
+                )
+                
+                # Update units with translations
+                for j, result in enumerate(results):
+                    if 'translatedText' in result:
+                        batch[j].target = result['translatedText']
+                        translated_count += 1
+                    else:
+                        failed_count += 1
+                
+                # Report progress
+                if progress_callback:
+                    progress_callback(
+                        i + len(batch),
+                        total_to_translate,
+                        f"Translated {translated_count}/{total_to_translate} units..."
+                    )
+                
+            except Exception as e:
+                # If batch translation fails, try individual translations
+                for j, unit in enumerate(batch):
+                    try:
+                        plain_text = re.sub(r'<[^>]+>', '', unit.source)
+                        result = translate_text(
+                            text=plain_text,
+                            target_language=target_base,
+                            source_language=source_base
+                        )
+                        
+                        if result and len(result) > 0 and 'translatedText' in result[0]:
+                            unit.target = result[0]['translatedText']
+                            translated_count += 1
+                        else:
+                            failed_count += 1
+                    except Exception as inner_e:
+                        failed_count += 1
+                        if progress_callback:
+                            progress_callback(
+                                i + j + 1,
+                                total_to_translate,
+                                f"Failed to translate unit {unit.id}: {str(inner_e)}"
+                            )
+                
+                if progress_callback:
+                    progress_callback(
+                        i + len(batch),
+                        total_to_translate,
+                        f"Batch translation failed, processed individually. Translated {translated_count}/{total_to_translate}"
+                    )
+        
+        # Save all changes at once
+        if translated_count > 0:
+            self.save_xliff(filepath, source_lang, target_lang, units)
+        
+        return translated_count
 
 def main():
     st.set_page_config(page_title="Angular Locale Manager", layout="wide")
@@ -498,6 +602,45 @@ def main():
             st.metric("Untranslated", untranslated_units)
         
         st.progress(translated_units / total_units if total_units > 0 else 0)
+        
+        # Bulk translate button
+        if untranslated_units > 0:
+            st.divider()
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.info(f"💡 {untranslated_units} untranslated items can be auto-translated")
+            with col2:
+                if st.button("🌐 Bulk Translate All", type="primary", use_container_width=True):
+                    progress_bar = st.progress(0)
+                    status_text = st.empty()
+                    
+                    def progress_callback(current, total, message):
+                        progress_bar.progress(current / total)
+                        status_text.text(message)
+                    
+                    try:
+                        status_text.text("Starting bulk translation...")
+                        count = manager.bulk_translate(
+                            filepath, 
+                            source_lang, 
+                            target_lang, 
+                            units,
+                            progress_callback
+                        )
+                        
+                        progress_bar.progress(1.0)
+                        status_text.empty()
+                        progress_bar.empty()
+                        
+                        if count > 0:
+                            st.success(f"✅ Successfully translated {count} items!")
+                            st.rerun()
+                        else:
+                            st.warning("No items were translated")
+                    except Exception as e:
+                        status_text.empty()
+                        progress_bar.empty()
+                        st.error(f"Bulk translation failed: {str(e)}")
         
         st.divider()
         
