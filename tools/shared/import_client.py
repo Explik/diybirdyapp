@@ -152,17 +152,13 @@ def add_local_text_flashcard(deck_metadata, deck_order, front_language, back_lan
     front_content = {
         "type": "text",
         "text": front_text,
-        "languageId": front_language.id,
-        "languageName": front_language.name,
-        "languageAbbreviation": front_language.abbreviation
+        "languageId": front_language,
     }
     
     back_content = {
         "type": "text",
         "text": back_text,
-        "languageId": back_language.id,
-        "languageName": back_language.name,
-        "languageAbbreviation": back_language.abbreviation
+        "languageId": back_language,
     }
     
     flashcard = deck_storage.add_flashcard(

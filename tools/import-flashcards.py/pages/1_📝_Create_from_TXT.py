@@ -108,6 +108,10 @@ if available_languages:
             target_language_option = None
 
     st.markdown("---")
+else: 
+    st.error("❌ Failed to load available languages from the translation service.")
+    source_language_option = None
+    target_language_option = None
 
 # Generate button
 if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width=True):
@@ -167,23 +171,9 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
                     if not source_lang_code and 'detectedSourceLanguage' in translation_result[0]:
                         detected_source_code = translation_result[0]['detectedSourceLanguage']
                     
-                    # Try to get language objects from the system for creating flashcard
-                    source_lang = None
-                    target_lang = None
-                    try:
-                        if detected_source_code:
-                            source_lang = get_language_by_abbrevation(detected_source_code)
-                        target_lang = get_language_by_abbrevation(target_lang_code)
-                    except:
-                        # If language not found in system, try to use first available
-                        try:
-                            all_system_languages = get_languages()
-                            if all_system_languages:
-                                source_lang = all_system_languages[0]
-                                target_lang = all_system_languages[0]
-                        except:
-                            pass
-                    
+                    source_lang = source_lang_code or detected_source_code
+                    target_lang = target_lang_code
+
                     # Create flashcard locally
                     if source_lang and target_lang:
                         add_local_text_flashcard(
