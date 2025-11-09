@@ -4,8 +4,19 @@ Placeholder page for future Anki import functionality.
 """
 
 import streamlit as st
+import sys
+from pathlib import Path
+
+# Add parent directory to path to import shared modules
+sys.path.append(str(Path(__file__).parent.parent.parent))
+sys.path.append(str(Path(__file__).parent.parent))
+
+from login_utils import render_login_sidebar
 
 st.set_page_config(page_title="Create Deck from Anki", page_icon="📦", layout="wide")
+
+# Render login sidebar
+render_login_sidebar()
 
 st.title("📦 Create Deck from .anki File")
 st.markdown("---")

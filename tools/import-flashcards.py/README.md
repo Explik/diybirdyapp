@@ -180,6 +180,21 @@ Response:
 
 After retrieving the language code, the tool will check if the Google Translate API supports the language code. If not, an error message will be displayed to the user.
 
+# Login 
+The tool needs an associated user account to interact with the backend API. The user can log in using the backend url, username and password in the sidebar. This content is persisted across pages using a file on disk (`login_info.json`). The connection to the backend can be tested using the "Test Connection" button in the sidebar.
+
+```
+POST /auth/login
+Request:
+{
+    "email": "user",
+    "password": "pass"
+}
+
+Response:
+Cookie JSESSIONID # Session cookie for all subsequent authenticated requests
+```
+
 ## Internal representation of flashcard decks
 The tool represents a flashcard deck as a directory with the following structure:
 ```

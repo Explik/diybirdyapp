@@ -10,6 +10,7 @@ from shared.api_client.openapi_client.models.flashcard_dto import FlashcardDto
 import random
 import requests
 from deck_storage import DeckStorage
+from shared.auth import get_session_cookie
 
 # Setup the API client
 config = Configuration()
@@ -22,17 +23,37 @@ configuration_api = ConfigurationControllerApi(client)
 flashcard_deck_controller = FlashcardDeckControllerApi(client)
 flashcard_api = FlashcardControllerApi(client)
 
+def update_api_client_auth():
+    """Update the API client with the current session cookie for authentication"""
+    session_cookie = get_session_cookie()
+    if session_cookie:
+        # Set Cookie header with JSESSIONID for authenticated requests
+        client.set_default_header('Cookie', f'JSESSIONID={session_cookie}')
+    else:
+        # Clear the Cookie header if no session
+        if 'Cookie' in client.default_headers:
+            del client.default_headers['Cookie']
+
 # Create deck storage instance
 deck_storage = DeckStorage()
+
+def _get_request_cookies():
+    """Helper function to get cookies with session ID for authenticated requests"""
+    session_cookie = get_session_cookie()
+    if session_cookie:
+        return {'JSESSIONID': session_cookie}
+    return {}
 
 # Define functions 
 def get_languages(): 
     # Fetch languages
+    update_api_client_auth()  # Ensure API client has current session cookie
     languages = language_api.get_all()
     return languages
 
 def get_language_by_abbrevation(abbreviation):
     # Get a language by abbrievation
+    update_api_client_auth()  # Ensure API client has current session cookie
     languages = language_api.get_all()
     language = next((lang for lang in languages if lang.abbreviation == abbreviation), None)
 
@@ -43,11 +64,13 @@ def get_language_by_abbrevation(abbreviation):
 
 def get_language_by_name(name):
     # Get a language by name
+    update_api_client_auth()  # Ensure API client has current session cookie
     languages = language_api.get_all()
     language = next((lang for lang in languages if lang.name == name), None)
 
     if not language:
         raise ValueError(f"Language with name {name} not found")
+
 
     return language
 
@@ -61,6 +84,7 @@ def get_configurations(language_id):
     Returns:
         List of configuration objects
     """
+    update_api_client_auth()  # Ensure API client has current session cookie
     configurations = configuration_api.get_all3(language_id=language_id)
     return configurations
 
@@ -84,6 +108,7 @@ def get_language_code(language_id):
 
 def create_flashcard_deck(name, description):
     # Create a flashcard deck
+    update_api_client_auth()  # Ensure API client has current session cookie
     random_id = str(random.randint(1, 1000000))
     deck = flashcard_deck_controller.create1({ "id": random_id, "name": name, "description": description })
     
@@ -105,7 +130,11 @@ def create_flashcard(deck, flashcard, file_paths = None):
         file_name = file_path.split("\\")[-1] 
         form_data.append(("files", (file_name, open(file_path, "rb"), "application/octet-stream")))
 
-    response = requests.post("http://localhost:8080/flashcard/rich", files=form_data)
+    response = requests.post(
+        "http://localhost:8080/flashcard/rich", 
+        files=form_data,
+        cookies=_get_request_cookies()
+    )
 
     if response.status_code != 200:
         raise Exception(f"Failed to create flashcard: {response.text}")
@@ -139,7 +168,11 @@ def create_text_flashcard(deck, deck_order, front_language, back_language, front
         }
     }
 
-    response = requests.post("http://localhost:8080/flashcard", json=flashcard)
+    response = requests.post(
+        "http://localhost:8080/flashcard", 
+        json=flashcard,
+        cookies=_get_request_cookies()
+    )
 
     if response.status_code != 200:
         raise Exception(f"Failed to create flashcard: {response.text}")
@@ -416,7 +449,11 @@ def upload_local_deck(deck_metadata):
         else:
             # Use POST /flashcard for simple text-only flashcards
             if front_type == 'text' and back_type == 'text':
-                response = requests.post("http://localhost:8080/flashcard", json=flashcard_dto)
+                response = requests.post(
+                    "http://localhost:8080/flashcard", 
+                    json=flashcard_dto,
+                    cookies=_get_request_cookies()
+                )
                 
                 if response.status_code != 200:
                     raise Exception(f"Failed to create flashcard: {response.text}")

@@ -13,8 +13,12 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from import_client import get_languages
 from shared.google_api import text_to_speech
+from login_utils import render_login_sidebar
 
 st.set_page_config(page_title="Add Pronunciation", page_icon="🔊", layout="wide")
+
+# Render login sidebar
+render_login_sidebar()
 
 st.title("🔊 Add Pronunciation to Flashcards")
 st.markdown("---")

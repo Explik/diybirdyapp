@@ -4,6 +4,7 @@ Main entry point for the application.
 """
 
 import streamlit as st
+from login_utils import render_login_sidebar
 
 # Configure page settings
 st.set_page_config(
@@ -12,6 +13,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Render login sidebar (available on all pages)
+render_login_sidebar()
 
 # Main page content
 st.title("🎴 Flashcard Import Tool")

@@ -12,8 +12,12 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 sys.path.append(str(Path(__file__).parent.parent))
 
 from import_client import upload_local_deck, get_local_deck_data, list_local_decks
+from login_utils import render_login_sidebar, require_login
 
 st.set_page_config(page_title="Upload Deck", page_icon="🚀", layout="wide")
+
+# Render login sidebar and require login for this page
+require_login()
 
 st.title("🚀 Upload Deck to Server")
 

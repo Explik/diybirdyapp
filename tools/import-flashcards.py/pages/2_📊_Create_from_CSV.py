@@ -22,8 +22,12 @@ from import_client import (
     get_language_by_name,
     get_languages
 )
+from login_utils import render_login_sidebar
 
 st.set_page_config(page_title="Create Deck from CSV", page_icon="📊", layout="wide")
+
+# Render login sidebar
+render_login_sidebar()
 
 st.title("📊 Create Deck from .csv File")
 
@@ -230,10 +234,11 @@ if st.session_state.deck_created:
     button_col1, button_col2 = st.columns(2)
     
     with button_col1:
-        upload_url = f"5_🚀_Upload_deck?deck={deck_name}"
+        upload_url = f"Upload_deck?deck={deck_name}"
         st.markdown(f"[📤 Upload to Server]({upload_url})")
+        
         if st.button("📤 Go to Upload Page", type="primary", use_container_width=True):
-            st.switch_page("pages/5_🚀_Upload_deck.py")
+            st.switch_page("pages/Upload_deck.py")
             st.query_params["deck"] = deck_name
     
     with button_col2:
