@@ -26,7 +26,6 @@ from shared.import_client import (
 st.set_page_config(page_title="Create Deck from CSV", page_icon="📊", layout="wide")
 
 st.title("📊 Create Deck from .csv File")
-st.markdown("---")
 
 st.markdown("""
 This tool allows you to create flashcard decks from CSV files.
@@ -43,106 +42,93 @@ if 'deck_metadata' not in st.session_state:
 if 'deck_uploaded' not in st.session_state:
     st.session_state.deck_uploaded = False
 
-# Create two columns for the form
-col1, col2 = st.columns([2, 1])
+# Deck name
+deck_name = st.text_input(
+    "Deck Name",
+    placeholder="My Flashcard Deck",
+    help="Enter a name for your flashcard deck"
+)
 
-with col1:
-    st.subheader("Upload and Configuration")
-    
-    # File upload
-    uploaded_file = st.file_uploader(
-        "Choose a .csv file",
-        type=['csv'],
-        help="Upload a CSV file with two columns (source text and target text)"
-    )
-    
-    if uploaded_file is not None:
-        # Display file preview
-        content = uploaded_file.read().decode('utf-8')
-        uploaded_file.seek(0)  # Reset file pointer
-        
-        # Parse CSV
-        csv_reader = csv.reader(io.StringIO(content))
-        rows = list(csv_reader)
-        
-        st.info(f"📄 File loaded: {uploaded_file.name} ({len(rows)} rows)")
-        
-        with st.expander("Preview file content (first 10 rows)"):
-            preview_rows = rows[:10]
-            for i, row in enumerate(preview_rows, 1):
-                if len(row) >= 2:
-                    st.text(f"{i}. {row[0]} | {row[1]}")
-            if len(rows) > 10:
-                st.text(f"... and {len(rows) - 10} more rows")
+st.markdown("---")
 
-with col2:
-    st.subheader("Generation Options")
+# File upload
+uploaded_file = st.file_uploader(
+    "Choose a .csv file",
+    type=['csv'],
+    help="Upload a CSV file with two columns (source text and target text)"
+)
+
+# Skip header row option
+skip_header = st.checkbox(
+    "Skip header row",
+    value=False,
+    help="Check this if the first row contains column headers"
+)
+
+if uploaded_file is not None:
+    # Display file preview
+    content = uploaded_file.read().decode('utf-8')
+    uploaded_file.seek(0)  # Reset file pointer
     
-    # Skip header row option
-    skip_header = st.checkbox(
-        "Skip header row",
-        value=False,
-        help="Check this if the first row contains column headers"
-    )
+    # Parse CSV
+    csv_reader = csv.reader(io.StringIO(content))
+    rows = list(csv_reader)
     
-    # Deck name
-    deck_name = st.text_input(
-        "Deck Name",
-        placeholder="My Flashcard Deck",
-        help="Enter a name for your flashcard deck"
-    )
+    # Determine which rows to preview
+    preview_start = 1 if skip_header else 0
+    preview_rows = rows[preview_start:preview_start + 10]
+    total_data_rows = len(rows) - (1 if skip_header else 0)
     
-    # Deck description
-    deck_description = st.text_area(
-        "Description (Optional)",
-        placeholder="Brief description of the deck...",
-        help="Optional description for the deck",
-        height=100
-    )
-    
-    # Try to load languages from API
-    try:
-        available_languages = get_languages()
-        language_names = [lang.name for lang in available_languages]
-        language_abbrevs = {lang.name: lang.abbreviation for lang in available_languages}
-    except Exception as e:
-        st.error(f"⚠️ Could not load languages from API: {e}")
-        st.info("Make sure the API server is running on http://localhost:8080")
-        available_languages = []
-        language_names = []
-        language_abbrevs = {}
+    with st.expander(f"File {uploaded_file.name} ({total_data_rows} data rows)"):
+        for i, row in enumerate(preview_rows, 1):
+            if len(row) >= 2:
+                st.text(f"{i}. {row[0]} | {row[1]}")
+        if len(rows) - preview_start > 10:
+            st.text(f"... and {len(rows) - preview_start - 10} more rows")
+
+st.markdown("---")
+
+# Try to load languages from backend
+try:
+    backend_languages = get_languages()
+    language_options = {lang.name: lang for lang in backend_languages}
+    language_names = list(language_options.keys())
+except Exception as e:
+    st.error(f"⚠️ Could not load languages from backend: {e}")
+    backend_languages = []
+    language_options = {}
+    language_names = []
 
 # Language selection
-st.markdown("---")
-st.subheader("Language Settings")
+if backend_languages:
+    lang_col1, lang_col2 = st.columns(2)
 
-lang_col1, lang_col2 = st.columns(2)
-
-with lang_col1:
-    if language_names:
+    with lang_col1:
         left_language_option = st.selectbox(
             "Left Language (Column 1)",
             options=language_names,
             help="The language of the left column text"
         )
-    else:
-        left_language_option = None
-    
-with lang_col2:
-    if language_names:
-        default_right_idx = 1 if len(language_names) > 1 else 0
-        right_language_option = st.selectbox(
-            "Right Language (Column 2)",
-            options=language_names,
-            index=default_right_idx,
-            help="The language of the right column text"
-        )
-    else:
-        right_language_option = None
+        
+    with lang_col2:
+        if language_names:
+            default_right_idx = 1 if len(language_names) > 1 else 0
+            right_language_option = st.selectbox(
+                "Right Language (Column 2)",
+                options=language_names,
+                index=default_right_idx,
+                help="The language of the right column text"
+            )
+        else:
+            right_language_option = None
+
+    st.markdown("---")
+else: 
+    st.error("❌ Failed to load available languages from the backend.")
+    left_language_option = None
+    right_language_option = None
 
 # Generate button
-st.markdown("---")
-
 if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width=True):
     # Validation
     if not uploaded_file:
@@ -156,17 +142,14 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
         try:
             with st.spinner("Creating flashcard deck locally..."):
                 # Create deck locally
-                deck_metadata = create_local_flashcard_deck(deck_name, deck_description or "")
+                deck_metadata = create_local_flashcard_deck(deck_name, "")
                 st.session_state.deck_created = True
                 st.session_state.deck_metadata = deck_metadata
                 st.success(f"✅ Created local deck: {deck_name}")
                 
                 # Get language objects
-                left_lang_abbrev = language_abbrevs[left_language_option]
-                left_lang = get_language_by_abbrevation(left_lang_abbrev)
-                
-                right_lang_abbrev = language_abbrevs[right_language_option]
-                right_lang = get_language_by_abbrevation(right_lang_abbrev)
+                left_lang = language_options[left_language_option]
+                right_lang = language_options[right_language_option]
                 
                 # Parse CSV again
                 uploaded_file.seek(0)
@@ -200,8 +183,8 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
                     add_local_text_flashcard(
                         deck_metadata=deck_metadata,
                         deck_order=idx,
-                        front_language=left_lang,
-                        back_language=right_lang,
+                        front_language=left_lang.id,
+                        back_language=right_lang.id,
                         front_text=left_text,
                         back_text=right_text
                     )
