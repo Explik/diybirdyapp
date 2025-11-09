@@ -91,7 +91,7 @@ When ready:
 ### Creating Decks Locally
 
 ```python
-from shared.import_client import create_local_flashcard_deck
+from import_client import create_local_flashcard_deck
 
 # Create a new local deck
 deck_metadata = create_local_flashcard_deck(
@@ -111,7 +111,7 @@ deck_metadata = create_local_flashcard_deck(
 ### Adding Flashcards
 
 ```python
-from shared.import_client import (
+from import_client import (
     add_local_text_flashcard,
     get_language_by_name
 )
@@ -134,7 +134,7 @@ flashcard = add_local_text_flashcard(
 ### Adding Pronunciation
 
 ```python
-from shared.import_client import add_local_pronunciation
+from import_client import add_local_pronunciation
 
 # Add pronunciation to the front of a flashcard
 media_path = add_local_pronunciation(
@@ -150,7 +150,7 @@ media_path = add_local_pronunciation(
 ### Creating ZIP Archive
 
 ```python
-from shared.import_client import create_deck_zip
+from import_client import create_deck_zip
 
 # Create ZIP file
 zip_path = create_deck_zip(
@@ -164,7 +164,7 @@ zip_path = create_deck_zip(
 ### Viewing Deck Data
 
 ```python
-from shared.import_client import get_local_deck_data
+from import_client import get_local_deck_data
 
 # Get deck data
 deck_data = get_local_deck_data(deck_metadata)
@@ -182,7 +182,7 @@ for flashcard in deck_data['flashcards']:
 ### Uploading to Server
 
 ```python
-from shared.import_client import upload_local_deck
+from import_client import upload_local_deck
 
 # Upload the deck to the server
 server_deck = upload_local_deck(deck_metadata)
@@ -194,7 +194,7 @@ print(f"Deck uploaded! Server ID: {server_deck.id}")
 ### Listing Local Decks
 
 ```python
-from shared.import_client import list_local_decks
+from import_client import list_local_decks
 
 # Get all local decks
 decks = list_local_decks()
@@ -244,7 +244,7 @@ Default storage location: `[workspace]/deck_storage/`
 You can customize this by creating a `DeckStorage` instance:
 
 ```python
-from shared.deck_storage import DeckStorage
+from deck_storage import DeckStorage
 
 # Custom storage location
 storage = DeckStorage(storage_dir="C:/my/custom/path")
@@ -304,7 +304,7 @@ Add any media file type to the `media/` directory and reference it in `data.json
 Create a script to upload multiple decks:
 
 ```python
-from shared.import_client import list_local_decks, upload_local_deck
+from import_client import list_local_decks, upload_local_deck
 
 decks = list_local_decks()
 for deck in decks:
@@ -323,3 +323,4 @@ Planned features:
 - Export to Anki format
 - Deck validation and repair tools
 - Media optimization (compression, format conversion)
+

@@ -11,11 +11,11 @@ from pathlib import Path
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
+sys.path.append(str(Path(__file__).parent.parent))
 
-from shared.import_client import (
+from import_client import (
     create_local_flashcard_deck,
     add_local_text_flashcard,
-    upload_local_deck,
     create_deck_zip,
     get_local_deck_data,
     get_language_by_abbrevation,
@@ -226,22 +226,15 @@ if st.session_state.deck_created:
     if st.session_state.deck_metadata:
         st.info(f"📁 Deck location: `{st.session_state.deck_metadata['deck_dir']}`")
     
-    # Upload and reset buttons
+    # Action buttons
     button_col1, button_col2 = st.columns(2)
     
     with button_col1:
-        if not st.session_state.deck_uploaded:
-            if st.button("📤 Upload to Server", type="primary", use_container_width=True):
-                try:
-                    with st.spinner("Uploading deck to server..."):
-                        server_deck = upload_local_deck(st.session_state.deck_metadata)
-                        st.session_state.deck_uploaded = True
-                        st.success(f"✅ Deck uploaded successfully! Server ID: {server_deck.id}")
-                except Exception as e:
-                    st.error(f"❌ Error uploading deck: {str(e)}")
-                    st.exception(e)
-        else:
-            st.success("✅ Deck already uploaded to server")
+        upload_url = f"5_🚀_Upload_deck?deck={deck_name}"
+        st.markdown(f"[📤 Upload to Server]({upload_url})")
+        if st.button("📤 Go to Upload Page", type="primary", use_container_width=True):
+            st.switch_page("pages/5_🚀_Upload_deck.py")
+            st.query_params["deck"] = deck_name
     
     with button_col2:
         if st.button("Create Another Deck", use_container_width=True):

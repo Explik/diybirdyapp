@@ -9,8 +9,9 @@ from pathlib import Path
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
+sys.path.append(str(Path(__file__).parent.parent))
 
-from shared.import_client import get_languages
+from import_client import get_languages
 from shared.google_api import text_to_speech
 
 st.set_page_config(page_title="Add Pronunciation", page_icon="🔊", layout="wide")

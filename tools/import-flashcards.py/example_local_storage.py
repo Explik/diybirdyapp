@@ -14,8 +14,9 @@ from pathlib import Path
 
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent))
 
-from shared.import_client import (
+from import_client import (
     create_local_flashcard_deck,
     add_local_text_flashcard,
     add_local_pronunciation,

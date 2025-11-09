@@ -3,7 +3,7 @@
 ## Import Required Functions
 
 ```python
-from shared.import_client import (
+from import_client import (
     # Local storage functions
     create_local_flashcard_deck,
     add_local_text_flashcard,
