@@ -38,8 +38,6 @@ export class LoginPageComponent {
       this.auth.login(username as string, password as string).subscribe({
       next: () => {
         this.loading = false;
-        // navigate to home or dashboard
-        this.router.navigate(['/']);
       },
       error: (err) => {
         this.loading = false;

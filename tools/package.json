@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "generate-api-client": "openapi-generator-cli generate -i http://localhost:8080/v3/api-docs -g python -o ./shared/api_client --additional-properties=usePydanticModels=false"
+    "generate-api-client": "openapi-generator-cli generate -i http://localhost:8080/v3/api-docs -g python -o ./shared/api_client --additional-properties=usePydanticModels=false",
+    "generate-google-api-client": "openapi-generator-cli generate -i https://translate.googleapis.com/$discovery/rest?version=v2 -g python -o ./shared/api_client --additional-properties=usePydanticModels=false"
   },
   "author": "",
   "license": "ISC",

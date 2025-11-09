@@ -1,3 +1,4 @@
 /shared/api_client
 /shared/__pycache__
 /node_modules
+/__pycache__

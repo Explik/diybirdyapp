@@ -14,12 +14,14 @@ import { ExerciseContentWriteTranslatedSentenceContainerComponent } from '../../
 import { ExerciseComponentService } from '../../services/exerciseComponent.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { Observable } from 'rxjs';
+import { HotkeyService } from '../../../../shared/services/hotKey.service';
 
 @Component({
     selector: 'app-exercise-page',
     standalone: true,
     templateUrl: './exercise-page.component.html',
-    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent]
+    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent],
+    providers: [HotkeyService]
 })
 export class ExercisePageComponent {
     sessionId: string | undefined = undefined;

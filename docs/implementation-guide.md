@@ -1,8 +1,14 @@
-# 🧩 Error Handling Architecture
+# Implementation guide 
 
-This document explains how error handling works across our **Java Spring Boot backend** and **Angular frontend** — and how to extend it safely when adding new validation rules or features.
+# Hotkeys (ctrl+s)
+The frontend implements hotkeys using the HotKeyService.
 
----
+The HotkeyService supports three levels of scope control:
+- *No Boundary (Window Level)*: When you inject HotkeyRootService directly or use a HotkeyService provided at the app root, the hotkeys are global — they respond to keystrokes anywhere in the window, regardless of focus or component hierarchy.
+- *Boundary (Scoped Hotkeys)*: When a component provides its own HotkeyService (e.g., via providers: [HotkeyService]), that component and its children form a hotkey boundary. Only those components share the same hotkey instance and can listen to those shortcuts, preventing collisions with other parts of the app.
+- *Active Boundary*: When multiple boundaries exist (for example, a modal over an editor), only the active or topmost boundary receives key events. Lower boundaries are temporarily paused until the active one is destroyed or deactivated. This ensures predictable, context-aware keyboard behavior — e.g., Ctrl+S triggers “Save” in the editor normally, but “Submit” in a modal when it’s open.
+
+# Error handling and validation
 
 ## ⚙️ Overview
 

@@ -79,6 +79,13 @@ public class DataInitializerService {
                 .withAbbreviation("EN")
                 .withGoogleTextToSpeech("en-US", "en-US-Wavenet-A")
                 .build(traversalSource);
+
+        builderFactory.createLanguageVertexBuilder()
+                .withId("langVertex3")
+                .withName("Chinese")
+                .withAbbreviation("ZH")
+                .withGoogleTextToSpeech("zh-CN", "cmn-CN-Chirp3-HD-Achird")
+                .build(traversalSource);
     }
 
     public void addInitialContentAndConcepts() {
