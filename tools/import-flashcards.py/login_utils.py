@@ -48,7 +48,7 @@ def load_saved_credentials():
     """Load saved login credentials from file"""
     saved_info = load_login_info(LOGIN_INFO_FILE)
     if saved_info:
-        st.session_state.backend_url = saved_info.get('url', 'http://localhost:8080')
+        st.session_state.backend_url = saved_info.get('url', 'http://localhost:8080').strip()
         st.session_state.username = saved_info.get('username', '')
         st.session_state.password = saved_info.get('password', '')
         return True
@@ -131,7 +131,7 @@ def render_login_sidebar():
         )
         
         # Update session state from inputs
-        st.session_state.backend_url = st.session_state.backend_url_input
+        st.session_state.backend_url = st.session_state.backend_url_input.strip()
         st.session_state.username = st.session_state.username_input
         st.session_state.password = st.session_state.password_input
         
