@@ -4,6 +4,7 @@ from .api_client.openapi_client import Configuration
 from .api_client.openapi_client.api_client import ApiClient
 from .api_client.openapi_client.api.flashcard_controller_api import FlashcardControllerApi
 from .api_client.openapi_client.api.language_controller_api import LanguageControllerApi
+from .api_client.openapi_client.api.configuration_controller_api import ConfigurationControllerApi
 from .api_client.openapi_client.api.flashcard_deck_controller_api import FlashcardDeckControllerApi
 from .api_client.openapi_client.models.flashcard_dto import FlashcardDto
 import random
@@ -17,6 +18,7 @@ client = ApiClient(configuration=config)
 
 # Create an API instance
 language_api = LanguageControllerApi(client)
+configuration_api = ConfigurationControllerApi(client)
 flashcard_deck_controller = FlashcardDeckControllerApi(client)
 flashcard_api = FlashcardControllerApi(client)
 
@@ -48,6 +50,37 @@ def get_language_by_name(name):
         raise ValueError(f"Language with name {name} not found")
 
     return language
+
+def get_configurations(language_id):
+    """
+    Get all configurations for a specific language.
+    
+    Args:
+        language_id: The ID of the language
+        
+    Returns:
+        List of configuration objects
+    """
+    configurations = configuration_api.get_all3(language_id=language_id)
+    return configurations
+
+def get_language_code(language_id):
+    """
+    Get the language code for a specific language.
+    Uses the first configuration found for the language.
+    
+    Args:
+        language_id: The ID of the language
+        
+    Returns:
+        The language code (e.g., "en-US")
+    """
+    configurations = get_configurations(language_id)
+    if not configurations:
+        raise ValueError(f"No configuration found for language {language_id}")
+    
+    # Use the first configuration
+    return configurations[0].language_code
 
 def create_flashcard_deck(name, description):
     # Create a flashcard deck

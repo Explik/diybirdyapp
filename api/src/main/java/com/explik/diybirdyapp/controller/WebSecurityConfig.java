@@ -31,6 +31,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                                 // TODO Replace POST /reset-graph with a more secure approach in production
                                 .requestMatchers(HttpMethod.POST, "reset-graph").permitAll()
+                                // TODO Secure language, configuration in prod (it's open for tool testing)
+                                .requestMatchers("/language/**").permitAll()
+                                .requestMatchers("/configuration/**").permitAll()
                                 .requestMatchers("/ping").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("v3/api-docs").permitAll()

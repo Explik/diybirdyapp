@@ -19,9 +19,10 @@ from shared.import_client import (
     get_local_deck_data,
     get_language_by_abbrevation,
     get_language_by_name,
-    get_languages
+    get_languages,
+    get_language_code
 )
-from shared.google_api import translate_text, list_languages
+from shared.google_api import translate_text
 
 st.set_page_config(page_title="Create Deck from TXT", page_icon="📝", layout="wide")
 
@@ -73,26 +74,26 @@ if uploaded_file is not None:
 
 st.markdown("---")
 
-# Try to load languages from Google Translate API
+# Try to load languages from backend
 try:
-    available_languages = list_languages()
-    language_names = [lang['name'] for lang in available_languages]
-    language_codes = {lang['name']: lang['language'] for lang in available_languages}
+    backend_languages = get_languages()
+    language_options = {lang.name: lang for lang in backend_languages}
+    language_names = list(language_options.keys())
 except Exception as e:
-    st.error(f"⚠️ Could not load languages: {e}")
-    available_languages = []
+    st.error(f"⚠️ Could not load languages from backend: {e}")
+    backend_languages = []
+    language_options = {}
     language_names = []
-    language_codes = {}
 
 # Language selection
-if available_languages:
+if backend_languages:
     lang_col1, lang_col2 = st.columns(2)
 
     with lang_col1:
         source_language_option = st.selectbox(
             "Source Language",
-            options=["Auto-detect"] + language_names,
-            help="The language of the input text. Select 'Auto-detect' to automatically detect the language."
+            options=language_names,
+            help="The language of the input text."
         )
         
     with lang_col2:
@@ -109,7 +110,7 @@ if available_languages:
 
     st.markdown("---")
 else: 
-    st.error("❌ Failed to load available languages from the translation service.")
+    st.error("❌ Failed to load available languages from the backend.")
     source_language_option = None
     target_language_option = None
 
@@ -120,6 +121,8 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
         st.error("❌ Please upload a .txt file")
     elif not deck_name:
         st.error("❌ Please enter a deck name")
+    elif not source_language_option:
+        st.error("❌ Please select a source language")
     elif not target_language_option:
         st.error("❌ Please select a target language")
     else:
@@ -132,12 +135,12 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
                 st.session_state.deck_metadata = deck_metadata
                 st.success(f"✅ Created local deck: {deck_name}")
                 
-                # Get language codes
-                source_lang_code = None
-                if source_language_option != "Auto-detect":
-                    source_lang_code = language_codes[source_language_option]
+                # Get language objects and codes
+                source_language = language_options[source_language_option]
+                source_lang_code = get_language_code(source_language.id)
                 
-                target_lang_code = language_codes[target_language_option]
+                target_language = language_options[target_language_option]
+                target_lang_code = get_language_code(target_language.id)
                 
                 # Create flashcards
                 progress_bar = st.progress(0)
@@ -166,25 +169,16 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
                     
                     target_text = translation_result[0]['translatedText']
                     
-                    # Get detected source language code if auto-detect was used
-                    detected_source_code = source_lang_code
-                    if not source_lang_code and 'detectedSourceLanguage' in translation_result[0]:
-                        detected_source_code = translation_result[0]['detectedSourceLanguage']
-                    
-                    source_lang = source_lang_code or detected_source_code
-                    target_lang = target_lang_code
-
                     # Create flashcard locally
-                    if source_lang and target_lang:
-                        add_local_text_flashcard(
-                            deck_metadata=deck_metadata,
-                            deck_order=idx,
-                            front_language=source_lang,
-                            back_language=target_lang,
-                            front_text=source_text,
-                            back_text=target_text
-                        )
-                        flashcards_created += 1
+                    add_local_text_flashcard(
+                        deck_metadata=deck_metadata,
+                        deck_order=idx,
+                        front_language=source_language.id,
+                        back_language=target_language.id,
+                        front_text=source_text,
+                        back_text=target_text
+                    )
+                    flashcards_created += 1
                 
                 progress_bar.progress(1.0)
                 status_text.text("")

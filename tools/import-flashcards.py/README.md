@@ -139,6 +139,36 @@ Options:
 # Implementation of tool
 This section describes the implementation details of the flashcard import tool.
 
+## Language selection 
+The tool allows users to select source and target languages for flashcard generation from the available backend languages. Each language has one or more associated configuration that includes details such as language code. The tool will for now use the first configuration found for a given language.
+
+The tool retrieves the available languages and configurations using the following API endpoints:
+```
+GET /languages # Retrieve available languages
+Response:
+[
+    {
+        "id": "en",
+        "name": "English",
+        "abbreviation": "EN"
+    },
+    ...
+]
+
+GET /configuration?languageId={languageId} # Retrieve configuration for a specific language
+Response:
+[
+    {
+        "id": "config-id",
+        "languageId": "en",
+        "languageCode": "en-US",
+    },
+    ... 
+]
+```
+
+After retrieving the language code, the tool will check if the Google Translate API supports the language code. If not, an error message will be displayed to the user.
+
 ## Internal representation of flashcard decks
 The tool represents a flashcard deck as a directory with the following structure:
 ```
@@ -160,6 +190,7 @@ The format for data.json is largely based on the FlashcardDeckDto, FlashcardDto,
             "leftContent": {
                 "type": "text",
                 "content": "Text on the left side",
+                "languageId": "backend-language-id",
                 "pronounciation": {
                     "content": "media-1.mp4",
                 }
