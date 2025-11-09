@@ -11,11 +11,18 @@ import random
 import requests
 from deck_storage import DeckStorage
 from shared.auth import get_session_cookie
+import streamlit as st
 
 # Setup the API client
 config = Configuration()
 config.host = "http://localhost:8080"
 client = ApiClient(configuration=config)
+
+def get_backend_url():
+    """Get the backend URL from session state or use default"""
+    url = st.session_state.get('backend_url', 'http://localhost:8080')
+    # Strip whitespace and ensure no trailing slash
+    return url.strip().rstrip('/')
 
 # Create an API instance
 language_api = LanguageControllerApi(client)
@@ -25,6 +32,10 @@ flashcard_api = FlashcardControllerApi(client)
 
 def update_api_client_auth():
     """Update the API client with the current session cookie for authentication"""
+    # Update host from session state
+    backend_url = get_backend_url()
+    config.host = backend_url
+    
     session_cookie = get_session_cookie()
     if session_cookie:
         # Set Cookie header with JSESSIONID for authenticated requests
@@ -130,8 +141,9 @@ def create_flashcard(deck, flashcard, file_paths = None):
         file_name = file_path.split("\\")[-1] 
         form_data.append(("files", (file_name, open(file_path, "rb"), "application/octet-stream")))
 
+    backend_url = get_backend_url()
     response = requests.post(
-        "http://localhost:8080/flashcard/rich", 
+        f"{backend_url}/flashcard/rich", 
         files=form_data,
         cookies=_get_request_cookies()
     )
@@ -168,8 +180,9 @@ def create_text_flashcard(deck, deck_order, front_language, back_language, front
         }
     }
 
+    backend_url = get_backend_url()
     response = requests.post(
-        "http://localhost:8080/flashcard", 
+        f"{backend_url}/flashcard", 
         json=flashcard,
         cookies=_get_request_cookies()
     )
@@ -449,8 +462,9 @@ def upload_local_deck(deck_metadata):
         else:
             # Use POST /flashcard for simple text-only flashcards
             if front_type == 'text' and back_type == 'text':
+                backend_url = get_backend_url()
                 response = requests.post(
-                    "http://localhost:8080/flashcard", 
+                    f"{backend_url}/flashcard", 
                     json=flashcard_dto,
                     cookies=_get_request_cookies()
                 )

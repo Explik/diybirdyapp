@@ -114,7 +114,7 @@ def save_login_info(url: str, username: str, password: str, file_path: str = "lo
     """
     try:
         login_data = {
-            "url": url,
+            "url": url.strip(),
             "username": username,
             "password": password
         }

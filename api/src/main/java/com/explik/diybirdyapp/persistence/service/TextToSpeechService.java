@@ -14,32 +14,34 @@ public class TextToSpeechService {
     @Autowired
     BinaryStorageService storageService;
 
+    @Autowired
+    TextToSpeechClient textToSpeechClient;
+
     public byte[] generateAudio(Text textObject) throws IOException {
-        try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
-            // Build the input text
-            SynthesisInput input = SynthesisInput.newBuilder()
-                    .setText(textObject.text())
-                    .build();
+        // Build the input text
+        SynthesisInput input = SynthesisInput.newBuilder()
+                .setText(textObject.text())
+                .build();
 
-            // Configure the voice selection
-            VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
-                    .setLanguageCode(textObject.languageCode())
-                    .setName(textObject.voiceName())
-                    .build();
+        // Configure the voice selection
+        VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
+                .setLanguageCode(textObject.languageCode())
+                .setName(textObject.voiceName())
+                .build();
 
-            // Configure the audio settings
-            AudioConfig audioConfig = AudioConfig.newBuilder()
-                    .setAudioEncoding(AudioEncoding.valueOf(textObject.audioEncoding))
-                    .build();
+        // Configure the audio settings
+        AudioConfig audioConfig = AudioConfig.newBuilder()
+                .setAudioEncoding(AudioEncoding.valueOf(textObject.audioEncoding))
+                .build();
 
-            // Perform the text-to-speech request
-            SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
+        // Perform the text-to-speech request
+        SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
 
-            // Get the audio content from the response
-            ByteString audioContents = response.getAudioContent();
+        // Get the audio content from the response
+        ByteString audioContents = response.getAudioContent();
 
-            return audioContents.toByteArray();
-        }
+        return audioContents.toByteArray();
+
     }
 
     public void generateAudioFile(Text textObject, String outputPath) throws IOException {
