@@ -131,10 +131,8 @@ The page "Add pronounciation to flashcards" allows users to record their own pro
 
 Options: 
 - Select deck: Choose the flashcard deck to add pronounciation to.
-- Individual recording: Record pronounciation audio for each flashcard manually.
-- Individual automatic generation: Use text-to-speech synthesis to generate pronounciation audio for individual flashcards.
-- Individual playback: Play back the recorded or generated pronounciation audio for each flashcard.
-- Bulk translation: Use text-to-speech synthesis to generate pronounciation audio for all flashcards in the deck.
+- Recording: Record pronounciation audio for each flashcard manually.
+- Playback: Play back the recorded for each flashcard.
 
 # Implementation of tool
 This section describes the implementation details of the flashcard import tool.

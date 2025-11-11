@@ -66,4 +66,9 @@ public class TextContentVertex extends ContentVertex {
         var vertex = traversalSource.addV(LABEL).next();
         return new TextContentVertex(traversalSource, vertex);
     }
+
+    public static TextContentVertex findById(GraphTraversalSource traversalSource, String id) {
+        var vertex = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ID, id).tryNext();
+        return vertex.map(v -> new TextContentVertex(traversalSource, v)).orElse(null);
+    }
 }

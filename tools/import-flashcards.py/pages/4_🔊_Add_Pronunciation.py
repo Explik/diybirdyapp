@@ -6,14 +6,16 @@ Allows users to add pronunciation audio to flashcard decks.
 import streamlit as st
 import sys
 from pathlib import Path
+import tempfile
+import os
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
 sys.path.append(str(Path(__file__).parent.parent))
 
-from import_client import get_languages
-from shared.google_api import text_to_speech
+from import_client import get_languages, list_local_decks, add_local_pronunciation
 from login_utils import render_login_sidebar
+from deck_storage import DeckStorage
 
 st.set_page_config(page_title="Add Pronunciation", page_icon="🔊", layout="wide")
 
@@ -25,51 +27,88 @@ st.markdown("---")
 
 st.markdown("""
 This tool allows you to add pronunciation audio to flashcards in a deck.
-You can record your own pronunciation or use automatic text-to-speech synthesis.
+You can record your own pronunciation for individual flashcards.
 """)
+
+def has_pronunciation(flashcard, side):
+    """Check if a flashcard has pronunciation for a given side."""
+    content_key = f"{side}Content"
+    if content_key in flashcard:
+        return "pronunciation" in flashcard[content_key] and "content" in flashcard[content_key]["pronunciation"]
+    return False
+
+def save_audio_to_file(audio_data, flashcard_id, side):
+    """Save audio data to a temporary file and return the path."""
+    # Create a temporary file
+    suffix = ".wav"  # Streamlit audio_input returns WAV format
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix, prefix=f"{flashcard_id}_{side}_")
+    temp_file.write(audio_data.getvalue())
+    temp_file.close()
+    return temp_file.name
 
 # Initialize session state
 if 'selected_deck' not in st.session_state:
     st.session_state.selected_deck = None
+if 'selected_deck_data' not in st.session_state:
+    st.session_state.selected_deck_data = None
 if 'current_flashcard_idx' not in st.session_state:
     st.session_state.current_flashcard_idx = 0
-if 'recorded_audio' not in st.session_state:
-    st.session_state.recorded_audio = {}
 
 # Deck selection
 st.subheader("Select Deck")
 
-# Placeholder for deck list - would be fetched from API
-deck_options = ["Sample Deck 1", "Sample Deck 2", "Spanish Basics"]
+# Get local decks
+local_decks = list_local_decks()
 
-selected_deck = st.selectbox(
-    "Choose a flashcard deck",
-    options=deck_options,
-    help="Select the deck to add pronunciation to"
-)
-
-if selected_deck:
-    st.session_state.selected_deck = selected_deck
+if not local_decks:
+    st.warning("⚠️ No decks found. Please create a deck first using one of the other tools.")
+else:
+    # Create options with deck names and flashcard counts
+    deck_options = {
+        deck['name']: deck 
+        for deck in local_decks
+    }
     
-    st.success(f"✅ Selected deck: {selected_deck}")
+    selected_deck_name = st.selectbox(
+        "Choose a flashcard deck",
+        options=list(deck_options.keys()),
+        help="Select the deck to add pronunciation to",
+        format_func=lambda name: f"{name} ({deck_options[name]['flashcard_count']} cards)"
+    )
+
+if local_decks and selected_deck_name:
+    selected_deck = deck_options[selected_deck_name]
+    st.session_state.selected_deck = selected_deck
+    st.session_state.selected_deck_data = selected_deck['data']
+    
+    st.success(f"✅ Selected deck: {selected_deck['name']} ({selected_deck['flashcard_count']} flashcards)")
+    
+    # Show recording status - count from deck data
+    flashcards = selected_deck['data'].get('flashcards', [])
+    total_recordings = sum(
+        1 for fc in flashcards if has_pronunciation(fc, 'front')
+    ) + sum(
+        1 for fc in flashcards if has_pronunciation(fc, 'back')
+    )
+    
+    if total_recordings > 0:
+        st.info(f"📊 Recordings saved: {total_recordings} audio files")
     
     st.markdown("---")
     st.subheader("Pronunciation Options")
     
     # Create tabs for different modes
-    tab1, tab2, tab3 = st.tabs(["📝 Individual", "🔊 Playback", "🚀 Bulk Generation"])
+    tab1, tab2 = st.tabs(["📝 Individual", "🔊 Playback"])
     
     with tab1:
         st.markdown("### Individual Flashcard Pronunciation")
         
-        # Mock flashcard data
-        flashcards = [
-            {"id": 1, "front": "Hello", "back": "Hola"},
-            {"id": 2, "front": "Goodbye", "back": "Adiós"},
-            {"id": 3, "front": "Thank you", "back": "Gracias"}
-        ]
+        # Get flashcards from the selected deck
+        flashcards = selected_deck['data'].get('flashcards', [])
         
-        if flashcards:
+        if not flashcards:
+            st.warning("This deck has no flashcards yet.")
+        else:
             # Navigation
             nav_col1, nav_col2, nav_col3 = st.columns([1, 2, 1])
             
@@ -89,142 +128,293 @@ if selected_deck:
             # Current flashcard
             current_card = flashcards[st.session_state.current_flashcard_idx]
             
+            # Extract text from content structure
+            front_text = current_card['frontContent']['text'] if current_card['frontContent']['type'] == 'text' else None
+            back_text = current_card['backContent']['text'] if current_card['backContent']['type'] == 'text' else None
+            
+            # Show status of current card recordings (check deck data)
+            front_recorded = has_pronunciation(current_card, 'front')
+            back_recorded = has_pronunciation(current_card, 'back')
+            
+            status_col1, status_col2 = st.columns(2)
+            with status_col1:
+                if front_recorded:
+                    st.success("✅ Front recorded")
+                else:
+                    st.info("⭕ Front not recorded")
+            with status_col2:
+                if back_recorded:
+                    st.success("✅ Back recorded")
+                else:
+                    st.info("⭕ Back not recorded")
+            
             st.markdown("---")
+            
+            # Display both sides side by side
+            front_col, back_col = st.columns(2)
             
             # Front side
-            st.markdown("#### Front Side")
-            st.info(f"📝 {current_card['front']}")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("**Individual Recording**")
-                if st.button("🎤 Record Audio (Front)", key="record_front"):
-                    st.warning("⚠️ Recording feature requires browser microphone access (coming soon)")
-            
-            with col2:
-                st.markdown("**Automatic Generation**")
-                if st.button("🔊 Generate TTS (Front)", key="tts_front"):
-                    st.info("🔄 Generating text-to-speech audio...")
-                    st.success("✅ Audio generated for front side")
-            
-            st.markdown("---")
+            with front_col:
+                st.markdown("#### Front Side")
+                st.info(f"📝 {front_text}")
+                
+                st.markdown("**Record Pronunciation**")
+                
+                audio_front = st.audio_input("Record front side pronunciation", key=f"record_front_{current_card['id']}")
+                
+                if audio_front:
+                    # Save audio to temporary file
+                    temp_audio_path = save_audio_to_file(audio_front, current_card['id'], 'front')
+                    
+                    try:
+                        # Save to deck storage
+                        media_path = add_local_pronunciation(
+                            selected_deck,
+                            current_card['id'],
+                            'front',
+                            temp_audio_path
+                        )
+                        
+                        st.success("✅ Front side audio recorded and saved!")
+                        st.audio(audio_front)
+                        
+                        # Update the deck data in session state to reflect changes
+                        st.session_state.selected_deck_data = list_local_decks()[
+                            next(i for i, d in enumerate(list_local_decks()) if d['name'] == selected_deck['name'])
+                        ]['data']
+                        
+                    finally:
+                        # Clean up temporary file
+                        if os.path.exists(temp_audio_path):
+                            os.unlink(temp_audio_path)
+                
+                # Show existing pronunciation if available
+                if has_pronunciation(current_card, 'front'):
+                    if not audio_front:  # Only show if not currently recording
+                        st.info("Existing recording:")
+                        # Load the audio from the media directory
+                        deck_dir = Path(selected_deck['deck_dir'])
+                        media_path = current_card['frontContent']['pronunciation']['content']
+                        audio_file_path = deck_dir / media_path
+                        if audio_file_path.exists():
+                            with open(audio_file_path, 'rb') as f:
+                                st.audio(f.read())
+                    
+                    # Delete button for existing recording
+                    if st.button("🗑️ Delete Front Recording", key=f"delete_front_{current_card['id']}"):
+                        # Remove pronunciation from deck data
+                        deck_storage = DeckStorage()
+                        deck_data = deck_storage.get_deck_data(selected_deck['deck_dir'])
+                        
+                        # Find and update the flashcard
+                        for fc in deck_data['flashcards']:
+                            if fc['id'] == current_card['id']:
+                                if 'pronunciation' in fc['frontContent']:
+                                    # Delete the media file
+                                    deck_dir = Path(selected_deck['deck_dir'])
+                                    media_path = fc['frontContent']['pronunciation']['content']
+                                    audio_file_path = deck_dir / media_path
+                                    if audio_file_path.exists():
+                                        os.unlink(audio_file_path)
+                                    
+                                    # Remove from data
+                                    del fc['frontContent']['pronunciation']
+                                break
+                        
+                        # Save updated deck data
+                        import json
+                        data_file = Path(selected_deck['deck_dir']) / "data.json"
+                        with open(data_file, 'w', encoding='utf-8') as f:
+                            json.dump(deck_data, f, indent=2, ensure_ascii=False)
+                        
+                        st.success("✅ Front recording deleted!")
+                        st.rerun()
             
             # Back side
-            st.markdown("#### Back Side")
-            st.info(f"📝 {current_card['back']}")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("**Individual Recording**")
-                if st.button("🎤 Record Audio (Back)", key="record_back"):
-                    st.warning("⚠️ Recording feature requires browser microphone access (coming soon)")
-            
-            with col2:
-                st.markdown("**Automatic Generation**")
-                if st.button("🔊 Generate TTS (Back)", key="tts_back"):
-                    st.info("🔄 Generating text-to-speech audio...")
-                    st.success("✅ Audio generated for back side")
+            with back_col:
+                st.markdown("#### Back Side")
+                st.info(f"📝 {back_text}")
+                
+                st.markdown("**Record Pronunciation**")
+                
+                audio_back = st.audio_input("Record back side pronunciation", key=f"record_back_{current_card['id']}")
+                
+                if audio_back:
+                    # Save audio to temporary file
+                    temp_audio_path = save_audio_to_file(audio_back, current_card['id'], 'back')
+                    
+                    try:
+                        # Save to deck storage
+                        media_path = add_local_pronunciation(
+                            selected_deck,
+                            current_card['id'],
+                            'back',
+                            temp_audio_path
+                        )
+                        
+                        st.success("✅ Back side audio recorded and saved!")
+                        st.audio(audio_back)
+                        
+                        # Update the deck data in session state to reflect changes
+                        st.session_state.selected_deck_data = list_local_decks()[
+                            next(i for i, d in enumerate(list_local_decks()) if d['name'] == selected_deck['name'])
+                        ]['data']
+                        
+                    finally:
+                        # Clean up temporary file
+                        if os.path.exists(temp_audio_path):
+                            os.unlink(temp_audio_path)
+                
+                # Show existing pronunciation if available
+                if has_pronunciation(current_card, 'back'):
+                    if not audio_back:  # Only show if not currently recording
+                        st.info("Existing recording:")
+                        # Load the audio from the media directory
+                        deck_dir = Path(selected_deck['deck_dir'])
+                        media_path = current_card['backContent']['pronunciation']['content']
+                        audio_file_path = deck_dir / media_path
+                        if audio_file_path.exists():
+                            with open(audio_file_path, 'rb') as f:
+                                st.audio(f.read())
+                    
+                    # Delete button for existing recording
+                    if st.button("🗑️ Delete Back Recording", key=f"delete_back_{current_card['id']}"):
+                        # Remove pronunciation from deck data
+                        deck_storage = DeckStorage()
+                        deck_data = deck_storage.get_deck_data(selected_deck['deck_dir'])
+                        
+                        # Find and update the flashcard
+                        for fc in deck_data['flashcards']:
+                            if fc['id'] == current_card['id']:
+                                if 'pronunciation' in fc['backContent']:
+                                    # Delete the media file
+                                    deck_dir = Path(selected_deck['deck_dir'])
+                                    media_path = fc['backContent']['pronunciation']['content']
+                                    audio_file_path = deck_dir / media_path
+                                    if audio_file_path.exists():
+                                        os.unlink(audio_file_path)
+                                    
+                                    # Remove from data
+                                    del fc['backContent']['pronunciation']
+                                break
+                        
+                        # Save updated deck data
+                        import json
+                        data_file = Path(selected_deck['deck_dir']) / "data.json"
+                        with open(data_file, 'w', encoding='utf-8') as f:
+                            json.dump(deck_data, f, indent=2, ensure_ascii=False)
+                        
+                        st.success("✅ Back recording deleted!")
+                        st.rerun()
     
     with tab2:
         st.markdown("### Individual Playback")
         
         st.info("Play back pronunciation audio for individual flashcards")
         
-        # Mock flashcard selector
-        flashcard_select = st.selectbox(
-            "Select Flashcard",
-            options=[f"Card {i+1}: {fc['front']} - {fc['back']}" for i, fc in enumerate(flashcards)],
-            help="Choose a flashcard to play pronunciation"
-        )
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("**Front Side Audio**")
-            if st.button("▶️ Play Front", key="play_front"):
-                st.info("🔊 Playing front side audio...")
-        
-        with col2:
-            st.markdown("**Back Side Audio**")
-            if st.button("▶️ Play Back", key="play_back"):
-                st.info("🔊 Playing back side audio...")
-    
-    with tab3:
-        st.markdown("### Bulk Translation")
-        
-        st.info("Generate text-to-speech audio for all flashcards in the deck at once")
-        
-        st.markdown("#### Settings")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            generate_front = st.checkbox(
-                "Generate for front side",
-                value=True,
-                help="Generate pronunciation for the front side of all flashcards"
+        if not flashcards:
+            st.warning("This deck has no flashcards yet.")
+        else:
+            # Flashcard selector
+            selected_idx = st.selectbox(
+                "Select Flashcard",
+                options=list(range(len(flashcards))),
+                format_func=lambda i: f"Card {i+1}: {flashcards[i].get('frontContent', {}).get('text', 'No text')} - {flashcards[i].get('backContent', {}).get('text', 'No text')}",
+                help="Choose a flashcard to play pronunciation"
             )
             
-            if generate_front:
-                front_voice = st.selectbox(
-                    "Front voice",
-                    options=["Female (Standard)", "Male (Standard)", "Female (Wavenet)", "Male (Wavenet)"],
-                    help="Select the voice for front side audio"
-                )
-        
-        with col2:
-            generate_back = st.checkbox(
-                "Generate for back side",
-                value=True,
-                help="Generate pronunciation for the back side of all flashcards"
-            )
+            selected_card = flashcards[selected_idx]
             
-            if generate_back:
-                back_voice = st.selectbox(
-                    "Back voice",
-                    options=["Female (Standard)", "Male (Standard)", "Female (Wavenet)", "Male (Wavenet)"],
-                    help="Select the voice for back side audio"
-                )
-        
-        st.markdown("---")
-        
-        audio_quality = st.select_slider(
-            "Audio Quality",
-            options=["Low", "Medium", "High", "Very High"],
-            value="High",
-            help="Higher quality audio files are larger"
-        )
-        
-        st.markdown("---")
-        
-        if st.button("� Generate Pronunciation for All Flashcards", type="primary", use_container_width=True):
-            if not generate_front and not generate_back:
-                st.error("❌ Please select at least one side to generate pronunciation")
-            else:
-                with st.spinner("Generating pronunciation audio..."):
-                    progress_bar = st.progress(0)
-                    status_text = st.empty()
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Front Side Audio**")
+                if has_pronunciation(selected_card, 'front'):
+                    # Load the audio from the media directory
+                    deck_dir = Path(selected_deck['deck_dir'])
+                    media_path = selected_card['frontContent']['pronunciation']['content']
+                    audio_file_path = deck_dir / media_path
+                    if audio_file_path.exists():
+                        with open(audio_file_path, 'rb') as f:
+                            st.audio(f.read())
+                    else:
+                        st.warning("Audio file not found")
                     
-                    # Mock generation
-                    for idx, card in enumerate(flashcards):
-                        progress = (idx + 1) / len(flashcards)
-                        progress_bar.progress(progress)
-                        status_text.text(f"Generating audio {idx + 1}/{len(flashcards)}: {card['front']}...")
+                    if st.button("🗑️ Delete", key=f"playback_delete_front_{selected_card['id']}"):
+                        # Remove pronunciation from deck data
+                        deck_storage = DeckStorage()
+                        deck_data = deck_storage.get_deck_data(selected_deck['deck_dir'])
+                        
+                        # Find and update the flashcard
+                        for fc in deck_data['flashcards']:
+                            if fc['id'] == selected_card['id']:
+                                if 'pronunciation' in fc['frontContent']:
+                                    # Delete the media file
+                                    media_path = fc['frontContent']['pronunciation']['content']
+                                    audio_file_path = deck_dir / media_path
+                                    if audio_file_path.exists():
+                                        os.unlink(audio_file_path)
+                                    
+                                    # Remove from data
+                                    del fc['frontContent']['pronunciation']
+                                break
+                        
+                        # Save updated deck data
+                        import json
+                        data_file = Path(selected_deck['deck_dir']) / "data.json"
+                        with open(data_file, 'w', encoding='utf-8') as f:
+                            json.dump(deck_data, f, indent=2, ensure_ascii=False)
+                        
+                        st.success("✅ Front recording deleted!")
+                        st.rerun()
+                else:
+                    st.warning("No recording available for front side")
+            
+            with col2:
+                st.markdown("**Back Side Audio**")
+                if has_pronunciation(selected_card, 'back'):
+                    # Load the audio from the media directory
+                    deck_dir = Path(selected_deck['deck_dir'])
+                    media_path = selected_card['backContent']['pronunciation']['content']
+                    audio_file_path = deck_dir / media_path
+                    if audio_file_path.exists():
+                        with open(audio_file_path, 'rb') as f:
+                            st.audio(f.read())
+                    else:
+                        st.warning("Audio file not found")
                     
-                    progress_bar.progress(1.0)
-                    status_text.text("")
-                    
-                    st.success(f"✅ Successfully generated pronunciation for {len(flashcards)} flashcards!")
-                    st.balloons()
+                    if st.button("🗑️ Delete", key=f"playback_delete_back_{selected_card['id']}"):
+                        # Remove pronunciation from deck data
+                        deck_storage = DeckStorage()
+                        deck_data = deck_storage.get_deck_data(selected_deck['deck_dir'])
+                        
+                        # Find and update the flashcard
+                        for fc in deck_data['flashcards']:
+                            if fc['id'] == selected_card['id']:
+                                if 'pronunciation' in fc['backContent']:
+                                    # Delete the media file
+                                    media_path = fc['backContent']['pronunciation']['content']
+                                    audio_file_path = deck_dir / media_path
+                                    if audio_file_path.exists():
+                                        os.unlink(audio_file_path)
+                                    
+                                    # Remove from data
+                                    del fc['backContent']['pronunciation']
+                                break
+                        
+                        # Save updated deck data
+                        import json
+                        data_file = Path(selected_deck['deck_dir']) / "data.json"
+                        with open(data_file, 'w', encoding='utf-8') as f:
+                            json.dump(deck_data, f, indent=2, ensure_ascii=False)
+                        
+                        st.success("✅ Back recording deleted!")
+                        st.rerun()
+                else:
+                    st.warning("No recording available for back side")
 
 else:
     st.info("👆 Please select a deck to add pronunciation")
 
 st.markdown("---")
-st.caption("💡 Tip: You can use Google's text-to-speech or record your own pronunciation for more natural audio")
-
-
-st.markdown("---")
-st.caption("💡 Tip: You can use Google's text-to-speech or record your own pronunciation for more natural audio")
+st.caption("💡 Tip: Recordings are automatically saved when you finish recording. Use the delete button to remove unwanted recordings.")

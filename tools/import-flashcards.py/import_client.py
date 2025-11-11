@@ -1,4 +1,5 @@
 import json
+import os
 from shared.api_client.openapi_client.models.flashcard_content_text_dto import FlashcardContentTextDto
 from shared.api_client.openapi_client import Configuration
 from shared.api_client.openapi_client.api_client import ApiClient
@@ -357,8 +358,6 @@ def upload_local_deck(deck_metadata):
     Returns:
         The created deck object from the server
     """
-    import os
-    
     # Handle both metadata formats
     if isinstance(deck_metadata, str):
         # If just a string path, convert to dict
@@ -382,27 +381,10 @@ def upload_local_deck(deck_metadata):
         front_content = flashcard['frontContent']
         back_content = flashcard['backContent']
         
-        # Determine if this flashcard has media files (pronunciation, images, audio, etc.)
+        # Determine if this flashcard has media files (images, audio, video - NOT pronunciation)
+        # Pronunciation will be uploaded separately via /text-content/{id}/upload-pronunciation
         has_media = False
         media_files = []
-        
-        # Check for pronunciation audio in front content
-        if 'pronunciation' in front_content and 'content' in front_content['pronunciation']:
-            has_media = True
-            media_path = os.path.join(deck_dir, front_content['pronunciation']['content'])
-            if os.path.exists(media_path):
-                media_files.append(media_path)
-            else:
-                print(f"Warning: Pronunciation file not found: {media_path}")
-        
-        # Check for pronunciation audio in back content
-        if 'pronunciation' in back_content and 'content' in back_content['pronunciation']:
-            has_media = True
-            media_path = os.path.join(deck_dir, back_content['pronunciation']['content'])
-            if os.path.exists(media_path):
-                media_files.append(media_path)
-            else:
-                print(f"Warning: Pronunciation file not found: {media_path}")
         
         # Check if content type is non-text (image, audio, video)
         front_type = front_content.get('type', 'text')
@@ -457,7 +439,7 @@ def upload_local_deck(deck_metadata):
         if has_media and media_files:
             # Use POST /flashcard/rich for flashcards with media files
             # This includes pronunciation audio, images, videos, etc.
-            create_flashcard(server_deck, flashcard_dto, media_files)
+            server_flashcard = create_flashcard(server_deck, flashcard_dto, media_files)
             print(f"Uploaded rich flashcard {flashcard_dto['id']} with {len(media_files)} media file(s)")
         else:
             # Use POST /flashcard for simple text-only flashcards
@@ -472,12 +454,63 @@ def upload_local_deck(deck_metadata):
                 if response.status_code != 200:
                     raise Exception(f"Failed to create flashcard: {response.text}")
                 
-                flashcard_response = response.json()
+                server_flashcard = response.json()
                 print(f"Uploaded text flashcard: {front_content.get('text', '')} | {back_content.get('text', '')}")
             else:
                 # Fallback to rich endpoint even without media files for non-text types
-                create_flashcard(server_deck, flashcard_dto, [])
+                server_flashcard = create_flashcard(server_deck, flashcard_dto, [])
                 print(f"Uploaded rich flashcard {flashcard_dto['id']} (no media files)")
+        
+        # Upload pronunciation audio separately using /text-content/{id}/upload-pronunciation
+        # Check front content for pronunciation
+        if 'pronunciation' in front_content and 'content' in front_content['pronunciation']:
+            pronunciation_path = os.path.join(deck_dir, front_content['pronunciation']['content'])
+            if os.path.exists(pronunciation_path):
+                # Get the text content ID from the server response
+                front_content_id = server_flashcard.get('frontContent', {}).get('id')
+                if front_content_id:
+                    _upload_pronunciation(front_content_id, pronunciation_path)
+                    print(f"  Uploaded front pronunciation for flashcard {flashcard_dto['id']}")
+                else:
+                    print(f"Warning: No front content ID found in server response for flashcard {flashcard_dto['id']}")
+            else:
+                print(f"Warning: Pronunciation file not found: {pronunciation_path}")
+        
+        # Check back content for pronunciation
+        if 'pronunciation' in back_content and 'content' in back_content['pronunciation']:
+            pronunciation_path = os.path.join(deck_dir, back_content['pronunciation']['content'])
+            if os.path.exists(pronunciation_path):
+                # Get the text content ID from the server response
+                back_content_id = server_flashcard.get('backContent', {}).get('id')
+                if back_content_id:
+                    _upload_pronunciation(back_content_id, pronunciation_path)
+                    print(f"  Uploaded back pronunciation for flashcard {flashcard_dto['id']}")
+                else:
+                    print(f"Warning: No back content ID found in server response for flashcard {flashcard_dto['id']}")
+            else:
+                print(f"Warning: Pronunciation file not found: {pronunciation_path}")
     
     print(f"✅ Successfully uploaded deck '{deck_data['name']}' with {len(deck_data['flashcards'])} flashcards")
     return server_deck
+
+
+def _upload_pronunciation(text_content_id, audio_file_path):
+    """
+    Helper function to upload pronunciation audio for a text content.
+    
+    Args:
+        text_content_id: The ID of the text content
+        audio_file_path: Path to the audio file
+    """
+    backend_url = get_backend_url()
+    
+    with open(audio_file_path, 'rb') as audio_file:
+        files = {'file': (os.path.basename(audio_file_path), audio_file, 'application/octet-stream')}
+        response = requests.post(
+            f"{backend_url}/text-content/{text_content_id}/upload-pronunciation",
+            files=files,
+            cookies=_get_request_cookies()
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"Failed to upload pronunciation: {response.text}")
