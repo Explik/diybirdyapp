@@ -1,8 +1,6 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.persistence.command.AddAudioForTextCommand;
-import com.explik.diybirdyapp.persistence.command.FileContentCommandResult;
-import com.explik.diybirdyapp.persistence.command.SyncCommandHandler;
+import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +13,23 @@ public class TextContentService {
     BinaryStorageService binaryStorageService;
 
     @Autowired
-    SyncCommandHandler<AddAudioForTextCommand, FileContentCommandResult> commandHandler;
+    SyncCommandHandler<AddAudioToTextContentCommand, FileContentCommandResult> addAudioCommandHandler;
+
+    @Autowired
+    SyncCommandHandler<FetchAudioForTextContentCommand, FileContentCommandResult> fetchCommandHandler;
+
+    @Autowired
+    SyncCommandHandler<GenerateAudioForTextContentCommand, FileContentCommandResult> generateCommandHandler;
+
+    public FileContentCommandResult getPronunciation(String id) {
+        var fetchExistingCommand = new FetchAudioForTextContentCommand(id);
+        var existingResult = fetchCommandHandler.handle(fetchExistingCommand);
+        if (existingResult != null)
+            return existingResult;
+
+        var generateCommand = new GenerateAudioForTextContentCommand(id);
+        return generateCommandHandler.handle(generateCommand);
+    }
 
     public void uploadPronunciation(String id, String originalFileName, byte[] fileData) {
         var fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
@@ -24,8 +38,8 @@ public class TextContentService {
         binaryStorageService.set(newFileName, fileData);
 
         try {
-            var command = new AddAudioForTextCommand(id, newFileName);
-            commandHandler.handle(command);
+            var command = new AddAudioToTextContentCommand(id, newFileName);
+            addAudioCommandHandler.handle(command);
         }
         catch (Exception e) {
             binaryStorageService.delete(newFileName);

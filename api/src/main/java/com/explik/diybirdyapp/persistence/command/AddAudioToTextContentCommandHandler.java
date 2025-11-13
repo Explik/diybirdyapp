@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class AddAudioForTextCommandHandler implements SyncCommandHandler<AddAudioForTextCommand, FileContentCommandResult> {
+public class AddAudioToTextContentCommandHandler implements SyncCommandHandler<AddAudioToTextContentCommand, FileContentCommandResult> {
     @Autowired
     private GraphTraversalSource traversalSource;
 
@@ -21,7 +21,7 @@ public class AddAudioForTextCommandHandler implements SyncCommandHandler<AddAudi
     private PronunciationVertexFactory pronunciationVertexFactory;
 
     @Override
-    public FileContentCommandResult handle(AddAudioForTextCommand command) {
+    public FileContentCommandResult handle(AddAudioToTextContentCommand command) {
         var textContentId = command.getTextId();
         if (textContentId == null || textContentId.isEmpty())
             throw new RuntimeException("Text ID is empty");
@@ -36,7 +36,7 @@ public class AddAudioForTextCommandHandler implements SyncCommandHandler<AddAudi
 
         var audioVertex = audioContentVertexFactory.create(
                 traversalSource,
-                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), textContentId, textContentVertex.getLanguage()));
+                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), audioUrl, textContentVertex.getLanguage()));
 
         pronunciationVertexFactory.create(
                 traversalSource,
