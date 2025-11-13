@@ -13,6 +13,12 @@ export class AudioPlayService {
     play(audioUrl: string) {
         this.audioUrl = audioUrl;
         this.audio = new Audio(this.baseUrl + "/" + audioUrl);
+
+        this.audio.addEventListener('error', (e) => {
+            if (!this.audio) return; 
+            console.error('Audio error', this.audio.error);
+        });
+
         this.audio.play();
     }
 
