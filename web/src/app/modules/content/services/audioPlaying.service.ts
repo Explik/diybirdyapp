@@ -12,7 +12,7 @@ export class AudioPlayingService {
     
     constructor(private dataService: FlashcardService) { }
 
-    startPlayingReviewFlashcard(flashcardId: string, flashcardSide: "left"|"right"): Promise<void> { 
+    startPlayingTextPronounciation(textContentId: string): Promise<void> { 
         return new Promise((resolve, reject) => {
             if (this.currentAudioElement) {
                 this.stopPlaying();
@@ -20,7 +20,7 @@ export class AudioPlayingService {
                 return;
             }
 
-            this.dataService.pronounceFlashcardContent(flashcardId, flashcardSide).subscribe(blob => {
+            this.dataService.fetchTextPronounciation(textContentId).subscribe(blob => {
                 const url = URL.createObjectURL(blob);
                 this.currentAudioElement = new Audio(url);
                 this.currentAudioElement.onended = () => {

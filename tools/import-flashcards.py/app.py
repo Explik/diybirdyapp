@@ -43,10 +43,8 @@ This application helps you create flashcard decks from various sources with auto
 - Preserve card formatting and media
 
 **🔊 Add pronunciation to flashcards**
-- Individual recording for each flashcard
-- Individual automatic generation using text-to-speech
+- Manual recording for each flashcard
 - Individual playback of pronunciation audio
-- Bulk translation for all flashcards in a deck
 
 ### Getting Started
 

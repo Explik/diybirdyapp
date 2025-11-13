@@ -97,15 +97,4 @@ public class FlashcardController {
     public void delete(@PathVariable("id") String id) {
         service.delete(id);
     }
-
-    @PostMapping("/flashcard/{id}/text-to-speech/{side}")
-    public ResponseEntity<byte[]> generateTextToSpeech(@PathVariable("id") String id, @PathVariable("side") String side) {
-        var result = service.generateTextToSpeech(id, side);
-
-        return ResponseEntity
-                .status(HttpStatus.SC_PARTIAL_CONTENT)
-                .contentType(MediaType.parseMediaType(result.getContentType()))
-                .header("Accept-Ranges", "bytes")
-                .body(Arrays.copyOfRange(result.getContent(), 0, result.getContent().length));
-    }
 }

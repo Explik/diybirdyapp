@@ -13,6 +13,7 @@ import { ExerciseSessionDto, FlashcardDeckDto, FlashcardDto, FlashcardLanguageDt
 export class FlashcardService {
   private exerciseSessionBaseUrl = `${environment.apiUrl}/exercise-session`;
   private flashcardBaseUrl = `${environment.apiUrl}/flashcard`;
+  private textContentBaseUrl = `${environment.apiUrl}/text-content`;
   private flashcardDeckBaseUrl = `${environment.apiUrl}/flashcard-deck`;
   private languageBaseUrl = `${environment.apiUrl}/language`;
 
@@ -54,8 +55,8 @@ export class FlashcardService {
     }
   }
 
-  pronounceFlashcardContent(id: string, side: 'left' | 'right'): Observable<Blob> {
-    return this.http.post(`${this.flashcardBaseUrl}/${id}/text-to-speech/${side}`, {}, { responseType: 'blob' });
+  fetchTextPronounciation(id: string): Observable<Blob> {
+    return this.http.get(`${this.textContentBaseUrl}/${id}/pronunciation`, { responseType: 'blob' });
   }
 
   getFlashcards(deckId: string | null): Observable<EditFlashcardImpl[]> {

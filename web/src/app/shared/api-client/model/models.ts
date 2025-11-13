@@ -1,4 +1,5 @@
 export * from './arrange-text-option';
+export * from './configuration-dto';
 export * from './exercise-content-audio-dto';
 export * from './exercise-content-dto';
 export * from './exercise-content-flashcard-dto';

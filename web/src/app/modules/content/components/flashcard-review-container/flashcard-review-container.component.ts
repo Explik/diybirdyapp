@@ -40,13 +40,15 @@ export class FlashcardReviewContainerComponent {
   }
 
   playAudio(side: 'left' | 'right') {
-
-    console.log(`Request to play audio for ${side} side`);
+    if (!this.currentFlashcard) 
+      return;
     
-    if (!this.currentFlashcard) return;
+    const content = (side === 'left') ? this.currentFlashcard.frontContent : this.currentFlashcard.backContent;
+    const contentType = (side === 'left') ? this.currentFlashcard.leftContentType : this.currentFlashcard.rightContentType;
+    if (contentType !== 'text')
+      throw new Error('Audio can only be played for text content');
 
-    this.service.startPlayingReviewFlashcard(this.currentFlashcard.id, side);
+    this.service.startPlayingTextPronounciation(content.id);
     console.log(`Playing audio for ${side} side of flashcard ID ${this.currentFlashcard.id}`);
-    
   }
 }
