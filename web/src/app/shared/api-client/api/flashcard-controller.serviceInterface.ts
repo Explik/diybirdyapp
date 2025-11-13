@@ -48,14 +48,6 @@ export interface FlashcardControllerServiceInterface {
      * 
      * 
      * @param id 
-     * @param side 
-     */
-    generateTextToSpeech(id: string, side: string, extraHttpRequestParams?: any): Observable<Array<string>>;
-
-    /**
-     * 
-     * 
-     * @param id 
      */
     get1(id: string, extraHttpRequestParams?: any): Observable<FlashcardDto>;
 

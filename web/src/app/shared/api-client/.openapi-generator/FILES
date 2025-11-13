@@ -4,6 +4,8 @@ api.module.ts
 api/api.ts
 api/authentication-controller.service.ts
 api/authentication-controller.serviceInterface.ts
+api/configuration-controller.service.ts
+api/configuration-controller.serviceInterface.ts
 api/exercise-controller.service.ts
 api/exercise-controller.serviceInterface.ts
 api/exercise-session-controller.service.ts
@@ -18,6 +20,8 @@ api/language-controller.service.ts
 api/language-controller.serviceInterface.ts
 api/root-controller.service.ts
 api/root-controller.serviceInterface.ts
+api/text-content-controller.service.ts
+api/text-content-controller.serviceInterface.ts
 api/vocabulary-controller.service.ts
 api/vocabulary-controller.serviceInterface.ts
 configuration.ts
@@ -25,6 +29,7 @@ encoder.ts
 git_push.sh
 index.ts
 model/arrange-text-option.ts
+model/configuration-dto.ts
 model/exercise-content-audio-dto.ts
 model/exercise-content-dto.ts
 model/exercise-content-flashcard-dto.ts
