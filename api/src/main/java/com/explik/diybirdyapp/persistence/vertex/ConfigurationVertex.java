@@ -18,7 +18,7 @@ public class ConfigurationVertex extends AbstractVertex {
     public static final String EDGE_LANGUAGE = "has_language";
 
     public String getId() {
-        return getPropertyAsString(PROPERTY_ID);
+        return super.getPropertyAsString(PROPERTY_ID);
     }
 
     public void setId(String id) {
@@ -26,41 +26,38 @@ public class ConfigurationVertex extends AbstractVertex {
     }
 
     public String getType() {
-        return getPropertyAsString(PROPERTY_TYPE);
+        return super.getPropertyAsString(PROPERTY_TYPE);
     }
 
     public void setType(String type) {
         super.setProperty(PROPERTY_TYPE, type);
     }
 
-    @Override
-    public <T> T getProperty(String key) {
+    public <T> T getPropertyValue(String key) {
         if (key.equals(PROPERTY_ID))
             throw new IllegalArgumentException("Use getId() to get the id property");
         if (key.equals(PROPERTY_TYPE))
             throw new IllegalArgumentException("Use getType() to get the type property");
 
-        return super.getProperty(key);
+        return getProperty(key);
     }
 
-    @Override
-    public <T> T getProperty(String key, T defaultValue) {
+    public <T> T getPropertyValue(String key, T defaultValue) {
         if (key.equals(PROPERTY_ID))
             throw new IllegalArgumentException("Use getId() to get the id property");
         if (key.equals(PROPERTY_TYPE))
             throw new IllegalArgumentException("Use getType() to get the type property");
 
-        return super.getProperty(key, defaultValue);
+        return getProperty(key, defaultValue);
     }
 
-    @Override
-    public void setProperty(String key, Object value) {
+    public void setPropertyValue(String key, Object value) {
         if (key.equals(PROPERTY_ID))
             throw new IllegalArgumentException("Use setId() to set the id property");
         if (key.equals(PROPERTY_TYPE))
             throw new IllegalArgumentException("Use setType() to set the type property");
 
-        super.setProperty(key, value);
+        setProperty(key, value);
     }
 
     public List<LanguageVertex> getLanguages() {

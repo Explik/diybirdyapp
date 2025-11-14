@@ -35,8 +35,8 @@ public class VoiceRepositoryImpl implements VoiceRepository {
         model.setLanguageId(langVertex.getId());
         model.setLanguageName(langVertex.getName());
         model.setVoiceId(configVertex.getId());
-        model.setVoiceName(configVertex.getProperty("voiceName"));
-        model.setVoiceLanguageCode(configVertex.getProperty("languageCode"));
+        model.setVoiceName(configVertex.getPropertyValue("voiceName"));
+        model.setVoiceLanguageCode(configVertex.getPropertyValue("languageCode"));
         return model;
     }
 }

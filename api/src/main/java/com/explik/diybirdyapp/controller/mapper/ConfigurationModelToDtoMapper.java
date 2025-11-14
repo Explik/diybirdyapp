@@ -13,30 +13,21 @@ public class ConfigurationModelToDtoMapper implements GenericMapper<Configuratio
 
     public ConfigurationModelToDtoMapper() {
         modelMapper = new ModelMapper();
-        modelMapper.addConverter(configurationConverter);
     }
 
     @Override
-    public ConfigurationDto map(ConfigurationModel configurationModel) {
-        return modelMapper.map(configurationModel, ConfigurationDto.class);
+    public ConfigurationDto map(ConfigurationModel source) {
+        if (source == null)
+            return null;
+        if (source instanceof ConfigurationMicrosoftTextToSpeechModel)
+            return modelMapper.map(source, ConfigurationMicrosoftTextToSpeechDto.class);
+        if (source instanceof ConfigurationGoogleTextToSpeechModel)
+            return modelMapper.map(source, ConfigurationGoogleTextToSpeechDto.class);
+        if (source instanceof ConfigurationGoogleSpeechToTextModel)
+            return modelMapper.map(source, ConfigurationGoogleSpeechToTextDto.class);
+        if (source instanceof ConfigurationGoogleTranslateModel)
+            return modelMapper.map(source, ConfigurationGoogleTranslateDto.class);
+
+        throw new RuntimeException("Unsupported configuration type: " + source.getClass().getName());
     }
-
-    Converter<ConfigurationModel, ConfigurationDto> configurationConverter = new AbstractConverter<ConfigurationModel, ConfigurationDto>() {
-        @Override
-        protected ConfigurationDto convert(ConfigurationModel source) {
-            if (source == null)
-                return null;
-            if (source instanceof ConfigurationMicrosoftTextToSpeechModel)
-                return modelMapper.map(source, ConfigurationMicrosoftTextToSpeechDto.class);
-            if (source instanceof ConfigurationGoogleTextToSpeechModel)
-                return modelMapper.map(source, ConfigurationGoogleTextToSpeechDto.class);
-            if (source instanceof ConfigurationGoogleSpeechToTextModel)
-                return modelMapper.map(source, ConfigurationGoogleSpeechToTextDto.class);
-            if (source instanceof ConfigurationGoogleTranslateModel)
-                return modelMapper.map(source, ConfigurationGoogleTranslateDto.class);
-
-            throw new RuntimeException("Unsupported configuration type: " + source.getClass().getName());
-        }
-    };
-
 }

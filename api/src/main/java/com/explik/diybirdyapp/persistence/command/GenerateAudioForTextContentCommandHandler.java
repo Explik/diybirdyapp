@@ -56,8 +56,8 @@ public class GenerateAudioForTextContentCommandHandler implements SyncCommandHan
         var textToSpeechConfig = textToSpeechConfigs.getFirst();
         return new TextToSpeechService.Text(
                 textContentVertex.getValue(),
-                textToSpeechConfig.getProperty("languageCode"),
-                textToSpeechConfig.getProperty("voiceName"),
+                textToSpeechConfig.getPropertyValue("languageCode"),
+                textToSpeechConfig.getPropertyValue("voiceName"),
                 "LINEAR16"
         );
     }

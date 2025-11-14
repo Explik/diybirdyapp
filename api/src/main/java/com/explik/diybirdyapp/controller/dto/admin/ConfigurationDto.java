@@ -21,7 +21,10 @@ public class ConfigurationDto {
     private String id;
     private String type;
     private String languageId;
-    private String languageCode;
+
+    public ConfigurationDto(String type) {
+        this.type = type;
+    }
 
     public String getId() {
         return id;
@@ -45,13 +48,5 @@ public class ConfigurationDto {
 
     public void setLanguageId(String languageId) {
         this.languageId = languageId;
-    }
-
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
     }
 }

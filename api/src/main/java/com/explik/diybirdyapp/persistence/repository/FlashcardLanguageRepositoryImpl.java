@@ -1,5 +1,7 @@
 package com.explik.diybirdyapp.persistence.repository;
 
+import com.explik.diybirdyapp.ConfigurationTypes;
+import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTextToSpeechModel;
 import com.explik.diybirdyapp.model.admin.ConfigurationModel;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
@@ -115,13 +117,37 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository {
     }
 
     private static ConfigurationModel createConfigModel(String languageId, ConfigurationVertex vertex) {
-        // TODO move existing VoiceConfigurationModel mapping here
+        if (vertex.getType().equals(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH))
+            return createGoogleTextToSpeechConfigModel(languageId, vertex);
+
         // TODO SpeechToTextConfigurationModel mapping here
         // TODO TextToSpeechConfigurationModel mapping here
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
+    private static ConfigurationGoogleTextToSpeechModel createGoogleTextToSpeechConfigModel(String languageId, ConfigurationVertex vertex) {
+        var model = new ConfigurationGoogleTextToSpeechModel();
+        model.setId(vertex.getId());
+        model.setLanguageId(languageId);
+        model.setLanguageCode(vertex.getPropertyValue("languageCode"));
+        model.setVoiceName(vertex.getPropertyValue("voiceName"));
+        return model;
+    }
+
     private static void updateConfigVertex(ConfigurationVertex vertex, ConfigurationModel model) {
+        if (model instanceof ConfigurationGoogleTextToSpeechModel googleTextToSpeechModel) {
+            updateGoogleTextToSpeechConfigVertex(vertex, googleTextToSpeechModel);
+            return;
+        }
+
+        // TODO SpeechToTextConfigurationModel mapping here
+        // TODO TextToSpeechConfigurationModel mapping here
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    private static void updateGoogleTextToSpeechConfigVertex(ConfigurationVertex vertex, ConfigurationGoogleTextToSpeechModel model) {
+        vertex.setType(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
+        vertex.setPropertyValue("languageCode", model.getLanguageCode());
+        vertex.setPropertyValue("voiceName", model.getVoiceName());
     }
 }

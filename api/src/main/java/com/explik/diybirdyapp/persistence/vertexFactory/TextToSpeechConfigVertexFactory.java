@@ -14,8 +14,8 @@ public class TextToSpeechConfigVertexFactory implements VertexFactory<Configurat
         var vertex = ConfigurationVertex.create(traversalSource);
         vertex.setId(o.id);
         vertex.setType(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
-        vertex.setProperty("languageCode", o.languageCode);
-        vertex.setProperty("voiceName", o.voiceName);
+        vertex.setPropertyValue("languageCode", o.languageCode);
+        vertex.setPropertyValue("voiceName", o.voiceName);
         vertex.addLanguage(o.languageVertex);
 
         return vertex;
