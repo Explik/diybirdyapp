@@ -1,9 +1,6 @@
 export * from './authentication-controller.service';
 import { AuthenticationControllerService } from './authentication-controller.service';
 export * from './authentication-controller.serviceInterface';
-export * from './configuration-controller.service';
-import { ConfigurationControllerService } from './configuration-controller.service';
-export * from './configuration-controller.serviceInterface';
 export * from './exercise-controller.service';
 import { ExerciseControllerService } from './exercise-controller.service';
 export * from './exercise-controller.serviceInterface';
@@ -31,4 +28,4 @@ export * from './text-content-controller.serviceInterface';
 export * from './vocabulary-controller.service';
 import { VocabularyControllerService } from './vocabulary-controller.service';
 export * from './vocabulary-controller.serviceInterface';
-export const APIS = [AuthenticationControllerService, ConfigurationControllerService, ExerciseControllerService, ExerciseSessionControllerService, FileControllerService, FlashcardControllerService, FlashcardDeckControllerService, LanguageControllerService, RootControllerService, TextContentControllerService, VocabularyControllerService];
+export const APIS = [AuthenticationControllerService, ExerciseControllerService, ExerciseSessionControllerService, FileControllerService, FlashcardControllerService, FlashcardDeckControllerService, LanguageControllerService, RootControllerService, TextContentControllerService, VocabularyControllerService];

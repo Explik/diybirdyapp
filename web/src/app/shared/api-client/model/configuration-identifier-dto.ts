@@ -9,9 +9,8 @@
  */
 
 
-export interface ConfigurationDto { 
+export interface ConfigurationIdentifierDto { 
     id?: string;
     type?: string;
-    languageId?: string;
 }
 
