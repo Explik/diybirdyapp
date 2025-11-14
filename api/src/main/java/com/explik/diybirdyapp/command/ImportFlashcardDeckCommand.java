@@ -6,7 +6,7 @@ import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
 import com.explik.diybirdyapp.persistence.repository.FlashcardRepository;
-import com.explik.diybirdyapp.persistence.repository.FlashcardLanguageRepository;
+import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class ImportFlashcardDeckCommand implements Runnable {
     public FlashcardRepository flashcardCardRepository;
 
     @Autowired
-    public FlashcardLanguageRepository languageRepository;
+    public LanguageRepository languageRepository;
 
     @CommandLine.Parameters(index = "0", description = "Path to the file to import")
     public File file;

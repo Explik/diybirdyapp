@@ -1,16 +1,15 @@
 package com.explik.diybirdyapp.persistence.command;
 
+import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextToSpeechConfigVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class GenerateAudioForTextContentCommandHandler implements SyncCommandHandler<GenerateAudioForTextContentCommand, FileContentCommandResult>{
@@ -48,16 +47,17 @@ public class GenerateAudioForTextContentCommandHandler implements SyncCommandHan
     }
 
     private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
-        var languageId = textContentVertex.getLanguage().getId();
-        var textToSpeechConfigs = TextToSpeechConfigVertex.findByLanguageId(traversalSource, languageId);
+        var languageVertex = textContentVertex.getLanguage();
+
+        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
         if (textToSpeechConfigs.isEmpty())
             return null;
 
         var textToSpeechConfig = textToSpeechConfigs.getFirst();
         return new TextToSpeechService.Text(
                 textContentVertex.getValue(),
-                textToSpeechConfig.getLanguageCode(),
-                textToSpeechConfig.getVoiceName(),
+                textToSpeechConfig.getProperty("languageCode"),
+                textToSpeechConfig.getProperty("voiceName"),
                 "LINEAR16"
         );
     }

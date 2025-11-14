@@ -19,7 +19,7 @@ public class LanguageRepositoryUnitTests {
     private static final String PRE_EXISTENT_ABBREVIATION = "pre-existent-abbreviation";
 
     @Autowired
-    FlashcardLanguageRepository repository;
+    LanguageRepository repository;
 
     @Test
     void givenUniqueLanguage_whenAdd_thenReturnLanguage() {

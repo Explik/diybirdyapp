@@ -3,7 +3,7 @@ package com.explik.diybirdyapp;
 import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
-import com.explik.diybirdyapp.persistence.repository.FlashcardLanguageRepository;
+import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ public class TestDataService {
     GraphTraversalSource traversalSource;
 
     @Autowired
-    FlashcardLanguageRepository languageRepository;
+    LanguageRepository languageRepository;
 
     @Autowired
     FlashcardDeckRepository flashcardDeckRepository;

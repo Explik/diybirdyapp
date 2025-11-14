@@ -1,6 +1,8 @@
 package com.explik.diybirdyapp.persistence.repository;
 
+import com.explik.diybirdyapp.model.admin.ConfigurationModel;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class FlashcardLanguageRepositoryImpl implements FlashcardLanguageRepository {
+public class FlashcardLanguageRepositoryImpl implements LanguageRepository {
     private final GraphTraversalSource traversalSource;
 
     public FlashcardLanguageRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
@@ -32,7 +34,7 @@ public class FlashcardLanguageRepositoryImpl implements FlashcardLanguageReposit
         vertex.setName(language.getName());
         vertex.setAbbreviation(language.getAbbreviation());
 
-        return create(vertex);
+        return createLanguageModel(vertex);
     }
 
     @Override
@@ -41,14 +43,85 @@ public class FlashcardLanguageRepositoryImpl implements FlashcardLanguageReposit
 
         return vertices
             .stream()
-            .map(FlashcardLanguageRepositoryImpl::create)
+            .map(FlashcardLanguageRepositoryImpl::createLanguageModel)
             .toList();
     }
 
-    private static FlashcardLanguageModel create(LanguageVertex v) {
+    @Override
+    public List<ConfigurationModel> getLanguageConfigs(String languageId, String configurationType) {
+        var languageVertex = LanguageVertex.findById(traversalSource, languageId);
+        if (languageVertex == null)
+            throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
+
+        List<ConfigurationVertex> configurationVertices;
+        if (configurationType == null) {
+            configurationVertices = ConfigurationVertex.findByLanguage(languageVertex);
+        } else {
+            configurationVertices = ConfigurationVertex.findByLanguageAndType(languageVertex, configurationType);
+        }
+
+        return configurationVertices
+            .stream()
+            .map(v -> createConfigModel(languageId, v))
+            .toList();
+    }
+
+    @Override
+    public ConfigurationModel createLanguageConfig(String languageId, ConfigurationModel configModel) {
+        var languageVertex = LanguageVertex.findById(traversalSource, languageId);
+        if (languageVertex == null)
+            throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
+
+        var configurationVertex = ConfigurationVertex.create(traversalSource);
+        updateConfigVertex(configurationVertex, configModel);
+        configurationVertex.addLanguage(languageVertex);
+
+        return createConfigModel(languageId, configurationVertex);
+    }
+
+    @Override
+    public ConfigurationModel attachLanguageConfig(String languageId, String configId) {
+        var languageVertex = LanguageVertex.findById(traversalSource, languageId);
+        if (languageVertex == null)
+            throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
+
+        var configurationVertex = ConfigurationVertex.findById(traversalSource, configId);
+        if (configurationVertex == null)
+            throw new IllegalArgumentException("Configuration with id " + configId + " does not exist");
+
+        configurationVertex.addLanguage(languageVertex);
+
+        return createConfigModel(languageId, configurationVertex);
+    }
+
+    @Override
+    public void detachLanguageConfig(String languageId, String configId) {
+        var languageVertex = LanguageVertex.findById(traversalSource, languageId);
+        if (languageVertex == null)
+            throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
+
+        var configurationVertex = ConfigurationVertex.findById(traversalSource, configId);
+        if (configurationVertex == null)
+            throw new IllegalArgumentException("Configuration with id " + configId + " does not exist");
+
+        configurationVertex.removeLanguage(languageVertex);
+    }
+
+    private static FlashcardLanguageModel createLanguageModel(LanguageVertex v) {
         return new FlashcardLanguageModel(
             v.getId(),
             v.getAbbreviation(),
             v.getName());
+    }
+
+    private static ConfigurationModel createConfigModel(String languageId, ConfigurationVertex vertex) {
+        // TODO move existing VoiceConfigurationModel mapping here
+        // TODO SpeechToTextConfigurationModel mapping here
+        // TODO TextToSpeechConfigurationModel mapping here
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    private static void updateConfigVertex(ConfigurationVertex vertex, ConfigurationModel model) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }
