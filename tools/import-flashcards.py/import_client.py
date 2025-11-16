@@ -86,7 +86,7 @@ def get_language_by_name(name):
 
     return language
 
-def get_configurations(language_id):
+def get_configurations(language_id, type=None):
     """
     Get all configurations for a specific language.
     
@@ -97,7 +97,7 @@ def get_configurations(language_id):
         List of configuration objects
     """
     update_api_client_auth()  # Ensure API client has current session cookie
-    configurations = configuration_api.get_all3(language_id=language_id)
+    configurations = language_api.get_configs(language_id, type)
     return configurations
 
 def get_language_code(language_id):
@@ -111,7 +111,7 @@ def get_language_code(language_id):
     Returns:
         The language code (e.g., "en-US")
     """
-    configurations = get_configurations(language_id)
+    configurations = get_configurations(language_id, "google-translate")
     if not configurations:
         raise ValueError(f"No configuration found for language {language_id}")
     

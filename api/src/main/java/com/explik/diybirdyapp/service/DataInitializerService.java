@@ -70,6 +70,7 @@ public class DataInitializerService {
                 .withId("langVertex1")
                 .withName("Danish")
                 .withAbbreviation("DA")
+                .withGoogleTranslate("da-DK")
                 .withGoogleTextToSpeech("da-DK", "da-DK-Wavenet-A")
                 .build(traversalSource);
 
@@ -77,6 +78,7 @@ public class DataInitializerService {
                 .withId("langVertex2")
                 .withName("English")
                 .withAbbreviation("EN")
+                .withGoogleTranslate("en-US")
                 .withGoogleTextToSpeech("en-US", "en-US-Wavenet-A")
                 .build(traversalSource);
 
@@ -84,7 +86,8 @@ public class DataInitializerService {
                 .withId("langVertex3")
                 .withName("Chinese")
                 .withAbbreviation("ZH")
-                .withGoogleTextToSpeech("zh-CN", "cmn-CN-Chirp3-HD-Achird")
+                .withGoogleTranslate("zh-CN")
+                .withGoogleTextToSpeech("cmn-cn", "cmn-CN-Chirp3-HD-Achird")
                 .build(traversalSource);
     }
 

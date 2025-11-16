@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface LanguageRepository {
     FlashcardLanguageModel add(FlashcardLanguageModel language);
+    FlashcardLanguageModel getById(String languageId);
+    FlashcardLanguageModel update(FlashcardLanguageModel language);
     List<FlashcardLanguageModel> getAll();
 
     List<ConfigurationModel> getLanguageConfigs(String languageId, String configurationType);

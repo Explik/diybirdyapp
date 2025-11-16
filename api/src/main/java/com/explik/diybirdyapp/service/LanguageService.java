@@ -14,6 +14,18 @@ public class LanguageService {
     @Autowired
     LanguageRepository repository;
 
+    public FlashcardLanguageModel getById(String languageId) {
+        return repository.getById(languageId);
+    }
+
+    public FlashcardLanguageModel create(FlashcardLanguageModel languageModel) {
+        return repository.add(languageModel);
+    }
+
+    public FlashcardLanguageModel update(FlashcardLanguageModel languageModel) {
+        return repository.update(languageModel);
+    }
+
     public List<FlashcardLanguageModel> getAll() {
         return repository.getAll();
     }
