@@ -67,7 +67,7 @@ selected_config_type_key = st.selectbox(
 try:
     existing_configs = client.get_language_configs(selected_language['id'], selected_config_type_key)
     if existing_configs:
-        st.warning(f"⚠️ This language already has {len(existing_configs)} configuration(s) of type '{CONFIG_TYPES[selected_config_type_key]}'.")
+        st.warning(f"⚠️ This language already has {len(existing_configs)} configuration(s) of type '{CONFIG_TYPES[selected_config_type_key]}'. View [existing configurations](/Update_Config?languageId={selected_language['id']}&configType={selected_config_type_key}&autoLogin=true).")
 except Exception as e:
     st.error(f"Failed to check existing configurations: {str(e)}")
 
