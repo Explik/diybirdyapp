@@ -13,6 +13,10 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from login_utils import render_login_sidebar, require_login
 from shared.language_client import LanguageClient
 
+# Add current directory's parent to path to import config_viewer
+sys.path.append(str(Path(__file__).parent.parent))
+from config_viewer import render_config_viewer
+
 st.set_page_config(page_title="Update Language", page_icon="✏️", layout="wide")
 
 # Require login for this page
@@ -75,9 +79,7 @@ if languages:
             help="Short abbreviation for the language"
         )
         
-        col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 1])
-        with col_btn2:
-            submit_button = st.form_submit_button("Update Language", type="primary", use_container_width=True)
+        submit_button = st.form_submit_button("Update Language", type="primary")
         
         if submit_button:
             # Validate inputs
@@ -111,42 +113,8 @@ if languages:
     st.markdown("---")
     
     # Show current configurations for the selected language
-    with st.expander(f"⚙️ View Configurations for {selected_language['name']}", expanded=False):
-        with st.spinner("Loading configurations..."):
-            try:
-                configs = client.get_language_configs(selected_language['id'])
-                
-                if configs:
-                    st.success(f"Found {len(configs)} configuration(s)")
-                    
-                    for idx, config in enumerate(configs, 1):
-                        st.markdown(f"**Configuration {idx}**")
-                        
-                        config_col1, config_col2 = st.columns(2)
-                        
-                        with config_col1:
-                            st.write(f"**Type:** {config.get('type', 'N/A')}")
-                            st.write(f"**ID:** {config.get('id', 'N/A')}")
-                        
-                        with config_col2:
-                            # Display type-specific fields
-                            if config.get('type') == 'google-text-to-speech':
-                                st.write(f"**Language Code:** {config.get('languageCode', 'N/A')}")
-                                st.write(f"**Voice Name:** {config.get('voiceName', 'N/A')}")
-                            elif config.get('type') == 'microsoft-text-to-speech':
-                                st.write("**Microsoft TTS Configuration**")
-                            elif config.get('type') == 'google-speech-to-text':
-                                st.write("**Google STT Configuration**")
-                            elif config.get('type') == 'google-translate':
-                                st.write("**Google Translate Configuration**")
-                        
-                        if idx < len(configs):
-                            st.divider()
-                else:
-                    st.info("No configurations found for this language")
-                    
-            except Exception as e:
-                st.error(f"Failed to fetch configurations: {str(e)}")
+    st.subheader(f"Configurations for {selected_language['name']}")
+    render_config_viewer(client, selected_language['id'], "all", show_type_filter=True)
 
 else:
     st.warning("⚠️ No languages found in the backend.")

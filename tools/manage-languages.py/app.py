@@ -11,7 +11,8 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from login_utils import render_login_sidebar
-from shared.language_client import LanguageClient
+from shared.language_client import LanguageClient, CONFIG_TYPES
+from config_viewer import render_config_viewer
 
 # Configure page settings
 st.set_page_config(
@@ -57,7 +58,7 @@ if logged_in:
                     "ID": lang['id'],
                     "Name": lang['name'],
                     "Abbreviation": lang['abbreviation'],
-                    "EditLink": f"/Update_Language?language={lang['id']}"
+                    "EditLink": f"/Update_Language?languageId={lang['id']}"
                 } for lang in languages])
                 
                 st.dataframe(
@@ -69,7 +70,6 @@ if logged_in:
                     }
                 )
                 
-                st.success(f"Found {len(languages)} language(s)")
             else:
                 st.info("No languages found in the backend. Create a new language using the sidebar.")
                 
@@ -77,7 +77,30 @@ if logged_in:
             st.error(f"Failed to fetch languages: {str(e)}")
     
     st.markdown("---")
-    st.info("👈 Use the sidebar to create new languages or manage configurations!")
+
+    # Configuration section
+    st.subheader("⚙️ Language Configurations")
+    
+    # Language selection dropdown
+    col1, col2 = st.columns([2, 2])
+    
+    with col1:
+        language_options = {lang['id']: f"{lang['name']} ({lang['abbreviation']})" for lang in languages}
+        selected_language_id = st.selectbox(
+            "Select Language",
+            options=[None] + list(language_options.keys()),
+            format_func=lambda x: "-- Select a language --" if x is None else language_options[x],
+            key="config_language_select"
+        )
+    
+    # Display configurations if a language is selected
+    if selected_language_id:
+        with col2:
+            pass  # Column for layout balance
+        render_config_viewer(client, selected_language_id, "all", show_type_filter=True)
+    else:
+        st.info("👆 Please select a language to view its configurations.")
+
 else:
     st.markdown("---")
     st.info("👈 Please log in using the sidebar to view available languages and access all features!")
