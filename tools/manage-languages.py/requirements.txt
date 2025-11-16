@@ -1,0 +1,7 @@
+# Language Management Tool - Requirements
+
+streamlit>=1.28.0
+requests>=2.31.0
+
+# Note: The shared modules are accessed via sys.path
+# No additional dependencies needed for basic functionality
