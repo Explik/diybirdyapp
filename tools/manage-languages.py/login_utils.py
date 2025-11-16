@@ -70,6 +70,31 @@ def render_login_sidebar():
         if load_saved_credentials():
             st.session_state.credentials_loaded = True
     
+    # Check for autoLogin query parameter
+    query_params = st.query_params
+    auto_login = query_params.get("autoLogin")
+    
+    # Attempt automatic login if autoLogin parameter is present and not yet logged in
+    if auto_login and not st.session_state.logged_in and 'auto_login_attempted' not in st.session_state:
+        st.session_state.auto_login_attempted = True
+        
+        # Ensure we have credentials to attempt login
+        if st.session_state.backend_url and st.session_state.username and st.session_state.password:
+            success, session_cookie, error = try_login(
+                st.session_state.backend_url,
+                st.session_state.username,
+                st.session_state.password
+            )
+            
+            if success:
+                st.session_state.logged_in = True
+                st.session_state.session_cookie = session_cookie
+                set_session_cookie(session_cookie)
+                st.rerun()
+            else:
+                # Don't show error here, user will see login form instead
+                pass
+    
     st.sidebar.markdown("## 🔐 Login")
     
     if st.session_state.logged_in:

@@ -53,13 +53,31 @@ if languages:
     # Create a mapping for the selectbox
     language_options = {f"{lang['name']} ({lang['abbreviation']}) - {lang['id']}": lang for lang in languages}
     
+    # Get languageId from query parameters
+    query_params = st.query_params
+    language_id_from_query = query_params.get("languageId")
+    
+    # Find the index of the language to preselect
+    default_index = 0
+    if language_id_from_query:
+        for idx, (key, lang) in enumerate(language_options.items()):
+            if lang['id'] == language_id_from_query:
+                default_index = idx
+                break
+    
     selected_language_key = st.selectbox(
         "Language",
         options=list(language_options.keys()),
-        help="Choose the language you want to update"
+        index=default_index,
+        help="Choose the language you want to update",
+        key="language_selector"
     )
     
     selected_language = language_options[selected_language_key]
+    
+    # Update query parameter to match the selected language
+    if selected_language['id'] != language_id_from_query:
+        st.query_params["languageId"] = selected_language['id']
     
     st.markdown("---")
     st.subheader("Update Properties")

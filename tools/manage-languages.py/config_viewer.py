@@ -52,7 +52,7 @@ def render_config_viewer(
                     "ID": config.get('id', 'N/A'),
                     "Type": CONFIG_TYPES.get(config.get('type', ''), config.get('type', 'Unknown')),
                     "Details": str({k: v for k, v in config.items() if k not in ['id', 'type']}),
-                    "EditLink": f"/Update_Config?languageId={selected_language_id}&configType={config.get('type', '')}&configId={config.get('id', '')}"
+                    "EditLink": f"/Update_Config?languageId={selected_language_id}&configType={config.get('type', '')}&configId={config.get('id', '')}&autoLogin=true"
                 } for config in configs])
                 
                 st.dataframe(

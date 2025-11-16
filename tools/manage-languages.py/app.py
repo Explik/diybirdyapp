@@ -34,10 +34,9 @@ This application helps you manage languages and their configurations for the DIY
 Use the sidebar to navigate between different management tools or edit languages directly from the list below.
 """)
 
-st.markdown("---")
-
 # Overview section - show list of available languages
 if logged_in:
+    st.markdown("---")
     st.subheader("📋 Available Languages")
     
     with st.spinner("Loading languages..."):
@@ -58,7 +57,7 @@ if logged_in:
                     "ID": lang['id'],
                     "Name": lang['name'],
                     "Abbreviation": lang['abbreviation'],
-                    "EditLink": f"/Update_Language?languageId={lang['id']}"
+                    "EditLink": f"/Update_Language?languageId={lang['id']}&autoLogin=true"
                 } for lang in languages])
                 
                 st.dataframe(

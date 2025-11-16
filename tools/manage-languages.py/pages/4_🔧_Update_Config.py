@@ -49,21 +49,53 @@ if not languages:
     st.warning("No languages available. Please check your connection.")
     st.stop()
 
+# Get query parameters
+query_params = st.query_params
+language_id_from_query = query_params.get("languageId")
+config_type_from_query = query_params.get("configType")
+config_id_from_query = query_params.get("configId")
+
 language_options = {f"{lang['name']} ({lang['id']})": lang for lang in languages}
+
+# Find the index of the language to preselect
+language_default_index = 0
+if language_id_from_query:
+    for idx, (key, lang) in enumerate(language_options.items()):
+        if lang['id'] == language_id_from_query:
+            language_default_index = idx
+            break
+
 selected_language_name = st.selectbox(
     "Choose a language",
     options=list(language_options.keys()),
-    help="Select the language to update configuration for"
+    index=language_default_index,
+    help="Select the language to update configuration for",
+    key="language_selector"
 )
 
 selected_language = language_options[selected_language_name]
 
+# Update query parameter for language
+if selected_language['id'] != language_id_from_query:
+    st.query_params["languageId"] = selected_language['id']
+
+# Find the index of the config type to preselect
+config_type_default_index = 0
+if config_type_from_query and config_type_from_query in CONFIG_TYPES:
+    config_type_default_index = list(CONFIG_TYPES.keys()).index(config_type_from_query)
+
 selected_config_type_key = st.selectbox(
     "Choose configuration type",
     options=list(CONFIG_TYPES.keys()),
+    index=config_type_default_index,
     format_func=lambda x: CONFIG_TYPES[x],
-    help="Select the type of configuration to update"
+    help="Select the type of configuration to update",
+    key="config_type_selector"
 )
+
+# Update query parameter for config type
+if selected_config_type_key != config_type_from_query:
+    st.query_params["configType"] = selected_config_type_key
 
 # Fetch existing configurations of the selected type
 try:
@@ -81,21 +113,38 @@ if not existing_configs:
 if len(existing_configs) == 1:
     selected_config = existing_configs[0]
     st.info(f"✓ Auto-selected the only available configuration (ID: {selected_config.get('id', 'N/A')})")
+    # Update query parameter for config id
+    if selected_config.get('id') != config_id_from_query:
+        st.query_params["configId"] = selected_config.get('id', '')
 else:
     config_options = {
         f"{CONFIG_TYPES.get(cfg.get('type', 'N/A'), cfg.get('type', 'N/A'))} ({cfg.get('id', 'Unknown')})": cfg 
         for cfg in existing_configs
     }
 
+    # Find the index of the config to preselect
+    config_default_index = 0
+    if config_id_from_query:
+        for idx, (key, cfg) in enumerate(config_options.items()):
+            if cfg.get('id') == config_id_from_query:
+                config_default_index = idx
+                break
+
     selected_config_name = st.selectbox(
         "Choose configuration to update",
         options=list(config_options.keys()),
-        help="Select the configuration you want to modify"
+        index=config_default_index,
+        help="Select the configuration you want to modify",
+        key="config_selector"
     )
 
     selected_config = config_options[selected_config_name]
 
     st.info(f"Selected Configuration ID: {selected_config.get('id', 'N/A')}")
+    
+    # Update query parameter for config id
+    if selected_config.get('id') != config_id_from_query:
+        st.query_params["configId"] = selected_config.get('id', '')
 
 st.markdown("---")
 
