@@ -420,14 +420,26 @@ class LocaleManager:
         if new_filepath.exists():
             raise FileExistsError(f"Locale file {new_filename} already exists")
         
-        # Parse source file
-        source_lang, _, units = self.parse_xliff(self.source_file)
+        # Parse source file to get structure
+        tree = ET.parse(self.source_file)
+        root = tree.getroot()
         
-        # Create new units with empty targets
-        new_units = [TranslationUnit(u.id, u.source, "", u.contexts) for u in units]
+        # Register namespace
+        ET.register_namespace('', XLIFF_NS)
         
-        # Save new file
-        self.save_xliff(new_filepath, source_lang, language_code, new_units)
+        # Find the file element and update target-language
+        file_elem = root.find('.//{%s}file' % XLIFF_NS)
+        if file_elem is not None:
+            file_elem.set('target-language', language_code)
+        
+        # Remove all <target> elements from trans-units (keep only source)
+        for trans_unit in root.findall('.//{%s}trans-unit' % XLIFF_NS):
+            target_elem = trans_unit.find('{%s}target' % XLIFF_NS)
+            if target_elem is not None:
+                trans_unit.remove(target_elem)
+        
+        # Write the new file
+        tree.write(new_filepath, encoding='UTF-8', xml_declaration=True)
         
         return new_filepath
     
