@@ -3,11 +3,16 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 import os
 import re
+import sys
 from typing import Dict, List, Optional
+
+# Add parent directory to path to import shared modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from shared.google_api import translate_text, list_languages
 
 # Constants
-LOCALE_DIR = Path(__file__).parent.parent / "web" / "src" / "locale"
+LOCALE_DIR = Path(__file__).parent.parent.parent / "web" / "src" / "locale"
 SOURCE_FILE = "messages.xlf"
 XLIFF_NS = "urn:oasis:names:tc:xliff:document:1.2"
 

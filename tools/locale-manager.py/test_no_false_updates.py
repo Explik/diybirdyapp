@@ -9,7 +9,7 @@ import shutil
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from locale_manager import LocaleManager
+from app import LocaleManager
 
 def test_no_false_updates():
     """Test that saving without changes doesn't modify the file"""

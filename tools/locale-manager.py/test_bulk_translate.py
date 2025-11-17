@@ -13,7 +13,7 @@ import shutil
 tools_dir = Path(__file__).parent
 sys.path.insert(0, str(tools_dir))
 
-from locale_manager import LocaleManager, TranslationUnit
+from app import LocaleManager, TranslationUnit
 
 
 class TestBulkTranslate(unittest.TestCase):
@@ -81,7 +81,7 @@ class TestBulkTranslate(unittest.TestCase):
         
         self.assertEqual(count, 0, "Should return 0 when no units need translation")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_all_untranslated(self, mock_translate):
         """Test bulk translate when all units need translation"""
         # Mock the translation API
@@ -110,7 +110,7 @@ class TestBulkTranslate(unittest.TestCase):
         self.assertEqual(units[0].target, "Hola Mundo")
         self.assertEqual(units[1].target, "Bienvenido a nuestra aplicación")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_mixed(self, mock_translate):
         """Test bulk translate with mix of translated and untranslated units"""
         # Mock the translation API
@@ -136,7 +136,7 @@ class TestBulkTranslate(unittest.TestCase):
         # Second unit should remain unchanged
         self.assertEqual(units[1].target, "Ya hecho", "Should not modify already translated units")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_with_placeholders(self, mock_translate):
         """Test bulk translate strips XML placeholders before translation"""
         # Mock the translation API
@@ -166,7 +166,7 @@ class TestBulkTranslate(unittest.TestCase):
         
         self.assertEqual(count, 1, "Should translate 1 unit")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_progress_callback(self, mock_translate):
         """Test that progress callback is called during translation"""
         # Mock the translation API
@@ -200,7 +200,7 @@ class TestBulkTranslate(unittest.TestCase):
         self.assertIsInstance(call_args[1], int, "Second arg should be total count")
         self.assertIsInstance(call_args[2], str, "Third arg should be message")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_api_error_fallback(self, mock_translate):
         """Test that individual translation is attempted when batch fails"""
         # First call (batch) raises exception, subsequent calls succeed
@@ -227,7 +227,7 @@ class TestBulkTranslate(unittest.TestCase):
         self.assertEqual(units[0].target, "Uno")
         self.assertEqual(units[1].target, "Dos")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_saves_to_file(self, mock_translate):
         """Test that bulk translate saves results to file"""
         # Mock the translation API
@@ -256,7 +256,7 @@ class TestBulkTranslate(unittest.TestCase):
         unit1 = next(u for u in updated_units if u.id == 'unit1')
         self.assertNotEqual(unit1.target, "", "Translation should be saved to file")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_language_code_extraction(self, mock_translate):
         """Test that language codes are correctly extracted for API calls"""
         mock_translate.return_value = [
@@ -282,7 +282,7 @@ class TestBulkTranslate(unittest.TestCase):
         self.assertEqual(call_kwargs['source_language'], 'en', "Should extract base language code 'en' from 'en-US'")
         self.assertEqual(call_kwargs['target_language'], 'zh', "Should extract base language code 'zh' from 'zh-CN'")
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_bulk_translate_large_batch(self, mock_translate):
         """Test bulk translate handles large batches correctly"""
         # Mock the translation API to return results for batches
@@ -365,7 +365,7 @@ class TestBulkTranslateIntegration(unittest.TestCase):
         """Clean up test fixtures"""
         shutil.rmtree(self.test_dir)
     
-    @patch('locale_manager.translate_text')
+    @patch('app.translate_text')
     def test_integration_full_workflow(self, mock_translate):
         """Test complete workflow: parse, translate, save, re-parse"""
         # Mock translations

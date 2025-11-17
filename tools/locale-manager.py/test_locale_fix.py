@@ -5,10 +5,10 @@ Test script to verify the locale manager normalization fix
 import sys
 from pathlib import Path
 
-# Add parent directory to path to import locale_manager
+# Add parent directory to path to import app
 sys.path.insert(0, str(Path(__file__).parent))
 
-from locale_manager import LocaleManager
+from app import LocaleManager
 
 def test_normalization():
     """Test that XML content normalization works correctly"""

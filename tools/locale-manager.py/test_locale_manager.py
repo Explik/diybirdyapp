@@ -10,7 +10,7 @@ from pathlib import Path
 tools_dir = Path(__file__).parent
 sys.path.insert(0, str(tools_dir))
 
-from locale_manager import LocaleManager, TranslationUnit, LOCALE_DIR
+from app import LocaleManager, TranslationUnit, LOCALE_DIR
 
 def test_locale_manager():
     """Test LocaleManager basic functionality"""

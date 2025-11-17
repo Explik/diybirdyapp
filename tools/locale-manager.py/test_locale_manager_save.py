@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 import tempfile
 import shutil
-from locale_manager import LocaleManager, TranslationUnit
+from app import LocaleManager, TranslationUnit
 
 
 class TestLocaleSave(unittest.TestCase):

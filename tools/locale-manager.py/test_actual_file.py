@@ -1,6 +1,6 @@
 """Quick test of actual messages.zh-CN.xlf file"""
 from pathlib import Path
-from locale_manager import LocaleManager
+from app import LocaleManager
 
 manager = LocaleManager()
 file = Path('../web/src/locale/messages.zh-CN.xlf')
