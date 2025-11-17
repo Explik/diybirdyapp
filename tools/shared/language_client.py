@@ -121,6 +121,25 @@ class LanguageClient:
         except Exception as e:
             return False, f"Failed to create configuration: {str(e)}"
     
+    def update_config(self, config_id: str, config_data: Dict) -> Tuple[bool, str]:
+        """
+        Update an existing configuration.
+        
+        Args:
+            config_id: The ID of the configuration to update
+            config_data: Configuration data dictionary with type-specific fields
+            
+        Returns:
+            Tuple of (success: bool, message: str)
+        """
+        try:
+            url = f"{self.base_url}/config/{config_id}"
+            response = requests.put(url, json=config_data, cookies=self._get_cookies(), timeout=self.timeout)
+            response.raise_for_status()
+            return True, "Configuration updated successfully"
+        except Exception as e:
+            return False, f"Failed to update configuration: {str(e)}"
+    
     def attach_config(self, language_id: str, config_id: str, config_type: str) -> Tuple[bool, str]:
         """
         Attach an existing configuration to a language.

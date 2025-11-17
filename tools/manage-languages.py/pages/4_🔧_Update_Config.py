@@ -162,7 +162,7 @@ if update_button:
         st.error(f"❌ {error_message}")
     else:
         with st.spinner("Updating configuration..."):
-            success, message = client.create_config(selected_language['id'], config_data)
+            success, message = client.update_config(selected_config.get('id'), config_data)
             
             if success:
                 st.success(f"✅ {message}")

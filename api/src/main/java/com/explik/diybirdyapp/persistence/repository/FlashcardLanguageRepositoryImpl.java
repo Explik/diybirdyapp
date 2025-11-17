@@ -12,9 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
-public class FlashcardLanguageRepositoryImpl implements LanguageRepository {
+public class FlashcardLanguageRepositoryImpl implements LanguageRepository, ConfigurationRepository {
     private final GraphTraversalSource traversalSource;
 
     public FlashcardLanguageRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
@@ -47,6 +48,35 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository {
             throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
 
         return createLanguageModel(vertex);
+    }
+
+    @Override
+    public ConfigurationModel get(String configId) {
+        var configurationVertex = ConfigurationVertex.findById(traversalSource, configId);
+        if (configurationVertex == null)
+            throw new IllegalArgumentException("Configuration with id " + configId + " does not exist");
+
+        return createConfigModel(null, configurationVertex);
+    }
+
+    @Override
+    public ConfigurationModel update(ConfigurationModel configModel) {
+        var configurationVertex = ConfigurationVertex.findById(traversalSource, configModel.getId());
+        if (configurationVertex == null)
+            throw new IllegalArgumentException("Configuration with id " + configModel.getId() + " does not exist");
+
+        updateConfigVertex(configurationVertex, configModel);
+
+        return createConfigModel(null, configurationVertex);
+    }
+
+    @Override
+    public void delete(String configId) {
+        var configurationVertex = ConfigurationVertex.findById(traversalSource, configId);
+        if (configurationVertex == null)
+            throw new IllegalArgumentException("Configuration with id " + configId + " does not exist");
+
+        configurationVertex.delete();
     }
 
     @Override
@@ -98,7 +128,11 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository {
         if (languageVertex == null)
             throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
 
+        if (configModel.getId() == null)
+            configModel.setId(UUID.randomUUID().toString());
+
         var configurationVertex = ConfigurationVertex.create(traversalSource);
+        configurationVertex.setId(configModel.getId());
         updateConfigVertex(configurationVertex, configModel);
         configurationVertex.addLanguage(languageVertex);
 

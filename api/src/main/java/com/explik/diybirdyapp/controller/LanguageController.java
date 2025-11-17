@@ -46,7 +46,7 @@ public class LanguageController {
         var mapper = new ModelMapper();
         var languageModel = mapper.map(languageDto, FlashcardLanguageModel.class);
         languageModel.setId(languageId);
-        // service.updateLanguage(languageId, languageModel);
+        service.update(languageModel);
         return ResponseEntity.ok().build();
     }
 
@@ -55,7 +55,7 @@ public class LanguageController {
             @RequestBody FlashcardLanguageDto languageDto) {
         var mapper = new ModelMapper();
         var languageModel = mapper.map(languageDto, FlashcardLanguageModel.class);
-        // service.createLanguage(languageModel);
+        service.create(languageModel);
         return ResponseEntity.ok().build();
     }
 
