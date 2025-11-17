@@ -2,19 +2,26 @@ import streamlit as st
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import os
-import re
 import sys
+import re
 from typing import Dict, List, Optional
 
 # Add parent directory to path to import shared modules
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from shared.google_api import translate_text, list_languages
+from shared.google_api import translate_text as translate_text_google, list_languages
+from shared.openai_api import translate_text_openai
 
 # Constants
 LOCALE_DIR = Path(__file__).parent.parent.parent / "web" / "src" / "locale"
 SOURCE_FILE = "messages.xlf"
 XLIFF_NS = "urn:oasis:names:tc:xliff:document:1.2"
+
+# Translation service options
+TRANSLATORS = {
+    "Google Translate": "google",
+    "OpenAI (ChatGPT)": "openai"
+}
 
 class TranslationUnit:
     """Represents a single translation unit"""
@@ -425,7 +432,7 @@ class LocaleManager:
         return new_filepath
     
     def bulk_translate(self, filepath: Path, source_lang: str, target_lang: str, 
-                      units: List[TranslationUnit], progress_callback=None) -> int:
+                      units: List[TranslationUnit], translator: str = 'google', progress_callback=None) -> int:
         """Translate all untranslated units in bulk
         
         Args:
@@ -433,6 +440,7 @@ class LocaleManager:
             source_lang: Source language code
             target_lang: Target language code
             units: List of TranslationUnit objects to process
+            translator: Translation service to use ('google' or 'openai')
             progress_callback: Optional callback function(current, total, message) for progress updates
         
         Returns:
@@ -468,11 +476,18 @@ class LocaleManager:
             
             try:
                 # Call translate API with batch
-                results = translate_text(
-                    text=texts_to_translate,
-                    target_language=target_base,
-                    source_language=source_base
-                )
+                if translator == 'openai':
+                    results = translate_text_openai(
+                        text=texts_to_translate,
+                        target_language=target_base,
+                        source_language=source_base
+                    )
+                else:  # google
+                    results = translate_text_google(
+                        text=texts_to_translate,
+                        target_language=target_base,
+                        source_language=source_base
+                    )
                 
                 # Update units with translations
                 for j, result in enumerate(results):
@@ -495,11 +510,18 @@ class LocaleManager:
                 for j, unit in enumerate(batch):
                     try:
                         plain_text = re.sub(r'<[^>]+>', '', unit.source)
-                        result = translate_text(
-                            text=plain_text,
-                            target_language=target_base,
-                            source_language=source_base
-                        )
+                        if translator == 'openai':
+                            result = translate_text_openai(
+                                text=plain_text,
+                                target_language=target_base,
+                                source_language=source_base
+                            )
+                        else:  # google
+                            result = translate_text_google(
+                                text=plain_text,
+                                target_language=target_base,
+                                source_language=source_base
+                            )
                         
                         if result and len(result) > 0 and 'translatedText' in result[0]:
                             unit.target = result[0]['translatedText']
@@ -578,6 +600,17 @@ def main():
         show_translated = st.checkbox("Show translated", value=True)
         show_untranslated = st.checkbox("Show untranslated", value=True)
         search_term = st.text_input("Search (ID or text)", "")
+        
+        # Translator selection
+        st.subheader("Translator")
+        selected_translator = st.selectbox(
+            "Translation Service",
+            options=list(TRANSLATORS.keys()),
+            index=0,
+            key="translator_selector"
+        )
+        # Store translator code in session state
+        st.session_state.translator = TRANSLATORS[selected_translator]
     
     # Main content area
     if selected_file:
@@ -630,6 +663,7 @@ def main():
                             source_lang, 
                             target_lang, 
                             units,
+                            st.session_state.translator,
                             progress_callback
                         )
                         
@@ -674,6 +708,10 @@ def main():
         # Initialize session state for tracking last saved state
         if 'last_saved_state' not in st.session_state:
             st.session_state.last_saved_state = {}
+        
+        # Initialize default translator if not set
+        if 'translator' not in st.session_state:
+            st.session_state.translator = 'google'
         
         # Display translation units
         for idx, unit in enumerate(filtered_units):
@@ -726,17 +764,25 @@ def main():
                             st.error(f"Auto-save failed: {str(e)}")
                     
                     # Auto-translate button
-                    if st.button(f"🌐 Auto-translate", key=f"translate_{unit.id}_{idx}"):
+                    translator_name = [name for name, code in TRANSLATORS.items() if code == st.session_state.translator][0]
+                    if st.button(f"🌐 Translate with {translator_name}", key=f"translate_{unit.id}_{idx}"):
                         try:
                             # Extract plain text for translation (remove HTML tags)
                             import re
                             plain_source = re.sub(r'<[^>]+>', '', unit.source)
                             
-                            result = translate_text(
-                                text=plain_source,
-                                target_language=target_lang.split('-')[0],  # Use base language code
-                                source_language=source_lang.split('-')[0]
-                            )
+                            if st.session_state.translator == 'openai':
+                                result = translate_text_openai(
+                                    text=plain_source,
+                                    target_language=target_lang.split('-')[0],  # Use base language code
+                                    source_language=source_lang.split('-')[0]
+                                )
+                            else:  # google
+                                result = translate_text_google(
+                                    text=plain_source,
+                                    target_language=target_lang.split('-')[0],  # Use base language code
+                                    source_language=source_lang.split('-')[0]
+                                )
                             
                             if result and len(result) > 0:
                                 translated = result[0].get('translatedText', '')
