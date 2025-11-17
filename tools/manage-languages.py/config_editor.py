@@ -6,6 +6,7 @@ Provides a reusable form for editing language configurations.
 import streamlit as st
 from shared.language_client import CONFIG_TYPES
 from shared.google_tts_api import list_voices, format_language_code_display
+from shared.google_translate_api import list_languages, format_language_display
 
 def render_config_editor(config_type_key, existing_config=None):
     """
@@ -118,7 +119,50 @@ def render_config_editor(config_type_key, existing_config=None):
     
     elif config_type_key == "google-translate":
         st.markdown("**Google Translate Configuration**")
-        st.info("This configuration type has no additional fields.")
+        
+        # Fetch all languages on first load
+        if 'translate_all_languages' not in st.session_state:
+            try:
+                with st.spinner("Loading available languages from Google Cloud..."):
+                    st.session_state['translate_all_languages'] = list_languages(target_language='en')
+                    
+            except ImportError as e:
+                st.error(f"❌ {str(e)}")
+                st.info("Install the required package: `pip install google-cloud-translate`")
+                st.session_state['translate_all_languages'] = []
+            except Exception as e:
+                st.error(f"Failed to fetch languages: {str(e)}")
+                st.info("Make sure your Google Cloud credentials are properly configured.")
+                st.session_state['translate_all_languages'] = []
+        
+        all_languages = st.session_state.get('translate_all_languages', [])
+        
+        if not all_languages:
+            st.warning("No languages available. Please check your Google Cloud configuration.")
+            language_code = ""
+        else:
+            # Create language options with display text
+            language_options = {}
+            for lang in all_languages:
+                language_options[lang['language']] = format_language_display(lang['language'], lang['name'])
+            
+            language_codes = list(language_options.keys())
+            
+            # Language Selection
+            existing_lang_code = existing_config.get('languageCode', '') if existing_config else ''
+            default_lang_index = 0
+            if existing_lang_code and existing_lang_code in language_codes:
+                default_lang_index = language_codes.index(existing_lang_code)
+            
+            language_code = st.selectbox(
+                "Language",
+                options=language_codes,
+                index=default_lang_index,
+                format_func=lambda x: language_options[x],
+                help=f"Select the language for translation. Showing {len(all_languages)} available language(s)."
+            )
+        
+        config_data["languageCode"] = language_code
     
     # Preview configuration data
     with st.expander("Preview Configuration JSON"):
@@ -143,5 +187,9 @@ def validate_config_data(config_type_key, config_data):
             return False, "Language Code is required for Google Text-to-Speech"
         if not config_data.get("voiceName"):
             return False, "Voice Name is required for Google Text-to-Speech"
+    
+    elif config_type_key == "google-translate":
+        if not config_data.get("languageCode"):
+            return False, "Language Code is required for Google Translate"
     
     return True, None
