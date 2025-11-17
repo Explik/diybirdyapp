@@ -5,7 +5,7 @@ Provides a reusable form for editing language configurations.
 
 import streamlit as st
 from shared.language_client import CONFIG_TYPES
-
+from shared.google_tts_api import list_voices, format_language_code_display
 
 def render_config_editor(config_type_key, existing_config=None):
     """
@@ -29,19 +29,81 @@ def render_config_editor(config_type_key, existing_config=None):
     if config_type_key == "google-text-to-speech":
         st.markdown("**Google Text-to-Speech Configuration**")
         
-        language_code = st.text_input(
-            "Language Code",
-            value=existing_config.get('languageCode', '') if existing_config else '',
-            help="e.g., en-US, es-ES, fr-FR",
-            placeholder="en-US"
-        )
-    
-        voice_name = st.text_input(
-            "Voice Name",
-            value=existing_config.get('voiceName', '') if existing_config else '',
-            help="e.g., en-US-Wavenet-A",
-            placeholder="en-US-Wavenet-A"
-        )
+        # Fetch all voices on first load
+        if 'tts_all_voices' not in st.session_state:
+            try:
+                with st.spinner("Loading available voices from Google Cloud..."):
+                    st.session_state['tts_all_voices'] = list_voices()
+                    
+                    # Extract unique language codes from voices
+                    language_codes_set = set()
+                    for voice in st.session_state['tts_all_voices']:
+                        language_codes_set.update(voice['language_codes'])
+                    st.session_state['tts_language_codes'] = sorted(list(language_codes_set))
+                    
+            except ImportError as e:
+                st.error(f"❌ {str(e)}")
+                st.info("Install the required package: `pip install google-cloud-texttospeech`")
+                st.session_state['tts_all_voices'] = []
+                st.session_state['tts_language_codes'] = []
+            except Exception as e:
+                st.error(f"Failed to fetch voices: {str(e)}")
+                st.info("Make sure your Google Cloud credentials are properly configured.")
+                st.session_state['tts_all_voices'] = []
+                st.session_state['tts_language_codes'] = []
+        
+        all_voices = st.session_state.get('tts_all_voices', [])
+        language_codes = st.session_state.get('tts_language_codes', [])
+        
+        if not all_voices:
+            st.warning("No voices available. Please check your Google Cloud configuration.")
+            language_code = ""
+            voice_name = ""
+        else:
+            # Step 1: Select Language Code
+            # Find default index if editing existing config
+            existing_lang_code = existing_config.get('languageCode', '') if existing_config else ''
+            default_lang_index = 0
+            if existing_lang_code and existing_lang_code in language_codes:
+                default_lang_index = language_codes.index(existing_lang_code)
+            
+            selected_language_code = st.selectbox(
+                "Language",
+                options=language_codes,
+                index=default_lang_index,
+                format_func=format_language_code_display,
+                help="Select the language for text-to-speech"
+            )
+            
+            # Step 2: Filter voices by selected language code
+            filtered_voices = [
+                voice for voice in all_voices 
+                if selected_language_code in voice['language_codes']
+            ]
+            
+            # Create voice options with display text
+            voice_options = {}
+            for voice in filtered_voices:
+                display_text = f"{voice['name']} - {voice['ssml_gender']} ({voice['natural_sample_rate_hertz']} Hz)"
+                voice_options[voice['name']] = display_text
+            
+            # Find default index if editing existing config
+            existing_voice_name = existing_config.get('voiceName', '') if existing_config else ''
+            voice_names = list(voice_options.keys())
+            default_voice_index = 0
+            if existing_voice_name and existing_voice_name in voice_names:
+                default_voice_index = voice_names.index(existing_voice_name)
+            
+            selected_voice_name = st.selectbox(
+                "Voice",
+                options=voice_names,
+                index=default_voice_index,
+                format_func=lambda x: voice_options[x],
+                help=f"Select a voice for {selected_language_code}. Showing {len(filtered_voices)} available voice(s)."
+            )
+            
+            language_code = selected_language_code
+            voice_name = selected_voice_name
         
         config_data["languageCode"] = language_code
         config_data["voiceName"] = voice_name
