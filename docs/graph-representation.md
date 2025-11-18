@@ -12,7 +12,7 @@ V1(Language)
 Properties:
 - id: string
 - name: string
-- abbreviation: string
+- isoCode: string
 
 ### Word
 A word represents an entry in a language's vocabulary in the system. 

@@ -51,7 +51,7 @@ The tool provides the following features:
 The overview page shows a list of the available languages in the backend including name, abbriviation and ID.
 
 ### Create/update Languages
-The "Create/Update Languages" page allows you to add new languages or modify existing ones. You can specify the language name, abbreviation, and other relevant details.
+The "Create/Update Languages" page allows you to add new languages or modify existing ones. You can specify the language name, isoCode, and other relevant details.
 
 Usage: 
 1. Select the language to edit or choose to create a new language

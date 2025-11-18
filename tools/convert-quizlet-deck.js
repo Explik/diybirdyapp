@@ -28,12 +28,12 @@ function fetchFlashcards() {
       frontContent: {
         type: "text",
         text: extractContent(frontElement),
-        language: { abbrivation: extractAbbrievation(frontElement) }
+        language: { isoCode: extractIsoCode(frontElement) }
       },
       backContent: {
         type: "text",
         text: extractContent(backElement),
-        language: { abbrivation: extractAbbrievation(backElement) }
+        language: { isoCode: extractIsoCode(backElement) }
       }
     });
   }
@@ -47,7 +47,7 @@ function extractContent(elem) {
 
 // Extracts language code from term element
 // Ex. extracts "fr" from <tag class="lang-fr" />
-function extractAbbrievation(elem) {
+function extractIsoCode(elem) {
   return [...elem.classList].find((className) => className.startsWith("lang-")).split("-")[1];
 }
 

@@ -99,11 +99,11 @@ public class ImportFlashcardDeckCommand implements Runnable {
                 .orElseThrow(() -> new RuntimeException("Language with name " + partialLanguage.getName() + " not found"));
         }
 
-        if (partialLanguage.getAbbreviation() != null) {
+        if (partialLanguage.getIsoCode() != null) {
             return languages.stream()
-                .filter(l -> l.getAbbreviation().equals(partialLanguage.getAbbreviation()))
+                .filter(l -> l.getIsoCode().equals(partialLanguage.getIsoCode()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Language with abbreviation " + partialLanguage.getAbbreviation() + " not found"));
+                .orElseThrow(() -> new RuntimeException("Language with isoCode " + partialLanguage.getIsoCode() + " not found"));
         }
 
         throw new RuntimeException("Language not specified");

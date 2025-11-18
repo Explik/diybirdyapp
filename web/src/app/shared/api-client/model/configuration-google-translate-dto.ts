@@ -11,5 +11,6 @@ import { ConfigurationDto } from './configuration-dto';
 
 
 export interface ConfigurationGoogleTranslateDto extends ConfigurationDto { 
+    languageCode?: string;
 }
 

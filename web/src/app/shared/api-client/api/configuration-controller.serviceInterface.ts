@@ -12,6 +12,11 @@ import { HttpHeaders }                                       from '@angular/comm
 import { Observable }                                        from 'rxjs';
 
 import { ConfigurationDto } from '../model/models';
+import { ConfigurationGoogleSpeechToTextDto } from '../model/models';
+import { ConfigurationGoogleTextToSpeechDto } from '../model/models';
+import { ConfigurationGoogleTranslateDto } from '../model/models';
+import { ConfigurationMicrosoftTextToSpeechDto } from '../model/models';
+import { GetConfigById200Response } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -25,8 +30,23 @@ export interface ConfigurationControllerServiceInterface {
     /**
      * 
      * 
-     * @param languageId 
+     * @param id 
      */
-    getAll3(languageId: string, extraHttpRequestParams?: any): Observable<Array<ConfigurationDto>>;
+    deleteConfigById(id: string, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
+     * @param id 
+     */
+    getConfigById(id: string, extraHttpRequestParams?: any): Observable<GetConfigById200Response>;
+
+    /**
+     * 
+     * 
+     * @param id 
+     * @param configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto 
+     */
+    updateConfigById(id: string, configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto: ConfigurationDto | ConfigurationGoogleSpeechToTextDto | ConfigurationGoogleTextToSpeechDto | ConfigurationGoogleTranslateDto | ConfigurationMicrosoftTextToSpeechDto, extraHttpRequestParams?: any): Observable<GetConfigById200Response>;
 
 }

@@ -1,5 +1,5 @@
 // =================================================================================================
-// ViewModel interfaces 
+// ViewModel interfaces
 
 import { environment } from "../../../../environments/environment";
 import { FlashcardContentAudioDto, FlashcardContentDto, FlashcardContentImageDto, FlashcardContentTextDto, FlashcardContentUploadAudioDto, FlashcardContentUploadImageDto, FlashcardContentUploadVideoDto, FlashcardContentVideoDto, FlashcardDeckDto, FlashcardDto, FlashcardLanguageDto } from "../../../shared/api-client";
@@ -112,14 +112,14 @@ export class EditFlashcardLanguageImpl implements EditFlashcardLanguage {
     get name(): string { return this.tracker.get(this, 'name'); }
     set name(value: string) { this.tracker.set(this, 'name', value); }
 
-    get abbreviation(): string { return this.tracker.get(this, 'abbreviation'); }
-    set abbreviation(value: string) { this.tracker.set(this, 'abbreviation', value); }
+    get isoCode(): string | undefined { return this.tracker.get(this, 'isoCode'); }
+    set isoCode(value: string | undefined) { this.tracker.set(this, 'isoCode', value); }
 
     static createFromDto(dto: FlashcardLanguageDto): EditFlashcardLanguageImpl {
         var language = new EditFlashcardLanguageImpl();
         language.id = dto.id;
         language.name = dto.name;
-        language.abbreviation = dto.abbreviation;
+        language.isoCode = dto.isoCode;
         return language;
     }
 
@@ -130,17 +130,17 @@ export class EditFlashcardLanguageImpl implements EditFlashcardLanguage {
 
 export class EditFlashcardImpl implements EditFlashcard {
     _deckOrder: number | undefined;
-    
+
     id: string = "unknown";
     state: FlashcardStates = "unchanged";
 
     deckId?: string | undefined;
     get deckOrder(): number | undefined { return this._deckOrder; }
-    set deckOrder(value: number | undefined) { 
+    set deckOrder(value: number | undefined) {
         if (this._deckOrder !== value && this.state === "unchanged")
-            this.state = "updated"; 
-        
-        this._deckOrder = value;    
+            this.state = "updated";
+
+        this._deckOrder = value;
     }
 
     frontContent?: FlashcardContentDto | undefined;
@@ -230,7 +230,7 @@ export class EditFlashcardImpl implements EditFlashcard {
     }
 
     getAllChanges(): FlashcardChanges | undefined {
-        // Collect content changes 
+        // Collect content changes
         let leftChanges = undefined;
         let rightChanges = undefined;
 
@@ -295,7 +295,7 @@ export class EditFlashcardTextImpl implements EditFlashcardText {
 
     getChanges(): FlashcardContentChanges | undefined {
         let changes = this.tracker.getAllChanges({ id: this.id, type: "text" });
-        
+
         if (!changes)
             return undefined;
 
@@ -473,7 +473,7 @@ export class EditFlashcardVideoImpl implements EditFlashcardVideo {
 
     getChanges(): FlashcardContentChanges | undefined {
         if (!this.videoFile)
-            return undefined; 
+            return undefined;
 
         return {
             content: {

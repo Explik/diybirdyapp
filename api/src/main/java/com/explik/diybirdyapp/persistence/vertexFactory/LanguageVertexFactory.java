@@ -12,10 +12,10 @@ public class LanguageVertexFactory implements VertexFactory<LanguageVertex, Lang
         var vertex = new LanguageVertex(traversalSource, graphVertex);
         vertex.setId(options.id);
         vertex.setName(options.name);
-        vertex.setAbbreviation(options.abbreviation);
+        vertex.setIsoCode(options.isoCode);
 
         return vertex;
     }
 
-    public record Options (String id, String name, String abbreviation) {}
+    public record Options (String id, String name, String isoCode) {}
 }

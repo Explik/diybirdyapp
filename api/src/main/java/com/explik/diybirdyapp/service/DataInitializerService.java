@@ -69,7 +69,7 @@ public class DataInitializerService {
         builderFactory.createLanguageVertexBuilder()
                 .withId("langVertex1")
                 .withName("Danish")
-                .withAbbreviation("DA")
+                .withIsoCode("DA")
                 .withGoogleTranslate("da-DK")
                 .withGoogleTextToSpeech("da-DK", "da-DK-Wavenet-A")
                 .build(traversalSource);
@@ -77,7 +77,7 @@ public class DataInitializerService {
         builderFactory.createLanguageVertexBuilder()
                 .withId("langVertex2")
                 .withName("English")
-                .withAbbreviation("EN")
+                .withIsoCode("EN")
                 .withGoogleTranslate("en-US")
                 .withGoogleTextToSpeech("en-US", "en-US-Wavenet-A")
                 .build(traversalSource);
@@ -85,15 +85,15 @@ public class DataInitializerService {
         builderFactory.createLanguageVertexBuilder()
                 .withId("langVertex3")
                 .withName("Chinese")
-                .withAbbreviation("ZH")
+                .withIsoCode("ZH")
                 .withGoogleTranslate("zh-CN")
                 .withGoogleTextToSpeech("cmn-cn", "cmn-CN-Chirp3-HD-Achird")
                 .build(traversalSource);
     }
 
     public void addInitialContentAndConcepts() {
-        var langVertex1 = LanguageVertex.findByAbbreviation(traversalSource, "DA");
-        var langVertex2 = LanguageVertex.findByAbbreviation(traversalSource, "EN");
+        var langVertex1 = LanguageVertex.findByIsoCode(traversalSource, "DA");
+        var langVertex2 = LanguageVertex.findByIsoCode(traversalSource, "EN");
 
         builderFactory.createTextContentVertexBuilder()
                 .withValue("Bereshit")
@@ -176,7 +176,7 @@ public class DataInitializerService {
 
     public void addInitialExerciseData() {
         // Setting up exercise content
-        var langVertex = LanguageVertex.findByAbbreviation(traversalSource, "EN");
+        var langVertex = LanguageVertex.findByIsoCode(traversalSource, "EN");
 
         var sentenceTextContent = builderFactory.createTextContentVertexBuilder()
                 .withId("textContent2")

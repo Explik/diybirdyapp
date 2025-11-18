@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.component";
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
@@ -15,6 +15,8 @@ import { OptionComponent } from "../../../../shared/components/option/option.com
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
 import { TextInputComponent } from '../text-input/text-input.component';
 import { FormErrorComponent } from "../../../../shared/components/form-error/form-error.component";
+import { FlashcardLanguageDto } from '../../../../shared/api-client';
+import { LOCALE_ID } from '@angular/core';
 
 @Component({
   selector: 'app-flashcard-edit-container',
@@ -30,6 +32,7 @@ export class FlashcardEditContainerComponent {
   @Output() saveFlashcards = new EventEmitter<void>();
 
   currentDragIndex: number | undefined = undefined;
+  displayNames: Intl.DisplayNames;
 
   // Reactive form backing the template
   form: FormGroup = new FormGroup({
@@ -39,7 +42,9 @@ export class FlashcardEditContainerComponent {
   // Snapshot of original flashcard ids to detect adds/deletes on save
   private originalFlashcardIds: Set<string> | undefined = undefined;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
+    this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
+  }
 
   ngOnChanges(): void {
     if (this.flashcardDeck) {
@@ -103,6 +108,25 @@ export class FlashcardEditContainerComponent {
 
   private generateUniqueId(): string {
     return `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  public formatLanguageName(language: FlashcardLanguageDto) {
+    if (language.isoCode) {
+      return this.displayNames.of(language.isoCode) || language.name || 'N/A';
+    }
+    return language.name || 'N/A';
+  }
+
+  public getFrontLanguageName(): string {
+    const frontId = this.form?.get('frontLanguageId')?.value;
+    const lang = this.flashcardLanguages.find(l => l.id === frontId);
+    return lang ? this.formatLanguageName(lang) : 'N/A';
+  }
+
+  public getBackLanguageName(): string {
+    const backId = this.form?.get('backLanguageId')?.value;
+    const lang = this.flashcardLanguages.find(l => l.id === backId);
+    return lang ? this.formatLanguageName(lang) : 'N/A';
   }
 
   private getMostCommonLanguage(side: 'left' | 'right'): string | undefined {
@@ -207,17 +231,6 @@ export class FlashcardEditContainerComponent {
   // Template-friendly accessor for the form array controls
   get flashcardsControls() {
     return (this.form?.get('flashcards') as FormArray)?.controls || [];
-  }
-
-  /**
-   * Return the language name for a given language id using the provided
-   * flashcardLanguages input. If no match is found, return the id as a
-   * fallback so the UI still shows something.
-   */
-  getLanguageName(id?: string | null): string | undefined {
-    if (!id) return undefined;
-    const lang = this.flashcardLanguages?.find(l => l.id === id);
-    return lang ? lang.name : id;
   }
 
   handleSaveFlashcards() {

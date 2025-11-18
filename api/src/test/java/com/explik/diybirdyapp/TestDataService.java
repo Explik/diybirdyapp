@@ -32,12 +32,12 @@ public class TestDataService {
         var languageModel1 = new FlashcardLanguageModel();
         languageModel1.setId(LEFT_LANGUAGE_ID);
         languageModel1.setName("Language 1");
-        languageModel1.setAbbreviation("Lang 1");
+        languageModel1.setIsoCode("Lang 1");
 
         var languageModel2 = new FlashcardLanguageModel();
         languageModel2.setId(RIGHT_LANGUAGE_ID);
         languageModel2.setName("Language 2");
-        languageModel2.setAbbreviation("Lang 2");
+        languageModel2.setIsoCode("Lang 2");
 
         languageRepository.add(languageModel1);
         languageRepository.add(languageModel2);

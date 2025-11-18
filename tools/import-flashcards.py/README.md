@@ -159,7 +159,7 @@ Response:
     {
         "id": "en",
         "name": "English",
-        "abbreviation": "EN"
+        "isoCode": "EN"
     },
     ...
 ]

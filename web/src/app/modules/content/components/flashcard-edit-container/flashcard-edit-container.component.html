@@ -19,7 +19,7 @@
         <app-select class="global-left-language-input" formControlName="frontLanguageId">
           <app-option value="">Select language</app-option>
           <app-option *ngFor="let language of flashcardLanguages" [value]="language.id">
-            {{ language.name }}
+            {{ formatLanguageName(language) }}
           </app-option>
         </app-select>
         <app-form-error *ngIf="form.get('frontLanguageId')?.errors?.['language.required']">Front language required when text content exists</app-form-error>
@@ -30,7 +30,7 @@
         <app-select class="global-right-language-input" formControlName="backLanguageId">
           <app-option value="">Select language</app-option>
           <app-option *ngFor="let language of flashcardLanguages" [value]="language.id">
-            {{ language.name }}
+            {{ formatLanguageName(language) }}
           </app-option>
         </app-select>
         <app-form-error *ngIf="form.get('backLanguageId')?.errors?.['language.required']">Back language required when text content exists</app-form-error>
@@ -76,7 +76,7 @@
               <div class="flex items-center justify-between w-full">
                   <app-form-error *ngIf="fc.get('leftTextContent')?.errors?.['text.required'] else noLeftTextError" class="text-red-600 text-sm">Front text required</app-form-error>
                   <ng-template #noLeftTextError><app-label i18n>Front</app-label></ng-template>
-                  <span *ngIf="form?.get('frontLanguageId')?.value">{{ getLanguageName(form.get('frontLanguageId')?.value) }}</span>
+                  <span *ngIf="form.get('frontLanguageId')?.value">{{ getFrontLanguageName() }}</span>
               </div>
           </app-form-field>
           <app-form-field *ngIf="fc.get('leftContentType')?.value === 'audio'" left>
@@ -101,9 +101,9 @@
                 <app-form-error *ngIf="fc.get('rightTextContent')?.errors?.['text.required']; else noRightTextError">Back text required</app-form-error>
                 <ng-template #noRightTextError><app-label>Back</app-label></ng-template>
                 <span 
-                  *ngIf="form?.get('backLanguageId')?.value"
+                  *ngIf="form.get('backLanguageId')?.value"
                   class="text-right">
-                  {{ getLanguageName(form.get('backLanguageId')?.value) }}</span>
+                  {{ getBackLanguageName() }}</span>
               </div>
           </app-form-field>
           <app-form-field *ngIf="fc.get('rightContentType')?.value === 'audio'" right>

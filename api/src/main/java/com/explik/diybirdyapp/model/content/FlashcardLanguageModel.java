@@ -2,22 +2,19 @@ package com.explik.diybirdyapp.model.content;
 
 public class FlashcardLanguageModel {
     private String id;
-    private String abbreviation;
     private String name;
+    private String isoCode;
 
-    // Default constructor
     public FlashcardLanguageModel() {}
 
-    // Id only constructor
     public FlashcardLanguageModel(String id) {
         this.id = id;
     }
 
-    // Parameterized constructor
-    public FlashcardLanguageModel(String id, String abbreviation, String name) {
+    public FlashcardLanguageModel(String id, String isoCode, String name) {
         this.id = id;
-        this.abbreviation = abbreviation;
         this.name = name;
+        this.isoCode = isoCode;
     }
 
     public String getId() {
@@ -28,22 +25,18 @@ public class FlashcardLanguageModel {
         this.id = id;
     }
 
-    // Getter for abbreviation
-    public String getAbbreviation() {
-        return abbreviation;
+    public String getIsoCode() {
+        return isoCode;
     }
 
-    // Setter for abbreviation
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
     }
 
-    // Getter for name
     public String getName() {
         return name;
     }
 
-    // Setter for name
     public void setName(String name) {
         this.name = name;
     }
@@ -51,7 +44,7 @@ public class FlashcardLanguageModel {
     @Override
     public String toString() {
         return "FlashcardLanguageModel{" +
-            "abbreviation='" + abbreviation + '\'' +
+            "isoCode='" + isoCode + '\'' +
             ", name='" + name + '\'' +
             '}';
     }

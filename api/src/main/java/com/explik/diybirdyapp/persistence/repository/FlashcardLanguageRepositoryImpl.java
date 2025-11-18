@@ -29,14 +29,14 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
             throw new IllegalArgumentException("Language with id " + language.getId() + " already exists");
         if (LanguageVertex.findByName(traversalSource, language.getName()) != null)
             throw new IllegalArgumentException("Language with name " + language.getName() + " already exists");
-        if (LanguageVertex.findByAbbreviation(traversalSource, language.getAbbreviation()) != null)
-            throw new IllegalArgumentException("Language with abbreviation " + language.getAbbreviation() + " already exists");
+        if (LanguageVertex.findByIsoCode(traversalSource, language.getIsoCode()) != null)
+            throw new IllegalArgumentException("Language with isoCode " + language.getIsoCode() + " already exists");
 
         // Add language to database
         var vertex = LanguageVertex.create(traversalSource);
         vertex.setId(language.getId());
         vertex.setName(language.getName());
-        vertex.setAbbreviation(language.getAbbreviation());
+        vertex.setIsoCode(language.getIsoCode());
 
         return createLanguageModel(vertex);
     }
@@ -87,8 +87,8 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
 
         if (language.getName() != null)
             vertex.setName(language.getName());
-        if (language.getAbbreviation() != null)
-            vertex.setAbbreviation(language.getAbbreviation());
+        if (language.getIsoCode() != null)
+            vertex.setIsoCode(language.getIsoCode());
 
         return createLanguageModel(vertex);
     }
@@ -170,7 +170,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     private static FlashcardLanguageModel createLanguageModel(LanguageVertex v) {
         return new FlashcardLanguageModel(
             v.getId(),
-            v.getAbbreviation(),
+            v.getIsoCode(),
             v.getName());
     }
 

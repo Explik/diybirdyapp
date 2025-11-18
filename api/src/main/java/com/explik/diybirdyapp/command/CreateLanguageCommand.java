@@ -18,8 +18,8 @@ public class CreateLanguageCommand implements Runnable {
     @CommandLine.Option(names = { "-n", "--name" }, description = "The name of the language", required = true)
     public String name;
 
-    @CommandLine.Option(names = { "-a", "--abbreviation" }, description = "The abbreviation of the language", required = true)
-    public String abbreviation;
+    @CommandLine.Option(names = { "--isoCode" }, description = "The isoCode of the language", required = true)
+    public String isoCode;
 
     @Autowired
     public LanguageRepository languageRepository;
@@ -29,7 +29,7 @@ public class CreateLanguageCommand implements Runnable {
         var language = new FlashcardLanguageModel();
         language.setId(languageId);
         language.setName(name);
-        language.setAbbreviation(abbreviation);
+        language.setIsoCode(isoCode);
 
         languageRepository.add(language);
     }

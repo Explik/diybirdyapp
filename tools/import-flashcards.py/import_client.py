@@ -64,7 +64,7 @@ def get_languages():
     return languages
 
 def get_language_by_abbrevation(abbreviation):
-    # Get a language by abbrievation
+    # Get a language by isoCode
     update_api_client_auth()  # Ensure API client has current session cookie
     languages = language_api.get_all()
     language = next((lang for lang in languages if lang.abbreviation == abbreviation), None)

@@ -18,6 +18,16 @@ import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
 import { ConfigurationDto } from '../model/configuration-dto';
+// @ts-ignore
+import { ConfigurationGoogleSpeechToTextDto } from '../model/configuration-google-speech-to-text-dto';
+// @ts-ignore
+import { ConfigurationGoogleTextToSpeechDto } from '../model/configuration-google-text-to-speech-dto';
+// @ts-ignore
+import { ConfigurationGoogleTranslateDto } from '../model/configuration-google-translate-dto';
+// @ts-ignore
+import { ConfigurationMicrosoftTextToSpeechDto } from '../model/configuration-microsoft-text-to-speech-dto';
+// @ts-ignore
+import { GetConfigById200Response } from '../model/get-config-by-id200-response';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -94,22 +104,78 @@ export class ConfigurationControllerService implements ConfigurationControllerSe
     }
 
     /**
-     * @param languageId 
+     * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAll3(languageId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<Array<ConfigurationDto>>;
-    public getAll3(languageId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ConfigurationDto>>>;
-    public getAll3(languageId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ConfigurationDto>>>;
-    public getAll3(languageId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (languageId === null || languageId === undefined) {
-            throw new Error('Required parameter languageId was null or undefined when calling getAll3.');
+    public deleteConfigById(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public deleteConfigById(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public deleteConfigById(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public deleteConfigById(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling deleteConfigById.');
         }
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (languageId !== undefined && languageId !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>languageId, 'languageId');
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/config/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getConfigById(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<GetConfigById200Response>;
+    public getConfigById(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<GetConfigById200Response>>;
+    public getConfigById(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<GetConfigById200Response>>;
+    public getConfigById(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling getConfigById.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -148,11 +214,87 @@ export class ConfigurationControllerService implements ConfigurationControllerSe
             }
         }
 
-        let localVarPath = `/configuration`;
-        return this.httpClient.request<Array<ConfigurationDto>>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/config/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<GetConfigById200Response>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param id 
+     * @param configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public updateConfigById(id: string, configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto: ConfigurationDto | ConfigurationGoogleSpeechToTextDto | ConfigurationGoogleTextToSpeechDto | ConfigurationGoogleTranslateDto | ConfigurationMicrosoftTextToSpeechDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<GetConfigById200Response>;
+    public updateConfigById(id: string, configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto: ConfigurationDto | ConfigurationGoogleSpeechToTextDto | ConfigurationGoogleTextToSpeechDto | ConfigurationGoogleTranslateDto | ConfigurationMicrosoftTextToSpeechDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<GetConfigById200Response>>;
+    public updateConfigById(id: string, configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto: ConfigurationDto | ConfigurationGoogleSpeechToTextDto | ConfigurationGoogleTextToSpeechDto | ConfigurationGoogleTranslateDto | ConfigurationMicrosoftTextToSpeechDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<GetConfigById200Response>>;
+    public updateConfigById(id: string, configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto: ConfigurationDto | ConfigurationGoogleSpeechToTextDto | ConfigurationGoogleTextToSpeechDto | ConfigurationGoogleTranslateDto | ConfigurationMicrosoftTextToSpeechDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling updateConfigById.');
+        }
+        if (configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto === null || configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto === undefined) {
+            throw new Error('Required parameter configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto was null or undefined when calling updateConfigById.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/config/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<GetConfigById200Response>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

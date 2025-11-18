@@ -39,8 +39,8 @@ def main():
         english = get_language_by_name("English")
         spanish = get_language_by_name("Spanish")
         print(f"   ✓ Found {len(languages)} languages")
-        print(f"   ✓ English: {english.name} ({english.abbreviation})")
-        print(f"   ✓ Spanish: {spanish.name} ({spanish.abbreviation})")
+        print(f"   ✓ English: {english.name} ({english.isoCode})")
+        print(f"   ✓ Spanish: {spanish.name} ({spanish.isoCode})")
     except Exception as e:
         print(f"   ✗ Error: {e}")
         print("   Make sure the API server is running on http://localhost:8080")

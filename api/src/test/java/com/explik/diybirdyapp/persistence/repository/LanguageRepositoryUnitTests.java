@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LanguageRepositoryUnitTests {
     private static final String PRE_EXISTENT_ID = "pre-existent-id";
     private static final String PRE_EXISTENT_NAME = "pre-existent-name";
-    private static final String PRE_EXISTENT_ABBREVIATION = "pre-existent-abbreviation";
+    private static final String PRE_EXISTENT_ABBREVIATION = "pre-existent-iso-code";
 
     @Autowired
     LanguageRepository repository;
@@ -26,13 +26,13 @@ public class LanguageRepositoryUnitTests {
         var language = new FlashcardLanguageModel();
         language.setId("new-id-1");
         language.setName("new-name-1");
-        language.setAbbreviation("new-abbreviation-1");
+        language.setIsoCode("new-iso-code-1");
 
         var savedLanguage = repository.add(language);
 
         assertNotNull(savedLanguage.getId());
         assertNotNull(savedLanguage.getName());
-        assertNotNull(savedLanguage.getAbbreviation());
+        assertNotNull(savedLanguage.getIsoCode());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class LanguageRepositoryUnitTests {
         var language = new FlashcardLanguageModel();
         language.setId(PRE_EXISTENT_ID);
         language.setName("new-name-2");
-        language.setAbbreviation("new-abbreviation-2");
+        language.setIsoCode("new-iso-code-2");
 
         assertThrows(IllegalArgumentException.class, () -> {
             repository.add(language);
@@ -52,7 +52,7 @@ public class LanguageRepositoryUnitTests {
         var language = new FlashcardLanguageModel();
         language.setId("new-id-3");
         language.setName(PRE_EXISTENT_NAME);
-        language.setAbbreviation("new-abbreviation-3");
+        language.setIsoCode("new-iso-code<-3");
 
         assertThrows(IllegalArgumentException.class, () -> {
             repository.add(language);
@@ -64,7 +64,7 @@ public class LanguageRepositoryUnitTests {
         var language = new FlashcardLanguageModel();
         language.setId("new-id-4");
         language.setName("new-name-4");
-        language.setAbbreviation(PRE_EXISTENT_ABBREVIATION);
+        language.setIsoCode(PRE_EXISTENT_ABBREVIATION);
 
         assertThrows(IllegalArgumentException.class, () -> {
             repository.add(language);
@@ -82,7 +82,7 @@ public class LanguageRepositoryUnitTests {
         var language = new FlashcardLanguageModel();
         language.setId("new-id-5");
         language.setName("new-name-5");
-        language.setAbbreviation("new-abbreviation-5");
+        language.setIsoCode("new-iso-code-5");
 
         repository.add(language);
 

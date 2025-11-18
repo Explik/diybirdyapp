@@ -23,8 +23,8 @@ public class LanguageVertexUnitTest {
     @Test
     void givenVertex_whenSetAbbreviation_thenUpdatedAbbreviation() {
         var vertex = LanguageVertex.create(traversalSource);
-        vertex.setAbbreviation("new-abbreviation");
-        assertEquals("new-abbreviation", vertex.getAbbreviation());
+        vertex.setIsoCode("new-iso-code");
+        assertEquals("new-iso-code", vertex.getIsoCode());
     }
 
     @Test

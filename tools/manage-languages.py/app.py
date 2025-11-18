@@ -56,7 +56,7 @@ if logged_in:
                 df = pd.DataFrame([{
                     "ID": lang['id'],
                     "Name": lang['name'],
-                    "Abbreviation": lang['abbreviation'],
+                    "ISO code": lang['isoCode'],
                     "EditLink": f"/Update_Language?languageId={lang['id']}&autoLogin=true"
                 } for lang in languages])
                 
@@ -84,7 +84,7 @@ if logged_in:
     col1, col2 = st.columns([2, 2])
     
     with col1:
-        language_options = {lang['id']: f"{lang['name']} ({lang['abbreviation']})" for lang in languages}
+        language_options = {lang['id']: f"{lang['name']} ({lang['isoCode']})" for lang in languages}
         selected_language_id = st.selectbox(
             "Select Language",
             options=[None] + list(language_options.keys()),

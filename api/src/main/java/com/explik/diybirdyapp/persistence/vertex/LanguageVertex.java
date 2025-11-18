@@ -13,7 +13,7 @@ public class LanguageVertex extends AbstractVertex {
     public static final String LABEL = "language";
 
     public static final String PROPERTY_ID = "id";
-    public static final String PROPERTY_ABBREVIATION = "abbreviation";
+    public static final String PROPERTY_ISO_CODE = "isoCode";
     public static final String PROPERTY_NAME = "name";
 
     public String getId() {
@@ -24,12 +24,12 @@ public class LanguageVertex extends AbstractVertex {
         setProperty(PROPERTY_ID, id);
     }
 
-    public String getAbbreviation() {
-        return getPropertyAsString(PROPERTY_ABBREVIATION);
+    public String getIsoCode() {
+        return getPropertyAsString(PROPERTY_ISO_CODE, null);
     }
 
-    public void setAbbreviation(String abbreviation) {
-        setProperty(PROPERTY_ABBREVIATION, abbreviation);
+    public void setIsoCode(String isoCode) {
+        setProperty(PROPERTY_ISO_CODE, isoCode);
     }
 
     public String getName() {
@@ -59,8 +59,8 @@ public class LanguageVertex extends AbstractVertex {
         return new LanguageVertex(traversalSource, vertexQuery.next());
     }
 
-    public static LanguageVertex findByAbbreviation(GraphTraversalSource traversalSource, String abbreviation) {
-        var vertexQuery = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ABBREVIATION, abbreviation);
+    public static LanguageVertex findByIsoCode(GraphTraversalSource traversalSource, String isoCode) {
+        var vertexQuery = traversalSource.V().hasLabel(LABEL).has(PROPERTY_ISO_CODE, isoCode);
         if(!vertexQuery.hasNext())
             return null;
         return new LanguageVertex(traversalSource, vertexQuery.next());

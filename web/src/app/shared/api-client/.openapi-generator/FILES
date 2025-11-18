@@ -4,6 +4,8 @@ api.module.ts
 api/api.ts
 api/authentication-controller.service.ts
 api/authentication-controller.serviceInterface.ts
+api/configuration-controller.service.ts
+api/configuration-controller.serviceInterface.ts
 api/exercise-controller.service.ts
 api/exercise-controller.serviceInterface.ts
 api/exercise-session-controller.service.ts
@@ -33,7 +35,6 @@ model/configuration-google-text-to-speech-dto.ts
 model/configuration-google-translate-dto.ts
 model/configuration-identifier-dto.ts
 model/configuration-microsoft-text-to-speech-dto.ts
-model/create-config-request.ts
 model/exercise-content-audio-dto.ts
 model/exercise-content-dto.ts
 model/exercise-content-flashcard-dto.ts
@@ -76,6 +77,7 @@ model/flashcard-deck-dto.ts
 model/flashcard-dto-front-content.ts
 model/flashcard-dto.ts
 model/flashcard-language-dto.ts
+model/get-config-by-id200-response.ts
 model/login-dto.ts
 model/models.ts
 model/pair-option-feedback-pair.ts
