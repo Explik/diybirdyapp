@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, OnInit, Optional } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnInit, Optional, AfterContentInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SelectComponent } from '../select/select.component';
 
@@ -11,7 +11,7 @@ import { SelectComponent } from '../select/select.component';
     class: 'block w-full'
   }
 })
-export class OptionComponent implements OnInit {
+export class OptionComponent implements OnInit, AfterContentInit {
   @Input({ required: true }) value!: any;
   @Input() label?: string;
   @Input() disabled: boolean = false;
@@ -21,7 +21,9 @@ export class OptionComponent implements OnInit {
     @Optional() private select: SelectComponent
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  ngAfterContentInit(): void {
     // If no label provided, use the content of the element as label
     if (!this.label && this.elementRef.nativeElement.textContent) {
       this.label = this.elementRef.nativeElement.textContent.trim();
