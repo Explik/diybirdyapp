@@ -99,7 +99,7 @@
               <app-text-input formControlName="rightTextContent" (rows)="1"></app-text-input>
               <div class="flex items-center justify-between w-full">
                 <app-form-error *ngIf="fc.get('rightTextContent')?.errors?.['text.required']; else noRightTextError">Back text required</app-form-error>
-                <ng-template #noRightTextError><app-label>Back</app-label></ng-template>
+                <ng-template #noRightTextError><app-label i18n>Back</app-label></ng-template>
                 <span 
                   *ngIf="form.get('backLanguageId')?.value"
                   class="text-right">
