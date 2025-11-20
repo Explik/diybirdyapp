@@ -79,7 +79,6 @@ public class AuthenticationController {
         userService.createUser(user);
 
         return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
-
     }
 
     @PostMapping("/auth/logout")
