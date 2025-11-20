@@ -17,7 +17,7 @@
       <app-form-field class="w-1/2">
         <app-label i18n>Front language</app-label>
         <app-select class="global-left-language-input" formControlName="frontLanguageId">
-          <app-option value="">Select language</app-option>
+          <app-option value="" i18n>Select language</app-option>
           <app-option *ngFor="let language of flashcardLanguages" [value]="language.id">
             {{ formatLanguageName(language) }}
           </app-option>
@@ -28,7 +28,7 @@
       <app-form-field class="w-1/2">
         <app-label i18n>Back language</app-label>
         <app-select class="global-right-language-input" formControlName="backLanguageId">
-          <app-option value="">Select language</app-option>
+          <app-option value="" i18n>Select language</app-option>
           <app-option *ngFor="let language of flashcardLanguages" [value]="language.id">
             {{ formatLanguageName(language) }}
           </app-option>
