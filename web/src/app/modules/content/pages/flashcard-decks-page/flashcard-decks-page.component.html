@@ -1,6 +1,6 @@
 <div class="container mx-auto p-4 max-w-3xl">
 
-  <p class="text-lg font-semibold mb-2">Flashcard sets:</p>
+  <p i18n class="text-lg font-semibold mb-2">Flashcard sets:</p>
 
   <app-container layout="double" *ngFor="let deck of flashcardDecks" [routerLink]="['/flashcard-deck', deck.id]" class="cursor-pointer block mb-2">
     <span left i18n class="flex-grow">Deck "{{deck.name}}"</span>

@@ -1,9 +1,19 @@
+import { clickLoginButton, clickSignUpButton, goToLoginPage, goToSignUpPage, resetData, setEmail, setName, setPassword, setRepeatPassword } from "./utils";
+
 describe('Flashcard deck features', () => {
-  beforeEach(() => {
-    cy.visit('/login');
-    cy.get('input[type="email"], input[type="text"]').type('john@doe.com');
-    cy.get('input[type="password"]').type('password');
-    cy.get('button[type="submit"], button').contains(/login|sign in/i).click();
+  before(() => {
+    resetData(); 
+    goToSignUpPage();
+    setName('John Doe');
+    setEmail('john@doe.com');
+    setPassword('password');
+    setRepeatPassword('password');
+    clickSignUpButton();
+
+    goToLoginPage();
+    setEmail('john@doe.com');
+    setPassword('password');
+    clickLoginButton();
   });
 
   describe('Flashcard deck data', () => {

@@ -1,9 +1,10 @@
 package com.explik.diybirdyapp.persistence.command;
 
+import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextToSpeechConfigVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -45,16 +46,17 @@ public class GenerateAudioForFlashcardCommandHandler implements AsyncCommandHand
     }
 
     private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
-        var languageId = textContentVertex.getLanguage().getId();
-        var textToSpeechConfigs = TextToSpeechConfigVertex.findByLanguageId(traversalSource, languageId);
+        var languageVertex = textContentVertex.getLanguage();
+
+        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
         if (textToSpeechConfigs.isEmpty())
             return null;
 
         var textToSpeechConfig = textToSpeechConfigs.getFirst();
         return new TextToSpeechService.Text(
                 textContentVertex.getValue(),
-                textToSpeechConfig.getLanguageCode(),
-                textToSpeechConfig.getVoiceName(),
+                textToSpeechConfig.getPropertyValue("languageCode"),
+                textToSpeechConfig.getPropertyValue("voiceName"),
                 "LINEAR16"
         );
     }

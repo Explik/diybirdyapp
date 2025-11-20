@@ -1,20 +1,22 @@
 package com.explik.diybirdyapp.persistence.vertexFactory;
 
+import com.explik.diybirdyapp.ConfigurationTypes;
+import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextToSpeechConfigVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TextToSpeechConfigVertexFactory implements VertexFactory<TextToSpeechConfigVertex, TextToSpeechConfigVertexFactory.Options> {
+public class TextToSpeechConfigVertexFactory implements VertexFactory<ConfigurationVertex, TextToSpeechConfigVertexFactory.Options> {
 
     @Override
-    public TextToSpeechConfigVertex create(GraphTraversalSource traversalSource, Options o) {
-        var vertex = TextToSpeechConfigVertex.create(traversalSource);
+    public ConfigurationVertex create(GraphTraversalSource traversalSource, Options o) {
+        var vertex = ConfigurationVertex.create(traversalSource);
         vertex.setId(o.id);
-        vertex.setLanguageCode(o.languageCode);
-        vertex.setVoiceName(o.voiceName);
-        vertex.setLanguage(o.languageVertex);
+        vertex.setType(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
+        vertex.setPropertyValue("languageCode", o.languageCode);
+        vertex.setPropertyValue("voiceName", o.voiceName);
+        vertex.addLanguage(o.languageVertex);
 
         return vertex;
     }

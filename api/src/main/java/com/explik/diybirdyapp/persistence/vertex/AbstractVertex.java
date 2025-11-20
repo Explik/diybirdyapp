@@ -25,6 +25,10 @@ public class AbstractVertex {
         this.vertex = this.traversalSource.V(this.vertex).next();
     }
 
+    public void delete() {
+        this.traversalSource.V(this.vertex).drop().iterate();
+    }
+
     public String getLabel() {
         return this.vertex.label();
     }

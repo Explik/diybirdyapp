@@ -5,14 +5,20 @@ import com.explik.diybirdyapp.persistence.repository.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class ConfigurationService {
     @Autowired
     ConfigurationRepository repository;
 
-    public List<ConfigurationModel> getAll(String languageId) {
-        return repository.getAll(languageId);
+    public ConfigurationModel getById(String configId) {
+        return repository.get(configId);
+    }
+
+    public ConfigurationModel update(ConfigurationModel configModel) {
+        return repository.update(configModel);
+    }
+
+    public void deleteById(String configId) {
+        repository.delete(configId);
     }
 }

@@ -13,4 +13,8 @@ public class ValidationException extends RuntimeException {
     public Map<String, String> getFields() {
         return fields;
     }
+
+    public static ValidationException fromFieldError(String field, String message) {
+        return new ValidationException(Map.of(field, message));
+    }
 }

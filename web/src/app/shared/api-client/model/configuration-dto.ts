@@ -11,7 +11,7 @@
 
 export interface ConfigurationDto { 
     id?: string;
+    type?: string;
     languageId?: string;
-    languageCode?: string;
 }
 

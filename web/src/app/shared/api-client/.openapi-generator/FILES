@@ -30,6 +30,11 @@ git_push.sh
 index.ts
 model/arrange-text-option.ts
 model/configuration-dto.ts
+model/configuration-google-speech-to-text-dto.ts
+model/configuration-google-text-to-speech-dto.ts
+model/configuration-google-translate-dto.ts
+model/configuration-identifier-dto.ts
+model/configuration-microsoft-text-to-speech-dto.ts
 model/exercise-content-audio-dto.ts
 model/exercise-content-dto.ts
 model/exercise-content-flashcard-dto.ts
@@ -72,6 +77,7 @@ model/flashcard-deck-dto.ts
 model/flashcard-dto-front-content.ts
 model/flashcard-dto.ts
 model/flashcard-language-dto.ts
+model/get-config-by-id200-response.ts
 model/login-dto.ts
 model/models.ts
 model/pair-option-feedback-pair.ts

@@ -11,4 +11,5 @@ public class VertexBuilderFactories {
     public PronunciationVertexFactory pronunciationVertexFactory;
     public TextContentVertexFactory textContentVertexFactory;
     public TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
+    public TranslateConfigVertexFactory translationConfigVertexFactory;
 }

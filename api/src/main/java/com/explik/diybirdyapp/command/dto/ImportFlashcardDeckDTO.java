@@ -81,7 +81,7 @@ public class ImportFlashcardDeckDTO {
         public static class Language {
             private String id;
             private String name;
-            private String abbreviation;
+            private String isoCode;
 
             public String getId() {
                 return id;
@@ -99,12 +99,12 @@ public class ImportFlashcardDeckDTO {
                 this.name = name;
             }
 
-            public String getAbbreviation() {
-                return abbreviation;
+            public String getIsoCode() {
+                return isoCode;
             }
 
-            public void setAbbreviation(String abbreviation) {
-                this.abbreviation = abbreviation;
+            public void setIsoCode(String isoCode) {
+                this.isoCode = isoCode;
             }
         }
     }

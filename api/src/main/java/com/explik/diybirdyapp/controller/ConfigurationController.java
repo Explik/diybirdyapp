@@ -1,32 +1,40 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.dto.admin.ConfigurationDto;
+import com.explik.diybirdyapp.controller.mapper.GenericMapper;
+import com.explik.diybirdyapp.model.admin.ConfigurationModel;
 import com.explik.diybirdyapp.service.ConfigurationService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ConfigurationController {
-    private final ModelMapper modelMapper = new ModelMapper();
+    @Autowired
+    GenericMapper<ConfigurationDto, ConfigurationModel> incomingMapper;
+
+    @Autowired
+    GenericMapper<ConfigurationModel, ConfigurationDto> outgoingMapper;
 
     @Autowired
     ConfigurationService service;
 
-    @GetMapping("/configuration")
-    public List<ConfigurationDto> getAll(@RequestParam String languageId) {
-        var models = service.getAll(languageId);
+    @GetMapping("/config/{id}")
+    public ConfigurationDto getConfigById(@PathVariable("id") String configId) {
+        var model = service.getById(configId);
+        return outgoingMapper.map(model);
+    }
 
-        if (languageId == null || languageId.isBlank())
-            throw new IllegalArgumentException("No languageId parameter is not supported");
+    @PutMapping("/config/{id}")
+    public ConfigurationDto updateConfigById(@PathVariable("id") String configId, @RequestBody ConfigurationDto configDto) {
+        var model = incomingMapper.map(configDto);
+        model.setId(configId);
 
-        return models.stream()
-            .map(s -> modelMapper.map(s, ConfigurationDto.class))
-            .collect(Collectors.toList());
+        var updatedModel = service.update(model);
+        return outgoingMapper.map(updatedModel);
+    }
+
+    @DeleteMapping("/config/{id}")
+    public void deleteConfigById(@PathVariable("id") String configId) {
+        service.deleteById(configId);
     }
 }

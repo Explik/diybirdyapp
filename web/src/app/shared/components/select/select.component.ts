@@ -1,4 +1,4 @@
-import { Component, ContentChildren, forwardRef, HostBinding, HostListener, Input, OnInit, QueryList } from '@angular/core';
+import { Component, ContentChildren, forwardRef, HostBinding, HostListener, Input, OnInit, QueryList, AfterContentInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { OptionComponent } from '../option/option.component';
@@ -20,7 +20,7 @@ import { AppFormFieldControl } from '../../models/form.interface';
     }
   ]
 })
-export class SelectComponent implements ControlValueAccessor, OnInit, AppFormFieldControl {
+export class SelectComponent implements ControlValueAccessor, OnInit, AfterContentInit, AppFormFieldControl {
   @Input() id: string | undefined;
   @Input() placeholder: string = 'Select an option';
   @Input() disabled: boolean = false;
@@ -36,6 +36,11 @@ export class SelectComponent implements ControlValueAccessor, OnInit, AppFormFie
   private onTouched: () => void = () => {};
   
   ngOnInit(): void {}
+  
+  ngAfterContentInit(): void {
+    // Update selected label after content is initialized
+    this.updateSelectedLabel();
+  }
   
   @HostBinding('class.pointer-events-none')
   @HostBinding('class.opacity-50')
@@ -71,20 +76,22 @@ export class SelectComponent implements ControlValueAccessor, OnInit, AppFormFie
     this.isOpen = false;
   }
   
+  private updateSelectedLabel(): void {
+    if (this.selectedValue !== null && this.options) {
+      const selectedOption = this.options.find(option => option.value === this.selectedValue);
+      if (selectedOption) {
+        this.selectedLabel = selectedOption.label || selectedOption.value?.toString() || '';
+      }
+    }
+  }
+  
   // ControlValueAccessor methods
   writeValue(value: any): void {
     this.selectedValue = value;
     
     // Find matching option to get the label
     setTimeout(() => {
-      if (this.options) {
-        const selectedOption = this.options.find(option => option.value === value);
-        if (selectedOption) {
-          this.selectedLabel = selectedOption.label || selectedOption.value?.toString() || '';
-        } else {
-          this.selectedLabel = '';
-        }
-      }
+      this.updateSelectedLabel();
     });
   }
   

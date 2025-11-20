@@ -11,7 +11,7 @@
 
 export interface FlashcardLanguageDto { 
     id: string;
-    abbreviation: string;
     name: string;
+    isoCode?: string;
 }
 

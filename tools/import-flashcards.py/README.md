@@ -153,18 +153,18 @@ The tool allows users to select source and target languages for flashcard genera
 
 The tool retrieves the available languages and configurations using the following API endpoints:
 ```
-GET /languages # Retrieve available languages
+GET /language # Retrieve available languages
 Response:
 [
     {
         "id": "en",
         "name": "English",
-        "abbreviation": "EN"
+        "isoCode": "EN"
     },
     ...
 ]
 
-GET /configuration?languageId={languageId} # Retrieve configuration for a specific language
+GET /language/{id}/config?type=google-translate # Retrieve configuration for a specific language
 Response:
 [
     {

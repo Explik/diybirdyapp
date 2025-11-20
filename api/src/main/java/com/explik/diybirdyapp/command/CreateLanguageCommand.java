@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.command;
 
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
-import com.explik.diybirdyapp.persistence.repository.FlashcardLanguageRepository;
+import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -18,18 +18,18 @@ public class CreateLanguageCommand implements Runnable {
     @CommandLine.Option(names = { "-n", "--name" }, description = "The name of the language", required = true)
     public String name;
 
-    @CommandLine.Option(names = { "-a", "--abbreviation" }, description = "The abbreviation of the language", required = true)
-    public String abbreviation;
+    @CommandLine.Option(names = { "--isoCode" }, description = "The isoCode of the language", required = true)
+    public String isoCode;
 
     @Autowired
-    public FlashcardLanguageRepository languageRepository;
+    public LanguageRepository languageRepository;
 
     public void run() {
         var languageId = (id != null) ? id : UUID.randomUUID().toString();
         var language = new FlashcardLanguageModel();
         language.setId(languageId);
         language.setName(name);
-        language.setAbbreviation(abbreviation);
+        language.setIsoCode(isoCode);
 
         languageRepository.add(language);
     }

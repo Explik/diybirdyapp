@@ -1,5 +1,7 @@
 package com.explik.diybirdyapp.service;
 
+import com.explik.diybirdyapp.exception.UserAlreadyExistsException;
+import com.explik.diybirdyapp.exception.ValidationException;
 import com.explik.diybirdyapp.model.user.UserModel;
 import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,10 @@ public class UserService {
     UserRepository userRepository;
 
     public void createUser(UserModel model) {
-        userRepository.createUser(model);
+        try {
+            userRepository.createUser(model);
+        } catch (UserAlreadyExistsException e){
+            throw ValidationException.fromFieldError("email", "email.alreadyExists");
+        }
     }
 }

@@ -2,8 +2,8 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.admin.ConfigurationModel;
 
-import java.util.List;
-
 public interface ConfigurationRepository {
-    List<ConfigurationModel> getAll(String languageId);
+    ConfigurationModel get(String configId);
+    ConfigurationModel update(ConfigurationModel configModel);
+    void delete(String configId);
 }

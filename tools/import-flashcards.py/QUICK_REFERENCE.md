@@ -168,7 +168,7 @@ except Exception as e:
 # Check available languages first
 languages = get_languages()
 for lang in languages:
-    print(f"{lang.name} ({lang.abbreviation})")
+    print(f"{lang.name} ({lang.isoCode})")
 ```
 
 ### Flashcard ID mismatch

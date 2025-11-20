@@ -11,7 +11,14 @@ import { HttpHeaders }                                       from '@angular/comm
 
 import { Observable }                                        from 'rxjs';
 
+import { ConfigurationDto } from '../model/models';
+import { ConfigurationGoogleSpeechToTextDto } from '../model/models';
+import { ConfigurationGoogleTextToSpeechDto } from '../model/models';
+import { ConfigurationGoogleTranslateDto } from '../model/models';
+import { ConfigurationIdentifierDto } from '../model/models';
+import { ConfigurationMicrosoftTextToSpeechDto } from '../model/models';
 import { FlashcardLanguageDto } from '../model/models';
+import { GetConfigById200Response } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -25,7 +32,54 @@ export interface LanguageControllerServiceInterface {
     /**
      * 
      * 
+     * @param id 
+     * @param configurationIdentifierDto 
+     */
+    attachConfig(id: string, configurationIdentifierDto: ConfigurationIdentifierDto, extraHttpRequestParams?: any): Observable<object>;
+
+    /**
+     * 
+     * 
+     * @param id 
+     * @param configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto 
+     */
+    createConfig(id: string, configurationDtoConfigurationGoogleSpeechToTextDtoConfigurationGoogleTextToSpeechDtoConfigurationGoogleTranslateDtoConfigurationMicrosoftTextToSpeechDto: ConfigurationDto | ConfigurationGoogleSpeechToTextDto | ConfigurationGoogleTextToSpeechDto | ConfigurationGoogleTranslateDto | ConfigurationMicrosoftTextToSpeechDto, extraHttpRequestParams?: any): Observable<object>;
+
+    /**
+     * 
+     * 
+     * @param flashcardLanguageDto 
+     */
+    createLanguage(flashcardLanguageDto: FlashcardLanguageDto, extraHttpRequestParams?: any): Observable<object>;
+
+    /**
+     * 
+     * 
+     * @param id 
+     * @param configurationIdentifierDto 
+     */
+    detachConfig(id: string, configurationIdentifierDto: ConfigurationIdentifierDto, extraHttpRequestParams?: any): Observable<object>;
+
+    /**
+     * 
+     * 
      */
     getAll(extraHttpRequestParams?: any): Observable<Array<FlashcardLanguageDto>>;
+
+    /**
+     * 
+     * 
+     * @param id 
+     * @param type 
+     */
+    getConfigs(id: string, type?: string, extraHttpRequestParams?: any): Observable<Array<GetConfigById200Response>>;
+
+    /**
+     * 
+     * 
+     * @param id 
+     * @param flashcardLanguageDto 
+     */
+    updateLanguage(id: string, flashcardLanguageDto: FlashcardLanguageDto, extraHttpRequestParams?: any): Observable<object>;
 
 }

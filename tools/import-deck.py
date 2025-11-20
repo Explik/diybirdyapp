@@ -10,11 +10,11 @@ import sys
 #         {
 #             "frontContent": {
 #                 "text": "Text on front of card 1",
-#                 "language": { "abbreviation": "en" }
+#                 "language": { "isoCode": "en" }
 #             },
 #             "backContent": {
 #                 "text": "Text on back of card 1",
-#                 "language": { "abbreviation": "en" }
+#                 "language": { "isoCode": "en" }
 #             }
 #         }
 #     ]
@@ -42,8 +42,8 @@ def read_data_file(file_path):
 def get_language_from_query(obj): 
     if ('name' in obj):
         return get_language_by_name(obj["name"])
-    if ('abbrivation' in obj):
-        return get_language_by_abbrevation(obj["abbrivation"])
+    if ('isoCode' in obj):
+        return get_language_by_abbrevation(obj["isoCode "])
     else: 
         raise ValueError("No language found in content", obj)
 

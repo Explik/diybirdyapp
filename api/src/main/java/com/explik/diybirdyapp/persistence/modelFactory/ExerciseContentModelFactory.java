@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
+import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
@@ -116,20 +117,18 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         return model;
     }
 
-    // TODO remove duplicate code
     private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
-        var languageId = textContentVertex.getLanguage().getId();
-        var textToSpeechConfigs = TextToSpeechConfigVertex.findByLanguageId(
-                textContentVertex.getUnderlyingSource(),
-                languageId);
+        var languageVertex = textContentVertex.getLanguage();
+
+        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
         if (textToSpeechConfigs.isEmpty())
             return null;
 
         var textToSpeechConfig = textToSpeechConfigs.getFirst();
         return new TextToSpeechService.Text(
                 textContentVertex.getValue(),
-                textToSpeechConfig.getLanguageCode(),
-                textToSpeechConfig.getVoiceName(),
+                textToSpeechConfig.getPropertyValue("languageCode"),
+                textToSpeechConfig.getPropertyValue("voiceName"),
                 "LINEAR16"
         );
     }

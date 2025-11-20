@@ -6,11 +6,10 @@ public class FlashcardLanguageDto {
     @NotNull(message = "id.required")
     private String id;
 
-    @NotNull(message = "abbreviation.required")
-    private String abbreviation;
-
     @NotNull(message = "name.required")
     private String name;
+
+    private String isoCode;
 
     public FlashcardLanguageDto() {}
 
@@ -22,12 +21,12 @@ public class FlashcardLanguageDto {
         this.id = id;
     }
 
-    public String getAbbreviation() {
-        return abbreviation;
+    public String getIsoCode() {
+        return isoCode;
     }
 
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
     }
 
     public String getName() {
