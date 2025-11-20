@@ -115,8 +115,7 @@ describe('Sign Up and Login Flow', () => {
             setPassword(password);
             clickLoginButton();
 
-            // Known problem
-            // assertLoginSuccess();
+            assertLoginSuccess();
         }); 
 
         it('Failed login with invalid credentials', () => {

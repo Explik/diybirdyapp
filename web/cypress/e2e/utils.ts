@@ -77,14 +77,14 @@ export function clickSignUpButton() {
 export function clickLoginButton() {
     return getCurrentPageType().then(currentPageType => {
         if (currentPageType === 'login')
-            return cy.contains('Login').click();
+            return cy.get('button[type="submit"], button').contains(/login|sign in/i).click();
         else
             throw new Error('Unsupported page type ' + currentPageType);
         });
 }
 
 export function assertLoginSuccess() {
-    cy.url().should('equal', '/');
+    cy.url().should('not.include', '/login');
 }
 
 export function assertLoginError() {
