@@ -1,73 +1,15 @@
-import { cli } from "cypress";
-
-function resetData() {
-    cy.request('POST', 'http://localhost:8080/reset-graph');
-}
-
-function goToSignUpPage() {
-    cy.visit('/signup');
-}
-
-function getCurrentPageType() {
-    return "signup";
-}
-
-function setFieldValue(field: any, value: string) {
-    field.clear()
-    if (value) field.type(value);
-}
-
-function setName(value: string) {
-    let currentPageType = getCurrentPageType();
-    if (currentPageType === 'signup') 
-        return setFieldValue(cy.get('#form-input-1'), value);
-    else 
-        throw new Error('Unsupported page type' + currentPageType);
-}
-
-function setEmail(value: string) {
-    let currentPageType = getCurrentPageType();
-    if (currentPageType === 'signup')
-        return setFieldValue(cy.get('#form-input-2'), value);
-    else
-        throw new Error('Unsupported page type' + currentPageType);
-}
-
-function setPassword(value: string) {
-    let currentPageType = getCurrentPageType();
-    if (currentPageType === 'signup')
-        return setFieldValue(cy.get('#form-input-3'), value);
-    else
-        throw new Error('Unsupported page type' + currentPageType);
-}
-
-function setRepeatPassword(value: string) {
-    let currentPageType = getCurrentPageType();
-    if (currentPageType === 'signup')
-        return setFieldValue(cy.get('#form-input-4'), value);
-    else
-        throw new Error('Unsupported page type' + currentPageType);
-}
-
-function clickSignUpButton() {
-    let currentPageType = getCurrentPageType();
-    if (currentPageType === 'signup')
-        return cy.contains('Sign up').click();
-    else
-        throw new Error('Unsupported page type' + currentPageType);
-}
-
-function assertSignupButtonDisabled() {
-    cy.contains('Sign up').should('be.disabled');
-}
-
-function assertSignupSuccess() {
-    cy.url().should('include', '/login');
-}
-
-function assertSignupError() {
-    cy.url().should('include', '/signup');
-}
+import {
+    resetData,
+    goToSignUpPage,
+    setName,
+    setEmail,
+    setPassword,
+    setRepeatPassword,
+    clickSignUpButton,
+    assertSignupButtonDisabled,
+    assertSignupSuccess,
+    assertSignupError
+} from './utils';
 
 describe('Sign Up and Login Flow', () => {
     describe('Sign Up Tests', () => {
