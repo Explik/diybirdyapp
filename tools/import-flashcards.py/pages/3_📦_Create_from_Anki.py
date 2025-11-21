@@ -84,13 +84,50 @@ def strip_anki_formatting(text: str) -> str:
     text = ' '.join(text.split())
     return text.strip()
 
-def extract_media_filename(raw_value: str) -> str:
-    """Extract the media filename from Anki sound field (e.g., [sound:file.mp3] -> file.mp3)"""
+def detect_content_type(anki_deck, field_name) -> str:
+    """Detect content type (text, audio, image, video) from a field by checking file extensions"""
     import re
-    match = re.search(r'\[sound:([^\]]+)\]', raw_value)
-    if match:
-        return match.group(1)
-    return None
+    
+    # Check the first card to determine the field type
+    first_card = anki_deck.get_flashcards()[0]
+    raw_value = first_card.get_raw_value(field_name)
+    
+    # Extract potential filenames from the field
+    # Check for sound tag: [sound:filename.ext]
+    sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value)
+    if sound_match:
+        filename = sound_match.group(1)
+        ext = filename.split('.')[-1].lower() if '.' in filename else ''
+        
+        # Audio extensions
+        audio_exts = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'wma', 'opus']
+        if ext in audio_exts:
+            return "Audio"
+    
+    # Check for img tag: <img src="filename.ext">
+    img_match = re.search(r'<img[^>]+src=["\']?([^"\'>\s]+)["\']?', raw_value, re.IGNORECASE)
+    if img_match:
+        filename = img_match.group(1)
+        ext = filename.split('.')[-1].lower() if '.' in filename else ''
+        
+        # Image extensions
+        image_exts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico']
+        if ext in image_exts:
+            return "Image"
+    
+    # Check for video tag: <video src="filename.ext">
+    video_match = re.search(r'<video[^>]+src=["\']?([^"\'>\s]+)["\']?', raw_value, re.IGNORECASE)
+    if video_match:
+        filename = video_match.group(1)
+        ext = filename.split('.')[-1].lower() if '.' in filename else ''
+        
+        # Video extensions
+        video_exts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', 'm4v']
+        if ext in video_exts:
+            return "Video"
+    
+    # Default to text if no media detected
+    return "Text"
 
 # Step 1: Upload Anki File
 st.subheader("1️⃣ Upload Anki Deck File")
@@ -138,6 +175,9 @@ if st.session_state.anki_deck is not None:
     
     all_fields = [None] + anki_deck.get_field_names()
     sound_fields = [None] + anki_deck.get_sound_field_names()
+    image_fields = [None] + anki_deck.get_image_field_names()
+    video_fields = [None] + anki_deck.get_video_field_names()
+    media_fields = [None] + anki_deck.get_media_field_names()
     
     # Deck name and description
     deck_name = st.text_input("Deck Name", value=st.session_state.deck_name)
@@ -148,43 +188,99 @@ if st.session_state.anki_deck is not None:
     
     with cols[0]:
         st.markdown("#### Front Side")
-        front_language_name = st.selectbox(
-            "Front Language",
-            options=language_names,
-            key="front_language",
-            help="Select the language for the front of the flashcards"
-        )
-        front_language = language_options[front_language_name] if front_language_name else None
         
-        front_field = st.selectbox("Select text field", key="front_text_field", options=all_fields)
+        # Field selector - content type will be auto-detected
+        front_field = st.selectbox(
+            "Select field", 
+            key="front_field", 
+            options=all_fields,
+            help="Select the field for the front of the flashcards. Content type will be detected automatically."
+        )
+        
+        # Auto-detect content type
+        front_content_type = None
+        front_language = None
+        front_pronunciation_field = None
+        
         if front_field:
+            front_content_type = detect_content_type(anki_deck, front_field)
+            
+            # Show detected content type
+            st.caption(f"🔍 Detected type: **{front_content_type}**")
+            
+            # Show field examples
             front_field_string = format_field_values(anki_deck, front_field, 50)
             st.caption(f"Examples: **{front_field_string}**")
-        
-        front_pronunciation_field = st.selectbox("Select pronunciation field (optional)", key="front_pronunciation_field", options=sound_fields)
-        if front_pronunciation_field:
-            front_pronunciation_string = format_field_values(anki_deck, front_pronunciation_field, 50)
-            st.caption(f"Examples: **{front_pronunciation_string}**")
+            
+            # Language selector for text, audio, and video content
+            if front_content_type in ["Text", "Audio", "Video"]:
+                lang_label = "Language" if front_content_type == "Text" else f"{front_content_type} Language"
+                front_language_name = st.selectbox(
+                    lang_label,
+                    options=language_names,
+                    key="front_language",
+                    help=f"Select the language for the front side"
+                )
+                front_language = language_options[front_language_name] if front_language_name else None
+            
+            # Pronunciation field for text content
+            if front_content_type == "Text":
+                front_pronunciation_field = st.selectbox(
+                    "Pronunciation field (optional)", 
+                    key="front_pronunciation_field", 
+                    options=sound_fields
+                )
+                if front_pronunciation_field:
+                    front_pronunciation_string = format_field_values(anki_deck, front_pronunciation_field, 50)
+                    st.caption(f"Examples: **{front_pronunciation_string}**")
     
     with cols[1]:
         st.markdown("#### Back Side")
-        back_language_name = st.selectbox(
-            "Back Language",
-            options=language_names,
-            key="back_language",
-            help="Select the language for the back of the flashcards"
-        )
-        back_language = language_options[back_language_name] if back_language_name else None
         
-        back_field = st.selectbox("Select text field", key="back_text_field", options=all_fields)
+        # Field selector - content type will be auto-detected
+        back_field = st.selectbox(
+            "Select field", 
+            key="back_field", 
+            options=all_fields,
+            help="Select the field for the back of the flashcards. Content type will be detected automatically."
+        )
+        
+        # Auto-detect content type
+        back_content_type = None
+        back_language = None
+        back_pronunciation_field = None
+        
         if back_field:
+            back_content_type = detect_content_type(anki_deck, back_field)
+            
+            # Show detected content type
+            st.caption(f"🔍 Detected type: **{back_content_type}**")
+            
+            # Show field examples
             back_field_string = format_field_values(anki_deck, back_field, 50)
             st.caption(f"Examples: **{back_field_string}**")
-        
-        back_pronunciation_field = st.selectbox("Select pronunciation field (optional)", key="back_pronunciation_field", options=sound_fields)
-        if back_pronunciation_field:
-            back_pronunciation_string = format_field_values(anki_deck, back_pronunciation_field, 50)
-            st.caption(f"Examples: **{back_pronunciation_string}**")
+            
+            # Language selector for text, audio, and video content
+            if back_content_type in ["Text", "Audio", "Video"]:
+                lang_label = "Language" if back_content_type == "Text" else f"{back_content_type} Language"
+                back_language_name = st.selectbox(
+                    lang_label,
+                    options=language_names,
+                    key="back_language",
+                    help=f"Select the language for the back side"
+                )
+                back_language = language_options[back_language_name] if back_language_name else None
+            
+            # Pronunciation field for text content
+            if back_content_type == "Text":
+                back_pronunciation_field = st.selectbox(
+                    "Pronunciation field (optional)", 
+                    key="back_pronunciation_field", 
+                    options=sound_fields
+                )
+                if back_pronunciation_field:
+                    back_pronunciation_string = format_field_values(anki_deck, back_pronunciation_field, 50)
+                    st.caption(f"Examples: **{back_pronunciation_string}**")
     
     # Step 3: Preview
     st.markdown("---")
@@ -206,33 +302,69 @@ if st.session_state.anki_deck is not None:
         
         with cols[0]:
             st.markdown("**Front Side**")
-            front_value = strip_anki_formatting(card.get_raw_value(front_field))
-            st.info(front_value)
-            if front_pronunciation_field:
+            
+            if front_content_type == "Text":
+                front_value = strip_anki_formatting(card.get_raw_value(front_field))
+                st.info(front_value)
+                if front_pronunciation_field:
+                    try:
+                        if card.has_media(front_pronunciation_field):
+                            audio_path = card.get_media_file_path(front_pronunciation_field)
+                            st.audio(audio_path)
+                        else:
+                            st.caption("⚠️ No audio file in this field")
+                    except Exception as e:
+                        st.caption(f"⚠️ Audio not available: {str(e)}")
+            
+            elif front_content_type in ["Audio", "Image", "Video"]:
                 try:
-                    raw_value = card.get_raw_value(front_pronunciation_field)
-                    if raw_value and "[sound:" in raw_value:
-                        audio_path = card.get_media_path(front_pronunciation_field)
-                        st.audio(audio_path)
+                    if card.has_media(front_field):
+                        media_path = card.get_media_file_path(front_field)
+                        media_type = card.get_media_type(front_field)
+                        
+                        if media_type == "audio" or front_content_type == "Audio":
+                            st.audio(media_path)
+                        elif media_type == "image" or front_content_type == "Image":
+                            st.image(media_path)
+                        elif media_type == "video" or front_content_type == "Video":
+                            st.video(media_path)
                     else:
-                        st.caption("⚠️ No audio file in this field")
+                        st.caption("⚠️ No media file in this field")
                 except Exception as e:
-                    st.caption(f"⚠️ Audio not available: {str(e)}")
+                    st.caption(f"⚠️ Media not available: {str(e)}")
         
         with cols[1]:
             st.markdown("**Back Side**")
-            back_value = strip_anki_formatting(card.get_raw_value(back_field))
-            st.info(back_value)
-            if back_pronunciation_field:
+            
+            if back_content_type == "Text":
+                back_value = strip_anki_formatting(card.get_raw_value(back_field))
+                st.info(back_value)
+                if back_pronunciation_field:
+                    try:
+                        if card.has_media(back_pronunciation_field):
+                            audio_path = card.get_media_file_path(back_pronunciation_field)
+                            st.audio(audio_path)
+                        else:
+                            st.caption("⚠️ No audio file in this field")
+                    except Exception as e:
+                        st.caption(f"⚠️ Audio not available: {str(e)}")
+            
+            elif back_content_type in ["Audio", "Image", "Video"]:
                 try:
-                    raw_value = card.get_raw_value(back_pronunciation_field)
-                    if raw_value and "[sound:" in raw_value:
-                        audio_path = card.get_media_path(back_pronunciation_field)
-                        st.audio(audio_path)
+                    if card.has_media(back_field):
+                        media_path = card.get_media_file_path(back_field)
+                        media_type = card.get_media_type(back_field)
+                        
+                        if media_type == "audio" or back_content_type == "Audio":
+                            st.audio(media_path)
+                        elif media_type == "image" or back_content_type == "Image":
+                            st.image(media_path)
+                        elif media_type == "video" or back_content_type == "Video":
+                            st.video(media_path)
                     else:
-                        st.caption("⚠️ No audio file in this field")
+                        st.caption("⚠️ No media file in this field")
                 except Exception as e:
-                    st.caption(f"⚠️ Audio not available: {str(e)}")
+                    st.caption(f"⚠️ Media not available: {str(e)}")
         
         # Step 4: Convert and Save
         st.markdown("---")
@@ -241,8 +373,11 @@ if st.session_state.anki_deck is not None:
         if st.button("Convert to Local Deck", type="primary", use_container_width=True):
             if not deck_name:
                 show_error("Please provide a deck name")
-            elif not front_language or not back_language:
-                show_error("Please select languages for both front and back sides")
+            # Validate language requirements based on content type
+            elif front_content_type in ["Text", "Audio", "Video"] and not front_language:
+                show_error(f"Please select a language for the front side ({front_content_type})")
+            elif back_content_type in ["Text", "Audio", "Video"] and not back_language:
+                show_error(f"Please select a language for the back side ({back_content_type})")
             else:
                 try:
                     # Initialize deck storage
@@ -261,16 +396,26 @@ if st.session_state.anki_deck is not None:
                     successful_cards = 0
                     failed_cards = 0
                     pronunciation_count = 0
+                    media_count = 0
                     
                     # Convert flashcards
                     for idx, flashcard in enumerate(anki_deck.get_flashcards()):
                         try:
-                            # Create text content for front and back
-                            front_text = strip_anki_formatting(flashcard.get_raw_value(front_field))
-                            back_text = strip_anki_formatting(flashcard.get_raw_value(back_field))
+                            # Create front content based on content type
+                            if front_content_type == "Text":
+                                front_text = strip_anki_formatting(flashcard.get_raw_value(front_field))
+                                front_content = create_text_content(front_text, front_language.id)
+                            else:
+                                # For media content, create a placeholder that will be updated
+                                front_content = {"type": "text", "text": "", "languageId": front_language.id if front_language else ""}
                             
-                            front_content = create_text_content(front_text, front_language.id)
-                            back_content = create_text_content(back_text, back_language.id)
+                            # Create back content based on content type
+                            if back_content_type == "Text":
+                                back_text = strip_anki_formatting(flashcard.get_raw_value(back_field))
+                                back_content = create_text_content(back_text, back_language.id)
+                            else:
+                                # For media content, create a placeholder that will be updated
+                                back_content = {"type": "text", "text": "", "languageId": back_language.id if back_language else ""}
                             
                             # Add flashcard to deck
                             flashcard_obj = deck_storage.add_flashcard(
@@ -281,28 +426,63 @@ if st.session_state.anki_deck is not None:
                                 flashcard_id=f"flashcard-{idx+1}"
                             )
                             
-                            # Add pronunciation if available
-                            if front_pronunciation_field:
+                            # Handle front media content
+                            if front_content_type in ["Audio", "Image", "Video"]:
                                 try:
-                                    # Check if the field contains a sound reference
-                                    raw_value = flashcard.get_raw_value(front_pronunciation_field)
-                                    if raw_value and "[sound:" in raw_value:
-                                        audio_path = flashcard.get_media_path(front_pronunciation_field)
-                                        # Extract original filename to preserve extension
-                                        media_filename = extract_media_filename(raw_value)
+                                    if flashcard.has_media(front_field):
+                                        media_path = flashcard.get_media_file_path(front_field)
+                                        media_filename = flashcard.extract_media_filename(front_field)
+                                        media_type = front_content_type.lower()
+                                        
+                                        deck_storage.add_media_content(
+                                            deck_dir=deck_dir,
+                                            flashcard_id=flashcard_obj["id"],
+                                            side="front",
+                                            media_file=media_path,
+                                            media_type=media_type,
+                                            language_id=front_language.id if front_language else None,
+                                            media_name=media_filename
+                                        )
+                                        media_count += 1
+                                except Exception as e:
+                                    pass  # Skip if media not available
+                            elif front_content_type == "Text" and front_pronunciation_field:
+                                # Add pronunciation for text content
+                                try:
+                                    if flashcard.has_media(front_pronunciation_field):
+                                        audio_path = flashcard.get_media_file_path(front_pronunciation_field)
+                                        media_filename = flashcard.extract_media_filename(front_pronunciation_field)
                                         deck_storage.add_pronunciation(deck_dir, flashcard_obj["id"], "front", audio_path, media_filename)
                                         pronunciation_count += 1
                                 except Exception:
                                     pass  # Skip if audio not available
                             
-                            if back_pronunciation_field:
+                            # Handle back media content
+                            if back_content_type in ["Audio", "Image", "Video"]:
                                 try:
-                                    # Check if the field contains a sound reference
-                                    raw_value = flashcard.get_raw_value(back_pronunciation_field)
-                                    if raw_value and "[sound:" in raw_value:
-                                        audio_path = flashcard.get_media_path(back_pronunciation_field)
-                                        # Extract original filename to preserve extension
-                                        media_filename = extract_media_filename(raw_value)
+                                    if flashcard.has_media(back_field):
+                                        media_path = flashcard.get_media_file_path(back_field)
+                                        media_filename = flashcard.extract_media_filename(back_field)
+                                        media_type = back_content_type.lower()
+                                        
+                                        deck_storage.add_media_content(
+                                            deck_dir=deck_dir,
+                                            flashcard_id=flashcard_obj["id"],
+                                            side="back",
+                                            media_file=media_path,
+                                            media_type=media_type,
+                                            language_id=back_language.id if back_language else None,
+                                            media_name=media_filename
+                                        )
+                                        media_count += 1
+                                except Exception as e:
+                                    pass  # Skip if media not available
+                            elif back_content_type == "Text" and back_pronunciation_field:
+                                # Add pronunciation for text content
+                                try:
+                                    if flashcard.has_media(back_pronunciation_field):
+                                        audio_path = flashcard.get_media_file_path(back_pronunciation_field)
+                                        media_filename = flashcard.extract_media_filename(back_pronunciation_field)
                                         deck_storage.add_pronunciation(deck_dir, flashcard_obj["id"], "back", audio_path, media_filename)
                                         pronunciation_count += 1
                                 except Exception:
@@ -325,6 +505,8 @@ if st.session_state.anki_deck is not None:
                     status_text.text("Conversion complete!")
                     
                     show_success(f"Successfully converted {successful_cards} flashcard(s)!")
+                    if media_count > 0:
+                        show_info(f"Imported {media_count} media file(s) (audio, image, or video)")
                     if pronunciation_count > 0:
                         show_info(f"Imported {pronunciation_count} pronunciation audio file(s)")
                     if failed_cards > 0:
@@ -336,7 +518,7 @@ if st.session_state.anki_deck is not None:
                 except Exception as e:
                     show_error("Failed to convert deck", e)
     else:
-        show_warning("Please select text fields for both front and back sides to preview flashcards")
+        show_warning("Please select fields for both front and back sides to preview flashcards")
 
 # Show success message if conversion is complete
 if st.session_state.conversion_complete:

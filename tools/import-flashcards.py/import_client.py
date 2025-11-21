@@ -390,23 +390,37 @@ def upload_local_deck(deck_metadata):
         front_type = front_content.get('type', 'text')
         back_type = back_content.get('type', 'text')
         
-        if front_type in ['image', 'audio', 'video']:
-            has_media = True
-            if 'content' in front_content:
-                media_path = os.path.join(deck_dir, front_content['content'])
-                if os.path.exists(media_path):
-                    media_files.append(media_path)
-                else:
-                    print(f"Warning: Media file not found: {media_path}")
+        # Helper function to get media file path from content
+        def get_media_file_from_content(content, content_type):
+            """Extract media file path from content based on type"""
+            if content_type == 'audio-upload' and 'audioFileName' in content:
+                return os.path.join(deck_dir, 'media', content['audioFileName'])
+            elif content_type == 'image-upload' and 'imageFileName' in content:
+                return os.path.join(deck_dir, 'media', content['imageFileName'])
+            elif content_type == 'video-upload' and 'videoFileName' in content:
+                return os.path.join(deck_dir, 'media', content['videoFileName'])
+            elif content_type in ['image', 'audio', 'video'] and 'content' in content:
+                # Legacy format support
+                return os.path.join(deck_dir, content['content'])
+            return None
         
-        if back_type in ['image', 'audio', 'video']:
-            has_media = True
-            if 'content' in back_content:
-                media_path = os.path.join(deck_dir, back_content['content'])
-                if os.path.exists(media_path):
-                    media_files.append(media_path)
-                else:
-                    print(f"Warning: Media file not found: {media_path}")
+        # Check front content for media
+        if front_type in ['image', 'audio', 'video', 'audio-upload', 'image-upload', 'video-upload']:
+            media_path = get_media_file_from_content(front_content, front_type)
+            if media_path and os.path.exists(media_path):
+                has_media = True
+                media_files.append(media_path)
+            elif media_path:
+                print(f"Warning: Media file not found: {media_path}")
+        
+        # Check back content for media
+        if back_type in ['image', 'audio', 'video', 'audio-upload', 'image-upload', 'video-upload']:
+            media_path = get_media_file_from_content(back_content, back_type)
+            if media_path and os.path.exists(media_path):
+                has_media = True
+                media_files.append(media_path)
+            elif media_path:
+                print(f"Warning: Media file not found: {media_path}")
         
         # Build flashcard DTO matching the FlashcardDto structure
         flashcard_dto = {
@@ -415,13 +429,17 @@ def upload_local_deck(deck_metadata):
             "deckOrder": flashcard['deckOrder'],
             "frontContent": {
                 "type": front_type,
-                "languageId": front_content['languageId']
             },
             "backContent": {
                 "type": back_type,
-                "languageId": back_content['languageId']
             }
         }
+        
+        # Add languageId where applicable
+        if 'languageId' in front_content:
+            flashcard_dto['frontContent']['languageId'] = front_content['languageId']
+        if 'languageId' in back_content:
+            flashcard_dto['backContent']['languageId'] = back_content['languageId']
         
         # Add text content for text-type cards
         if 'text' in front_content:
@@ -429,16 +447,31 @@ def upload_local_deck(deck_metadata):
         if 'text' in back_content:
             flashcard_dto['backContent']['text'] = back_content['text']
         
-        # Add content field for non-text types (relative path to media file)
-        if 'content' in front_content and front_type != 'text':
+        # Add filename fields for upload types
+        if front_type == 'audio-upload' and 'audioFileName' in front_content:
+            flashcard_dto['frontContent']['audioFileName'] = front_content['audioFileName']
+        elif front_type == 'image-upload' and 'imageFileName' in front_content:
+            flashcard_dto['frontContent']['imageFileName'] = front_content['imageFileName']
+        elif front_type == 'video-upload' and 'videoFileName' in front_content:
+            flashcard_dto['frontContent']['videoFileName'] = front_content['videoFileName']
+        
+        if back_type == 'audio-upload' and 'audioFileName' in back_content:
+            flashcard_dto['backContent']['audioFileName'] = back_content['audioFileName']
+        elif back_type == 'image-upload' and 'imageFileName' in back_content:
+            flashcard_dto['backContent']['imageFileName'] = back_content['imageFileName']
+        elif back_type == 'video-upload' and 'videoFileName' in back_content:
+            flashcard_dto['backContent']['videoFileName'] = back_content['videoFileName']
+        
+        # Add content field for legacy non-text types (relative path to media file)
+        if 'content' in front_content and front_type in ['audio', 'video', 'image']:
             flashcard_dto['frontContent']['content'] = front_content['content']
-        if 'content' in back_content and back_type != 'text':
+        if 'content' in back_content and back_type in ['audio', 'video', 'image']:
             flashcard_dto['backContent']['content'] = back_content['content']
         
         # Choose upload method based on whether we have media files
         if has_media and media_files:
             # Use POST /flashcard/rich for flashcards with media files
-            # This includes pronunciation audio, images, videos, etc.
+            # This includes audio, images, videos, etc.
             server_flashcard = create_flashcard(server_deck, flashcard_dto, media_files)
             print(f"Uploaded rich flashcard {flashcard_dto['id']} with {len(media_files)} media file(s)")
         else:
@@ -458,8 +491,9 @@ def upload_local_deck(deck_metadata):
                 print(f"Uploaded text flashcard: {front_content.get('text', '')} | {back_content.get('text', '')}")
             else:
                 # Fallback to rich endpoint even without media files for non-text types
+                # This handles cases where media files might be missing
                 server_flashcard = create_flashcard(server_deck, flashcard_dto, [])
-                print(f"Uploaded rich flashcard {flashcard_dto['id']} (no media files)")
+                print(f"Uploaded rich flashcard {flashcard_dto['id']} (no media files found)")
         
         # Upload pronunciation audio separately using /text-content/{id}/upload-pronunciation
         # Check front content for pronunciation
