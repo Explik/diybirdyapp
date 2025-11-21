@@ -68,7 +68,7 @@ def format_field_values(anki_deck, field_name, max_length=100):
 def create_text_content(text: str, language_id: str = None):
     """Create text content structure"""
     return {
-        "type": "Text",
+        "type": "text",
         "text": text,
         "languageId": language_id
     }
