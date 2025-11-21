@@ -46,6 +46,11 @@ class DeckStorage:
         
         # Create deck directory
         deck_dir = self.storage_dir / safe_name
+        
+        # Clean up existing deck if it exists to prevent duplicate media
+        if deck_dir.exists():
+            shutil.rmtree(deck_dir)
+        
         deck_dir.mkdir(parents=True, exist_ok=True)
         
         # Create media directory
@@ -166,7 +171,8 @@ class DeckStorage:
         deck_dir: str,
         flashcard_id: str,
         side: str,  # "front" or "back"
-        audio_file: str
+        audio_file: str,
+        media_name: Optional[str] = None
     ) -> str:
         """
         Add pronunciation audio to a flashcard.
@@ -176,6 +182,7 @@ class DeckStorage:
             flashcard_id: ID of the flashcard
             side: Which side to add pronunciation to ("front" or "back")
             audio_file: Path to the audio file
+            media_name: Optional name for the media file (to preserve original filename)
             
         Returns:
             The relative path to the media file
@@ -183,8 +190,8 @@ class DeckStorage:
         deck_path = Path(deck_dir)
         data_file = deck_path / "data.json"
         
-        # Add media file
-        media_path = self.add_media_file(deck_dir, audio_file)
+        # Add media file with specified name to preserve extension
+        media_path = self.add_media_file(deck_dir, audio_file, media_name)
         
         # Load deck data
         with open(data_file, 'r', encoding='utf-8') as f:

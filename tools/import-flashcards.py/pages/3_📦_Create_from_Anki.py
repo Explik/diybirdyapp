@@ -84,6 +84,14 @@ def strip_anki_formatting(text: str) -> str:
     text = ' '.join(text.split())
     return text.strip()
 
+def extract_media_filename(raw_value: str) -> str:
+    """Extract the media filename from Anki sound field (e.g., [sound:file.mp3] -> file.mp3)"""
+    import re
+    match = re.search(r'\[sound:([^\]]+)\]', raw_value)
+    if match:
+        return match.group(1)
+    return None
+
 # Step 1: Upload Anki File
 st.subheader("1️⃣ Upload Anki Deck File")
 uploaded_file = st.file_uploader("Choose an .apkg file", type=["apkg"])
@@ -202,7 +210,12 @@ if st.session_state.anki_deck is not None:
             st.info(front_value)
             if front_pronunciation_field:
                 try:
-                    st.audio(card.get_media_path(front_pronunciation_field))
+                    raw_value = card.get_raw_value(front_pronunciation_field)
+                    if raw_value and "[sound:" in raw_value:
+                        audio_path = card.get_media_path(front_pronunciation_field)
+                        st.audio(audio_path)
+                    else:
+                        st.caption("⚠️ No audio file in this field")
                 except Exception as e:
                     st.caption(f"⚠️ Audio not available: {str(e)}")
         
@@ -212,7 +225,12 @@ if st.session_state.anki_deck is not None:
             st.info(back_value)
             if back_pronunciation_field:
                 try:
-                    st.audio(card.get_media_path(back_pronunciation_field))
+                    raw_value = card.get_raw_value(back_pronunciation_field)
+                    if raw_value and "[sound:" in raw_value:
+                        audio_path = card.get_media_path(back_pronunciation_field)
+                        st.audio(audio_path)
+                    else:
+                        st.caption("⚠️ No audio file in this field")
                 except Exception as e:
                     st.caption(f"⚠️ Audio not available: {str(e)}")
         
@@ -242,6 +260,7 @@ if st.session_state.anki_deck is not None:
                     total_cards = anki_deck.get_number_of_flashcards()
                     successful_cards = 0
                     failed_cards = 0
+                    pronunciation_count = 0
                     
                     # Convert flashcards
                     for idx, flashcard in enumerate(anki_deck.get_flashcards()):
@@ -263,17 +282,29 @@ if st.session_state.anki_deck is not None:
                             )
                             
                             # Add pronunciation if available
-                            if front_pronunciation_field and flashcard.has_media_path(front_pronunciation_field):
+                            if front_pronunciation_field:
                                 try:
-                                    audio_path = flashcard.get_media_path(front_pronunciation_field)
-                                    deck_storage.add_pronunciation(deck_dir, flashcard_obj["id"], "front", audio_path)
+                                    # Check if the field contains a sound reference
+                                    raw_value = flashcard.get_raw_value(front_pronunciation_field)
+                                    if raw_value and "[sound:" in raw_value:
+                                        audio_path = flashcard.get_media_path(front_pronunciation_field)
+                                        # Extract original filename to preserve extension
+                                        media_filename = extract_media_filename(raw_value)
+                                        deck_storage.add_pronunciation(deck_dir, flashcard_obj["id"], "front", audio_path, media_filename)
+                                        pronunciation_count += 1
                                 except Exception:
                                     pass  # Skip if audio not available
                             
-                            if back_pronunciation_field and flashcard.has_media_path(back_pronunciation_field):
+                            if back_pronunciation_field:
                                 try:
-                                    audio_path = flashcard.get_media_path(back_pronunciation_field)
-                                    deck_storage.add_pronunciation(deck_dir, flashcard_obj["id"], "back", audio_path)
+                                    # Check if the field contains a sound reference
+                                    raw_value = flashcard.get_raw_value(back_pronunciation_field)
+                                    if raw_value and "[sound:" in raw_value:
+                                        audio_path = flashcard.get_media_path(back_pronunciation_field)
+                                        # Extract original filename to preserve extension
+                                        media_filename = extract_media_filename(raw_value)
+                                        deck_storage.add_pronunciation(deck_dir, flashcard_obj["id"], "back", audio_path, media_filename)
+                                        pronunciation_count += 1
                                 except Exception:
                                     pass  # Skip if audio not available
                             
@@ -294,6 +325,8 @@ if st.session_state.anki_deck is not None:
                     status_text.text("Conversion complete!")
                     
                     show_success(f"Successfully converted {successful_cards} flashcard(s)!")
+                    if pronunciation_count > 0:
+                        show_info(f"Imported {pronunciation_count} pronunciation audio file(s)")
                     if failed_cards > 0:
                         show_warning(f"Failed to convert {failed_cards} flashcard(s)")
                     
@@ -310,9 +343,3 @@ if st.session_state.conversion_complete:
     st.markdown("---")
     st.success("✅ Conversion complete! Your deck has been saved locally.")
     st.info("💡 You can now upload this deck using the '📤 Upload Local Deck' page or view it in '📚 Manage Local Decks'.")
-    
-    if st.button("Convert Another Deck"):
-        st.session_state.anki_deck = None
-        st.session_state.deck_name = ""
-        st.session_state.conversion_complete = False
-        st.rerun()
