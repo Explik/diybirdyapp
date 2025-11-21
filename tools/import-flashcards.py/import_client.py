@@ -67,7 +67,7 @@ def get_language_by_abbrevation(abbreviation):
     # Get a language by isoCode
     update_api_client_auth()  # Ensure API client has current session cookie
     languages = language_api.get_all()
-    language = next((lang for lang in languages if lang.abbreviation == abbreviation), None)
+    language = next((lang for lang in languages if lang.iso_code == abbreviation), None)
 
     if not language:
         raise ValueError(f"Language with abbreviation {abbreviation} not found")
