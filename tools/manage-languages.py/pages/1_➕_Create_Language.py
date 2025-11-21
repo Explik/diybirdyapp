@@ -44,7 +44,7 @@ with st.form("create_language_form", border=False):
     language_id = st.text_input(
         "Language ID *",
         placeholder="e.g., en, es, fr, de, zh",
-        help="Unique identifier for the language (typically ISO 639-1 code)"
+        help="Unique identifier for the language"
     )
     language_name = st.text_input(
         "Language Name *",
@@ -52,9 +52,9 @@ with st.form("create_language_form", border=False):
         help="Full name of the language"
     )
     language_abbreviation = st.text_input(
-        "Abbreviation *",
+        "ISO code *",
         placeholder="e.g., EN, ES, FR",
-        help="Short abbreviation for the language (typically uppercase)"
+        help="ISO code identifier of language"
     )
     
     st.markdown("---")

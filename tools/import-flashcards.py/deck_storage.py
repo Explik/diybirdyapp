@@ -46,6 +46,11 @@ class DeckStorage:
         
         # Create deck directory
         deck_dir = self.storage_dir / safe_name
+        
+        # Clean up existing deck if it exists to prevent duplicate media
+        if deck_dir.exists():
+            shutil.rmtree(deck_dir)
+        
         deck_dir.mkdir(parents=True, exist_ok=True)
         
         # Create media directory
@@ -85,8 +90,12 @@ class DeckStorage:
         Args:
             deck_dir: Path to the deck directory
             deck_order: Order of the flashcard in the deck
-            front_content: Front content dict with type, text, languageId, etc.
-            back_content: Back content dict with type, text, languageId, etc.
+            front_content: Front content dict with type and content-specific fields
+                For text: {"type": "text", "text": "...", "languageId": "..."}
+                For audio-upload: {"type": "audio-upload", "audioFileName": "...", "languageId": "..."}
+                For image-upload: {"type": "image-upload", "imageFileName": "..."}
+                For video-upload: {"type": "video-upload", "videoFileName": "...", "languageId": "..."}
+            back_content: Back content dict (same format as front_content)
             flashcard_id: Optional ID for the flashcard
             
         Returns:
@@ -166,7 +175,8 @@ class DeckStorage:
         deck_dir: str,
         flashcard_id: str,
         side: str,  # "front" or "back"
-        audio_file: str
+        audio_file: str,
+        media_name: Optional[str] = None
     ) -> str:
         """
         Add pronunciation audio to a flashcard.
@@ -176,6 +186,7 @@ class DeckStorage:
             flashcard_id: ID of the flashcard
             side: Which side to add pronunciation to ("front" or "back")
             audio_file: Path to the audio file
+            media_name: Optional name for the media file (to preserve original filename)
             
         Returns:
             The relative path to the media file
@@ -183,8 +194,8 @@ class DeckStorage:
         deck_path = Path(deck_dir)
         data_file = deck_path / "data.json"
         
-        # Add media file
-        media_path = self.add_media_file(deck_dir, audio_file)
+        # Add media file with specified name to preserve extension
+        media_path = self.add_media_file(deck_dir, audio_file, media_name)
         
         # Load deck data
         with open(data_file, 'r', encoding='utf-8') as f:
@@ -205,6 +216,80 @@ class DeckStorage:
             flashcard[content_key]["pronunciation"] = {}
         
         flashcard[content_key]["pronunciation"]["content"] = media_path
+        
+        # Save updated data.json
+        with open(data_file, 'w', encoding='utf-8') as f:
+            json.dump(deck_data, f, indent=2, ensure_ascii=False)
+        
+        return media_path
+    
+    def add_media_content(
+        self,
+        deck_dir: str,
+        flashcard_id: str,
+        side: str,  # "front" or "back"
+        media_file: str,
+        media_type: str,  # "audio", "image", or "video"
+        language_id: Optional[str] = None,
+        media_name: Optional[str] = None
+    ) -> str:
+        """
+        Add media content (audio, image, or video) to a flashcard side.
+        Updates the flashcard's front/back content to be of the appropriate upload type.
+        
+        Args:
+            deck_dir: Path to the deck directory
+            flashcard_id: ID of the flashcard
+            side: Which side to update ("front" or "back")
+            media_file: Path to the media file
+            media_type: Type of media ("audio", "image", or "video")
+            language_id: Optional language ID (required for audio and video)
+            media_name: Optional name for the media file (to preserve original filename)
+            
+        Returns:
+            The relative path to the media file
+        """
+        deck_path = Path(deck_dir)
+        data_file = deck_path / "data.json"
+        
+        # Add media file with specified name to preserve extension
+        media_path = self.add_media_file(deck_dir, media_file, media_name)
+        
+        # Load deck data
+        with open(data_file, 'r', encoding='utf-8') as f:
+            deck_data = json.load(f)
+        
+        # Find the flashcard
+        flashcard = next((fc for fc in deck_data['flashcards'] if fc['id'] == flashcard_id), None)
+        
+        if flashcard is None:
+            raise ValueError(f"Flashcard with ID {flashcard_id} not found")
+        
+        # Update the content to be media upload type
+        content_key = f"{side}Content"
+        
+        # Get the filename from the media path
+        filename = Path(media_path).name
+        
+        if media_type == "audio":
+            flashcard[content_key] = {
+                "type": "audio-upload",
+                "audioFileName": filename,
+                "languageId": language_id
+            }
+        elif media_type == "image":
+            flashcard[content_key] = {
+                "type": "image-upload",
+                "imageFileName": filename
+            }
+        elif media_type == "video":
+            flashcard[content_key] = {
+                "type": "video-upload",
+                "videoFileName": filename,
+                "languageId": language_id
+            }
+        else:
+            raise ValueError(f"Unknown media type: {media_type}")
         
         # Save updated data.json
         with open(data_file, 'w', encoding='utf-8') as f:
