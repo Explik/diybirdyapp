@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertexFactory;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputTextModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputWriteTextDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,12 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAnswerVertex, ExerciseInputTextModel> {
+public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel> {
     @Autowired
     private TextContentVertexFactory textContentVertexFactory;
 
     @Override
-    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseInputTextModel answerModel) {
+    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
 

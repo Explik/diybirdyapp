@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.model.exercise;
+package com.explik.diybirdyapp.dto.exercise;
 
 public class ExerciseContentTextDto extends ExerciseContentDto {
     private String text;

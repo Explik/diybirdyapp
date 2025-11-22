@@ -3,10 +3,8 @@ package com.explik.diybirdyapp.persistence.strategy;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputSelectOptionsDto;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
@@ -24,10 +22,10 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
     private GraphTraversalSource traversalSource;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getInput() instanceof ExerciseInputSelectOptionsModel answerModel))
+        if (!(context.getInput() instanceof ExerciseInputSelectOptionsDto answerModel))
             throw new RuntimeException("Answer model type is not ExerciseInputMultipleChoiceTextModel");
 
         // Evaluate exercise
@@ -56,25 +54,25 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
         return createExerciseWithFeedback(correctOptionVertex, incorrectOptionVertices, answerModel, context);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends ContentVertex> incorrectOptionVertices, ExerciseInputSelectOptionsModel answerModel, ExerciseEvaluationContext context) {
+    private static ExerciseDto createExerciseWithFeedback(ContentVertex correctOptionVertex, List<? extends ContentVertex> incorrectOptionVertices, ExerciseInputSelectOptionsDto answerModel, ExerciseEvaluationContext context) {
         var correctOptionId = correctOptionVertex.getId();
         var incorrectOptionIds = incorrectOptionVertices.stream().map(ContentVertex::getId).toList();
         var isCorrect = answerModel.getValue().equals(correctOptionId);
 
-        var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isCorrect);
+        var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isCorrect);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
-        var inputFeedback = new ExerciseInputSelectOptionsModel.Feedback();
+        var inputFeedback = new ExerciseInputSelectOptionsDto.SelectOptionsInputFeedbackDto();
         inputFeedback.setCorrectOptionIds(List.of(correctOptionId));
         inputFeedback.setIncorrectOptionIds(incorrectOptionIds);
 
         if (context.getRetypeCorrectAnswerEnabled())
             inputFeedback.setIsRetypeAnswerEnabled(!isCorrect);
 
-        var exerciseInput = new ExerciseInputSelectOptionsModel();
+        var exerciseInput = new ExerciseInputSelectOptionsDto();
         exerciseInput.setFeedback(inputFeedback);
 
-        var exercise = new ExerciseModel();
+        var exercise = new ExerciseDto();
         exercise.setId(correctOptionVertex.getId());
         exercise.setType(ExerciseTypes.SELECT_FLASHCARD);
         exercise.setFeedback(exerciseFeedback);

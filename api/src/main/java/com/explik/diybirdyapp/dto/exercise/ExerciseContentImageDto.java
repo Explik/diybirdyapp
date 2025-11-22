@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.model.exercise;
+package com.explik.diybirdyapp.dto.exercise;
 
 public class ExerciseContentImageDto extends ExerciseContentDto {
     public ExerciseContentImageDto() {

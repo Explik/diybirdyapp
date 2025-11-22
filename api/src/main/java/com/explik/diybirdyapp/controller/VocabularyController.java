@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.content.VocabularyDto;
+import com.explik.diybirdyapp.controller.model.content.VocabularyDto;
 import com.explik.diybirdyapp.controller.mapper.GenericMapper;
 import com.explik.diybirdyapp.model.content.VocabularyModel;
 import com.explik.diybirdyapp.service.VocabularyService;

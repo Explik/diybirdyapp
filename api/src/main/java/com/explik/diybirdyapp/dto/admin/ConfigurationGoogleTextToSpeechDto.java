@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.model.admin;
+package com.explik.diybirdyapp.dto.admin;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
 

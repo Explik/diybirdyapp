@@ -1,15 +1,15 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
-import com.explik.diybirdyapp.model.exercise.*;
+import com.explik.diybirdyapp.dto.exercise.*;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseSessionOptionsModelFactory implements ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsModel> {
+public class ExerciseSessionOptionsModelFactory implements ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsDto> {
     @Override
-    public ExerciseSessionOptionsModel create(ExerciseSessionOptionsVertex optionsVertex) {
+    public ExerciseSessionOptionsDto create(ExerciseSessionOptionsVertex optionsVertex) {
         if (optionsVertex == null)
             return null;
 
@@ -24,8 +24,8 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         };
     }
 
-    private ExerciseSessionOptionsLearnFlashcardModel createLearnModel(ExerciseSessionOptionsVertex optionsVertex) {
-        var model = new ExerciseSessionOptionsLearnFlashcardModel();
+    private ExerciseSessionOptionsLearnFlashcardsDto createLearnModel(ExerciseSessionOptionsVertex optionsVertex) {
+        var model = new ExerciseSessionOptionsLearnFlashcardsDto();
 
         applyCommonProperties(optionsVertex, model);
 
@@ -36,8 +36,8 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         return model;
     }
 
-    private ExerciseSessionOptionsReviewFlashcardsModel createReviewModel(ExerciseSessionOptionsVertex optionsVertex) {
-        var model = new ExerciseSessionOptionsReviewFlashcardsModel();
+    private ExerciseSessionOptionsReviewFlashcardsDto createReviewModel(ExerciseSessionOptionsVertex optionsVertex) {
+        var model = new ExerciseSessionOptionsReviewFlashcardsDto();
 
         applyCommonProperties(optionsVertex, model);
         model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
@@ -46,8 +46,8 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         return model;
     }
 
-    private ExerciseSessionOptionsSelectFlashcardsModel createSelectModel(ExerciseSessionOptionsVertex optionsVertex) {
-        var model = new ExerciseSessionOptionsSelectFlashcardsModel();
+    private ExerciseSessionOptionsSelectFlashcardsDto createSelectModel(ExerciseSessionOptionsVertex optionsVertex) {
+        var model = new ExerciseSessionOptionsSelectFlashcardsDto();
 
         applyCommonProperties(optionsVertex, model);
         model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
@@ -56,8 +56,8 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         return model;
     }
 
-    private ExerciseSessionOptionsWriteFlashcardsModel createWriteModel(ExerciseSessionOptionsVertex optionsVertex) {
-        var model = new ExerciseSessionOptionsWriteFlashcardsModel();
+    private ExerciseSessionOptionsWriteFlashcardsDto createWriteModel(ExerciseSessionOptionsVertex optionsVertex) {
+        var model = new ExerciseSessionOptionsWriteFlashcardsDto();
 
         applyCommonProperties(optionsVertex, model);
         model.setAvailableAnswerLanguageIds(getFlashcardLanguageIds(optionsVertex));
@@ -67,7 +67,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         return model;
     }
 
-    private void applyCommonProperties(ExerciseSessionOptionsVertex optionsVertex, ExerciseSessionOptionsModel model) {
+    private void applyCommonProperties(ExerciseSessionOptionsVertex optionsVertex, ExerciseSessionOptionsDto model) {
         model.setTextToSpeechEnabled(optionsVertex.getTextToSpeechEnabled());
     }
 

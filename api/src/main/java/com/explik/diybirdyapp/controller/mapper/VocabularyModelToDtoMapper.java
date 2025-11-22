@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.content.VocabularyContentTextDto;
-import com.explik.diybirdyapp.controller.dto.content.VocabularyDto;
+import com.explik.diybirdyapp.controller.model.content.VocabularyContentTextDto;
+import com.explik.diybirdyapp.controller.model.content.VocabularyDto;
 import com.explik.diybirdyapp.model.content.VocabularyModel;
 import com.explik.diybirdyapp.model.content.VocabularyTextContentModel;
 import org.modelmapper.AbstractConverter;

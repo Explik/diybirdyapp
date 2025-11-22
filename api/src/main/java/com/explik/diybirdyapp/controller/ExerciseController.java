@@ -1,16 +1,15 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.exercise.ExerciseDto;
-import com.explik.diybirdyapp.controller.dto.exercise.ExerciseInputDto;
-import com.explik.diybirdyapp.controller.mapper.GenericMapper;
+import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.event.ExerciseAnsweredEvent;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.service.ExerciseService;
 import com.explik.diybirdyapp.service.ExerciseTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,21 +24,11 @@ public class ExerciseController {
     ExerciseTypeService exerciseTypeService;
 
     @Autowired
-    GenericMapper<ExerciseModel, ExerciseDto> exerciseMapper;
-
-    @Autowired
-    GenericMapper<ExerciseInputDto, ExerciseInputModel> exerciseInputMapper;
-
-    @Autowired
     ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/exercise")
     public List<ExerciseDto> get() {
-        var models = exerciseService.getExercises();
-
-        return models.stream()
-                .map(exerciseMapper::map)
-                .toList();
+        return exerciseService.getExercises();
     }
 
     @GetMapping("/exercise/types")
@@ -48,16 +37,19 @@ public class ExerciseController {
     }
 
     @GetMapping("/exercise/{id}")
-    public ExerciseDto get(
+    public ResponseEntity<ExerciseDto> get(
             @PathVariable String id,
             @RequestParam(required = false) String sessionId) {
         var model = exerciseService.getExercise(id, sessionId);
-        return exerciseMapper.map(model);
+        if (model == null)
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping("/exercise/{id}/answer")
     public ExerciseDto submitAnswer(@PathVariable String id, @Valid @RequestBody ExerciseInputDto dto) {
-        var model = exerciseInputMapper.map(dto);
+        var model = new ExerciseAnswerModel();
         model.setExerciseId(id);
         model.setSessionId(dto.getSessionId());
 

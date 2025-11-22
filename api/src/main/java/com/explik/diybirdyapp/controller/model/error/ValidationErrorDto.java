@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.controller.dto.error;
+package com.explik.diybirdyapp.controller.model.error;
 
 import java.util.Map;
 

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertexFactory;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputRecordAudioDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -12,12 +13,12 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class ExerciseAnswerVertexFactoryAudio implements VertexFactory<ExerciseAnswerVertex, ExerciseInputAudioModel> {
+public class ExerciseAnswerVertexFactoryAudio implements VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel> {
     @Autowired
     AudioContentVertexFactory audioContentVertexFactory;
 
     @Override
-    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseInputAudioModel answerModel) {
+    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
 

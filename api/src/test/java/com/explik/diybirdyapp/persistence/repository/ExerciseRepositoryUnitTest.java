@@ -1,7 +1,8 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
@@ -64,7 +65,7 @@ public class ExerciseRepositoryUnitTest {
         vertex.setType(exerciseType);
 
         // Setting up the exercise factory provider, factory and model
-        var model = new ExerciseModel();
+        var model = new ExerciseDto();
         when(exerciseModelFactoryProvider.get(eq(exerciseType))).thenReturn(exerciseModelFactory);
         when(exerciseModelFactory.create(eq(vertex))).thenReturn(model);
 
@@ -97,7 +98,7 @@ public class ExerciseRepositoryUnitTest {
     @Test
     void givenNonExistentExerciseId_whenSubmitAnswer_thenThrowException() {
         var id = "non-existent-id";
-        var model = new ExerciseInputModel();
+        var model = new ExerciseAnswerModel();
         model.setExerciseId(id);
 
         assertThrows(RuntimeException.class, () -> repository.submitAnswer(model));
@@ -112,11 +113,11 @@ public class ExerciseRepositoryUnitTest {
         vertex.setType(exerciseType);
 
         // Setting up the exercise factory provider, factory and model
-        var model = new ExerciseModel();
+        var model = new ExerciseDto();
         when(exerciseOperationProvider.get(eq(exerciseType))).thenReturn(exerciseOperations);
         when(exerciseOperations.evaluate(any(), any())).thenReturn(model);
 
-        var inputModel = new ExerciseInputModel();
+        var inputModel = new ExerciseAnswerModel();
         inputModel.setExerciseId(exerciseId);
 
         var actualModel = repository.submitAnswer(inputModel);

@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputPairOptionsModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputPairOptionsDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.PairVertex;
@@ -9,28 +9,42 @@ import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseInputModelFactoryPairOptions implements ContextualModelFactory<ExerciseVertex, ExerciseInputPairOptionsModel, ExerciseRetrievalContext> {
+public class ExerciseInputModelFactoryPairOptions implements ContextualModelFactory<ExerciseVertex, ExerciseInputPairOptionsDto, ExerciseRetrievalContext> {
     @Override
-    public ExerciseInputPairOptionsModel create(ExerciseVertex vertex, ExerciseRetrievalContext context) {
-        var input = new ExerciseInputPairOptionsModel();
+    public ExerciseInputPairOptionsDto create(ExerciseVertex vertex, ExerciseRetrievalContext context) {
+        var input = new ExerciseInputPairOptionsDto();
         input.setType(ExerciseInputTypes.PAIR_OPTIONS);
 
-        var optionPairs = vertex.getOptionPairs();
-        optionPairs.forEach(v -> input.addOptionPair(createOptionPair(vertex, v)));
+        var optionPairs = vertex
+                .getOptionPairs()
+                .stream()
+                .map(pairVertex -> createOptionPair(vertex, pairVertex))
+                .toList();
+        var leftOptionsDto = optionPairs.stream().map(OptionPair::leftOption).toList();
+        var rightOptionsDto = optionPairs.stream().map(OptionPair::rightOption).toList();
+        input.setLeftOptions(leftOptionsDto);
+        input.setRightOptions(rightOptionsDto);
 
         return input;
     }
 
-    private ExerciseInputPairOptionsModel.OptionPair createOptionPair(ExerciseVertex vertex, PairVertex pairVertex) {
+    private OptionPair createOptionPair(ExerciseVertex vertex, PairVertex pairVertex) {
         var leftSide = pairVertex.getLeftContent();
         var rightSide = pairVertex.getRightContent();
 
         if (leftSide instanceof TextContentVertex leftTextSide && rightSide instanceof TextContentVertex rightTextSide) {
-            var leftOption = new ExerciseInputPairOptionsModel.Option(leftTextSide.getId(), leftTextSide.getValue());
-            var rightOption = new ExerciseInputPairOptionsModel.Option(rightTextSide.getId(), rightTextSide.getValue());
+            var leftOption = new ExerciseInputPairOptionsDto.PairOptionsInputTextOptionDto();
+            leftOption.setId(leftTextSide.getId());
+            leftOption.setText(leftTextSide.getValue());
 
-            return new ExerciseInputPairOptionsModel.OptionPair(leftOption, rightOption);
+            var rightOption = new ExerciseInputPairOptionsDto.PairOptionsInputTextOptionDto();
+            rightOption.setId(rightTextSide.getId());
+            rightOption.setText(rightTextSide.getValue());
+
+            return new OptionPair(leftOption, rightOption);
         }
         else throw new IllegalArgumentException("Unsupported paired content type: " + leftSide.getClass().getName() + " and " + rightSide.getClass().getName());
     }
+
+    private record OptionPair(ExerciseInputPairOptionsDto.PairOptionsInputOptionDto leftOption, ExerciseInputPairOptionsDto.PairOptionsInputOptionDto rightOption) { }
 }

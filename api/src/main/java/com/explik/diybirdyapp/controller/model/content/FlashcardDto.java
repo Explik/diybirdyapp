@@ -1,7 +1,6 @@
-package com.explik.diybirdyapp.controller.dto.content;
+package com.explik.diybirdyapp.controller.model.content;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class FlashcardDto {
     @NotBlank(message = "id.required")

@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.vertexFactory;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputRecognizabilityRatingModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputSelectReviewOptionsDto;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class ExerciseAnswerVertexFactoryRecognizabilityRating implements VertexFactory<ExerciseAnswerVertex, ExerciseInputRecognizabilityRatingModel> {
+public class ExerciseAnswerVertexFactoryRecognizabilityRating implements VertexFactory<ExerciseAnswerVertex, ExerciseInputSelectReviewOptionsDto> {
     @Autowired
     private RecognizabilityRatingVertexFactory ratingVertexFactory;
 
     @Override
-    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseInputRecognizabilityRatingModel answerModel) {
+    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseInputSelectReviewOptionsDto answerModel) {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
 

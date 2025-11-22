@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.error.ValidationErrorDto;
+import com.explik.diybirdyapp.controller.model.error.ValidationErrorDto;
 import com.explik.diybirdyapp.exception.ValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

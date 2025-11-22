@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.persistence.operation;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -28,7 +28,7 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Override
-    public ExerciseSessionModel init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+    public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var options = context.getSessionModel();
 
         // Resolve neighboring vertices
@@ -61,7 +61,7 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
     }
 
     @Override
-    public ExerciseSessionModel nextExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
+    public ExerciseSessionDto nextExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var sessionId = context.getSessionModel().getId();
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
         if (sessionVertex == null)

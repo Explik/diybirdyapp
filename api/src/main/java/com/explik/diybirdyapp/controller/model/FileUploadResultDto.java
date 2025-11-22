@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.controller.dto;
+package com.explik.diybirdyapp.controller.model;
 
 import jakarta.validation.constraints.NotNull;
 

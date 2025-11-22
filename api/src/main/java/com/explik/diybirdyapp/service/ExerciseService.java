@@ -1,8 +1,8 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputRecordAudioDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.repository.ExerciseRepository;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +20,11 @@ public class ExerciseService {
     @Autowired
     ExerciseRepository repository;
 
-    public ExerciseModel getExercise(String id, String sessionId) {
+    public ExerciseDto getExercise(String id, String sessionId) {
         return repository.get(id, sessionId);
     }
 
-    public ExerciseModel submitExerciseAnswer(ExerciseInputModel answer, MultipartFile[] files) {
+    public ExerciseDto submitExerciseAnswer(ExerciseAnswerModel answer, MultipartFile[] files) {
         // Validate model
         if (answer == null)
             throw new IllegalArgumentException("Answer model is required");
@@ -40,11 +40,11 @@ public class ExerciseService {
         return repository.submitAnswer(answer);
     }
 
-    private void validateFiles(ExerciseInputModel answer, MultipartFile[] files) {
+    private void validateFiles(ExerciseAnswerModel answer, MultipartFile[] files) {
         // Extract all file names from the model
         List<String> expectedFileNames = List.of();
 
-        if (answer instanceof ExerciseInputAudioModel audioAnswer) {
+        if (answer.getInput() instanceof ExerciseInputRecordAudioDto audioAnswer) {
             expectedFileNames = List.of(audioAnswer.getUrl());
         }
 
@@ -76,7 +76,7 @@ public class ExerciseService {
         }
     }
 
-    public List<ExerciseModel> getExercises() {
+    public List<ExerciseDto> getExercises() {
         return repository.getAll();
     }
 }

@@ -2,8 +2,9 @@ package com.explik.diybirdyapp.model.admin;
 
 import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
 
-public class AnswerSubmissionModel {
+public class ExerciseAnswerModel {
     private String exerciseId;
+    private String sessionId;
     private ExerciseInputDto answer;
 
     public String getExerciseId() {
@@ -14,7 +15,15 @@ public class AnswerSubmissionModel {
         this.exerciseId = exerciseId;
     }
 
-    public ExerciseInputDto getAnswer() {
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public ExerciseInputDto getInput() {
         return answer;
     }
 

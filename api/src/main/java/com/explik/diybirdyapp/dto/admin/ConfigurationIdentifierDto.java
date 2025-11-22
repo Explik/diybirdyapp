@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.model.admin;
+package com.explik.diybirdyapp.dto.admin;
 
 public class ConfigurationIdentifierDto {
     private String id;

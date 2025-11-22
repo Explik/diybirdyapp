@@ -1,9 +1,8 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.content.FlashcardDeckDto;
+import com.explik.diybirdyapp.controller.model.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
 import com.explik.diybirdyapp.service.FlashcardDeckService;
-import com.google.rpc.context.AttributeContext;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

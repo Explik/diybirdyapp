@@ -2,21 +2,17 @@ package com.explik.diybirdyapp.persistence.strategy;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
-import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputTextModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.dto.exercise.ExerciseFeedbackDto;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputWriteTextDto;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryText;
-import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.UUID;
 
 @Component(ExerciseEvaluationTypes.CORRECT_TEXT + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluationStrategy {
@@ -27,10 +23,10 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
     private ExerciseAnswerVertexFactoryText answerVertexFactory;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getInput() instanceof ExerciseInputTextModel answerModel))
+        if (!(context.getInput() instanceof ExerciseInputWriteTextDto answerModel))
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
 
         // Save answer
@@ -40,25 +36,25 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
         return createExerciseWithFeedback(exerciseVertex, answerModel, context);
     }
 
-    private static ExerciseModel createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputTextModel answerModel, ExerciseEvaluationContext context) {
+    private static ExerciseDto createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext context) {
         // Compare correct options and answer (CASE INSENSITIVE)
         var correctOptions = exerciseVertex.getCorrectOptions().stream().map(v -> (TextContentVertex)v).toList();
         var correctOptionValues = correctOptions.stream().map(TextContentVertex::getValue).toList();
         var isAnswerCorrect = correctOptionValues.stream().anyMatch(v -> v.equalsIgnoreCase(answerModel.getText()));
-        var exerciseFeedback = ExerciseFeedbackModel.createCorrectFeedback(isAnswerCorrect);
+        var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isAnswerCorrect);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
-        var inputFeedback = new ExerciseInputTextModel.Feedback();
+        var inputFeedback = new ExerciseInputWriteTextDto.ExerciseInputFeedbackTextDto();
         inputFeedback.setCorrectValues(correctOptionValues);
         if (!isAnswerCorrect) inputFeedback.setIncorrectValues(List.of(answerModel.getText()));
 
         if (context.getRetypeCorrectAnswerEnabled())
             inputFeedback.setIsRetypeAnswerEnabled(!isAnswerCorrect);
 
-        var input = new ExerciseInputTextModel();
+        var input = new ExerciseInputWriteTextDto();
         input.setFeedback(inputFeedback);
 
-        var exercise = new ExerciseModel();
+        var exercise = new ExerciseDto();
         exercise.setId(exerciseVertex.getId());
         exercise.setType(exerciseVertex.getType());
         exercise.setFeedback(exerciseFeedback);

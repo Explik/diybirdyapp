@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.*;
-import com.explik.diybirdyapp.controller.dto.content.*;
+import com.explik.diybirdyapp.controller.model.content.*;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import org.junit.jupiter.api.BeforeEach;

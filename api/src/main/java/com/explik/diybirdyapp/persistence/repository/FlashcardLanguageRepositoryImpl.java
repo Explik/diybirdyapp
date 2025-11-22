@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
-import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTextToSpeechModel;
-import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTranslateModel;
-import com.explik.diybirdyapp.model.admin.ConfigurationModel;
+import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
+import com.explik.diybirdyapp.dto.admin.ConfigurationGoogleTextToSpeechDto;
+import com.explik.diybirdyapp.dto.admin.ConfigurationGoogleTranslateDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
@@ -51,7 +51,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public ConfigurationModel get(String configId) {
+    public ConfigurationDto get(String configId) {
         var configurationVertex = ConfigurationVertex.findById(traversalSource, configId);
         if (configurationVertex == null)
             throw new IllegalArgumentException("Configuration with id " + configId + " does not exist");
@@ -60,7 +60,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public ConfigurationModel update(ConfigurationModel configModel) {
+    public ConfigurationDto update(ConfigurationDto configModel) {
         var configurationVertex = ConfigurationVertex.findById(traversalSource, configModel.getId());
         if (configurationVertex == null)
             throw new IllegalArgumentException("Configuration with id " + configModel.getId() + " does not exist");
@@ -104,7 +104,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public List<ConfigurationModel> getLanguageConfigs(String languageId, String configurationType) {
+    public List<ConfigurationDto> getLanguageConfigs(String languageId, String configurationType) {
         var languageVertex = LanguageVertex.findById(traversalSource, languageId);
         if (languageVertex == null)
             throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
@@ -123,7 +123,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public ConfigurationModel createLanguageConfig(String languageId, ConfigurationModel configModel) {
+    public ConfigurationDto createLanguageConfig(String languageId, ConfigurationDto configModel) {
         var languageVertex = LanguageVertex.findById(traversalSource, languageId);
         if (languageVertex == null)
             throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
@@ -140,7 +140,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public ConfigurationModel attachLanguageConfig(String languageId, String configId) {
+    public ConfigurationDto attachLanguageConfig(String languageId, String configId) {
         var languageVertex = LanguageVertex.findById(traversalSource, languageId);
         if (languageVertex == null)
             throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
@@ -174,7 +174,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
             v.getName());
     }
 
-    private static ConfigurationModel createConfigModel(String languageId, ConfigurationVertex vertex) {
+    private static ConfigurationDto createConfigModel(String languageId, ConfigurationVertex vertex) {
         if (vertex.getType().equals(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH))
             return createGoogleTextToSpeechConfigModel(languageId, vertex);
         if (vertex.getType().equals(ConfigurationTypes.GOOGLE_TRANSLATE))
@@ -184,8 +184,8 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
         throw new IllegalArgumentException("Unsupported configuration type: " + vertex.getType());
     }
 
-    private static ConfigurationGoogleTextToSpeechModel createGoogleTextToSpeechConfigModel(String languageId, ConfigurationVertex vertex) {
-        var model = new ConfigurationGoogleTextToSpeechModel();
+    private static ConfigurationGoogleTextToSpeechDto createGoogleTextToSpeechConfigModel(String languageId, ConfigurationVertex vertex) {
+        var model = new ConfigurationGoogleTextToSpeechDto();
         model.setId(vertex.getId());
         model.setLanguageId(languageId);
         model.setLanguageCode(vertex.getPropertyValue("languageCode"));
@@ -193,20 +193,20 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
         return model;
     }
 
-    private static ConfigurationGoogleTranslateModel createGoogleTranslateConfigModel(String languageId, ConfigurationVertex vertex) {
-        var model = new ConfigurationGoogleTranslateModel();
+    private static ConfigurationGoogleTranslateDto createGoogleTranslateConfigModel(String languageId, ConfigurationVertex vertex) {
+        var model = new ConfigurationGoogleTranslateDto();
         model.setId(vertex.getId());
         model.setLanguageId(languageId);
         model.setLanguageCode(vertex.getPropertyValue("languageCode"));
         return model;
     }
 
-    private static void updateConfigVertex(ConfigurationVertex vertex, ConfigurationModel model) {
-        if (model instanceof ConfigurationGoogleTextToSpeechModel googleTextToSpeechModel) {
+    private static void updateConfigVertex(ConfigurationVertex vertex, ConfigurationDto model) {
+        if (model instanceof ConfigurationGoogleTextToSpeechDto googleTextToSpeechModel) {
             updateGoogleTextToSpeechConfigVertex(vertex, googleTextToSpeechModel);
             return;
         }
-        if (model instanceof ConfigurationGoogleTranslateModel googleTranslateModel) {
+        if (model instanceof ConfigurationGoogleTranslateDto googleTranslateModel) {
             updateGoogleTranslateConfigVertex(vertex, googleTranslateModel);
             return;
         }
@@ -215,13 +215,13 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
         throw new IllegalArgumentException("Unsupported configuration model type: " + model.getClass().getName());
     }
 
-    private static void updateGoogleTextToSpeechConfigVertex(ConfigurationVertex vertex, ConfigurationGoogleTextToSpeechModel model) {
+    private static void updateGoogleTextToSpeechConfigVertex(ConfigurationVertex vertex, ConfigurationGoogleTextToSpeechDto model) {
         vertex.setType(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
         vertex.setPropertyValue("languageCode", model.getLanguageCode());
         vertex.setPropertyValue("voiceName", model.getVoiceName());
     }
 
-    private static void updateGoogleTranslateConfigVertex(ConfigurationVertex vertex, ConfigurationGoogleTranslateModel model) {
+    private static void updateGoogleTranslateConfigVertex(ConfigurationVertex vertex, ConfigurationGoogleTranslateDto model) {
         vertex.setType(ConfigurationTypes.GOOGLE_TRANSLATE);
         vertex.setPropertyValue("languageCode", model.getLanguageCode());
     }

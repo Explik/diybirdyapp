@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
-import com.explik.diybirdyapp.controller.dto.content.FlashcardContentTextDto;
 import com.explik.diybirdyapp.model.content.*;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;

@@ -1,8 +1,7 @@
-package com.explik.diybirdyapp.controller.dto.content;
+package com.explik.diybirdyapp.controller.model.content;
 
 import com.explik.diybirdyapp.ContentTypes;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public class FlashcardContentTextDto extends FlashcardContentDto {
     public FlashcardContentTextDto() {

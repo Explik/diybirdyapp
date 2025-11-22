@@ -1,10 +1,9 @@
-package com.explik.diybirdyapp.controller.dto.content;
+package com.explik.diybirdyapp.controller.model.content;
 
 import com.explik.diybirdyapp.ContentTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,

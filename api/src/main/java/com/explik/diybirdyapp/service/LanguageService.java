@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.model.admin.ConfigurationIdentifierModel;
-import com.explik.diybirdyapp.model.admin.ConfigurationModel;
+import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
+import com.explik.diybirdyapp.dto.admin.ConfigurationIdentifierDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
 import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +30,19 @@ public class LanguageService {
         return repository.getAll();
     }
 
-    public List<ConfigurationModel> getLanguageConfigs(String languageId, String configurationType) {
+    public List<ConfigurationDto> getLanguageConfigs(String languageId, String configurationType) {
         return repository.getLanguageConfigs(languageId, configurationType);
     }
 
-    public ConfigurationModel createLanguageConfig(String languageId, ConfigurationModel configModel) {
+    public ConfigurationDto createLanguageConfig(String languageId, ConfigurationDto configModel) {
         return repository.createLanguageConfig(languageId, configModel);
     }
 
-    public ConfigurationModel attachLanguageConfig(String languageId, ConfigurationIdentifierModel configDto) {
+    public ConfigurationDto attachLanguageConfig(String languageId, ConfigurationIdentifierDto configDto) {
         return repository.attachLanguageConfig(languageId, configDto.getId());
     }
 
-    public void detachLanguageConfig(String languageId, ConfigurationIdentifierModel configDto) {
+    public void detachLanguageConfig(String languageId, ConfigurationIdentifierDto configDto) {
         repository.detachLanguageConfig(languageId, configDto.getId());
     }
 }

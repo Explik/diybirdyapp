@@ -1,7 +1,8 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
@@ -21,7 +22,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     private final GraphTraversalSource traversalSource;
 
     @Autowired
-    private GenericProvider<ContextualModelFactory<ExerciseVertex, ExerciseModel, ExerciseRetrievalContext>> exerciseModelFactoryProvider;
+    private GenericProvider<ContextualModelFactory<ExerciseVertex, ExerciseDto, ExerciseRetrievalContext>> exerciseModelFactoryProvider;
 
     @Autowired
     private GenericProvider<ExerciseEvaluationStrategy> evaluationStrategyProvider;
@@ -31,7 +32,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
-    public ExerciseModel get(String id, String sessionId) {
+    public ExerciseDto get(String id, String sessionId) {
         var vertex = ExerciseVertex.getById(traversalSource, id);
         var exerciseType = vertex.getType();
         var exerciseFactory = exerciseModelFactoryProvider.get(exerciseType);
@@ -48,7 +49,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
-    public List<ExerciseModel> getAll() {
+    public List<ExerciseDto> getAll() {
         // Null indicates generic exercise model factory
         var factory = exerciseModelFactoryProvider.get(null);
         var vertices = ExerciseVertex.getAll(traversalSource);
@@ -60,7 +61,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
-    public ExerciseModel submitAnswer(ExerciseInputModel answer) {
+    public ExerciseDto submitAnswer(ExerciseAnswerModel answer) {
         assert answer != null;
         assert answer.getExerciseId() != null;
 
@@ -77,7 +78,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         return provider.get(sessionVertex);
     }
 
-    private ExerciseEvaluationContext getEvaluationContext(ExerciseInputModel answer) {
+    private ExerciseEvaluationContext getEvaluationContext(ExerciseAnswerModel answer) {
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answer.getSessionId());
         var sessionOptionsVertex = (sessionVertex != null) ? sessionVertex.getOptions() : null;
 

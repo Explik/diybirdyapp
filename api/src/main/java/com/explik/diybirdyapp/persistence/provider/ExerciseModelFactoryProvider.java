@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.provider;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseAbstractModelFactory;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseModelFactoryProvider implements GenericProvider<ContextualModelFactory<ExerciseVertex, ExerciseModel, ExerciseRetrievalContext>> {
+public class ExerciseModelFactoryProvider implements GenericProvider<ContextualModelFactory<ExerciseVertex, ExerciseDto, ExerciseRetrievalContext>> {
     @Autowired
     private LimitedExerciseModelFactory limitedExerciseModelFactory;
 
@@ -19,7 +19,7 @@ public class ExerciseModelFactoryProvider implements GenericProvider<ContextualM
     private ExerciseAbstractModelFactory abstractModelFactory;
 
     @Override
-    public ContextualModelFactory<ExerciseVertex, ExerciseModel, ExerciseRetrievalContext> get(String exerciseType) {
+    public ContextualModelFactory<ExerciseVertex, ExerciseDto, ExerciseRetrievalContext> get(String exerciseType) {
         if (exerciseType == null)
             return limitedExerciseModelFactory;
 

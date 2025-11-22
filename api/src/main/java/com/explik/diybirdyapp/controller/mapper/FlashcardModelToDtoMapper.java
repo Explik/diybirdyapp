@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.content.*;
+import com.explik.diybirdyapp.controller.model.content.*;
 import com.explik.diybirdyapp.model.content.*;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
