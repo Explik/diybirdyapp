@@ -40,12 +40,11 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
         var answerVertex = answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
-        var exerciseFeedback = ExerciseFeedbackDto.createIndecisiveFeedback();
+        var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();
 
-        var exercise = new ExerciseModel();
+        var exercise = new ExerciseDto();
         exercise.setId(exerciseVertex.getId());
         exercise.setType(exerciseVertex.getType());
-        exercise.setAnswerId(answerVertex.getId());
         exercise.setFeedback(exerciseFeedback);
 
         return exercise;

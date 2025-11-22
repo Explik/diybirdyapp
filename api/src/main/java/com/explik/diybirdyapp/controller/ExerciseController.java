@@ -62,7 +62,7 @@ public class ExerciseController {
                 newModel.getAnswerId());
         eventPublisher.publishEvent(event);
 
-        return exerciseMapper.map(newModel);
+        return newModel;
     }
 
     @PostMapping("/exercise/{id}/answer/rich")
@@ -70,8 +70,10 @@ public class ExerciseController {
             @PathVariable String id,
             @Valid @RequestPart("answer") ExerciseInputDto dto,
             @RequestPart(value = "files", required = false) MultipartFile[] files) {
-        var model = exerciseInputMapper.map(dto);
+        var model = new ExerciseAnswerModel<>();
         model.setExerciseId(id);
+        model.setSessionId(dto.getSessionId());
+        model.setInput(dto);
 
         var newModel = exerciseService.submitExerciseAnswer(model, files);
 
@@ -82,6 +84,6 @@ public class ExerciseController {
                 newModel.getAnswerId());
         eventPublisher.publishEvent(event);
 
-        return exerciseMapper.map(newModel);
+        return newModel;
     }
 }

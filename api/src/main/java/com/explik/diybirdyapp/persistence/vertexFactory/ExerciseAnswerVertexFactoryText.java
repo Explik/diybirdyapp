@@ -10,12 +10,14 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel> {
+public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel<ExerciseInputWriteTextDto>> {
     @Autowired
     private TextContentVertexFactory textContentVertexFactory;
 
     @Override
-    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
+    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseAnswerModel<ExerciseInputWriteTextDto> answerModel) {
+        var answerInput = answerModel.getInput();
+
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
 
@@ -33,9 +35,9 @@ public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAn
 
         var textVertex = textContentVertexFactory.create(
                 traversalSource,
-                new TextContentVertexFactory.Options(UUID.randomUUID().toString(), answerModel.getText(), languageVertex));
+                new TextContentVertexFactory.Options(UUID.randomUUID().toString(), answerInput.getText(), languageVertex));
 
-        var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();
+        var answerId = (answerInput.getId() != null) ? answerInput.getId() : UUID.randomUUID().toString();
         var exerciseAnswerVertex = ExerciseAnswerVertex.create(traversalSource);
         exerciseAnswerVertex.setId(answerId);
         exerciseAnswerVertex.setExercise(exerciseVertex);

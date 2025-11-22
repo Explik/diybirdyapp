@@ -13,12 +13,14 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class ExerciseAnswerVertexFactoryAudio implements VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel> {
+public class ExerciseAnswerVertexFactoryAudio implements VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel<ExerciseInputRecordAudioDto>> {
     @Autowired
     AudioContentVertexFactory audioContentVertexFactory;
 
     @Override
-    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseAnswerModel answerModel) {
+    public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseAnswerModel<ExerciseInputRecordAudioDto> answerModel) {
+        var answerInput = answerModel.getInput();
+
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answerModel.getExerciseId());
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
 
@@ -28,9 +30,9 @@ public class ExerciseAnswerVertexFactoryAudio implements VertexFactory<ExerciseA
 
         var audioVertex = audioContentVertexFactory.create(
                 traversalSource,
-                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), answerModel.getUrl(), language));
+                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), answerInput.getUrl(), language));
 
-        var answerId = (answerModel.getId() != null) ? answerModel.getId() : UUID.randomUUID().toString();
+        var answerId = (answerInput.getId() != null) ? answerInput.getId() : UUID.randomUUID().toString();
         var answerVertex = ExerciseAnswerVertex.create(traversalSource);
         answerVertex.setId(answerId);
         answerVertex.setExercise(exerciseVertex);

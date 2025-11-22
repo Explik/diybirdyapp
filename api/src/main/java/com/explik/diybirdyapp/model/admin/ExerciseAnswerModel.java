@@ -2,10 +2,10 @@ package com.explik.diybirdyapp.model.admin;
 
 import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
 
-public class ExerciseAnswerModel {
+public class ExerciseAnswerModel<T extends ExerciseInputDto> {
     private String exerciseId;
     private String sessionId;
-    private ExerciseInputDto answer;
+    private T answer;
 
     public String getExerciseId() {
         return exerciseId;
@@ -23,11 +23,11 @@ public class ExerciseAnswerModel {
         this.sessionId = sessionId;
     }
 
-    public ExerciseInputDto getInput() {
+    public T getInput() {
         return answer;
     }
 
-    public void setAnswer(ExerciseInputDto answer) {
+    public void setInput(T answer) {
         this.answer = answer;
     }
 }
