@@ -25,7 +25,7 @@ public class ExerciseEvaluationStrategyReviewFlashcard implements ExerciseEvalua
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getInput() instanceof ExerciseInputSelectReviewOptionsDto answerModel))
+        if (!(context.getAnswer().getInput() instanceof ExerciseInputSelectReviewOptionsDto answerModel))
             throw new RuntimeException("Answer model type is not recognizability rating");
 
         // Save answer to graph

@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.persistence.strategy;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseFeedbackDto;
 import com.explik.diybirdyapp.dto.exercise.ExerciseInputWriteTextDto;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
@@ -26,7 +25,7 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getInput() instanceof ExerciseInputWriteTextDto answerModel))
+        if (!(context.getAnswer().getInput() instanceof ExerciseInputWriteTextDto answerModel))
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
 
         // Save answer

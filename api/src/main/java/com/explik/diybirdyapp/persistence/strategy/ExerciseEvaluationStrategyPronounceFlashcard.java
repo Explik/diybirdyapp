@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.persistence.strategy;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseFeedbackDto;
 import com.explik.diybirdyapp.dto.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.persistence.service.SpeechToTextService;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -27,7 +26,7 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getInput() instanceof ExerciseInputRecordAudioDto answerModel))
+        if (!(context.getAnswer().getInput() instanceof ExerciseInputRecordAudioDto answerModel))
             throw new RuntimeException("Answer model type is not audio");
 
         // Transcribe answer
