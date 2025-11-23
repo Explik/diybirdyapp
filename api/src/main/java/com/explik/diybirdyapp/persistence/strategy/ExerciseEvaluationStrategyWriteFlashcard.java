@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
 import com.explik.diybirdyapp.dto.exercise.ExerciseInputWriteTextDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryText;
@@ -25,14 +26,19 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getAnswer().getInput() instanceof ExerciseInputWriteTextDto answerModel))
+        if (!(context.getInput() instanceof ExerciseInputWriteTextDto input))
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
 
         // Save answer
+        var answerModel = new ExerciseAnswerModel<ExerciseInputWriteTextDto>();
+        answerModel.setExerciseId(context.getExerciseId());
+        answerModel.setSessionId(context.getSessionId());
+        answerModel.setInput(input);
+
         answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
-        return createExerciseWithFeedback(exerciseVertex, answerModel, context);
+        return createExerciseWithFeedback(exerciseVertex, input, context);
     }
 
     private static ExerciseDto createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext context) {

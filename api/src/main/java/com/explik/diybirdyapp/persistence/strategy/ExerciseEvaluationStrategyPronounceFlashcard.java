@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
 import com.explik.diybirdyapp.dto.exercise.ExerciseInputRecordAudioDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.service.SpeechToTextService;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryAudio;
@@ -26,14 +27,19 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getAnswer().getInput() instanceof ExerciseInputRecordAudioDto answerModel))
-            throw new RuntimeException("Answer model type is not audio");
+        if (!(context.getInput()instanceof ExerciseInputRecordAudioDto input))
+            throw new RuntimeException("Input model type is not audio");
 
         // Transcribe answer
-        var audioContentUrl = answerModel.getUrl();
+        var answerModel = new ExerciseAnswerModel<ExerciseInputRecordAudioDto>();
+        answerModel.setExerciseId(context.getExerciseId());
+        answerModel.setSessionId(context.getSessionId());
+        answerModel.setInput(input);
+
+        var audioContentUrl = input.getUrl();
         var audioLangId = "en-US";
         var transcribedText = speechToTextService.generateTranscription(audioContentUrl, audioLangId);
-        answerModel.setTranscription(transcribedText);
+        answerModel.setProperty("transcription", transcribedText);
 
         // Save answer
         var answerVertex = answerVertexFactory.create(traversalSource, answerModel);

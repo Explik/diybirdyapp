@@ -25,7 +25,7 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getAnswer().getInput() instanceof ExerciseInputSelectOptionsDto answerModel))
+        if (!(context.getInput() instanceof ExerciseInputSelectOptionsDto answerModel))
             throw new RuntimeException("Answer model type is not ExerciseInputMultipleChoiceTextModel");
 
         // Evaluate exercise

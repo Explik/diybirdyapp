@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
 import com.explik.diybirdyapp.dto.exercise.ExerciseInputSelectReviewOptionsDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionStateVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
@@ -25,14 +26,19 @@ public class ExerciseEvaluationStrategyReviewFlashcard implements ExerciseEvalua
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getAnswer().getInput() instanceof ExerciseInputSelectReviewOptionsDto answerModel))
+        if (!(context.getInput() instanceof ExerciseInputSelectReviewOptionsDto input))
             throw new RuntimeException("Answer model type is not recognizability rating");
 
         // Save answer to graph
+        var answerModel = new ExerciseAnswerModel<ExerciseInputSelectReviewOptionsDto>();
+        answerModel.setExerciseId(context.getExerciseId());
+        answerModel.setSessionId(context.getSessionId());
+        answerModel.setInput(input);
+
         answerVertexFactory.create(traversalSource, answerModel);
 
         // Update spaced repetition data (if applicable)
-        updateSpacedRepetitionData(exerciseVertex, answerModel);
+        updateSpacedRepetitionData(exerciseVertex, input);
 
         // Generate feedback
         var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();
