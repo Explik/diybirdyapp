@@ -21,11 +21,11 @@ public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelF
 
         var inputOptions = allOptionVertices
                 .stream()
-                .map(v -> createOption(vertex, v))
+                .map(this::createOption)
                 .toList();
         input.setOptions(inputOptions);
 
-        // Determine type
+        // Determine option type
         if (!allOptionVertices.isEmpty()) {
             var firstOption = allOptionVertices.getFirst();
             if (firstOption instanceof AudioContentVertex)
@@ -39,32 +39,32 @@ public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelF
         return input;
     }
 
-    private ExerciseInputSelectOptionsDto.SelectOptionInputBaseOption createOption(ExerciseVertex vertex, ContentVertex contentVertex) {
+    private ExerciseInputSelectOptionsDto.SelectOptionInputBaseOption createOption(ContentVertex contentVertex) {
         if (contentVertex instanceof AudioContentVertex audioContentVertex)
-            return createAudioOption(vertex, audioContentVertex);
+            return createAudioOption(audioContentVertex);
         if (contentVertex instanceof TextContentVertex textContentVertex)
-            return createTextOption(vertex, textContentVertex);
+            return createTextOption(textContentVertex);
         if (contentVertex instanceof ImageContentVertex imageContentVertex)
-            return createImageOption(vertex, imageContentVertex);
+            return createImageOption(imageContentVertex);
 
         throw new RuntimeException("Unsupported content type: " + contentVertex.getClass().getName());
     }
 
-    private ExerciseInputSelectOptionsDto.SelectOptionInputAudioOption createAudioOption(ExerciseVertex vertex, AudioContentVertex contentVertex) {
+    private ExerciseInputSelectOptionsDto.SelectOptionInputAudioOption createAudioOption(AudioContentVertex contentVertex) {
         return new ExerciseInputSelectOptionsDto.SelectOptionInputAudioOption(
-                vertex.getId(),
+                contentVertex.getId(),
                 contentVertex.getUrl());
     }
 
-    private ExerciseInputSelectOptionsDto.SelectOptionInputTextOption createTextOption(ExerciseVertex vertex, TextContentVertex textContentVertex) {
+    private ExerciseInputSelectOptionsDto.SelectOptionInputTextOption createTextOption(TextContentVertex textContentVertex) {
         return new ExerciseInputSelectOptionsDto.SelectOptionInputTextOption(
-                vertex.getId(),
+                textContentVertex.getId(),
                 textContentVertex.getValue());
     }
 
-    private ExerciseInputSelectOptionsDto.SelectOptionInputImageOption createImageOption(ExerciseVertex vertex, ImageContentVertex imageContentVertex) {
+    private ExerciseInputSelectOptionsDto.SelectOptionInputImageOption createImageOption(ImageContentVertex imageContentVertex) {
         return new ExerciseInputSelectOptionsDto.SelectOptionInputImageOption(
-                vertex.getId(),
+                imageContentVertex.getId(),
                 imageContentVertex.getUrl());
     }
 }
