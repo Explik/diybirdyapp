@@ -25,6 +25,17 @@ public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelF
                 .toList();
         input.setOptions(inputOptions);
 
+        // Determine type
+        if (!allOptionVertices.isEmpty()) {
+            var firstOption = allOptionVertices.getFirst();
+            if (firstOption instanceof AudioContentVertex)
+                input.setOptionType("audio");
+            else if (firstOption instanceof TextContentVertex)
+                input.setOptionType("text");
+            else if (firstOption instanceof ImageContentVertex)
+                input.setOptionType("image");
+        }
+
         return input;
     }
 
