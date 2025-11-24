@@ -62,7 +62,7 @@ export * from './submit-answer-rich-request';
 export * from './update1-request';
 export * from './update-config-request';
 export * from './upload-file-request';
+export * from './vocabulary-content-text-dto';
 export * from './vocabulary-dto';
-export * from './vocabulary-text-content-model';
 export * from './write-placeholders-feedback-dto';
 export * from './write-placeholders-part-dto';

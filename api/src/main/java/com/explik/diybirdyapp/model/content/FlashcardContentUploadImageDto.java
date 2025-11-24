@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.model.content;
 
 import com.explik.diybirdyapp.ContentTypes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class FlashcardContentUploadImageDto extends FlashcardContentDto implemen
         this.imageFileName = imageFileName;
     }
 
+    @JsonIgnore
     @Override
     public List<String> getFileNames() {
         return List.of(imageFileName);

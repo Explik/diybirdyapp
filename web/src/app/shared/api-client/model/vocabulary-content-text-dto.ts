@@ -7,10 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { VocabularyContentTextDto } from './vocabulary-content-text-dto';
 
 
-export interface VocabularyDto { 
-    words?: Array<VocabularyContentTextDto>;
+export interface VocabularyContentTextDto { 
+    text?: string;
+    pronunciationUrl?: string;
 }
 

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.model.content;
 
 import com.explik.diybirdyapp.ContentTypes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class FlashcardContentUploadVideoDto extends FlashcardContentDto implemen
         this.languageId = languageId;
     }
 
+    @JsonIgnore
     @Override
     public List<String> getFileNames() {
         return List.of(videoFileName);
