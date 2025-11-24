@@ -38,6 +38,11 @@ This application helps you create flashcard decks from various sources with auto
 - Skip header row option
 - Specify languages for left and right columns
 
+**📦 Create deck from .zip file**
+- Import decks in internal storage format
+- Includes flashcard data and media files
+- Validates deck structure before import
+
 **📦 Create deck from .anki file** *(Coming Soon)*
 - Import existing Anki decks
 - Preserve card formatting and media
