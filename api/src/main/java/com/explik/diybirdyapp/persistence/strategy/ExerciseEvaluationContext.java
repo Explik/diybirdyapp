@@ -1,13 +1,25 @@
 package com.explik.diybirdyapp.persistence.strategy;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 
-public class ExerciseEvaluationContext {
-    private ExerciseInputModel input;
+public class ExerciseEvaluationContext<T extends ExerciseInputDto> {
+    private String exerciseId;
+    private String sessionId;
+
+    private T input;
     private boolean retypeCorrectAnswerEnabled = false;
     private String algorithm = null;
 
-    public ExerciseInputModel getInput() {
+    public String getExerciseId() {
+        return exerciseId;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public T getInput() {
         return input;
     }
 
@@ -27,9 +39,11 @@ public class ExerciseEvaluationContext {
         this.algorithm = algorithm;
     }
 
-    public static ExerciseEvaluationContext create(ExerciseInputModel input) {
-        var context = new ExerciseEvaluationContext();
-        context.input = input;
+    public static <TInput extends ExerciseInputDto> ExerciseEvaluationContext<TInput> create(ExerciseAnswerModel<TInput> answerModel) {
+        var context = new ExerciseEvaluationContext<TInput>();
+        context.exerciseId = answerModel.getExerciseId();
+        context.sessionId = answerModel.getSessionId();
+        context.input = answerModel.getInput();
         return context;
     }
 }

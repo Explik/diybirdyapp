@@ -1,13 +1,13 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 
 public interface ExerciseSessionRepository {
-    ExerciseSessionModel add(ExerciseSessionModel model);
-    ExerciseSessionModel get(String sessionId);
-    ExerciseSessionModel nextExercise(String sessionId);
+    ExerciseSessionDto add(ExerciseSessionDto model);
+    ExerciseSessionDto get(String sessionId);
+    ExerciseSessionDto nextExercise(String sessionId);
 
-    ExerciseSessionOptionsModel getConfig(String sessionId);
-    ExerciseSessionModel updateConfig(String modelId, ExerciseSessionOptionsModel config);
+    ExerciseSessionOptionsDto getConfig(String sessionId);
+    ExerciseSessionDto updateConfig(String modelId, ExerciseSessionOptionsDto config);
 }

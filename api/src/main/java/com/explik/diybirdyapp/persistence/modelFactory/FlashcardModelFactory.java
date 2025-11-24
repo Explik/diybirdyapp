@@ -1,18 +1,17 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
-import com.explik.diybirdyapp.controller.dto.content.FlashcardContentTextDto;
 import com.explik.diybirdyapp.model.content.*;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FlashcardModelFactory implements ModelFactory<FlashcardVertex, FlashcardModel> {
+public class FlashcardModelFactory implements ModelFactory<FlashcardVertex, FlashcardDto> {
     @Override
-    public FlashcardModel create(FlashcardVertex vertex) {
+    public FlashcardDto create(FlashcardVertex vertex) {
         var leftContent = vertex.getLeftContent();
         var rightContent = vertex.getRightContent();
 
-        FlashcardModel model = new FlashcardModel();
+        FlashcardDto model = new FlashcardDto();
         model.setId(vertex.getId());
         model.setDeckId(vertex.getDeck().getId());
         model.setDeckOrder(vertex.getDeckOrder());
@@ -36,30 +35,30 @@ public class FlashcardModelFactory implements ModelFactory<FlashcardVertex, Flas
         return model;
     }
 
-    public FlashcardContentAudioModel createAudioContent(AudioContentVertex vertex) {
-        var model = new FlashcardContentAudioModel();
+    public FlashcardContentAudioDto createAudioContent(AudioContentVertex vertex) {
+        var model = new FlashcardContentAudioDto();
         model.setId(vertex.getId());
         model.setAudioUrl(vertex.getUrl());
         return model;
     }
 
-    public FlashcardContentImageModel createImageContent(ImageContentVertex vertex) {
-        var model = new FlashcardContentImageModel();
+    public FlashcardContentImageDto createImageContent(ImageContentVertex vertex) {
+        var model = new FlashcardContentImageDto();
         model.setId(vertex.getId());
         model.setImageUrl(vertex.getUrl());
         return model;
     }
 
-    public FlashcardContentTextModel createTextContent(TextContentVertex vertex) {
-        var model = new FlashcardContentTextModel();
+    public FlashcardContentTextDto createTextContent(TextContentVertex vertex) {
+        var model = new FlashcardContentTextDto();
         model.setId(vertex.getId());
         model.setText(vertex.getValue());
         model.setLanguageId(vertex.getLanguage().getId());
         return model;
     }
 
-    public FlashcardContentVideoModel createVideoContent(VideoContentVertex vertex) {
-        var model = new FlashcardContentVideoModel();
+    public FlashcardContentVideoDto createVideoContent(VideoContentVertex vertex) {
+        var model = new FlashcardContentVideoDto();
         model.setId(vertex.getId());
         model.setVideoUrl(vertex.getUrl());
         return model;

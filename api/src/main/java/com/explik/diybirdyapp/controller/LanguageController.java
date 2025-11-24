@@ -1,12 +1,8 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.dto.admin.ConfigurationDto;
-import com.explik.diybirdyapp.controller.dto.admin.ConfigurationIdentifierDto;
-import com.explik.diybirdyapp.controller.dto.content.FlashcardLanguageDto;
-import com.explik.diybirdyapp.controller.mapper.GenericMapper;
-import com.explik.diybirdyapp.model.admin.ConfigurationIdentifierModel;
-import com.explik.diybirdyapp.model.admin.ConfigurationModel;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.admin.ConfigurationDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationIdentifierDto;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.service.LanguageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +14,6 @@ import java.util.stream.Collectors;
 
 @RestController
 public class LanguageController {
-    @Autowired
-    GenericMapper<ConfigurationDto, ConfigurationModel> incomingMapper;
-
-    @Autowired
-    GenericMapper<ConfigurationModel, ConfigurationDto> outgoingMapper;
-
     @Autowired
     LanguageService service;
 
@@ -44,7 +34,7 @@ public class LanguageController {
             @PathVariable("id") String languageId,
             @RequestBody FlashcardLanguageDto languageDto) {
         var mapper = new ModelMapper();
-        var languageModel = mapper.map(languageDto, FlashcardLanguageModel.class);
+        var languageModel = mapper.map(languageDto, FlashcardLanguageDto.class);
         languageModel.setId(languageId);
         service.update(languageModel);
         return ResponseEntity.ok().build();
@@ -54,7 +44,7 @@ public class LanguageController {
     public ResponseEntity<?> createLanguage(
             @RequestBody FlashcardLanguageDto languageDto) {
         var mapper = new ModelMapper();
-        var languageModel = mapper.map(languageDto, FlashcardLanguageModel.class);
+        var languageModel = mapper.map(languageDto, FlashcardLanguageDto.class);
         service.create(languageModel);
         return ResponseEntity.ok().build();
     }
@@ -63,19 +53,16 @@ public class LanguageController {
     public List<ConfigurationDto> getConfigs(
             @PathVariable("id") String languageId,
             @RequestParam(required = false) String type) {
-        var configs = service.getLanguageConfigs(languageId, type);
 
-        return configs.stream()
-            .map(c -> outgoingMapper.map(c))
-            .collect(Collectors.toList());
+        return service.getLanguageConfigs(languageId, type);
     }
 
     @PostMapping("/language/{id}/create-config")
     public ResponseEntity<?> createConfig(
             @PathVariable("id") String languageId,
             @RequestBody ConfigurationDto configDto) {
-        var configModel = incomingMapper.map(configDto);
-        var createdConfig = service.createLanguageConfig(languageId, configModel);
+
+        var createdConfig = service.createLanguageConfig(languageId, configDto);
 
         return ResponseEntity.ok().build();
     }
@@ -84,10 +71,7 @@ public class LanguageController {
     public ResponseEntity<?> attachConfig(
             @PathVariable("id") String languageId,
             @RequestBody ConfigurationIdentifierDto configDto) {
-        var modelMapper = new ModelMapper();
-        var configModel = modelMapper.map(configDto, ConfigurationIdentifierModel.class);
-
-        service.attachLanguageConfig(languageId, configModel);
+        service.attachLanguageConfig(languageId, configDto);
 
         return ResponseEntity.ok().build();
     }
@@ -96,10 +80,8 @@ public class LanguageController {
     public ResponseEntity<?> detachConfig(
             @PathVariable("id") String languageId,
             @RequestBody ConfigurationIdentifierDto configDto) {
-        var modelMapper = new ModelMapper();
-        var configModel = modelMapper.map(configDto, ConfigurationIdentifierModel.class);
 
-        service.detachLanguageConfig(languageId, configModel);
+        service.detachLanguageConfig(languageId, configDto);
 
         return ResponseEntity.ok().build();
     }

@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExerciseContentModelFactory implements ContextualModelFactory<ExerciseVertex, ExerciseContentModel, ExerciseRetrievalContext> {
+public class ExerciseContentModelFactory implements ContextualModelFactory<ExerciseVertex, ExerciseContentDto, ExerciseRetrievalContext> {
     @Autowired
     private TextToSpeechService textToSpeechService;
 
     @Override
-    public ExerciseContentModel create(ExerciseVertex exerciseVertex, ExerciseRetrievalContext context) {
+    public ExerciseContentDto create(ExerciseVertex exerciseVertex, ExerciseRetrievalContext context) {
         var vertex = exerciseVertex.getContent();
 
         if (vertex instanceof FlashcardVertex flashcardVertex) {
@@ -24,11 +24,11 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         return createBasicContentModel(vertex, context);
     }
 
-    public ExerciseContentFlashcardModel createFlashcardModel(FlashcardVertex vertex, ExerciseRetrievalContext context) {
+    public ExerciseContentFlashcardDto createFlashcardModel(FlashcardVertex vertex, ExerciseRetrievalContext context) {
         var leftContent = createBasicContentModel(vertex.getLeftContent(), context);
         var rightContent = createBasicContentModel(vertex.getRightContent(), context);
 
-        ExerciseContentFlashcardModel model = new ExerciseContentFlashcardModel();
+        ExerciseContentFlashcardDto model = new ExerciseContentFlashcardDto();
         model.setId(vertex.getId());
         model.setFront(leftContent);
         model.setBack(rightContent);
@@ -47,16 +47,16 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         return model;
     }
 
-    public ExerciseContentFlashcardSideModel createFlashcardSideModel(FlashcardVertex vertex, String side, ExerciseRetrievalContext context) {
+    public ExerciseContentFlashcardSideDto createFlashcardSideModel(FlashcardVertex vertex, String side, ExerciseRetrievalContext context) {
         var content = createBasicContentModel(vertex.getSide(side), context);
 
-        ExerciseContentFlashcardSideModel model = new ExerciseContentFlashcardSideModel();
+        ExerciseContentFlashcardSideDto model = new ExerciseContentFlashcardSideDto();
         model.setId(vertex.getId());
         model.setContent(content);
         return model;
     }
 
-    public ExerciseContentModel createBasicContentModel(ContentVertex contentVertex, ExerciseRetrievalContext context) {
+    public ExerciseContentDto createBasicContentModel(ContentVertex contentVertex, ExerciseRetrievalContext context) {
         if (contentVertex instanceof AudioContentVertex audioContentVertex)
             return createAudioModel(audioContentVertex, context);
         if (contentVertex instanceof TextContentVertex textContentVertex)
@@ -69,16 +69,16 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         throw new RuntimeException("Unknown content type " + contentVertex.getLabel());
     }
 
-    public ExerciseContentAudioModel createAudioModel(AudioContentVertex vertex, ExerciseRetrievalContext context) {
-        ExerciseContentAudioModel model = new ExerciseContentAudioModel();
+    public ExerciseContentAudioDto createAudioModel(AudioContentVertex vertex, ExerciseRetrievalContext context) {
+        ExerciseContentAudioDto model = new ExerciseContentAudioDto();
         model.setId(vertex.getId());
         model.setAudioUrl(vertex.getUrl());
 
         return model;
     }
 
-    public ExerciseContentTextModel createTextModel(TextContentVertex vertex, ExerciseRetrievalContext context) {
-        ExerciseContentTextModel model = new ExerciseContentTextModel();
+    public ExerciseContentTextDto createTextModel(TextContentVertex vertex, ExerciseRetrievalContext context) {
+        ExerciseContentTextDto model = new ExerciseContentTextDto();
         model.setId(vertex.getId());
         model.setText(vertex.getValue());
 
@@ -101,16 +101,16 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         return model;
     }
 
-    public ExerciseContentImageModel createImageModel(ImageContentVertex vertex, ExerciseRetrievalContext context) {
-        ExerciseContentImageModel model = new ExerciseContentImageModel();
+    public ExerciseContentImageDto createImageModel(ImageContentVertex vertex, ExerciseRetrievalContext context) {
+        ExerciseContentImageDto model = new ExerciseContentImageDto();
         model.setId(vertex.getId());
         model.setImageUrl(vertex.getUrl());
 
         return model;
     }
 
-    public ExerciseContentVideoModel createVideoModel(VideoContentVertex vertex, ExerciseRetrievalContext context) {
-        ExerciseContentVideoModel model = new ExerciseContentVideoModel();
+    public ExerciseContentVideoDto createVideoModel(VideoContentVertex vertex, ExerciseRetrievalContext context) {
+        ExerciseContentVideoDto model = new ExerciseContentVideoDto();
         model.setId(vertex.getId());
         model.setVideoUrl(vertex.getUrl());
 

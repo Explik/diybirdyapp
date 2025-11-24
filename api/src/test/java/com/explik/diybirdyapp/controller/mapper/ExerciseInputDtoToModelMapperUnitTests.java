@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.exercise.*;
 import com.explik.diybirdyapp.model.exercise.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

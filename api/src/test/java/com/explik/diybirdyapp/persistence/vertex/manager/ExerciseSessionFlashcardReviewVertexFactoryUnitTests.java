@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.vertex.manager;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;

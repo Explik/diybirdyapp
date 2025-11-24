@@ -7,10 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { VocabularyTextContentModel } from './vocabulary-text-content-model';
+import { VocabularyContentTextDto } from './vocabulary-content-text-dto';
 
 
 export interface VocabularyDto { 
-    words?: Array<VocabularyTextContentModel>;
+    words?: Array<VocabularyContentTextDto>;
 }
 

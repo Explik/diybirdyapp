@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.admin.ConfigurationModel;
+import com.explik.diybirdyapp.model.admin.ConfigurationDto;
 
 public interface ConfigurationRepository {
-    ConfigurationModel get(String configId);
-    ConfigurationModel update(ConfigurationModel configModel);
+    ConfigurationDto get(String configId);
+    ConfigurationDto update(ConfigurationDto configModel);
     void delete(String configId);
 }

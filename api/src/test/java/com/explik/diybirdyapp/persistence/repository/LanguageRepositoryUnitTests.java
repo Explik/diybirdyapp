@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -23,7 +23,7 @@ public class LanguageRepositoryUnitTests {
 
     @Test
     void givenUniqueLanguage_whenAdd_thenReturnLanguage() {
-        var language = new FlashcardLanguageModel();
+        var language = new FlashcardLanguageDto();
         language.setId("new-id-1");
         language.setName("new-name-1");
         language.setIsoCode("new-iso-code-1");
@@ -37,7 +37,7 @@ public class LanguageRepositoryUnitTests {
 
     @Test
     void givenSameId_whenAdd_thenThrowsException() {
-        var language = new FlashcardLanguageModel();
+        var language = new FlashcardLanguageDto();
         language.setId(PRE_EXISTENT_ID);
         language.setName("new-name-2");
         language.setIsoCode("new-iso-code-2");
@@ -49,7 +49,7 @@ public class LanguageRepositoryUnitTests {
 
     @Test
     void givenSameName_whenAdd_thenThrowsException() {
-        var language = new FlashcardLanguageModel();
+        var language = new FlashcardLanguageDto();
         language.setId("new-id-3");
         language.setName(PRE_EXISTENT_NAME);
         language.setIsoCode("new-iso-code<-3");
@@ -61,7 +61,7 @@ public class LanguageRepositoryUnitTests {
 
     @Test
     void givenSameAbbreviation_whenAdd_thenThrowsException() {
-        var language = new FlashcardLanguageModel();
+        var language = new FlashcardLanguageDto();
         language.setId("new-id-4");
         language.setName("new-name-4");
         language.setIsoCode(PRE_EXISTENT_ABBREVIATION);
@@ -79,7 +79,7 @@ public class LanguageRepositoryUnitTests {
 
     @Test
     void givenNewlyCreatedLanguage_whenGetAll_thenReturnListContainingLanguage() {
-        var language = new FlashcardLanguageModel();
+        var language = new FlashcardLanguageDto();
         language.setId("new-id-5");
         language.setName("new-name-5");
         language.setIsoCode("new-iso-code-5");

@@ -24,7 +24,7 @@ export class VocabularyPageComponent {
     });
   }
 
-  playAudio(url: string) {
+  playAudio(url?: string) {
     if (!url) return;
     this.audioPlayService.toggle(url);
   }

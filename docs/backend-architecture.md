@@ -22,6 +22,9 @@ The vertex builders are responsible for creating cluters of associated vertices.
 The vertices are responsible for handling the graph representation of the data per data subtype.
 The model factories are responsible for creating models from the graph representation of the data.
 
+## Inter-layer communication
+The different layers communicate with each other using models (located in /src/models). The models class names either end with "Model" or "DTO". Model indicates that the model is used internally in the system, while DTO indicates that the model is used for data transfer (e.g. between frontend and backend). NB DTOs must always be a flat data structure (JSON-like). DTOs are sometimes mapped to models, but only when necessary. Most of the time, DTOs are directly mapped to the graph representation, since this reduces complexity and improve traceability, performance and reduces the overall amount of code.
+
 ## Persistance 
 All data in the system is store as a graph nodes and connections.
 

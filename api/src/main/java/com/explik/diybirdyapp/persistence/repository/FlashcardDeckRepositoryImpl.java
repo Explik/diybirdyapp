@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
+import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.UserVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -19,7 +19,7 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
     }
 
     @Override
-    public FlashcardDeckModel add(String userId, FlashcardDeckModel model) {
+    public FlashcardDeckDto add(String userId, FlashcardDeckDto model) {
         // Fetch owner vertex
         var userVertex = UserVertex.findWithEmail(traversalSource, userId);
         if (userVertex == null)
@@ -37,7 +37,7 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
     }
 
     @Override
-    public FlashcardDeckModel get(String userId, String id) {
+    public FlashcardDeckDto get(String userId, String id) {
         var query = traversalSource.V().has(FlashcardDeckVertex.LABEL, FlashcardDeckVertex.PROPERTY_ID, id);
 
         if (!query.hasNext())
@@ -51,7 +51,7 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
     }
 
     @Override
-    public List<FlashcardDeckModel> getAll(String userId) {
+    public List<FlashcardDeckDto> getAll(String userId) {
         var vertices = traversalSource.V().hasLabel(FlashcardDeckVertex.LABEL).toList();
 
         return vertices
@@ -63,7 +63,7 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
     }
 
     @Override
-    public FlashcardDeckModel update(String userId, FlashcardDeckModel flashcardDeckModel) {
+    public FlashcardDeckDto update(String userId, FlashcardDeckDto flashcardDeckModel) {
         if (flashcardDeckModel.getId() == null)
             throw new IllegalArgumentException("FlashcardDeck is missing id");
 
@@ -98,8 +98,8 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
         query.next().remove();
     }
 
-    private static FlashcardDeckModel createModel(FlashcardDeckVertex v) {
-        var model = new FlashcardDeckModel();
+    private static FlashcardDeckDto createModel(FlashcardDeckVertex v) {
+        var model = new FlashcardDeckDto();
         model.setId(v.getId());
         model.setName(v.getName());
         model.setDescription(v.getDescription());
