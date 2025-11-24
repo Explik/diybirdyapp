@@ -7,7 +7,7 @@ import { FormFieldComponent } from "../../components/form-field/form-field.compo
 import { LabelComponent } from "../../components/label/label.component";
 import { FormErrorComponent } from "../../components/form-error/form-error.component";
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const pw = control.get('password')?.value;
@@ -21,7 +21,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 @Component({
   selector: 'app-signup-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TextFieldComponent, ButtonComponent, FormFieldComponent, LabelComponent, FormErrorComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TextFieldComponent, ButtonComponent, FormFieldComponent, LabelComponent, FormErrorComponent],
   templateUrl: './signup-page.component.html',
   styleUrls: ['./signup-page.component.css']
 })
