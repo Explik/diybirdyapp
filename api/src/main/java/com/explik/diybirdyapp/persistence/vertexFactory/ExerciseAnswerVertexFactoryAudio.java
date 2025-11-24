@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.vertexFactory;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputRecordAudioDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;

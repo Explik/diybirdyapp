@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputSelectOptionsDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;

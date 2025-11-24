@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.operation;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
 public interface ExerciseSessionOperations {

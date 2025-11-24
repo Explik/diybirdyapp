@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
-import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
-import com.explik.diybirdyapp.dto.admin.ConfigurationGoogleTextToSpeechDto;
-import com.explik.diybirdyapp.dto.admin.ConfigurationGoogleTranslateDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTextToSpeechDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTranslateDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;

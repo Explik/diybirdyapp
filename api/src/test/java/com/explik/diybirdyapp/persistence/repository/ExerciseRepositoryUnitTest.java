@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;

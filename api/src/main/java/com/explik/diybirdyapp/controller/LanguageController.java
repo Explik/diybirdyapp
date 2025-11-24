@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
-import com.explik.diybirdyapp.dto.admin.ConfigurationIdentifierDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationIdentifierDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.service.LanguageService;
 import org.modelmapper.ModelMapper;

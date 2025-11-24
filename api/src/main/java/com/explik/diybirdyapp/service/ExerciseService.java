@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputRecordAudioDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.repository.ExerciseRepository;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;

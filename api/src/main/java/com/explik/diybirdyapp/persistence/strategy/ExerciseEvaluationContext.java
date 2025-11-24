@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.strategy;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 
 public class ExerciseEvaluationContext<T extends ExerciseInputDto> {

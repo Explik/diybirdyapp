@@ -1,8 +1,8 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionProgressDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;

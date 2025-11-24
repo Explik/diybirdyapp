@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.provider;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseAbstractModelFactory;

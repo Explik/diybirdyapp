@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationDto;
 import com.explik.diybirdyapp.service.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

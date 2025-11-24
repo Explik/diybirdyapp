@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputPairOptionsDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputPairOptionsDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.PairVertex;

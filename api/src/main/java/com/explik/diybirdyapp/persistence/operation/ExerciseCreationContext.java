@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.operation;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 
 public class ExerciseCreationContext {
     private ExerciseSessionDto sessionModel;

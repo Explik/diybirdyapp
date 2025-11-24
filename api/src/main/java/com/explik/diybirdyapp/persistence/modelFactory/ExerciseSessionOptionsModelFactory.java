@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
-import com.explik.diybirdyapp.dto.exercise.*;
+import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.springframework.stereotype.Component;

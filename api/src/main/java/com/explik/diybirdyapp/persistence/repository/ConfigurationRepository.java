@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationDto;
 
 public interface ConfigurationRepository {
     ConfigurationDto get(String configId);

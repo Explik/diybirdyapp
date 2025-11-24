@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.strategy;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseFeedbackDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackDto;
 
 public class ExerciseFeedbackHelper {
     public static ExerciseFeedbackDto createIndecisiveFeedback() {

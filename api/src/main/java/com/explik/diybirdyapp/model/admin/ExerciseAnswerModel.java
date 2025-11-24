@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.model.admin;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionOptionsDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 
 public interface ExerciseSessionRepository {
     ExerciseSessionDto add(ExerciseSessionDto model);

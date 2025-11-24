@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionOptionsDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.service.ExerciseSessionService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;

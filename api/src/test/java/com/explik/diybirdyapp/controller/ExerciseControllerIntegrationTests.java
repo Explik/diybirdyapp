@@ -2,10 +2,10 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.dto.exercise.ExerciseContentFlashcardDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseContentTextDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputSelectOptionsDto;
-import com.explik.diybirdyapp.dto.exercise.ExerciseInputSelectReviewOptionsDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseContentFlashcardDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseContentTextDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectReviewOptionsDto;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
