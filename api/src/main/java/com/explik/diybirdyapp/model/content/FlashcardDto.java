@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.controller.model.content;
+package com.explik.diybirdyapp.model.content;
 
 import jakarta.validation.constraints.NotBlank;
 

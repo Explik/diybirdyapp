@@ -4,7 +4,7 @@ import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
 import com.explik.diybirdyapp.dto.admin.ConfigurationGoogleTextToSpeechDto;
 import com.explik.diybirdyapp.dto.admin.ConfigurationGoogleTranslateDto;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -23,7 +23,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public FlashcardLanguageModel add(FlashcardLanguageModel language) {
+    public FlashcardLanguageDto add(FlashcardLanguageDto language) {
         // Check for duplicates
         if (LanguageVertex.findById(traversalSource, language.getId()) != null)
             throw new IllegalArgumentException("Language with id " + language.getId() + " already exists");
@@ -42,7 +42,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public FlashcardLanguageModel getById(String languageId) {
+    public FlashcardLanguageDto getById(String languageId) {
         var vertex = LanguageVertex.findById(traversalSource, languageId);
         if (vertex == null)
             throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
@@ -80,7 +80,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public FlashcardLanguageModel update(FlashcardLanguageModel language) {
+    public FlashcardLanguageDto update(FlashcardLanguageDto language) {
         var vertex = LanguageVertex.findById(traversalSource, language.getId());
         if (vertex == null)
             throw new IllegalArgumentException("Language with id " + language.getId() + " does not exist");
@@ -94,7 +94,7 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
     }
 
     @Override
-    public List<FlashcardLanguageModel> getAll() {
+    public List<FlashcardLanguageDto> getAll() {
         var vertices = LanguageVertex.findAll(traversalSource);
 
         return vertices
@@ -167,11 +167,12 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
         configurationVertex.removeLanguage(languageVertex);
     }
 
-    private static FlashcardLanguageModel createLanguageModel(LanguageVertex v) {
-        return new FlashcardLanguageModel(
-            v.getId(),
-            v.getIsoCode(),
-            v.getName());
+    private static FlashcardLanguageDto createLanguageModel(LanguageVertex v) {
+        var dto = new FlashcardLanguageDto();
+        dto.setId(v.getId());
+        dto.setName(v.getName());
+        dto.setIsoCode(v.getIsoCode());
+        return dto;
     }
 
     private static ConfigurationDto createConfigModel(String languageId, ConfigurationVertex vertex) {

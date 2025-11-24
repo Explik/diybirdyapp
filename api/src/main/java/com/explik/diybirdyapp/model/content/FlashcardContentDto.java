@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.controller.model.content;
+package com.explik.diybirdyapp.model.content;
 
 import com.explik.diybirdyapp.ContentTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes;

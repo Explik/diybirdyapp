@@ -1,9 +1,12 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.*;
-import com.explik.diybirdyapp.controller.model.content.*;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
+import com.explik.diybirdyapp.model.content.FlashcardContentTextDto;
+import com.explik.diybirdyapp.model.content.FlashcardContentUploadAudioDto;
+import com.explik.diybirdyapp.model.content.FlashcardContentUploadVideoDto;
+import com.explik.diybirdyapp.model.content.FlashcardDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

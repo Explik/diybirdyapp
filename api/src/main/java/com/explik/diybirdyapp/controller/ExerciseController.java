@@ -55,12 +55,12 @@ public class ExerciseController {
 
         var newModel = exerciseService.submitExerciseAnswer(model, null);
 
-        var event = new ExerciseAnsweredEvent(
-                this,
-                newModel.getType(),
-                newModel.getId(),
-                newModel.getAnswerId());
-        eventPublisher.publishEvent(event);
+//        var event = new ExerciseAnsweredEvent(
+//                this,
+//                newModel.getType(),
+//                newModel.getId(),
+//                newModel.getAnswerId());
+//        eventPublisher.publishEvent(event);
 
         return newModel;
     }
@@ -77,12 +77,12 @@ public class ExerciseController {
 
         var newModel = exerciseService.submitExerciseAnswer(model, files);
 
-        var event = new ExerciseAnsweredEvent(
-                this,
-                newModel.getType(),
-                newModel.getId(),
-                newModel.getAnswerId());
-        eventPublisher.publishEvent(event);
+//        var event = new ExerciseAnsweredEvent(
+//                this,
+//                newModel.getType(),
+//                newModel.getId(),
+//                newModel.getAnswerId());
+//        eventPublisher.publishEvent(event);
 
         return newModel;
     }

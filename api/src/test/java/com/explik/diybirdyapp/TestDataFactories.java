@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp;
 
-import com.explik.diybirdyapp.controller.model.content.*;
+import com.explik.diybirdyapp.model.content.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 

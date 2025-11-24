@@ -1,8 +1,10 @@
-package com.explik.diybirdyapp.controller.model.content;
+package com.explik.diybirdyapp.model.content;
 
 import com.explik.diybirdyapp.ContentTypes;
 
-public class FlashcardContentUploadAudioDto extends FlashcardContentDto {
+import java.util.List;
+
+public class FlashcardContentUploadAudioDto extends FlashcardContentDto implements FileUploadModel {
     public FlashcardContentUploadAudioDto() {
         super(ContentTypes.AUDIO_UPLOAD);
     }
@@ -24,5 +26,10 @@ public class FlashcardContentUploadAudioDto extends FlashcardContentDto {
 
     public void setLanguageId(String languageId) {
         this.languageId = languageId;
+    }
+
+    @Override
+    public List<String> getFileNames() {
+        return List.of(audioFileName);
     }
 }

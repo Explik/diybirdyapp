@@ -3,8 +3,6 @@ package com.explik.diybirdyapp.persistence.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.explik.diybirdyapp.model.content.FlashcardContentTextModel;
-import com.explik.diybirdyapp.model.content.FlashcardModel;
 import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -30,23 +28,23 @@ public class FlashcardRepositoryImplUnitTest {
         var languageId1 = "lang1";
         var languageId2 = "lang2";
 
-        var flashcardFront = new FlashcardContentTextModel();
+        var flashcardFront = new FlashcardContentTextDto();
         flashcardFront.setLanguageId(languageId1);
         flashcardFront.setText("left-value");
 
-        var flashcardBack = new FlashcardContentTextModel();
+        var flashcardBack = new FlashcardContentTextDto();
         flashcardBack.setLanguageId(languageId2);
         flashcardBack.setText("right-value");
 
-        var flashcard = new FlashcardModel(
+        var flashcard = new FlashcardDto(
                 "flashcard1",
                 "flashcardDeck1",
                 flashcardFront,
                 flashcardBack);
 
         var savedFlashcard = repository.add(flashcard);
-        var savedFlashcardFrontContent = (FlashcardContentTextModel)savedFlashcard.getFrontContent();
-        var savedFlashcardBackContent = (FlashcardContentTextModel)savedFlashcard.getBackContent();
+        var savedFlashcardFrontContent = (FlashcardContentTextDto)savedFlashcard.getFrontContent();
+        var savedFlashcardBackContent = (FlashcardContentTextDto)savedFlashcard.getBackContent();
 
         assertNotNull(savedFlashcard.getId());
         assertNotNull(savedFlashcard.getDeckId());
@@ -77,15 +75,15 @@ public class FlashcardRepositoryImplUnitTest {
         var languageId1 = "lang1";
         var languageId2 = "lang2";
 
-        var flashcardFront = new FlashcardContentTextModel();
+        var flashcardFront = new FlashcardContentTextDto();
         flashcardFront.setLanguageId(languageId1);
         flashcardFront.setText("left-value");
 
-        var flashcardBack = new FlashcardContentTextModel();
+        var flashcardBack = new FlashcardContentTextDto();
         flashcardBack.setLanguageId(languageId2);
         flashcardBack.setText("right-value");
 
-        var flashcard = new FlashcardModel(
+        var flashcard = new FlashcardDto(
                 "flashcard1",
                 "flashcardDeck1",
                 flashcardFront,
@@ -93,8 +91,8 @@ public class FlashcardRepositoryImplUnitTest {
 
         var savedFlashcardId = repository.add(flashcard).getId();
         var savedFlashcard = repository.get(savedFlashcardId);
-        var savedFlashcardFrontContent = (FlashcardContentTextModel)savedFlashcard.getFrontContent();
-        var savedFlashcardBackContent = (FlashcardContentTextModel)savedFlashcard.getBackContent();
+        var savedFlashcardFrontContent = (FlashcardContentTextDto)savedFlashcard.getFrontContent();
+        var savedFlashcardBackContent = (FlashcardContentTextDto)savedFlashcard.getBackContent();
 
         assertEquals(savedFlashcardId, savedFlashcard.getId());
         assertEquals(languageId1, savedFlashcardFrontContent.getLanguageId());
@@ -109,15 +107,15 @@ public class FlashcardRepositoryImplUnitTest {
                 .withFrontText("old-value")
                 .build(traversalSource);
 
-        var textChanges = new FlashcardContentTextModel();
+        var textChanges = new FlashcardContentTextDto();
         textChanges.setText("new-value");
 
-        var flashcardChanges = new FlashcardModel();
+        var flashcardChanges = new FlashcardDto();
         flashcardChanges.setId(flashcardId);
         flashcardChanges.setFrontContent(textChanges);
 
         var savedFlashCard = repository.update(flashcardChanges);
-        var savedFlashcardFrontContent = (FlashcardContentTextModel)savedFlashCard.getFrontContent();
+        var savedFlashcardFrontContent = (FlashcardContentTextDto)savedFlashCard.getFrontContent();
 
         assertEquals(flashcardId, savedFlashCard.getId());
         assertEquals("new-value", savedFlashcardFrontContent.getText());
@@ -131,15 +129,15 @@ public class FlashcardRepositoryImplUnitTest {
                 .withBackText("old-value")
                 .build(traversalSource);
 
-        var textChanges = new FlashcardContentTextModel();
+        var textChanges = new FlashcardContentTextDto();
         textChanges.setText("new-value");
 
-        var flashcardChanges = new FlashcardModel();
+        var flashcardChanges = new FlashcardDto();
         flashcardChanges.setId(flashcardId);
         flashcardChanges.setFrontContent(textChanges);
 
         var savedFlashCard = repository.update(flashcardChanges);
-        var savedFlashcardBackContent = (FlashcardContentTextModel)savedFlashCard.getBackContent();
+        var savedFlashcardBackContent = (FlashcardContentTextDto)savedFlashCard.getBackContent();
 
         assertEquals(flashcardId, savedFlashCard.getId());
         assertEquals("new-value", savedFlashcardBackContent.getText());

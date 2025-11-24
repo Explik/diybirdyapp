@@ -1,8 +1,10 @@
-package com.explik.diybirdyapp.controller.model.content;
+package com.explik.diybirdyapp.model.content;
 
 import com.explik.diybirdyapp.ContentTypes;
 
-public class FlashcardContentUploadImageDto extends FlashcardContentDto {
+import java.util.List;
+
+public class FlashcardContentUploadImageDto extends FlashcardContentDto implements FileUploadModel {
     public FlashcardContentUploadImageDto() {
         super(ContentTypes.IMAGE_UPLOAD);
     }
@@ -15,5 +17,10 @@ public class FlashcardContentUploadImageDto extends FlashcardContentDto {
 
     public void setImageFileName(String imageFileName) {
         this.imageFileName = imageFileName;
+    }
+
+    @Override
+    public List<String> getFileNames() {
+        return List.of(imageFileName);
     }
 }

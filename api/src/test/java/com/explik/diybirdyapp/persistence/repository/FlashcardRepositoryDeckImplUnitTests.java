@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
 import com.explik.diybirdyapp.persistence.builder.VertexBuilderFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -31,7 +30,7 @@ public class FlashcardRepositoryDeckImplUnitTests {
 
     @Test
     void givenNewlyCreatedFlashcardDeck_whenAdd_thenReturnFlashcardDeck() {
-        var flashcardDeck = new FlashcardDeckModel();
+        var flashcardDeck = new FlashcardDeckDto();
 
         var savedFlashcardDeck = repository.add(flashcardDeck);
 
@@ -60,7 +59,7 @@ public class FlashcardRepositoryDeckImplUnitTests {
 
     @Test
     void givenNewlyCreatedFlashcardDeck_whenGetById_thenReturnFlashcard() {
-        var flashcardDeck = new FlashcardDeckModel();
+        var flashcardDeck = new FlashcardDeckDto();
 
         var savedFlashcardDeck1 = repository.add(flashcardDeck);
         var savedFlashcardDeck2 = repository.get(savedFlashcardDeck1.getId());
@@ -70,7 +69,7 @@ public class FlashcardRepositoryDeckImplUnitTests {
 
     @Test
     void givenNewlyCreatedFlashcardDeck_whenGetAll_thenReturnListContainingDeck() {
-        var flashcardDeck = new FlashcardDeckModel();
+        var flashcardDeck = new FlashcardDeckDto();
         flashcardDeck.setId("new-id");
 
         repository.add(flashcardDeck);
@@ -91,7 +90,7 @@ public class FlashcardRepositoryDeckImplUnitTests {
                 .withName("old-value")
                 .build(traversalSource);
 
-        var flashcardDeckChanges = new FlashcardDeckModel();
+        var flashcardDeckChanges = new FlashcardDeckDto();
         flashcardDeckChanges.setId(flashcardDeckId);
         flashcardDeckChanges.setName("new-value");
 
@@ -109,7 +108,7 @@ public class FlashcardRepositoryDeckImplUnitTests {
                 .withDescription("old-value")
                 .build(traversalSource);
 
-        var flashcardDeckChanges = new FlashcardDeckModel();
+        var flashcardDeckChanges = new FlashcardDeckDto();
         flashcardDeckChanges.setId(flashcardDeckId);
         flashcardDeckChanges.setDescription("new-description");
 

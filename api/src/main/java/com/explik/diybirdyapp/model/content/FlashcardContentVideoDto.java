@@ -1,6 +1,12 @@
 package com.explik.diybirdyapp.model.content;
 
-public class FlashcardContentVideoModel extends FlashcardContentModel {
+import com.explik.diybirdyapp.ContentTypes;
+
+public class FlashcardContentVideoDto extends FlashcardContentDto {
+    public FlashcardContentVideoDto() {
+        super(ContentTypes.VIDEO);
+    }
+
     private String videoUrl;
 
     public String getVideoUrl() { return videoUrl; }

@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp;
 
-import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
 import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -29,12 +28,12 @@ public class TestDataService {
     }
 
     public void populateFlashcardLanguages() {
-        var languageModel1 = new FlashcardLanguageModel();
+        var languageModel1 = new FlashcardLanguageDto();
         languageModel1.setId(LEFT_LANGUAGE_ID);
         languageModel1.setName("Language 1");
         languageModel1.setIsoCode("Lang 1");
 
-        var languageModel2 = new FlashcardLanguageModel();
+        var languageModel2 = new FlashcardLanguageDto();
         languageModel2.setId(RIGHT_LANGUAGE_ID);
         languageModel2.setName("Language 2");
         languageModel2.setIsoCode("Lang 2");
@@ -44,7 +43,7 @@ public class TestDataService {
     }
 
     public void populateFlashcardDecks() {
-        var flashcardDeckModel = new FlashcardDeckModel();
+        var flashcardDeckModel = new FlashcardDeckDto();
         flashcardDeckModel.setId(FLASHCARD_DECK_1_ID);
         flashcardDeckModel.setName("Deck 1");
 

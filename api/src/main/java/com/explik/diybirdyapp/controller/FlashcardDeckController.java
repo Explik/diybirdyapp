@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
-import com.explik.diybirdyapp.controller.model.content.FlashcardDeckDto;
-import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
+import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.service.FlashcardDeckService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -22,7 +21,7 @@ public class FlashcardDeckController {
     @PostMapping("/flashcard-deck")
     public FlashcardDeckDto create(Authentication authentication, @Valid @RequestBody FlashcardDeckDto dto) {
         var userId = getUserId(authentication);
-        var model = modelMapper.map(dto, FlashcardDeckModel.class);
+        var model = modelMapper.map(dto, FlashcardDeckDto.class);
 
         var persistedModel = service.add(userId, model);
 
@@ -50,7 +49,7 @@ public class FlashcardDeckController {
     @PutMapping("flashcard-deck")
     public FlashcardDeckDto update(Authentication authentication, @Valid @RequestBody FlashcardDeckDto dto) {
         var userId = getUserId(authentication);
-        var model = modelMapper.map(dto, FlashcardDeckModel.class);
+        var model = modelMapper.map(dto, FlashcardDeckDto.class);
 
         var persistedModel = service.update(userId, model);
 

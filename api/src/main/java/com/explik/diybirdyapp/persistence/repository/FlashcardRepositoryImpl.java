@@ -38,7 +38,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     @Override
-    public FlashcardModel add(FlashcardModel flashcardModel) {
+    public FlashcardDto add(FlashcardDto flashcardModel) {
         if (flashcardModel.getFrontContent() == null)
             throw new IllegalArgumentException("Flashcard is missing front content");
         if (flashcardModel.getBackContent() == null)
@@ -72,13 +72,13 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     @Override
-    public FlashcardModel get(String id) {
+    public FlashcardDto get(String id) {
         var vertex = FlashcardVertex.findById(traversalSource, id);
         return flashcardCardModelFactory.create(vertex);
     }
 
     @Override
-    public List<FlashcardModel> getAll(String deckId) {
+    public List<FlashcardDto> getAll(String deckId) {
         List<FlashcardVertex> vertices;
 
         if (deckId != null) {
@@ -95,7 +95,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     }
 
     @Override
-    public FlashcardModel update(FlashcardModel flashcardModel) {
+    public FlashcardDto update(FlashcardDto flashcardModel) {
         if (flashcardModel.getId() == null)
             throw new IllegalArgumentException("Flashcard is missing id");
 
@@ -129,48 +129,48 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         return flashcardCardModelFactory.create(flashcardVertex);
     }
 
-    private ContentVertex createContent(FlashcardContentModel model) {
-        if (model instanceof FlashcardContentTextModel) {
-            return createTextContent((FlashcardContentTextModel) model);
+    private ContentVertex createContent(FlashcardContentDto model) {
+        if (model instanceof FlashcardContentTextDto) {
+            return createTextContent((FlashcardContentTextDto) model);
         }
-        else if (model instanceof FlashcardContentUploadAudioModel) {
-            return createAudioContent((FlashcardContentUploadAudioModel) model);
+        else if (model instanceof FlashcardContentUploadAudioDto) {
+            return createAudioContent((FlashcardContentUploadAudioDto) model);
         }
-        else if (model instanceof FlashcardContentUploadImageModel) {
-            return createImageContent((FlashcardContentUploadImageModel) model);
+        else if (model instanceof FlashcardContentUploadImageDto) {
+            return createImageContent((FlashcardContentUploadImageDto) model);
         }
-        else if (model instanceof FlashcardContentUploadVideoModel) {
-            return createVideoContent((FlashcardContentUploadVideoModel) model);
+        else if (model instanceof FlashcardContentUploadVideoDto) {
+            return createVideoContent((FlashcardContentUploadVideoDto) model);
         }
         throw new RuntimeException("Not implemented");
     }
 
-    private ContentVertex createOrUpdateContent(FlashcardContentModel model, ContentVertex vertex) {
-        if (model instanceof FlashcardContentTextModel) {
-            return updateTextContent((TextContentVertex) vertex, (FlashcardContentTextModel) model);
+    private ContentVertex createOrUpdateContent(FlashcardContentDto model, ContentVertex vertex) {
+        if (model instanceof FlashcardContentTextDto) {
+            return updateTextContent((TextContentVertex) vertex, (FlashcardContentTextDto) model);
         }
-        else if (model instanceof FlashcardContentAudioModel) {
-            return updateAudioContent((AudioContentVertex) vertex, (FlashcardContentAudioModel) model);
+        else if (model instanceof FlashcardContentAudioDto) {
+            return updateAudioContent((AudioContentVertex) vertex, (FlashcardContentAudioDto) model);
         }
-        else if (model instanceof FlashcardContentUploadAudioModel) {
-            return createAudioContent((FlashcardContentUploadAudioModel) model);
+        else if (model instanceof FlashcardContentUploadAudioDto) {
+            return createAudioContent((FlashcardContentUploadAudioDto) model);
         }
-        else if (model instanceof FlashcardContentImageModel) {
-            return updateImageContent((ImageContentVertex) vertex, (FlashcardContentImageModel) model);
+        else if (model instanceof FlashcardContentImageDto) {
+            return updateImageContent((ImageContentVertex) vertex, (FlashcardContentImageDto) model);
         }
-        else if (model instanceof FlashcardContentUploadImageModel) {
-            return createImageContent((FlashcardContentUploadImageModel) model);
+        else if (model instanceof FlashcardContentUploadImageDto) {
+            return createImageContent((FlashcardContentUploadImageDto) model);
         }
-        else if (model instanceof FlashcardContentVideoModel) {
-            return updateVideoContent((VideoContentVertex) vertex, (FlashcardContentVideoModel) model);
+        else if (model instanceof FlashcardContentVideoDto) {
+            return updateVideoContent((VideoContentVertex) vertex, (FlashcardContentVideoDto) model);
         }
-        else if(model instanceof FlashcardContentUploadVideoModel) {
-            return createVideoContent((FlashcardContentUploadVideoModel) model);
+        else if(model instanceof FlashcardContentUploadVideoDto) {
+            return createVideoContent((FlashcardContentUploadVideoDto) model);
         }
         return vertex;
     }
 
-    private AudioContentVertex createAudioContent(FlashcardContentUploadAudioModel model) {
+    private AudioContentVertex createAudioContent(FlashcardContentUploadAudioDto model) {
         var url = model.getAudioFileName();
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
 
@@ -179,7 +179,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
                 new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), url, languageVertex));
     }
 
-    private AudioContentVertex updateAudioContent(AudioContentVertex vertex, FlashcardContentAudioModel model) {
+    private AudioContentVertex updateAudioContent(AudioContentVertex vertex, FlashcardContentAudioDto model) {
         if (vertex.isStatic()) {
             var newVertex = audioContentVertexFactory.copy(vertex);
             newVertex.setUrl(model.getAudioUrl());
@@ -191,7 +191,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         }
     }
 
-    private ImageContentVertex createImageContent(FlashcardContentUploadImageModel model) {
+    private ImageContentVertex createImageContent(FlashcardContentUploadImageDto model) {
         var url = model.getImageFileName();
 
         return imageContentVertexFactory.create(
@@ -199,7 +199,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
                 new ImageContentVertexFactory.Options(UUID.randomUUID().toString(), url));
     }
 
-    private ImageContentVertex updateImageContent(ImageContentVertex vertex, FlashcardContentImageModel model) {
+    private ImageContentVertex updateImageContent(ImageContentVertex vertex, FlashcardContentImageDto model) {
         if (vertex.isStatic()) {
             var newVertex = imageContentVertexFactory.copy(vertex);
             newVertex.setUrl(model.getImageUrl());
@@ -211,7 +211,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         }
     }
 
-    private TextContentVertex createTextContent(FlashcardContentTextModel model) {
+    private TextContentVertex createTextContent(FlashcardContentTextDto model) {
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
         var textContentVertex = TextContentVertex.create(traversalSource);
         textContentVertex.setId(UUID.randomUUID().toString());
@@ -221,7 +221,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         return textContentVertex;
     }
 
-    private TextContentVertex updateTextContent(TextContentVertex vertex, FlashcardContentTextModel model) {
+    private TextContentVertex updateTextContent(TextContentVertex vertex, FlashcardContentTextDto model) {
         var updateVertex = vertex.isStatic() ? textContentVertexFactory.copy(vertex) : vertex;
 
         if (model.getLanguageId() != null) {
@@ -234,7 +234,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         return updateVertex;
     }
 
-    private VideoContentVertex createVideoContent(FlashcardContentUploadVideoModel model) {
+    private VideoContentVertex createVideoContent(FlashcardContentUploadVideoDto model) {
         var url = model.getVideoFileName();
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
 
@@ -243,7 +243,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
                 new VideoContentVertexFactory.Options(UUID.randomUUID().toString(), url, languageVertex));
     }
 
-    private VideoContentVertex updateVideoContent(VideoContentVertex vertex, FlashcardContentVideoModel model) {
+    private VideoContentVertex updateVideoContent(VideoContentVertex vertex, FlashcardContentVideoDto model) {
         if (vertex.isStatic()) {
             var newVertex = videoContentVertexFactory.copy(vertex);
             newVertex.setUrl(model.getVideoUrl());

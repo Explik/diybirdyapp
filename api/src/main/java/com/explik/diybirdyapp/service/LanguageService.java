@@ -2,7 +2,7 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
 import com.explik.diybirdyapp.dto.admin.ConfigurationIdentifierDto;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,19 +14,19 @@ public class LanguageService {
     @Autowired
     LanguageRepository repository;
 
-    public FlashcardLanguageModel getById(String languageId) {
+    public FlashcardLanguageDto getById(String languageId) {
         return repository.getById(languageId);
     }
 
-    public FlashcardLanguageModel create(FlashcardLanguageModel languageModel) {
+    public FlashcardLanguageDto create(FlashcardLanguageDto languageModel) {
         return repository.add(languageModel);
     }
 
-    public FlashcardLanguageModel update(FlashcardLanguageModel languageModel) {
+    public FlashcardLanguageDto update(FlashcardLanguageDto languageModel) {
         return repository.update(languageModel);
     }
 
-    public List<FlashcardLanguageModel> getAll() {
+    public List<FlashcardLanguageDto> getAll() {
         return repository.getAll();
     }
 

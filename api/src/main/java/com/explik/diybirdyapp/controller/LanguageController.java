@@ -2,8 +2,7 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.dto.admin.ConfigurationDto;
 import com.explik.diybirdyapp.dto.admin.ConfigurationIdentifierDto;
-import com.explik.diybirdyapp.controller.model.content.FlashcardLanguageDto;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.service.LanguageService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class LanguageController {
             @PathVariable("id") String languageId,
             @RequestBody FlashcardLanguageDto languageDto) {
         var mapper = new ModelMapper();
-        var languageModel = mapper.map(languageDto, FlashcardLanguageModel.class);
+        var languageModel = mapper.map(languageDto, FlashcardLanguageDto.class);
         languageModel.setId(languageId);
         service.update(languageModel);
         return ResponseEntity.ok().build();
@@ -45,7 +44,7 @@ public class LanguageController {
     public ResponseEntity<?> createLanguage(
             @RequestBody FlashcardLanguageDto languageDto) {
         var mapper = new ModelMapper();
-        var languageModel = mapper.map(languageDto, FlashcardLanguageModel.class);
+        var languageModel = mapper.map(languageDto, FlashcardLanguageDto.class);
         service.create(languageModel);
         return ResponseEntity.ok().build();
     }
