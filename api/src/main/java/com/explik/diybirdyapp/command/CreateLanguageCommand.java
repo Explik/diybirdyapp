@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.command;
 
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class CreateLanguageCommand implements Runnable {
 
     public void run() {
         var languageId = (id != null) ? id : UUID.randomUUID().toString();
-        var language = new FlashcardLanguageModel();
+        var language = new FlashcardLanguageDto();
         language.setId(languageId);
         language.setName(name);
         language.setIsoCode(isoCode);

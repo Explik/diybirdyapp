@@ -1,7 +1,9 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.exercise.*;
-import com.explik.diybirdyapp.model.exercise.*;
+import com.explik.diybirdyapp.model.exercise.ExerciseContentAudioDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

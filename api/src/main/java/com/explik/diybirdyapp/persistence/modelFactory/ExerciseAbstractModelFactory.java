@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseContentModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseContentDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -24,11 +24,11 @@ public class ExerciseAbstractModelFactory {
     @Autowired
     private ExerciseInputModelFactoryPairOptions pairOptionsModelFactory;
 
-    public ContextualModelFactory<ExerciseVertex, ExerciseModel, ExerciseRetrievalContext> create(ExerciseSchema schema) {
+    public ContextualModelFactory<ExerciseVertex, ExerciseDto, ExerciseRetrievalContext> create(ExerciseSchema schema) {
         return (vertex, context) -> createExercise(vertex, context, schema);
     }
 
-    private ExerciseModel createExercise(ExerciseVertex vertex, ExerciseRetrievalContext context, ExerciseSchema schema) {
+    private ExerciseDto createExercise(ExerciseVertex vertex, ExerciseRetrievalContext context, ExerciseSchema schema) {
         if (vertex == null)
             throw new RuntimeException("Vertex is null");
         if (schema == null)
@@ -36,7 +36,7 @@ public class ExerciseAbstractModelFactory {
         if (!vertex.getType().equals(schema.getExerciseType()))
             throw new RuntimeException("Vertex type does not match schema type (Expected: " + schema.getExerciseType() + ", Actual: " + vertex.getType() + ")");
 
-        var instance = new ExerciseModel();
+        var instance = new ExerciseDto();
         instance.setId(vertex.getId());
         instance.setType(vertex.getType());
 
@@ -51,11 +51,11 @@ public class ExerciseAbstractModelFactory {
         return instance;
     }
 
-    private ExerciseContentModel createContent(ExerciseVertex vertex, ExerciseRetrievalContext context, ExerciseSchema schema) {
+    private ExerciseContentDto createContent(ExerciseVertex vertex, ExerciseRetrievalContext context, ExerciseSchema schema) {
         return contentModelFactory.create(vertex, context);
     }
 
-    private ExerciseInputModel createInput(ExerciseVertex vertex, ExerciseRetrievalContext context, ExerciseSchema schema) {
+    private ExerciseInputDto createInput(ExerciseVertex vertex, ExerciseRetrievalContext context, ExerciseSchema schema) {
         var inputType = schema.getInputType();
 
         if (inputType.equals(ExerciseInputTypes.ARRANGE_TEXT_OPTIONS)) {

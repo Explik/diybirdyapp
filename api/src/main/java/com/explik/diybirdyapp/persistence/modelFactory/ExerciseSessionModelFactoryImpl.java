@@ -1,13 +1,11 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
-import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +15,11 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
     ExerciseAbstractModelFactory abstractModelFactory;
 
     @Override
-    public ExerciseSessionModel create(ExerciseSessionVertex vertex) {
+    public ExerciseSessionDto create(ExerciseSessionVertex vertex) {
         boolean isCompleted = vertex.getCompleted();
 
         // Fetch session data
-        ExerciseSessionModel model = new ExerciseSessionModel();
+        ExerciseSessionDto model = new ExerciseSessionDto();
         model.setId(vertex.getId());
         model.setType(vertex.getType());
         model.setCompleted(isCompleted);
@@ -37,7 +35,7 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         return model;
     }
 
-    private ExerciseModel createExercise(ExerciseSessionVertex vertex) {
+    private ExerciseDto createExercise(ExerciseSessionVertex vertex) {
         var exerciseVertex = vertex.getCurrentExercise();
         if (exerciseVertex == null)
             return null;
@@ -50,8 +48,8 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         return exerciseFactory.create(exerciseVertex, retrievalContext);
     }
 
-    private ExerciseSessionProgressModel createProgress(ExerciseSessionVertex vertex) {
-        ExerciseSessionProgressModel progressModel = new ExerciseSessionProgressModel();
+    private ExerciseSessionProgressDto createProgress(ExerciseSessionVertex vertex) {
+        ExerciseSessionProgressDto progressModel = new ExerciseSessionProgressDto();
         progressModel.setType("percentage");
         progressModel.setPercentage(90);
         return progressModel;

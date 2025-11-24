@@ -1,14 +1,14 @@
 package com.explik.diybirdyapp.persistence.repository;
 
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
+
 import java.util.List;
 
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
-
 public interface ExerciseRepository {
-    ExerciseModel get(String id, String sessionId);
+    ExerciseDto get(String id, String sessionId);
 
-    List<ExerciseModel> getAll();
+    List<ExerciseDto> getAll();
 
-    ExerciseModel submitAnswer(ExerciseInputModel answer);
+    ExerciseDto submitAnswer(ExerciseAnswerModel answer);
 }

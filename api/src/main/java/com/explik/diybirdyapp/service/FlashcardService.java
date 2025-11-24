@@ -1,10 +1,7 @@
 package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.content.FileUploadModel;
-import com.explik.diybirdyapp.model.content.FlashcardModel;
-import com.explik.diybirdyapp.persistence.command.FileContentCommandResult;
-import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
-import com.explik.diybirdyapp.persistence.command.SyncCommandHandler;
+import com.explik.diybirdyapp.model.content.FlashcardDto;
 import com.explik.diybirdyapp.persistence.repository.FlashcardRepository;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +21,14 @@ public class FlashcardService {
     @Autowired
     FlashcardRepository repository;
 
-    public FlashcardModel add(FlashcardModel model, MultipartFile[] files) {
+    public FlashcardDto add(FlashcardDto model, MultipartFile[] files) {
         validateFiles(model, files);
         saveFilesIfAny(files);
 
         return repository.add(model);
     }
 
-    public FlashcardModel update(FlashcardModel model, MultipartFile[] files) {
+    public FlashcardDto update(FlashcardDto model, MultipartFile[] files) {
         validateFiles(model, files);
         saveFilesIfAny(files);
 
@@ -42,15 +39,15 @@ public class FlashcardService {
         repository.delete(id);
     }
 
-    public FlashcardModel get(String id) {
+    public FlashcardDto get(String id) {
         return repository.get(id);
     }
 
-    public List<FlashcardModel> getAll(@Nullable String setId) {
+    public List<FlashcardDto> getAll(@Nullable String setId) {
         return repository.getAll(setId);
     }
 
-    private void validateFiles(FlashcardModel model, MultipartFile[] files) {
+    private void validateFiles(FlashcardDto model, MultipartFile[] files) {
         // Extract all file names from the model
         List<String> expectedFileNames = new ArrayList<>();
 

@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.model.admin.ConfigurationModel;
+import com.explik.diybirdyapp.model.admin.ConfigurationDto;
 import com.explik.diybirdyapp.persistence.repository.ConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,11 +10,11 @@ public class ConfigurationService {
     @Autowired
     ConfigurationRepository repository;
 
-    public ConfigurationModel getById(String configId) {
+    public ConfigurationDto getById(String configId) {
         return repository.get(configId);
     }
 
-    public ConfigurationModel update(ConfigurationModel configModel) {
+    public ConfigurationDto update(ConfigurationDto configModel) {
         return repository.update(configModel);
     }
 

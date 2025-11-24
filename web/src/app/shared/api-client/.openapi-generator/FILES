@@ -93,8 +93,8 @@ model/submit-answer-rich-request.ts
 model/update-config-request.ts
 model/update1-request.ts
 model/upload-file-request.ts
+model/vocabulary-content-text-dto.ts
 model/vocabulary-dto.ts
-model/vocabulary-text-content-model.ts
 model/write-placeholders-feedback-dto.ts
 model/write-placeholders-part-dto.ts
 param.ts

@@ -1,16 +1,17 @@
 package com.explik.diybirdyapp.persistence.repository;
 
+import com.explik.diybirdyapp.model.content.FlashcardDto;
+
 import java.util.List;
-import com.explik.diybirdyapp.model.content.FlashcardModel;
 
 public interface FlashcardRepository {
-    FlashcardModel add(FlashcardModel flashcardModel);
+    FlashcardDto add(FlashcardDto FlashcardDto);
 
-    FlashcardModel get(String id);
+    FlashcardDto get(String id);
 
-    List<FlashcardModel> getAll(String deckId);
+    List<FlashcardDto> getAll(String deckId);
 
-    FlashcardModel update(FlashcardModel flashcardModel);
+    FlashcardDto update(FlashcardDto FlashcardDto);
 
     void delete(String id);
 }

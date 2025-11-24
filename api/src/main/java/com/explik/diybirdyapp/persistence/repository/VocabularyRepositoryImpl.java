@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.content.VocabularyTextContentModel;
+import com.explik.diybirdyapp.model.content.VocabularyContentTextDto;
 import com.explik.diybirdyapp.persistence.vertex.WordVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class VocabularyRepositoryImpl implements VocabularyRepository {
     }
 
     @Override
-    public List<VocabularyTextContentModel> getAllWords() {
+    public List<VocabularyContentTextDto> getAllWords() {
         var wordVertices = WordVertex.getAll(traversalSource);
 
         return wordVertices
@@ -26,8 +26,8 @@ public class VocabularyRepositoryImpl implements VocabularyRepository {
             .toList();
     }
 
-    private static VocabularyTextContentModel createFromMainExample(WordVertex v) {
-        var buffer = new VocabularyTextContentModel();
+    private static VocabularyContentTextDto createFromMainExample(WordVertex v) {
+        var buffer = new VocabularyContentTextDto();
         buffer.setText(v.getTextContent().getValue());
 
         if (v.getTextContent().getMainPronunciation() != null) {

@@ -1,53 +1,70 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
-public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelFactory<ExerciseVertex, ExerciseInputSelectOptionsModel, ExerciseRetrievalContext> {
+public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelFactory<ExerciseVertex, ExerciseInputSelectOptionsDto, ExerciseRetrievalContext> {
     @Override
-    public ExerciseInputSelectOptionsModel create(ExerciseVertex vertex, ExerciseRetrievalContext context) {
-        var input = new ExerciseInputSelectOptionsModel();
+    public ExerciseInputSelectOptionsDto create(ExerciseVertex vertex, ExerciseRetrievalContext context) {
+        var allOptionVertices = new ArrayList<ContentVertex>();
+        allOptionVertices.addAll(vertex.getCorrectOptions());
+        allOptionVertices.addAll(vertex.getOptions());
+
+        var input = new ExerciseInputSelectOptionsDto();
         input.setType(ExerciseInputTypes.SELECT_OPTIONS);
 
-        var correctOptions = vertex.getCorrectOptions();
-        correctOptions.forEach(v -> input.addOption(createOption(vertex, v)));
+        var inputOptions = allOptionVertices
+                .stream()
+                .map(this::createOption)
+                .toList();
+        input.setOptions(inputOptions);
 
-        var incorrectOptions = vertex.getOptions();
-        incorrectOptions.forEach(v -> input.addOption(createOption(vertex, v)));
+        // Determine option type
+        if (!allOptionVertices.isEmpty()) {
+            var firstOption = allOptionVertices.getFirst();
+            if (firstOption instanceof AudioContentVertex)
+                input.setOptionType("audio");
+            else if (firstOption instanceof TextContentVertex)
+                input.setOptionType("text");
+            else if (firstOption instanceof ImageContentVertex)
+                input.setOptionType("image");
+        }
 
         return input;
     }
 
-    private ExerciseInputSelectOptionsModel.BaseOption createOption(ExerciseVertex vertex, ContentVertex contentVertex) {
+    private ExerciseInputSelectOptionsDto.SelectOptionInputBaseOption createOption(ContentVertex contentVertex) {
         if (contentVertex instanceof AudioContentVertex audioContentVertex)
-            return createAudioOption(vertex, audioContentVertex);
+            return createAudioOption(audioContentVertex);
         if (contentVertex instanceof TextContentVertex textContentVertex)
-            return createTextOption(vertex, textContentVertex);
+            return createTextOption(textContentVertex);
         if (contentVertex instanceof ImageContentVertex imageContentVertex)
-            return createImageOption(vertex, imageContentVertex);
+            return createImageOption(imageContentVertex);
 
         throw new RuntimeException("Unsupported content type: " + contentVertex.getClass().getName());
     }
 
-    private ExerciseInputSelectOptionsModel.AudioOption createAudioOption(ExerciseVertex vertex, AudioContentVertex contentVertex) {
-        return new ExerciseInputSelectOptionsModel.AudioOption(
-                vertex.getId(),
+    private ExerciseInputSelectOptionsDto.SelectOptionInputAudioOption createAudioOption(AudioContentVertex contentVertex) {
+        return new ExerciseInputSelectOptionsDto.SelectOptionInputAudioOption(
+                contentVertex.getId(),
                 contentVertex.getUrl());
     }
 
-    private ExerciseInputSelectOptionsModel.TextOption createTextOption(ExerciseVertex vertex, TextContentVertex textContentVertex) {
-        return new ExerciseInputSelectOptionsModel.TextOption(
-                vertex.getId(),
+    private ExerciseInputSelectOptionsDto.SelectOptionInputTextOption createTextOption(TextContentVertex textContentVertex) {
+        return new ExerciseInputSelectOptionsDto.SelectOptionInputTextOption(
+                textContentVertex.getId(),
                 textContentVertex.getValue());
     }
 
-    private ExerciseInputSelectOptionsModel.ImageOption createImageOption(ExerciseVertex vertex, ImageContentVertex imageContentVertex) {
-        return new ExerciseInputSelectOptionsModel.ImageOption(
-                vertex.getId(),
+    private ExerciseInputSelectOptionsDto.SelectOptionInputImageOption createImageOption(ImageContentVertex imageContentVertex) {
+        return new ExerciseInputSelectOptionsDto.SelectOptionInputImageOption(
+                imageContentVertex.getId(),
                 imageContentVertex.getUrl());
     }
 }

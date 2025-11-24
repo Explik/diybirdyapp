@@ -2,20 +2,15 @@ package com.explik.diybirdyapp.persistence.strategy;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
-import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseFeedbackModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputAudioModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputModel;
-import com.explik.diybirdyapp.model.exercise.ExerciseModel;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
+import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.service.SpeechToTextService;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryAudio;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component(ExerciseEvaluationTypes.CORRECT_SPEECH_TO_TEXT + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEvaluationStrategy {
@@ -29,28 +24,32 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
     SpeechToTextService speechToTextService;
 
     @Override
-    public ExerciseModel evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
-        if (!(context.getInput() instanceof ExerciseInputAudioModel answerModel))
-            throw new RuntimeException("Answer model type is not audio");
+        if (!(context.getInput()instanceof ExerciseInputRecordAudioDto input))
+            throw new RuntimeException("Input model type is not audio");
 
         // Transcribe answer
-        var audioContentUrl = answerModel.getUrl();
+        var answerModel = new ExerciseAnswerModel<ExerciseInputRecordAudioDto>();
+        answerModel.setExerciseId(context.getExerciseId());
+        answerModel.setSessionId(context.getSessionId());
+        answerModel.setInput(input);
+
+        var audioContentUrl = input.getUrl();
         var audioLangId = "en-US";
         var transcribedText = speechToTextService.generateTranscription(audioContentUrl, audioLangId);
-        answerModel.setTranscription(transcribedText);
+        answerModel.setProperty("transcription", transcribedText);
 
         // Save answer
         var answerVertex = answerVertexFactory.create(traversalSource, answerModel);
 
         // Generate feedback
-        var exerciseFeedback = ExerciseFeedbackModel.createIndecisiveFeedback();
+        var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();
 
-        var exercise = new ExerciseModel();
+        var exercise = new ExerciseDto();
         exercise.setId(exerciseVertex.getId());
         exercise.setType(exerciseVertex.getType());
-        exercise.setAnswerId(answerVertex.getId());
         exercise.setFeedback(exerciseFeedback);
 
         return exercise;

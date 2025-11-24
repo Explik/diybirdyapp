@@ -1,11 +1,6 @@
 package com.explik.diybirdyapp.controller.mapper;
 
-import com.explik.diybirdyapp.controller.dto.exercise.*;
 import com.explik.diybirdyapp.model.exercise.*;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel.AudioOption;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel.ImageOption;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel.TextOption;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsModel.VideoOption;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import org.junit.jupiter.params.provider.Arguments;
@@ -68,23 +63,23 @@ public class ExerciseModelToDtoMapperUnitTests {
     // Test argument providers
     private static Stream<Arguments> provideContentTypes() {
         return Stream.of(
-                Arguments.of(new ExerciseContentAudioModel(), ExerciseContentAudioDto.class),
-                Arguments.of(new ExerciseContentTextModel(), ExerciseContentTextDto.class),
-                Arguments.of(new ExerciseContentImageModel(), ExerciseContentImageDto.class),
-                Arguments.of(new ExerciseContentVideoModel(), ExerciseContentVideoDto.class),
-                Arguments.of(new ExerciseContentFlashcardModel(), ExerciseContentFlashcardDto.class),
-                Arguments.of(new ExerciseContentFlashcardSideModel(), ExerciseContentFlashcardSideDto.class)
+                Arguments.of(new ExerciseContentAudioDto(), ExerciseContentAudioDto.class),
+                Arguments.of(new ExerciseContentTextDto(), ExerciseContentTextDto.class),
+                Arguments.of(new ExerciseContentImageDto(), ExerciseContentImageDto.class),
+                Arguments.of(new ExerciseContentVideoDto(), ExerciseContentVideoDto.class),
+                Arguments.of(new ExerciseContentFlashcardDto(), ExerciseContentFlashcardDto.class),
+                Arguments.of(new ExerciseContentFlashcardSideDto(), ExerciseContentFlashcardSideDto.class)
         );
     }
 
     private static Stream<Arguments> provideInputTypes() {
-        var inputSelectModel = new ExerciseInputSelectOptionsModel();
+        var inputSelectModel = new ExerciseInputSelectOptionsDto();
         inputSelectModel.getOptions().add(new TextOption());
 
         return Stream.of(
-                Arguments.of(new ExerciseInputArrangeTextOptionsModel(), ExerciseInputArrangeTextOptionsDto.class),
-                Arguments.of(new ExerciseInputTextModel(), ExerciseInputWriteTextDto.class),
-                Arguments.of(new ExerciseInputPairOptionsModel(), ExerciseInputPairOptionsDto.class),
+                Arguments.of(new ExerciseInputArrangeTextOptionsDto(), ExerciseInputArrangeTextOptionsDto.class),
+                Arguments.of(new ExerciseInputWriteTextDto(), ExerciseInputWriteTextDto.class),
+                Arguments.of(new ExerciseInputPairOptionsDto(), ExerciseInputPairOptionsDto.class),
                 Arguments.of(inputSelectModel, ExerciseInputSelectOptionsDto.class)
         );
     }

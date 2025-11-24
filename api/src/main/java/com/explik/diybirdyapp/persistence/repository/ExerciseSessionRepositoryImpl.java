@@ -24,7 +24,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Autowired
-    ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsModel> sessionOptionsModelFactory;
+    ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsDto> sessionOptionsModelFactory;
 
     @Autowired
     GenericProvider<ExerciseSessionOperations> sessionOperationProvider;
@@ -34,7 +34,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     }
 
     @Override
-    public ExerciseSessionModel add(ExerciseSessionModel model) {
+    public ExerciseSessionDto add(ExerciseSessionDto model) {
         var sessionType = model.getType();
         var sessionManager = sessionOperationProvider.get(sessionType);
 
@@ -42,12 +42,12 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     }
 
     @Override
-    public ExerciseSessionModel get(String id) {
+    public ExerciseSessionDto get(String id) {
         var vertex = getSessionVertex(id);
         return sessionModelFactory.create(vertex);
     }
 
-    public ExerciseSessionModel nextExercise(String modelId) {
+    public ExerciseSessionDto nextExercise(String modelId) {
         var sessionVertex = getSessionVertex(modelId);
         var sessionType = sessionVertex.getType();
         var sessionManager = sessionOperationProvider.get(sessionType);
@@ -58,14 +58,14 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     }
 
     @Override
-    public ExerciseSessionOptionsModel getConfig(String sessionId) {
+    public ExerciseSessionOptionsDto getConfig(String sessionId) {
         var sessionVertex = getSessionVertex(sessionId);
         var optionsVertex = sessionVertex.getOptions();
 
         return sessionOptionsModelFactory.create(optionsVertex);
     }
 
-    public ExerciseSessionModel updateConfig(String modelId, ExerciseSessionOptionsModel config) {
+    public ExerciseSessionDto updateConfig(String modelId, ExerciseSessionOptionsDto config) {
         var sessionVertex = getSessionVertex(modelId);
         var sessionOptions = sessionVertex.getOptions();
 
@@ -81,15 +81,15 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         return sessionVertex;
     }
 
-    private void updateSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsModel model) {
+    private void updateSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsDto model) {
         switch (model) {
-            case ExerciseSessionOptionsLearnFlashcardModel learnModel ->
+            case ExerciseSessionOptionsLearnFlashcardsDto learnModel ->
                     updateLearnSessionOptions(vertex, learnModel);
-            case ExerciseSessionOptionsReviewFlashcardsModel reviewModel ->
+            case ExerciseSessionOptionsReviewFlashcardsDto reviewModel ->
                     updateReviewSessionOptions(vertex, reviewModel);
-            case ExerciseSessionOptionsSelectFlashcardsModel selectModel ->
+            case ExerciseSessionOptionsSelectFlashcardsDto selectModel ->
                     updateSelectSessionOptions(vertex, selectModel);
-            case ExerciseSessionOptionsWriteFlashcardsModel writeModel ->
+            case ExerciseSessionOptionsWriteFlashcardsDto writeModel ->
                     updateSelectWriteOptions(vertex, writeModel);
             default ->
                     throw new IllegalArgumentException("Unsupported ExerciseSessionOptionsModel type: " + model.getClass().getName());
@@ -98,7 +98,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
         updateCommonOptions(vertex, model);
     }
 
-    private void updateLearnSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsLearnFlashcardModel model) {
+    private void updateLearnSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsLearnFlashcardsDto model) {
         if (model.getAnswerLanguageIds() != null && model.getAnswerLanguageIds().length > 0) {
             var languages = getLanguagesByIds(model.getAnswerLanguageIds());
 
@@ -110,19 +110,19 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
     }
 
-    private void updateReviewSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsReviewFlashcardsModel model) {
+    private void updateReviewSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsReviewFlashcardsDto model) {
         if (model.getInitialFlashcardLanguageId() != null)
             vertex.setInitialFlashcardLanguageId(model.getInitialFlashcardLanguageId());
     }
 
-    private void updateSelectSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsSelectFlashcardsModel model) {
+    private void updateSelectSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsSelectFlashcardsDto model) {
         if (model.getInitialFlashcardLanguageId() != null)
             vertex.setInitialFlashcardLanguageId(model.getInitialFlashcardLanguageId());
         if (model.getTextToSpeechEnabled() != vertex.getTextToSpeechEnabled())
             vertex.setTextToSpeechEnabled(model.getTextToSpeechEnabled());
     }
 
-    private void updateSelectWriteOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsWriteFlashcardsModel model) {
+    private void updateSelectWriteOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsWriteFlashcardsDto model) {
         if (model.getAnswerLanguageId() != null) {
             var language = getLanguageById(model.getAnswerLanguageId());
 
@@ -134,7 +134,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
     }
 
-    private void updateCommonOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsModel model) {
+    private void updateCommonOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsDto model) {
         if (model.getTextToSpeechEnabled() != vertex.getTextToSpeechEnabled())
             vertex.setTextToSpeechEnabled(model.getTextToSpeechEnabled());
     }

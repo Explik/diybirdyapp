@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.command;
 
 import com.explik.diybirdyapp.command.dto.ImportFlashcardDeckDTO;
-import com.explik.diybirdyapp.model.content.FlashcardDeckModel;
-import com.explik.diybirdyapp.model.content.FlashcardLanguageModel;
-import com.explik.diybirdyapp.model.content.FlashcardModel;
+import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
+import com.explik.diybirdyapp.model.content.FlashcardDto;
+import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
 import com.explik.diybirdyapp.persistence.repository.FlashcardRepository;
 import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
@@ -45,8 +45,8 @@ public class ImportFlashcardDeckCommand implements Runnable {
             var fileObject = jsonMapper.readValue(fileContents, ImportFlashcardDeckDTO.class);
 
             // Convert to models
-            var flashcardDeck = modelMapper.map(fileObject, FlashcardDeckModel.class);
-            var flashcards = modelMapper.map(fileObject.getFlashcards(), FlashcardModel[].class);
+            var flashcardDeck = modelMapper.map(fileObject, FlashcardDeckDto.class);
+            var flashcards = modelMapper.map(fileObject.getFlashcards(), FlashcardDto[].class);
 
             // Populate partial fields
             populateFlashcardDeck(flashcardDeck);
@@ -61,12 +61,12 @@ public class ImportFlashcardDeckCommand implements Runnable {
         }
     }
 
-    private void populateFlashcardDeck(FlashcardDeckModel flashcardDeck) {
+    private void populateFlashcardDeck(FlashcardDeckDto flashcardDeck) {
         if (flashcardDeck.getId() == null)
             flashcardDeck.setId(UUID.randomUUID().toString());
     }
 
-    private void populateFlashcards(FlashcardDeckModel flashcardDeck, FlashcardModel[] flashcards) {
+    private void populateFlashcards(FlashcardDeckDto flashcardDeck, FlashcardDto[] flashcards) {
         var languages = languageRepository.getAll();
 
         for (var flashcard : flashcards) {
@@ -84,7 +84,7 @@ public class ImportFlashcardDeckCommand implements Runnable {
         }
     }
 
-    private static FlashcardLanguageModel matchLanguage(List<FlashcardLanguageModel> languages, FlashcardLanguageModel partialLanguage) {
+    private static FlashcardLanguageDto matchLanguage(List<FlashcardLanguageDto> languages, FlashcardLanguageDto partialLanguage) {
         if (partialLanguage.getId() != null) {
             return languages.stream()
                 .filter(l -> l.getId().equals(partialLanguage.getId()))

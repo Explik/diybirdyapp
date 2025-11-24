@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.persistence.repository;
 
-import com.explik.diybirdyapp.model.content.VocabularyTextContentModel;
+import com.explik.diybirdyapp.model.content.VocabularyContentTextDto;
 
 import java.util.List;
 
 public interface VocabularyRepository {
-    List<VocabularyTextContentModel> getAllWords();
+    List<VocabularyContentTextDto> getAllWords();
 }

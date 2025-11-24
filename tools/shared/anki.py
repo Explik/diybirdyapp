@@ -99,6 +99,32 @@ class AnkiDeck:
                 buffer.append(field_name)
 
         return buffer
+    
+    def get_image_field_names(self) -> list[str]:
+        """Get field names that contain image references (e.g., <img src="file.jpg">)"""
+        buffer = list()
+
+        for field_name in self.field_names:
+            first_field_value = self.flashcards[0].get_raw_value(field_name)
+            if first_field_value and "<img" in first_field_value.lower():
+                buffer.append(field_name)
+
+        return buffer
+    
+    def get_video_field_names(self) -> list[str]:
+        """Get field names that contain video references (e.g., <video src="file.mp4">)"""
+        buffer = list()
+
+        for field_name in self.field_names:
+            first_field_value = self.flashcards[0].get_raw_value(field_name)
+            if first_field_value and "<video" in first_field_value.lower():
+                buffer.append(field_name)
+
+        return buffer
+    
+    def get_media_field_names(self) -> list[str]:
+        """Get all field names that contain any type of media (sound, image, or video)"""
+        return list(set(self.get_sound_field_names() + self.get_image_field_names() + self.get_video_field_names()))
 
     def get_flashcards(self) -> list['AnkiCard']:
         return self.flashcards
@@ -154,6 +180,63 @@ class AnkiCard:
         text_value = self.get_text_value(field_name, transform)
         media_path = self.file.get_media_path(text_value)
         return media_path is not None
+    
+    def extract_media_filename(self, field_name) -> str:
+        """Extract media filename from Anki field (e.g., [sound:file.mp3] or <img src="file.jpg">)"""
+        import re
+        raw_value = self.get_raw_value(field_name)
+        
+        # Check for sound tag: [sound:filename]
+        sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value)
+        if sound_match:
+            return sound_match.group(1)
+        
+        # Check for img tag: <img src="filename">
+        img_match = re.search(r'<img[^>]+src=["\']?([^"\'>\s]+)["\']?', raw_value, re.IGNORECASE)
+        if img_match:
+            return img_match.group(1)
+        
+        # Check for video tag: <video src="filename">
+        video_match = re.search(r'<video[^>]+src=["\']?([^"\'>\s]+)["\']?', raw_value, re.IGNORECASE)
+        if video_match:
+            return video_match.group(1)
+        
+        return None
+    
+    def get_media_type(self, field_name) -> str:
+        """Determine the media type (audio, image, video) from the field content"""
+        raw_value = self.get_raw_value(field_name)
+        
+        if "[sound:" in raw_value:
+            return "audio"
+        elif "<img" in raw_value.lower():
+            return "image"
+        elif "<video" in raw_value.lower():
+            return "video"
+        
+        return None
+    
+    def get_media_file_path(self, field_name) -> str:
+        """Get the full path to the media file from a field"""
+        filename = self.extract_media_filename(field_name)
+        if not filename:
+            raise ValueError(f"No media filename found in field {field_name}")
+        
+        media_path = self.file.get_media_path(filename)
+        if not media_path:
+            raise ValueError(f"Media file not found for filename {filename}")
+        
+        return media_path
+    
+    def has_media(self, field_name) -> bool:
+        """Check if a field contains media content"""
+        try:
+            filename = self.extract_media_filename(field_name)
+            if not filename:
+                return False
+            return self.file.get_media_path(filename) is not None
+        except Exception:
+            return False
     
     def get_text_value(self, field_name, transform=None):
         raw_value = self.get_raw_value(field_name)
