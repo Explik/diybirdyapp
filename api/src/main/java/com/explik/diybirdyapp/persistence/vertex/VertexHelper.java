@@ -45,6 +45,18 @@ public class VertexHelper {
         return v == null ? null : mapper.apply(traversalSource, v);
     }
 
+    public static <T extends AbstractVertex> T getFirstOutgoingModel(AbstractVertex vertex, String edgeLabel, String orderProperty, BiFunction<GraphTraversalSource, Vertex, T> mapper) {
+        var traversalSource = vertex.getUnderlyingSource();
+        var v = traversalSource.V(vertex.getUnderlyingVertex())
+                .outE(edgeLabel)
+                .order().by(orderProperty)
+                .inV()
+                .tryNext()
+                .orElse(null);
+
+        return (v == null) ? null : mapper.apply(traversalSource, v);
+    }
+
     public static <T extends AbstractVertex> T getOptionalIngoingModel(AbstractVertex vertex, String edgeLabel, BiFunction<GraphTraversalSource, Vertex, T> mapper) {
         var traversalSource = vertex.getUnderlyingSource();
         var v = traversalSource.V(vertex.getUnderlyingVertex()).in(edgeLabel).tryNext().orElse(null);
