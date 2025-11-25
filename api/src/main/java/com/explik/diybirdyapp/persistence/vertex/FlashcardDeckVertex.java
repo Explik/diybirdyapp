@@ -99,7 +99,15 @@ public class FlashcardDeckVertex extends ContentVertex {
             if (rightContent instanceof TextContentVertex rightTextContent)
                 languages.add(rightTextContent.getLanguage());
         }
-        return languages.stream().distinct().toArray(LanguageVertex[]::new);
+
+        var distinctLanguages = new ArrayList<LanguageVertex>();
+        for (var language : languages) {
+            if (distinctLanguages.stream().noneMatch(l -> l.getId().equals(language.getId()))) {
+                distinctLanguages.add(language);
+            }
+        }
+
+        return distinctLanguages.toArray(LanguageVertex[]::new);
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {
