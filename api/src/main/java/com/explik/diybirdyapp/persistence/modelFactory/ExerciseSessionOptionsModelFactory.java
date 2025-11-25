@@ -1,8 +1,10 @@
 package com.explik.diybirdyapp.persistence.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,8 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         model.setAvailableAnswerLanguageIds(getFlashcardLanguageIds(optionsVertex));
         model.setAnswerLanguageIds(getAnswerLanguageIds(optionsVertex));
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
+        model.setAvailableExerciseTypes(getAvailableExerciseTypeOptions());
+        model.setExerciseTypesIds(getExerciseTypeIds(optionsVertex));
 
         return model;
     }
@@ -87,5 +91,23 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
             throw new RuntimeException("ExerciseSessionVertex is not linked to a FlashcardDeckVertex");
 
         return flashcardDeck.getFlashcardLanguageIds();
+    }
+
+    private String[] getExerciseTypeIds(ExerciseSessionOptionsVertex optionsVertex) {
+        assert optionsVertex.getType().equals(ExerciseSessionTypes.LEARN_FLASHCARD);
+
+        return optionsVertex
+                .getExerciseTypes()
+                .stream()
+                .map(ExerciseTypeVertex::getId)
+                .toArray(String[]::new);
+    }
+
+    private ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption[] getAvailableExerciseTypeOptions() {
+        return new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption[] {
+            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.SELECT_FLASHCARD, "Select Flashcard Deck"),
+            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.WRITE_FLASHCARD, "Write Flashcard"),
+            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.REVIEW_FLASHCARD, "Review Flashcard")
+        };
     }
 }

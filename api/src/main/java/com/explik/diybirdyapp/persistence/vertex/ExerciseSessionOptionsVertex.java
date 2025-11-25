@@ -20,6 +20,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_ALGORITHM = "algorithm";
 
     public final static String EDGE_ANSWER_LANGUAGE = "hasAnswerLanguage";
+    public final static String EDGE_EXERCISE_TYPES = "hasExerciseType";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -88,5 +89,17 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public ExerciseSessionVertex getSession() {
         return VertexHelper.getIngoingModel(this, ExerciseSessionVertex.EDGE_OPTIONS, ExerciseSessionVertex::new);
+    }
+
+    public void addExerciseType(ExerciseTypeVertex exerciseType) {
+        addEdgeOneToMany(EDGE_EXERCISE_TYPES, exerciseType);
+    }
+
+    public void removeExerciseType(ExerciseTypeVertex exerciseType) {
+        removeEdge(EDGE_EXERCISE_TYPES, exerciseType);
+    }
+
+    public List<ExerciseTypeVertex> getExerciseTypes() {
+        return VertexHelper.getOutgoingModels(this, EDGE_EXERCISE_TYPES, ExerciseTypeVertex::new);
     }
 }

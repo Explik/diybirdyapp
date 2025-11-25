@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray } from '@angular
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { LabelComponent } from '../../../../shared/components/label/label.component';
 import { SlideToogleComponent } from "../../../../shared/components/slide-toogle/slide-toogle.component";
-import { ExerciseSessionOptionsLearnFlashcardsDto } from '../../../../shared/api-client';
+import { ExerciseSessionOptionsLearnFlashcardsDto, ExerciseTypeOption } from '../../../../shared/api-client';
 import { SessionOptionsComponent } from '../../models/component.interface';
 import { Subscription } from 'rxjs';
 
@@ -21,11 +21,13 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
 
   form: FormGroup;
   availableAnswerLanguages: Array<string> = [];
+  availableExerciseTypes: Array<ExerciseTypeOption> = [];
   private sub: Subscription | undefined = undefined;
 
   constructor(private fb: FormBuilder) {
     this.form = this.fb.group({
       answerLanguageIds: this.fb.array([]),
+      exerciseTypeIds: this.fb.array([]),
       retypeCorrectAnswerEnabled: [false],
       textToSpeechEnabled: [false]
     });
@@ -54,10 +56,31 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
     return this.form.get('answerLanguageIds') as FormArray;
   }
 
+  get exerciseTypeIds(): FormArray {
+    return this.form.get('exerciseTypeIds') as FormArray;
+  }
+
   private patchFormFromOptions() {
     const options = this.options || ({} as ExerciseSessionOptionsLearnFlashcardsDto);
 
     this.availableAnswerLanguages = options.availableAnswerLanguageIds || [];
+    this.availableExerciseTypes = options.availableExerciseTypes || []; 
+
+    // Rebuild answerLanguageIds form array
+    const answerLangArray = this.form.get('answerLanguageIds') as FormArray;
+    answerLangArray.clear({ emitEvent: false });
+    this.availableAnswerLanguages.forEach(langId => {
+      const isSelected = options.answerLanguageIds?.includes(langId) || false;
+      answerLangArray.push(this.fb.control(isSelected), { emitEvent: false });
+    });
+
+    // Rebuild exerciseTypeIds form array
+    const exerciseTypeArray = this.form.get('exerciseTypeIds') as FormArray;
+    exerciseTypeArray.clear({ emitEvent: false });
+    this.availableExerciseTypes.forEach(type => {
+      const isSelected = options.exerciseTypesIds?.includes(type.id || '') || false;
+      exerciseTypeArray.push(this.fb.control(isSelected), { emitEvent: false });
+    });
 
     this.form.patchValue({
       retypeCorrectAnswerEnabled: options.retypeCorrectAnswerEnabled || false,
@@ -66,12 +89,24 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
   }
 
   private buildDtoFromForm(): ExerciseSessionOptionsLearnFlashcardsDto {
-    const arr = this.form.get('answerLanguageIds') as FormArray;
-    const selectedLangs = this.availableAnswerLanguages.filter((_, i) => arr.at(i).value);
+    const answerLangArray = this.form.get('answerLanguageIds') as FormArray;
+    const selectedLangs = this.availableAnswerLanguages.filter((_, i) => {
+      const control = answerLangArray.at(i);
+      return control && control.value;
+    });
+    
+    const exerciseTypeArray = this.form.get('exerciseTypeIds') as FormArray;
+    const selectedExerciseTypes = this.availableExerciseTypes
+      .filter((_, i) => {
+        const control = exerciseTypeArray.at(i);
+        return control && control.value;
+      })
+      .map(type => type.id || '');
 
     return {
       type: this.options?.type,
       answerLanguageIds: selectedLangs,
+      exerciseTypesIds: selectedExerciseTypes,
       retypeCorrectAnswerEnabled: !!this.form.get('retypeCorrectAnswerEnabled')?.value,
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsLearnFlashcardsDto;

@@ -9,6 +9,16 @@
 				</div>
 			</div>
 		</app-form-field>
+
+		<app-form-field>
+			<app-label i18n>Exercise types</app-label>
+			<div formArrayName="exerciseTypeIds">
+				<div *ngFor="let type of availableExerciseTypes; let i = index" class="flex items-center mb-2">
+					<input type="checkbox" [formControlName]="i" id="exercise-type-{{i}}" />
+					<label for="exercise-type-{{i}}" class="ml-2">{{ type.name }}</label>
+				</div>
+			</div>
+		</app-form-field>
 	</div>
 
 	<div>

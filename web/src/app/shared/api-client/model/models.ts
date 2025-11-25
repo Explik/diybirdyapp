@@ -34,6 +34,7 @@ export * from './exercise-session-options-review-flashcards-dto';
 export * from './exercise-session-options-select-flashcards-dto';
 export * from './exercise-session-options-write-flashcards-dto';
 export * from './exercise-session-progress-dto';
+export * from './exercise-type-option';
 export * from './file-upload-result-dto';
 export * from './flashcard-content-audio-dto';
 export * from './flashcard-content-dto';
