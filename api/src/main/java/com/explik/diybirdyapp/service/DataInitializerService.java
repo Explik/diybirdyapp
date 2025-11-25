@@ -271,6 +271,15 @@ public class DataInitializerService {
                 .create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE)
                 .create(traversalSource, reviewFlashcardExerciseParameters);
 
+        // Exercise - Write flashcard exercise
+        var writeFlashcardExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.WRITE_FLASHCARD)
+                .withSession(null)
+                .withContent(flashcardSideContentParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE)
+                .create(traversalSource, writeFlashcardExerciseParameters);
+
         // Exercise - Flashcard pronounce exercise
         var pronounceFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.PRONOUNCE_FLASHCARD)
