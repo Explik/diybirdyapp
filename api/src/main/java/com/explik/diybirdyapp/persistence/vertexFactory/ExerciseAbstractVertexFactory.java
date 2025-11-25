@@ -3,8 +3,7 @@ package com.explik.diybirdyapp.persistence.vertexFactory;
 import com.explik.diybirdyapp.ContentTypes;
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
+import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,12 @@ public class ExerciseAbstractVertexFactory {
         var id = options.getId() != null ? options.getId() : UUID.randomUUID().toString();
         vertex.setId(id);
 
-        vertex.setType(schema.getExerciseType());
+        var exerciseTypeVertex = ExerciseTypeVertex.findById(traversalSource, schema.getExerciseType());
+        if (exerciseTypeVertex == null) {
+            exerciseTypeVertex = ExerciseTypeVertex.create(traversalSource);
+            exerciseTypeVertex.setId(schema.getExerciseType());
+        }
+        vertex.setExerciseType(exerciseTypeVertex);
 
         if (options.getSession() != null)
             options.getSession().addExercise(vertex);

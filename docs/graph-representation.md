@@ -191,10 +191,12 @@ Documentation for each of specific exercise type is provided in exercise-types.m
 This section describes the overall relationship between exercises, exercise answers, and exercise sessions.
 ```mermaid
 graph TB
+ExerciseType(ExerciseType)
 Exercise(Exercise)
 ExerciseAnswer(ExerciseAnswer)
 ExerciseSession(ExerciseSession)
 
+Exercise--hasType-->ExerciseType
 Exercise--hasSession-->ExerciseSession
 ExerciseAnswer--hasSession-->ExerciseSession
 ExerciseAnswer--hasExercise-->Exercise
@@ -202,7 +204,6 @@ ExerciseAnswer--hasExercise-->Exercise
 
 Exercise properties:
 - id: string
-- type: string
 
 Exercise answer properties:
 - id: string

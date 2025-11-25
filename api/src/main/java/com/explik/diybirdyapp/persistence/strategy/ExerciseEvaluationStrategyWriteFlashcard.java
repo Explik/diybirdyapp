@@ -61,7 +61,7 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
 
         var exercise = new ExerciseDto();
         exercise.setId(exerciseVertex.getId());
-        exercise.setType(exerciseVertex.getType());
+        exercise.setType(exerciseVertex.getExerciseType().getId());
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(input);
         return exercise;

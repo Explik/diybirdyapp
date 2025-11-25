@@ -14,7 +14,7 @@ public class LimitedExerciseModelFactory implements ContextualModelFactory<Exerc
 
         var instance = new ExerciseDto();
         instance.setId(vertex.getId());
-        instance.setType(vertex.getType());
+        instance.setType(vertex.getExerciseType().getId());
         return instance;
     }
 }

@@ -33,7 +33,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     @Override
     public ExerciseDto get(String id, String sessionId) {
         var vertex = ExerciseVertex.getById(traversalSource, id);
-        var exerciseType = vertex.getType();
+        var exerciseType = vertex.getExerciseType().getId();
         var exerciseFactory = exerciseModelFactoryProvider.get(exerciseType);
 
         if (sessionId == null)
@@ -65,7 +65,7 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         assert answer.getExerciseId() != null;
 
         var exerciseVertex = ExerciseVertex.getById(traversalSource, answer.getExerciseId());
-        var exerciseType = exerciseVertex.getType();
+        var exerciseType = exerciseVertex.getExerciseType().getId();
         var strategy = evaluationStrategyProvider.get(exerciseType);
         var strategyContext = getEvaluationContext(answer);
 
