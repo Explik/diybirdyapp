@@ -3,7 +3,7 @@
 		<app-form-field>
 			<app-label i18n>Answer language</app-label>
 			<app-select formControlName="answerLanguageId">
-				<app-option *ngFor="let lang of availableAnswerLanguages" [value]="lang">{{ lang }}</app-option>
+				<app-option *ngFor="let lang of availableAnswerLanguages" [value]="lang.id">{{ formatLanguageName(lang) }}</app-option>
 			</app-select>
 		</app-form-field>
 	</div>

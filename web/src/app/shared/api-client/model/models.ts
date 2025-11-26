@@ -29,6 +29,7 @@ export * from './exercise-input-write-placeholders-dto';
 export * from './exercise-input-write-text-dto';
 export * from './exercise-session-dto';
 export * from './exercise-session-options-dto';
+export * from './exercise-session-options-language-option-dto';
 export * from './exercise-session-options-learn-flashcards-dto';
 export * from './exercise-session-options-review-flashcards-dto';
 export * from './exercise-session-options-select-flashcards-dto';

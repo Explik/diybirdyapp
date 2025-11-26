@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy, LOCALE_ID, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { SelectComponent } from '../../../../shared/components/select/select.component';
@@ -6,7 +6,7 @@ import { OptionComponent } from '../../../../shared/components/option/option.com
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { LabelComponent } from '../../../../shared/components/label/label.component';
 import { SlideToogleComponent } from "../../../../shared/components/slide-toogle/slide-toogle.component";
-import { ExerciseSessionOptionsReviewFlashcardsDto } from '../../../../shared/api-client';
+import { ExerciseSessionOptionsLanguageOptionDto, ExerciseSessionOptionsReviewFlashcardsDto } from '../../../../shared/api-client';
 import { SessionOptionsComponent } from '../../models/component.interface';
 import { Subscription } from 'rxjs';
 
@@ -21,14 +21,16 @@ export class SessionOptionsReviewFlashcardComponent implements OnInit, OnChanges
   @Output() optionsChange: EventEmitter<ExerciseSessionOptionsReviewFlashcardsDto> = new EventEmitter();
 
   form: FormGroup;
-  availableLanguages: Array<string> = [];
+  availableLanguages: Array<ExerciseSessionOptionsLanguageOptionDto> = [];
   private sub: Subscription | undefined = undefined;
+  private displayNames: Intl.DisplayNames;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
       initialFlashcardLanguageId: [''],
       textToSpeechEnabled: [false]
     });
+    this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
   }
 
   ngOnInit(): void {
@@ -50,7 +52,7 @@ export class SessionOptionsReviewFlashcardComponent implements OnInit, OnChanges
 
   private patchFormFromOptions() {
     const options = this.options || ({} as ExerciseSessionOptionsReviewFlashcardsDto);
-    this.availableLanguages = options.availableFlashcardLanguageIds || [];
+    this.availableLanguages = options.availableFlashcardLanguages || [];
 
     this.form.patchValue({
       initialFlashcardLanguageId: options.initialFlashcardLanguageId || '',
@@ -64,5 +66,12 @@ export class SessionOptionsReviewFlashcardComponent implements OnInit, OnChanges
       initialFlashcardLanguageId: this.form.get('initialFlashcardLanguageId')?.value || '',
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsReviewFlashcardsDto;
+  }
+
+  public formatLanguageName(language: ExerciseSessionOptionsLanguageOptionDto) {
+    if (language.isoCode) {
+      return this.displayNames.of(language.isoCode) || 'N/A';
+    }
+    return 'N/A';
   }
 }

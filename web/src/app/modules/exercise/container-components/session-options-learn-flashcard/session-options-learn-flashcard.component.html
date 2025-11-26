@@ -5,7 +5,7 @@
 			<div formArrayName="answerLanguageIds">
 				<div *ngFor="let lang of availableAnswerLanguages; let i = index" class="flex items-center mb-2">
 					<input type="checkbox" [formControlName]="i" id="ans-{{i}}" />
-					<label for="ans-{{i}}" class="ml-2">{{ lang }}</label>
+					<label for="ans-{{i}}" class="ml-2">{{ formatLanguageName(lang) }}</label>
 				</div>
 			</div>
 		</app-form-field>

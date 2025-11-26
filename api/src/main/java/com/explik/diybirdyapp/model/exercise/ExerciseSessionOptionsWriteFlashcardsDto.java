@@ -4,7 +4,7 @@ import com.explik.diybirdyapp.ExerciseSessionTypes;
 
 public class ExerciseSessionOptionsWriteFlashcardsDto extends ExerciseSessionOptionsDto {
     private String answerLanguageId;
-    private String[] availableAnswerLanguageIds = new String[0];
+    private ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguages = new ExerciseSessionOptionsLanguageOptionDto[0];
     private boolean retypeCorrectAnswerEnabled;
 
     public ExerciseSessionOptionsWriteFlashcardsDto() {
@@ -27,11 +27,11 @@ public class ExerciseSessionOptionsWriteFlashcardsDto extends ExerciseSessionOpt
         this.answerLanguageId = answerLanguageId;
     }
 
-    public String[] getAvailableAnswerLanguageIds() {
-        return availableAnswerLanguageIds;
+    public ExerciseSessionOptionsLanguageOptionDto[] getAvailableAnswerLanguages() {
+        return availableAnswerLanguages;
     }
 
-    public void setAvailableAnswerLanguageIds(String[] availableAnswerLanguageIds) {
-        this.availableAnswerLanguageIds = availableAnswerLanguageIds;
+    public void setAvailableAnswerLanguages(ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguageIds) {
+        this.availableAnswerLanguages = availableAnswerLanguageIds;
     }
 }

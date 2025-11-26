@@ -1,11 +1,11 @@
 
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { LabelComponent } from '../../../../shared/components/label/label.component';
 import { SlideToogleComponent } from "../../../../shared/components/slide-toogle/slide-toogle.component";
-import { ExerciseSessionOptionsLearnFlashcardsDto, ExerciseTypeOption } from '../../../../shared/api-client';
+import { ExerciseSessionOptionsLanguageOptionDto, ExerciseSessionOptionsLearnFlashcardsDto, ExerciseTypeOption } from '../../../../shared/api-client';
 import { SessionOptionsComponent } from '../../models/component.interface';
 import { Subscription } from 'rxjs';
 
@@ -20,17 +20,19 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
   @Output() optionsChange: EventEmitter<ExerciseSessionOptionsLearnFlashcardsDto> = new EventEmitter();
 
   form: FormGroup;
-  availableAnswerLanguages: Array<string> = [];
+  availableAnswerLanguages: Array<ExerciseSessionOptionsLanguageOptionDto> = [];
   availableExerciseTypes: Array<ExerciseTypeOption> = [];
   private sub: Subscription | undefined = undefined;
+  private displayNames: Intl.DisplayNames;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
       answerLanguageIds: this.fb.array([]),
       exerciseTypeIds: this.fb.array([]),
       retypeCorrectAnswerEnabled: [false],
       textToSpeechEnabled: [false]
     });
+    this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
   }
 
   ngOnInit(): void {
@@ -63,13 +65,14 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
   private patchFormFromOptions() {
     const options = this.options || ({} as ExerciseSessionOptionsLearnFlashcardsDto);
 
-    this.availableAnswerLanguages = options.availableAnswerLanguageIds || [];
-    this.availableExerciseTypes = options.availableExerciseTypes || []; 
+    this.availableAnswerLanguages = options.availableAnswerLanguages || [];
+    this.availableExerciseTypes = options.availableExerciseTypes || [];
 
     // Rebuild answerLanguageIds form array
     const answerLangArray = this.form.get('answerLanguageIds') as FormArray;
     answerLangArray.clear({ emitEvent: false });
-    this.availableAnswerLanguages.forEach(langId => {
+    this.availableAnswerLanguages.forEach(lang => {
+      const langId = lang.id || '';
       const isSelected = options.answerLanguageIds?.includes(langId) || false;
       answerLangArray.push(this.fb.control(isSelected), { emitEvent: false });
     });
@@ -94,7 +97,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       const control = answerLangArray.at(i);
       return control && control.value;
     });
-    
+
     const exerciseTypeArray = this.form.get('exerciseTypeIds') as FormArray;
     const selectedExerciseTypes = this.availableExerciseTypes
       .filter((_, i) => {
@@ -105,10 +108,17 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
 
     return {
       type: this.options?.type,
-      answerLanguageIds: selectedLangs,
+      answerLanguageIds: selectedLangs.map(lang => lang.id),
       exerciseTypesIds: selectedExerciseTypes,
       retypeCorrectAnswerEnabled: !!this.form.get('retypeCorrectAnswerEnabled')?.value,
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsLearnFlashcardsDto;
+  }
+
+  public formatLanguageName(language: ExerciseSessionOptionsLanguageOptionDto) {
+    if (language.isoCode) {
+      return this.displayNames.of(language.isoCode) || 'N/A';
+    }
+    return 'N/A';
   }
 }

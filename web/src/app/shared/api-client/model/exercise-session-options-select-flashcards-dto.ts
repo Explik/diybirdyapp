@@ -8,10 +8,11 @@
  * Do not edit the class manually.
  */
 import { ExerciseSessionOptionsDto } from './exercise-session-options-dto';
+import { ExerciseSessionOptionsLanguageOptionDto } from './exercise-session-options-language-option-dto';
 
 
 export interface ExerciseSessionOptionsSelectFlashcardsDto extends ExerciseSessionOptionsDto { 
     initialFlashcardLanguageId?: string;
-    availableFlashcardLanguageIds?: Array<string>;
+    availableFlashcardLanguages?: Array<ExerciseSessionOptionsLanguageOptionDto>;
 }
 
