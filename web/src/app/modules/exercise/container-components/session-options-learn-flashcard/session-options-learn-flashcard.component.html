@@ -8,6 +8,9 @@
 					<label for="ans-{{i}}" class="ml-2">{{ formatLanguageName(lang) }}</label>
 				</div>
 			</div>
+			<app-form-error *ngIf="answerLanguageIds.errors?.['atLeastOneRequired']" i18n>
+				Please select at least one answer language
+			</app-form-error>
 		</app-form-field>
 
 		<app-form-field>

@@ -1,18 +1,19 @@
 
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { LabelComponent } from '../../../../shared/components/label/label.component';
 import { SlideToogleComponent } from "../../../../shared/components/slide-toogle/slide-toogle.component";
 import { ExerciseSessionOptionsLanguageOptionDto, ExerciseSessionOptionsLearnFlashcardsDto, ExerciseTypeOption } from '../../../../shared/api-client';
 import { SessionOptionsComponent } from '../../models/component.interface';
 import { Subscription } from 'rxjs';
+import { FormErrorComponent } from "../../../../shared/components/form-error/form-error.component";
 
 @Component({
   selector: 'app-session-options-learn-flashcard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, LabelComponent, SlideToogleComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, LabelComponent, SlideToogleComponent, FormErrorComponent, FormErrorComponent],
   templateUrl: './session-options-learn-flashcard.component.html'
 })
 export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges, OnDestroy, SessionOptionsComponent<ExerciseSessionOptionsLearnFlashcardsDto> {
@@ -27,7 +28,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
 
   constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
-      answerLanguageIds: this.fb.array([]),
+      answerLanguageIds: this.fb.array([], this.atLeastOneSelectedValidator),
       exerciseTypeIds: this.fb.array([]),
       retypeCorrectAnswerEnabled: [false],
       textToSpeechEnabled: [false]
@@ -120,5 +121,11 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       return this.displayNames.of(language.isoCode) || 'N/A';
     }
     return 'N/A';
+  }
+
+  private atLeastOneSelectedValidator(control: AbstractControl): ValidationErrors | null {
+    const formArray = control as FormArray;
+    const hasAtLeastOne = formArray.controls.some(ctrl => ctrl.value === true);
+    return hasAtLeastOne ? null : { atLeastOneRequired: true };
   }
 }
