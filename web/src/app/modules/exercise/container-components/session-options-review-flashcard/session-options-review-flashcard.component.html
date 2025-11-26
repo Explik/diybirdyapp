@@ -3,7 +3,7 @@
 		<app-form-field>
 			<app-label i18n>Initial flashcard language</app-label>
 			<app-select formControlName="initialFlashcardLanguageId">
-				<app-option *ngFor="let lang of availableLanguages" [value]="lang">{{ lang }}</app-option>
+				<app-option *ngFor="let lang of availableLanguages" [value]="lang.id">{{ formatLanguageName(lang) }}</app-option>
 			</app-select>
 		</app-form-field>
 	</div>

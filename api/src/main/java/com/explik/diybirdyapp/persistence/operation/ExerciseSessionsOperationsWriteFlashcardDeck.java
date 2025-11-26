@@ -47,7 +47,7 @@ public class ExerciseSessionsOperationsWriteFlashcardDeck implements ExerciseSes
         optionVertex.setId(UUID.randomUUID().toString());
         optionVertex.setType(ExerciseSessionTypes.WRITE_FLASHCARD);
         optionVertex.setTextToSpeechEnabled(false);
-        optionVertex.addAnswerLanguage( flashcardDeckVertex.getFlashcardLanguages()[0] );
+        optionVertex.addAnswerLanguage(flashcardDeckVertex.getFlashcardLanguages().getFirst());
         optionVertex.setRetypeCorrectAnswer(false);
         vertex.setOptions(optionVertex);
 

@@ -49,7 +49,7 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
 
         var exercise = new ExerciseDto();
         exercise.setId(exerciseVertex.getId());
-        exercise.setType(exerciseVertex.getType());
+        exercise.setType(exerciseVertex.getExerciseType().getId());
         exercise.setFeedback(exerciseFeedback);
 
         return exercise;

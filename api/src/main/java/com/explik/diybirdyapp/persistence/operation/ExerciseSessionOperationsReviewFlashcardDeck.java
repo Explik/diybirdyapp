@@ -51,7 +51,7 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
         optionVertex.setId(UUID.randomUUID().toString());
         optionVertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
         optionVertex.setTextToSpeechEnabled(false);
-        optionVertex.setInitialFlashcardLanguageId(flashcardLanguages[0].getId());
+        optionVertex.setInitialFlashcardLanguageId(flashcardLanguages.getFirst().getId());
         optionVertex.setAlgorithm("SuperMemo2");
         vertex.setOptions(optionVertex);
 

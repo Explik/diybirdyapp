@@ -13,6 +13,7 @@ public class ExerciseSessionVertex extends AbstractVertex {
     public final static String LABEL = "exerciseSession";
 
     public final static String EDGE_EXERCISE = "hasExercise";
+    public final static String EDGE_EXERCISE_PROPERTY_CREATED_AT = "createdAt";
     public final static String EDGE_FLASHCARD_DECK = "hasFlashcardDeck";
     public final static String EDGE_OPTIONS = "hasOptions";
     public final static String EDGE_STATE = "hasState";
@@ -46,7 +47,7 @@ public class ExerciseSessionVertex extends AbstractVertex {
     }
 
     public ExerciseVertex getCurrentExercise() {
-        return VertexHelper.getOptionalOutgoingModel(this, EDGE_EXERCISE, ExerciseVertex::new);
+        return VertexHelper.getFirstOutgoingModel(this, EDGE_EXERCISE, EDGE_EXERCISE_PROPERTY_CREATED_AT, ExerciseVertex::new);
     }
 
     public List<ExerciseVertex> getExercises() {
@@ -54,7 +55,7 @@ public class ExerciseSessionVertex extends AbstractVertex {
     }
 
     public void addExercise(ExerciseVertex exerciseVertex) {
-        addEdgeOneToMany(EDGE_EXERCISE, exerciseVertex);
+        addOrderedEdgeOneToMany(EDGE_EXERCISE, exerciseVertex, EDGE_EXERCISE_PROPERTY_CREATED_AT, -System.currentTimeMillis());
     }
 
     public void removeExercise(ExerciseVertex exerciseVertex) {

@@ -4,7 +4,10 @@ import com.explik.diybirdyapp.ExerciseSessionTypes;
 
 public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOptionsDto {
     private String[] answerLanguageIds = new String[0];
-    private String[] availableAnswerLanguageIds = new String[0];
+    private ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguage = new ExerciseSessionOptionsLanguageOptionDto[0];
+    private String[] exerciseTypesIds = new String[0];
+    private ExerciseTypeOption[] availableExerciseTypes = new ExerciseTypeOption[0];
+
     private boolean retypeCorrectAnswerEnabled;
 
     public ExerciseSessionOptionsLearnFlashcardsDto() {
@@ -19,12 +22,28 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
         this.answerLanguageIds = answerLanguageIds;
     }
 
-    public String[] getAvailableAnswerLanguageIds() {
-        return availableAnswerLanguageIds;
+    public ExerciseSessionOptionsLanguageOptionDto[] getAvailableAnswerLanguages() {
+        return availableAnswerLanguage;
     }
 
-    public void setAvailableAnswerLanguageIds(String[] availableAnswerLanguageIds) {
-        this.availableAnswerLanguageIds = availableAnswerLanguageIds;
+    public void setAvailableAnswerLanguages(ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguageIds) {
+        this.availableAnswerLanguage = availableAnswerLanguageIds;
+    }
+
+    public String[] getExerciseTypesIds() {
+        return exerciseTypesIds;
+    }
+
+    public void setExerciseTypesIds(String[] exerciseTypesIds) {
+        this.exerciseTypesIds = exerciseTypesIds;
+    }
+
+    public ExerciseTypeOption[] getAvailableExerciseTypes() {
+        return availableExerciseTypes;
+    }
+
+    public void setAvailableExerciseTypes(ExerciseTypeOption[] availableExerciseTypes) {
+        this.availableExerciseTypes = availableExerciseTypes;
     }
 
     public boolean getRetypeCorrectAnswerEnabled() {
@@ -34,4 +53,6 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
     public void setRetypeCorrectAnswerEnabled(boolean retypeCorrectAnswerEnabled) {
         this.retypeCorrectAnswerEnabled = retypeCorrectAnswerEnabled;
     }
+
+    public record ExerciseTypeOption(String id, String name) { }
 }

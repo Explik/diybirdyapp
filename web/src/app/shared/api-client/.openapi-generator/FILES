@@ -59,11 +59,13 @@ model/exercise-input-write-placeholders-dto.ts
 model/exercise-input-write-text-dto.ts
 model/exercise-session-dto.ts
 model/exercise-session-options-dto.ts
+model/exercise-session-options-language-option-dto.ts
 model/exercise-session-options-learn-flashcards-dto.ts
 model/exercise-session-options-review-flashcards-dto.ts
 model/exercise-session-options-select-flashcards-dto.ts
 model/exercise-session-options-write-flashcards-dto.ts
 model/exercise-session-progress-dto.ts
+model/exercise-type-option.ts
 model/file-upload-result-dto.ts
 model/flashcard-content-audio-dto.ts
 model/flashcard-content-dto.ts

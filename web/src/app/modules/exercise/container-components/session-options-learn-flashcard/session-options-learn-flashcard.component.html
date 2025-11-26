@@ -5,7 +5,20 @@
 			<div formArrayName="answerLanguageIds">
 				<div *ngFor="let lang of availableAnswerLanguages; let i = index" class="flex items-center mb-2">
 					<input type="checkbox" [formControlName]="i" id="ans-{{i}}" />
-					<label for="ans-{{i}}" class="ml-2">{{ lang }}</label>
+					<label for="ans-{{i}}" class="ml-2">{{ formatLanguageName(lang) }}</label>
+				</div>
+			</div>
+			<app-form-error *ngIf="answerLanguageIds.errors?.['atLeastOneRequired']" i18n>
+				Please select at least one answer language
+			</app-form-error>
+		</app-form-field>
+
+		<app-form-field>
+			<app-label i18n>Exercise types</app-label>
+			<div formArrayName="exerciseTypeIds">
+				<div *ngFor="let type of availableExerciseTypes; let i = index" class="flex items-center mb-2">
+					<input type="checkbox" [formControlName]="i" id="exercise-type-{{i}}" />
+					<label for="exercise-type-{{i}}" class="ml-2">{{ type.name }}</label>
 				</div>
 			</div>
 		</app-form-field>

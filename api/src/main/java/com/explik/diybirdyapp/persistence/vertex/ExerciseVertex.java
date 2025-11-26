@@ -12,6 +12,7 @@ public class ExerciseVertex extends AbstractVertex {
 
     public final static String LABEL = "exercise";
 
+    public final static String EDGE_TYPE = "hasType";
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_CONTENT_PROPERTY_FLASHCARD_SIDE = "flashcardSide";
     public final static String EDGE_OPTION = "hasOption";
@@ -21,8 +22,6 @@ public class ExerciseVertex extends AbstractVertex {
     public final static String PROPERTY_ID = "id";
     public final static String PROPERTY_TARGET_LANGUAGE = "targetLanguage";
 
-    public final static String PROPERTY_TYPE = "exerciseType";
-
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
     }
@@ -31,12 +30,13 @@ public class ExerciseVertex extends AbstractVertex {
         setProperty(PROPERTY_ID, id);
     }
 
-    public String getType() {
-        return getPropertyAsString(PROPERTY_TYPE);
+    public ExerciseTypeVertex getExerciseType() {
+        var exerciseTypeVertex = traversalSource.V(vertex).out(EDGE_TYPE).next();
+        return new ExerciseTypeVertex(traversalSource, exerciseTypeVertex);
     }
 
-    public void setType(String type) {
-        setProperty(PROPERTY_TYPE, type);
+    public void setExerciseType(ExerciseTypeVertex exerciseTypeVertex) {
+        addEdgeOneToOne(EDGE_TYPE, exerciseTypeVertex);
     }
 
     public ContentVertex getContent() {

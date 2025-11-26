@@ -20,7 +20,7 @@ public class HandleFlashcardPronunciationExerciseAnswerCommandHandler implements
     @Override
     public void handleAsync(HandleFlashcardPronunciationExerciseAnswerCommand command) {
         var exerciseVertex = ExerciseVertex.getById(traversalSource, command.getExerciseId());
-        if (!exerciseVertex.getType().equals(ExerciseTypes.PRONOUNCE_FLASHCARD))
+        if (!exerciseVertex.getExerciseType().getId().equals(ExerciseTypes.PRONOUNCE_FLASHCARD))
             throw new RuntimeException("Exercise is not a pronunciation exercise");
 
         var textContentVertex = (TextContentVertex)exerciseVertex.getContent();

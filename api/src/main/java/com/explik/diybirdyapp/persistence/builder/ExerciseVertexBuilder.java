@@ -1,6 +1,8 @@
 package com.explik.diybirdyapp.persistence.builder;
 
 import java.util.UUID;
+
+import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
@@ -18,8 +20,6 @@ public class ExerciseVertexBuilder extends VertexBuilderBase<ExerciseVertex>  {
         return this;
     }
 
-
-
     @Override
     public ExerciseVertex build(GraphTraversalSource traversalSource) {
         if (this.factories == null)
@@ -29,11 +29,15 @@ public class ExerciseVertexBuilder extends VertexBuilderBase<ExerciseVertex>  {
 
         var id = (this.id != null) ? this.id : UUID.randomUUID().toString();
 
+        var typeVertex = ExerciseTypeVertex.findById(traversalSource, this.type);
+        if (typeVertex == null) {
+            typeVertex = ExerciseTypeVertex.create(traversalSource);
+            typeVertex.setId(this.type);
+        }
+
         var vertex = ExerciseVertex.create(traversalSource);
         vertex.setId(id);
-        vertex.setType(type);
-
-
+        vertex.setExerciseType(typeVertex);
 
         return vertex;
     }

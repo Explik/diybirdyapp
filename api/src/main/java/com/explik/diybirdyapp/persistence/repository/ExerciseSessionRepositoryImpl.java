@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
@@ -8,6 +9,7 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +108,13 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             languages.forEach(vertex::addAnswerLanguage);
         }
 
+        if (model.getExerciseTypesIds() != null && model.getExerciseTypesIds().length > 0) {
+            var exerciseTypes = getExerciseTypesByIds(model.getExerciseTypesIds());
+
+            vertex.getExerciseTypes().forEach(vertex::removeExerciseType);
+            exerciseTypes.forEach(vertex::addExerciseType);
+        }
+
         if (model.getRetypeCorrectAnswerEnabled() != vertex.getRetypeCorrectAnswer())
             vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
     }
@@ -152,6 +161,17 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             var vertex = LanguageVertex.findById(traversalSource, languageId);
             if (vertex == null)
                 throw new IllegalArgumentException("No language with id " + languageId);
+            buffer.add(vertex);
+        }
+        return buffer;
+    }
+
+    private List<ExerciseTypeVertex> getExerciseTypesByIds(String[] exerciseTypeIds) {
+        var buffer = new ArrayList<ExerciseTypeVertex>();
+        for (var exerciseTypeId : exerciseTypeIds) {
+            var vertex = ExerciseTypeVertex.findById(traversalSource, exerciseTypeId);
+            if (vertex == null)
+                throw new IllegalArgumentException("No exercise type with id " + exerciseTypeId);
             buffer.add(vertex);
         }
         return buffer;
