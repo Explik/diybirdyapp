@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.persistence.operation;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
@@ -88,63 +89,39 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
                 .toList();
 
         if (exerciseTypes.contains(ExerciseTypes.REVIEW_FLASHCARD)) {
-            flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.REVIEW_FLASHCARD);
-            if (flashcardVertex != null) {
-                var exerciseParameters = new ExerciseParameters()
-                        .withSession(sessionVertex)
-                        .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
-                var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
-
-                return exerciseFactory.create(traversalSource, exerciseParameters);
-            }
+            var reviewExerciseVertex = tryGenerateReviewExercise(traversalSource, sessionVertex);
+            if (reviewExerciseVertex != null)
+                return reviewExerciseVertex;
         }
 
         if (exerciseTypes.contains(ExerciseTypes.SELECT_FLASHCARD)) {
-            flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
-            if (flashcardVertex != null) {
-                var flashcardSide = "front";
-                var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
-                var answerContentType = flashcardVertex.getOtherSide(flashcardSide).getClass();
-                FlashcardVertex finalFlashcardVertex = flashcardVertex;
-                var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
-                        .filter(flashcard -> !flashcard.getId().equals(finalFlashcardVertex.getId())) // Skips the current flashcard
-                        .filter(flashcard -> flashcard.getOtherSide(flashcardSide).getClass() == answerContentType) // Skips flashcards with different content type
-                        .limit(3)
-                        .collect(Collectors.toList());
+            var selectExerciseVertex = tryGenerateSelectExercise(traversalSource, sessionVertex);
+            if (selectExerciseVertex != null)
+                return selectExerciseVertex;
+        }
 
-                var correctContentVertex = flashcardVertex.getOtherSide(flashcardSide);
-                var incorrectContentVertices = alternativeFlashcardVertices
-                        .stream()
-                        .map(f -> f.getOtherSide(flashcardSide))
-                        .toList();
-
-                var exerciseParameters = new ExerciseParameters()
-                        .withSession(sessionVertex)
-                        .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
-                        .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
-                                .withCorrectOptions(List.of(correctContentVertex))
-                                .withIncorrectOptions(incorrectContentVertices)
-                        );
-                var exerciseVertexFactory = abstractVertexFactory.create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE);
-                return exerciseVertexFactory.create(traversalSource, exerciseParameters);
-            }
+        if (exerciseTypes.contains(ExerciseTypes.LISTEN_AND_SELECT)) {
+            var listenAndSelectExerciseVertex = tryGenerateListenAndSelectExercise(traversalSource, sessionVertex);
+            if (listenAndSelectExerciseVertex != null)
+                return listenAndSelectExerciseVertex;
         }
 
         if (exerciseTypes.contains(ExerciseTypes.WRITE_FLASHCARD)) {
-            flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
-            if (flashcardVertex != null) {
-                var flashcardSide = "front";
-                var questionContentVertex = flashcardVertex.getSide(flashcardSide);
-                var answerContentVertex = flashcardVertex.getOtherSide(flashcardSide);
+            var writeExerciseVertex = tryGenerateWriteExercise(traversalSource, sessionVertex);
+            if (writeExerciseVertex != null)
+                return writeExerciseVertex;
+        }
 
-                var exerciseParameters = new ExerciseParameters()
-                        .withSession(sessionVertex)
-                        .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
-                        .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
-                var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE);
+        if (exerciseTypes.contains(ExerciseTypes.LISTEN_AND_WRITE)) {
+            var listenAndWriteExerciseVertex = tryGenerateListenAndWriteExercise(traversalSource, sessionVertex);
+            if (listenAndWriteExerciseVertex != null)
+                return listenAndWriteExerciseVertex;
+        }
 
-                return exerciseFactory.create(traversalSource, exerciseParameters);
-            }
+        if (exerciseTypes.contains(ExerciseTypes.PRONOUNCE_FLASHCARD)) {
+            var pronounceExerciseVertex = tryGeneratePronounceExercise(traversalSource, sessionVertex);
+            if (pronounceExerciseVertex != null)
+                return pronounceExerciseVertex;
         }
 
         // If no flashcards are found, the session is complete
@@ -152,11 +129,92 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
         return null;
     }
 
+    private ExerciseVertex tryGenerateReviewExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.REVIEW_FLASHCARD);
+        if (flashcardVertex == null)
+            return null;
+
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
+        var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
+
+        return exerciseFactory.create(traversalSource, exerciseParameters);
+    }
+
+    private ExerciseVertex tryGenerateSelectExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
+        if (flashcardVertex == null)
+            return null;
+
+        var flashcardSide = "front";
+        var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
+        var answerContentType = flashcardVertex.getOtherSide(flashcardSide).getClass();
+        FlashcardVertex finalFlashcardVertex = flashcardVertex;
+        var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
+                .filter(flashcard -> !flashcard.getId().equals(finalFlashcardVertex.getId())) // Skips the current flashcard
+                .filter(flashcard -> flashcard.getOtherSide(flashcardSide).getClass() == answerContentType) // Skips flashcards with different content type
+                .limit(3)
+                .collect(Collectors.toList());
+
+        var correctContentVertex = flashcardVertex.getOtherSide(flashcardSide);
+        var incorrectContentVertices = alternativeFlashcardVertices
+                .stream()
+                .map(f -> f.getOtherSide(flashcardSide))
+                .toList();
+
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
+                .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
+                        .withCorrectOptions(List.of(correctContentVertex))
+                        .withIncorrectOptions(incorrectContentVertices)
+                );
+        var exerciseVertexFactory = abstractVertexFactory.create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE);
+        return exerciseVertexFactory.create(traversalSource, exerciseParameters);
+    }
+
+    private ExerciseVertex tryGenerateListenAndSelectExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        // TODO implement
+        return null;
+    }
+
+    private ExerciseVertex tryGenerateWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
+        if (flashcardVertex == null)
+            return null;
+
+        var flashcardSide = "front";
+        var questionContentVertex = flashcardVertex.getSide(flashcardSide);
+        var answerContentVertex = flashcardVertex.getOtherSide(flashcardSide);
+
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
+                .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
+        var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE);
+
+        return exerciseFactory.create(traversalSource, exerciseParameters);
+    }
+
+    private ExerciseVertex tryGenerateListenAndWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        // TODO implement
+        return null;
+    }
+
+    private ExerciseVertex tryGeneratePronounceExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        // TODO implement
+        return null;
+    }
+
     private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {
         return List.of(
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.REVIEW_FLASHCARD),
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.SELECT_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.WRITE_FLASHCARD)
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.WRITE_FLASHCARD),
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.PRONOUNCE_FLASHCARD),
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_SELECT),
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_WRITE)
         );
     }
 }
