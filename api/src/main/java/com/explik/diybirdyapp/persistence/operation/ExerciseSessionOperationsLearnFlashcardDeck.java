@@ -9,10 +9,7 @@ import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFacto
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersWriteText;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
+import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -203,8 +200,21 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
     }
 
     private ExerciseVertex tryGeneratePronounceExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        // TODO implement
-        return null;
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.PRONOUNCE_FLASHCARD);
+        if (flashcardVertex == null)
+            return null;
+
+        var flashcardSide = "front";
+        var flashcardContentVertex = flashcardVertex.getSide(flashcardSide);
+        if (!(flashcardContentVertex instanceof TextContentVertex textContentVertex))
+            return null;
+
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
+                .withRecordAudioInput(new ExerciseInputParametersRecordAudio().withCorrectOption(textContentVertex));
+        var exerciseVertexFactory = abstractVertexFactory.create(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE);
+        return exerciseVertexFactory.create(traversalSource, exerciseParameters);
     }
 
     private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {

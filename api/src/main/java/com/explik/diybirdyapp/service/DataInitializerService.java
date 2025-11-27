@@ -72,6 +72,7 @@ public class DataInitializerService {
                 .withIsoCode("DA")
                 .withGoogleTranslate("da-DK")
                 .withGoogleTextToSpeech("da-DK", "da-DK-Wavenet-A")
+                .withGoogleSpeechToText("da-DK")
                 .build(traversalSource);
 
         builderFactory.createLanguageVertexBuilder()
@@ -80,6 +81,7 @@ public class DataInitializerService {
                 .withIsoCode("EN")
                 .withGoogleTranslate("en-US")
                 .withGoogleTextToSpeech("en-US", "en-US-Wavenet-A")
+                .withGoogleSpeechToText("en-US")
                 .build(traversalSource);
 
         builderFactory.createLanguageVertexBuilder()
@@ -88,6 +90,7 @@ public class DataInitializerService {
                 .withIsoCode("ZH")
                 .withGoogleTranslate("zh-CN")
                 .withGoogleTextToSpeech("cmn-cn", "cmn-CN-Chirp3-HD-Achird")
+                .withGoogleSpeechToText("cmn-CN")
                 .build(traversalSource);
     }
 

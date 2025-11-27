@@ -14,6 +14,7 @@ public class ExerciseParameters {
     private ExerciseInputParametersSelectOptions selectOptionsInput;
     private ExerciseInputParametersPairOptions pairOptionsInput;
     private ExerciseInputParametersWriteText writeTextInput;
+    private ExerciseInputParametersRecordAudio recordAudioInput;
 
     public String getId() {
         return id;
@@ -116,6 +117,19 @@ public class ExerciseParameters {
 
     public ExerciseParameters withWriteTextInput(ExerciseInputParametersWriteText writeTextInput) {
         this.writeTextInput = writeTextInput;
+        return this;
+    }
+
+    public ExerciseInputParametersRecordAudio getRecordAudioInput() {
+        return recordAudioInput;
+    }
+
+    public void setRecordAudioInput(ExerciseInputParametersRecordAudio recordAudioInput) {
+        this.recordAudioInput = recordAudioInput;
+    }
+
+    public ExerciseParameters withRecordAudioInput(ExerciseInputParametersRecordAudio recordAudioInput) {
+        this.recordAudioInput = recordAudioInput;
         return this;
     }
 }

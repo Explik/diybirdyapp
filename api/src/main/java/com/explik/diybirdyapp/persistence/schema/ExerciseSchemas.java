@@ -40,6 +40,7 @@ public class ExerciseSchemas {
     public static final ExerciseSchema PRONOUNCE_FLASHCARD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.PRONOUNCE_FLASHCARD)
             .withContentType(ContentTypes.FLASHCARD_SIDE)
+            .withInputType(ExerciseInputTypes.RECORD_AUDIO)
             .withEvaluationType(ExerciseEvaluationTypes.CORRECT_SPEECH_TO_TEXT);
 
     public static final ExerciseSchema REVIEW_FLASHCARD_EXERCISE = new ExerciseSchema()
