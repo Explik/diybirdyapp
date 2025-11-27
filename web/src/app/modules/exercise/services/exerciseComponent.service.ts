@@ -13,6 +13,8 @@ import { ExerciseNavigationSkipOnlyContainerComponent } from "../components/exer
 import { ExerciseContentPronounceFlashcardContainerComponent } from "../container-components/exercise-content-pronounce-flashcard-container/exercise-content-pronounce-flashcard-container.component";
 import { ExerciseContentArrangeWordsInTranslationComponent } from "../container-components/exercise-content-arrange-words-in-translation/exercise-content-arrange-words-in-translation.component";
 import { ExerciseContentTapPairsContainerComponent } from "../container-components/exercise-content-tap-pairs-container/exercise-content-tap-pairs-container.component";
+import { ExerciseContentListenAndSelectContainerComponent } from "../container-components/exercise-content-listen-and-select-container/exercise-content-listen-and-select-container.component";
+import { ExerciseContentListenAndWriteContainerComponent } from "../container-components/exercise-content-listen-and-write-container/exercise-content-listen-and-write-container.component";
 
 @Injectable({
     providedIn: 'root'
@@ -49,6 +51,10 @@ export class ExerciseComponentService {
                 return ExerciseContentReviewFlashcardContainerComponent;
             case "pronounce-flashcard-exercise":
                 return ExerciseContentPronounceFlashcardContainerComponent;
+            case "listen-and-select-exercise":
+                return ExerciseContentListenAndSelectContainerComponent; 
+            case "listen-and-write-exercise":
+                return ExerciseContentListenAndWriteContainerComponent;
             default: 
                 throw new Error("Unknown exercise type " + exerciseType);
         }
@@ -67,8 +73,10 @@ export class ExerciseComponentService {
             case "write-translated-sentence-exercise":
             case "write-flashcard-exercise":
             case "pronounce-flashcard-exercise":
+            case "listen-and-write-exercise":
                 return ExerciseNavigationCheckAnswerContainerComponent; 
             case "select-flashcard-exercise":
+            case "listen-and-select-exercise":
                 return ExerciseNavigationSkipOnlyContainerComponent;
             default: 
                 return null; 

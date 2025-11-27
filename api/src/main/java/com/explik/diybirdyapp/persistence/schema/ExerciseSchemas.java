@@ -25,6 +25,18 @@ public class ExerciseSchemas {
             .withInputType(ExerciseInputTypes.SELECT_OPTIONS)
             .withEvaluationType(ExerciseEvaluationTypes.CORRECT_OPTIONS);
 
+    public static final ExerciseSchema LISTEN_AND_SELECT_EXERCISE = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.LISTEN_AND_SELECT)
+            .withContentType(ContentTypes.AUDIO)
+            .withInputType(ExerciseInputTypes.SELECT_OPTIONS)
+            .withEvaluationType(ExerciseEvaluationTypes.CORRECT_OPTIONS);
+
+    public static final ExerciseSchema LISTEN_AND_WRITE_EXERCISE = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.LISTEN_AND_WRITE)
+            .withContentType(ContentTypes.AUDIO)
+            .withInputType(ExerciseInputTypes.WRITE_TEXT)
+            .withEvaluationType(ExerciseEvaluationTypes.CORRECT_TEXT);
+
     public static final ExerciseSchema PRONOUNCE_FLASHCARD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.PRONOUNCE_FLASHCARD)
             .withContentType(ContentTypes.FLASHCARD_SIDE)
@@ -65,6 +77,8 @@ public class ExerciseSchemas {
             case ExerciseTypes.WRITE_FLASHCARD -> WRITE_FLASHCARD_EXERCISE;
             case ExerciseTypes.WRITE_SENTENCE_USING_WORD -> WRITE_SENTENCE_USING_WORD_EXERCISE;
             case ExerciseTypes.WRITE_TRANSLATED_SENTENCE -> WRITE_TRANSLATED_SENTENCE_EXERCISE;
+            case ExerciseTypes.LISTEN_AND_WRITE -> LISTEN_AND_WRITE_EXERCISE;
+            case ExerciseTypes.LISTEN_AND_SELECT -> LISTEN_AND_SELECT_EXERCISE;
             default -> throw new RuntimeException("Unknown exercise type: " + type);
         };
     }

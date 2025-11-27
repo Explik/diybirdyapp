@@ -1,0 +1,14 @@
+<app-instruction  
+    i18n-title title="Can you hear it?"
+    i18n-instruction instruction="Select what it says"></app-instruction>
+
+<div class="block my-4 ml-2">
+    <app-dynamic-audio-content 
+        *ngIf="content" 
+        [data]="content"></app-dynamic-audio-content>
+</div>
+
+
+<app-exercise-input-write-text 
+    *ngIf="input" 
+    [input]="input!"></app-exercise-input-write-text>

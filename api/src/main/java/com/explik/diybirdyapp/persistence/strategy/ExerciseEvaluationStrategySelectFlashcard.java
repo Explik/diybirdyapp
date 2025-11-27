@@ -74,7 +74,7 @@ public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvalua
 
         var exercise = new ExerciseDto();
         exercise.setId(correctOptionVertex.getId());
-        exercise.setType(ExerciseTypes.SELECT_FLASHCARD);
+        //exercise.setType(ExerciseTypes.SELECT_FLASHCARD);
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(exerciseInput);
         return exercise;

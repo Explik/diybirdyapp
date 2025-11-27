@@ -204,6 +204,10 @@ public class DataInitializerService {
                 .withBackText("Random option 1", langVertex)
                 .build(traversalSource);
 
+        var audioContentVertex1 = audioContentVertexFactory.create(
+                traversalSource,
+                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex));
+
         // Setting up exercise parameters
         var shortTextContentParameters = new ExerciseContentParameters()
                 .withContent(builderFactory.createTextContentVertexBuilder()
@@ -219,6 +223,9 @@ public class DataInitializerService {
 
         var flashcardSideContentParameters = new ExerciseContentParameters()
                 .withFlashcardContent(flashcardVertex1, "front");
+
+        var audioContentParameters = new ExerciseContentParameters()
+                .withContent(audioContentVertex1);
 
         var arrangeTextOptionsParameters = new ExerciseInputParametersArrangeTextOptions()
                 .withOptions(wordTextContents);
@@ -261,6 +268,25 @@ public class DataInitializerService {
         exerciseAbstractVertexFactory
                 .create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE)
                 .create(traversalSource, selectFlashcardExerciseParameters);
+
+        // Exercise - Listen and select exercise
+        var listenAndSelectFlashcardExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.LISTEN_AND_SELECT)
+                .withSession(null)
+                .withContent(audioContentParameters)
+                .withSelectOptionsInput(selectFlashcardParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.LISTEN_AND_SELECT_EXERCISE)
+                .create(traversalSource, listenAndSelectFlashcardExerciseParameters);
+
+        // Exercise - Listen and write exercise
+        var listenAndWriteFlashcardExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.LISTEN_AND_WRITE)
+                .withSession(null)
+                .withContent(audioContentParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.LISTEN_AND_WRITE_EXERCISE)
+                .create(traversalSource, listenAndWriteFlashcardExerciseParameters);
 
         // Exercise - Flashcard review exercise
         var reviewFlashcardExerciseParameters = new ExerciseParameters()

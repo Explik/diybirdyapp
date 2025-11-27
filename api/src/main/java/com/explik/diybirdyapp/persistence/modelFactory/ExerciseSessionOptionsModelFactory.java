@@ -112,7 +112,10 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         return new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption[] {
             new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.SELECT_FLASHCARD, "Select Flashcard Deck"),
             new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.WRITE_FLASHCARD, "Write Flashcard"),
-            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.REVIEW_FLASHCARD, "Review Flashcard")
+            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.REVIEW_FLASHCARD, "Review Flashcard"),
+            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.PRONOUNCE_FLASHCARD, "Pronounce Flashcard"),
+            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.LISTEN_AND_SELECT, "Listen and Select"),
+            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.LISTEN_AND_WRITE, "Listen and Write")
         };
     }
 }
