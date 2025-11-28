@@ -10,4 +10,5 @@
 
 <app-exercise-input-select-options
     *ngIf="input" 
-    [input]="input"></app-exercise-input-select-options>
+    [input]="input"
+    (optionSelected)="handleOptionSelected($event)"></app-exercise-input-select-options>

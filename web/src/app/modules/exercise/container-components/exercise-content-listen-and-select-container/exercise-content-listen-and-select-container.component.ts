@@ -21,4 +21,8 @@ export class ExerciseContentListenAndSelectContainerComponent {
     this.service.getContent<ExerciseContentAudioDto>().subscribe(data => this.content = data);
     this.service.getInput<ExerciseInputSelectOptionsDto>().subscribe(data => this.input = data);
   }
+
+  handleOptionSelected(optionId: string): void {
+    this.service.submitAnswerAsync({ type: "multiple-choice", value: optionId });
+  }
 }

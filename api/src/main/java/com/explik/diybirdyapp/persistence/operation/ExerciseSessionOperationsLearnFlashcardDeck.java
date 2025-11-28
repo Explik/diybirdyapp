@@ -1,14 +1,18 @@
 package com.explik.diybirdyapp.persistence.operation;
 
 import com.explik.diybirdyapp.ComponentTypes;
+import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
+import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
+import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +28,16 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
     private ExerciseAbstractVertexFactory abstractVertexFactory;
 
     @Autowired
-    ExerciseSessionModelFactory sessionModelFactory;
+    private ExerciseSessionModelFactory sessionModelFactory;
+
+    @Autowired
+    private AudioContentVertexFactory audioContentVertexFactory;
+
+    @Autowired
+    private PronunciationVertexFactory pronunciationVertexFactory;
+
+    @Autowired
+    private TextToSpeechService textToSpeechService;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -172,8 +185,42 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
     }
 
     private ExerciseVertex tryGenerateListenAndSelectExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        // TODO implement
-        return null;
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_SELECT);
+        if (flashcardVertex == null)
+            return null;
+
+        // Fetch content
+        var flashcardSide = "front";
+        var correctContentVertex = flashcardVertex.getSide(flashcardSide);
+        if (!(correctContentVertex instanceof TextContentVertex textContentVertex))
+            return null;
+
+        var pronunciationAudioVertex = tryFetchOrGeneratePronunciation(traversalSource, textContentVertex);
+        if (pronunciationAudioVertex == null)
+            return null;
+
+        // Fetch alternative answers
+        var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
+        var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
+                .filter(flashcard -> !flashcard.getId().equals(flashcardVertex.getId())) // Skips the current flashcard
+                .filter(flashcard -> flashcard.getSide(flashcardSide).getClass() == correctContentVertex.getClass()) // Skips flashcards with different content type
+                .limit(3)
+                .collect(Collectors.toList());
+        var incorrectContentVertices = alternativeFlashcardVertices
+                .stream()
+                .map(f -> f.getSide(flashcardSide))
+                .toList();
+
+        // Create exercise
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withContent(pronunciationAudioVertex))
+                .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
+                        .withCorrectOptions(List.of(correctContentVertex))
+                        .withIncorrectOptions(incorrectContentVertices)
+                );
+        var exerciseVertexFactory = abstractVertexFactory.create(ExerciseSchemas.LISTEN_AND_SELECT_EXERCISE);
+        return exerciseVertexFactory.create(traversalSource, exerciseParameters);
     }
 
     private ExerciseVertex tryGenerateWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
@@ -195,8 +242,26 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
     }
 
     private ExerciseVertex tryGenerateListenAndWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        // TODO implement
-        return null;
+        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_WRITE);
+        if (flashcardVertex == null)
+            return null;
+
+        var flashcardSide = "front";
+        var questionContentVertex = flashcardVertex.getSide(flashcardSide);
+        if (!(questionContentVertex instanceof TextContentVertex textContentVertex))
+            return null;
+
+        var pronunciationAudioVertex = tryFetchOrGeneratePronunciation(traversalSource, textContentVertex);
+        if (pronunciationAudioVertex == null)
+            return null;
+
+        var answerContentVertex = flashcardVertex.getOtherSide(flashcardSide);
+        var exerciseParameters = new ExerciseParameters()
+                .withSession(sessionVertex)
+                .withContent(new ExerciseContentParameters().withContent(pronunciationAudioVertex))
+                .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
+        var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.LISTEN_AND_WRITE_EXERCISE);
+        return exerciseFactory.create(traversalSource, exerciseParameters);
     }
 
     private ExerciseVertex tryGeneratePronounceExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
@@ -217,14 +282,61 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
         return exerciseVertexFactory.create(traversalSource, exerciseParameters);
     }
 
+    private AudioContentVertex tryFetchOrGeneratePronunciation(GraphTraversalSource traversalSource, TextContentVertex textContentVertex) {
+        var existingPronunciation = textContentVertex.getMainPronunciation();
+        if (existingPronunciation != null)
+            return existingPronunciation.getAudioContent();
+
+        // Generate pronunciation file
+        var voiceConfig = generateVoiceConfig(textContentVertex);
+        if (voiceConfig == null)
+            return null;
+
+        var filePath = textContentVertex.getId() + ".wav";
+        try {
+            textToSpeechService.generateAudioFile(voiceConfig, filePath);
+        }
+        catch (Exception e) {
+            System.err.println("Failed to generate audio for text content: " + textContentVertex.getId());
+            System.err.println(e.toString());
+            return null;
+        }
+
+        // Save pronunciation to graph
+        var audioVertex = audioContentVertexFactory.create(
+                traversalSource,
+                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), filePath, textContentVertex.getLanguage()));
+
+        pronunciationVertexFactory.create(
+                traversalSource,
+                new PronunciationVertexFactory.Options(UUID.randomUUID().toString(), textContentVertex, audioVertex));
+
+        return audioVertex;
+    }
+
+    private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
+        var languageVertex = textContentVertex.getLanguage();
+
+        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
+        if (textToSpeechConfigs.isEmpty())
+            return null;
+
+        var textToSpeechConfig = textToSpeechConfigs.getFirst();
+        return new TextToSpeechService.Text(
+                textContentVertex.getValue(),
+                textToSpeechConfig.getPropertyValue("languageCode"),
+                textToSpeechConfig.getPropertyValue("voiceName"),
+                "LINEAR16"
+        );
+    }
+
     private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {
+        // This list should not contain any non-flashcard-based exercises as it breaks the next-exercise algorithm
         return List.of(
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.REVIEW_FLASHCARD),
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.SELECT_FLASHCARD),
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.WRITE_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.PRONOUNCE_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_SELECT),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_WRITE)
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.PRONOUNCE_FLASHCARD)
         );
     }
 }
