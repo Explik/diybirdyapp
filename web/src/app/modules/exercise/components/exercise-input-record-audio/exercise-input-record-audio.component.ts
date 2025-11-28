@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AudioUploadService } from '../../../../shared/services/audioUpload.service';
 import { CommonModule } from '@angular/common';
 import { ExerciseInputRecordAudioDto, FileUploadResultDto } from '../../../../shared/api-client';
@@ -15,8 +15,9 @@ export class ExerciseInputRecordAudioComponent {
   mediaRecorder!: MediaRecorder;
   audioChunks: Blob[] = [];
   isUploading = false;
-
+  
   @Input() input?: ExerciseInputRecordAudioDto;
+  @Output()  recordingFinished: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private audioUploadService: AudioUploadService) {}
 
@@ -49,6 +50,7 @@ export class ExerciseInputRecordAudioComponent {
         if (this.input) {
           this.input.url = 'audio.webm'; 
           (this.input as any).files = [new File(this.audioChunks, 'audio.webm')]; 
+          this.recordingFinished?.emit();
         }
       };
       this.mediaRecorder.start();
@@ -62,27 +64,6 @@ export class ExerciseInputRecordAudioComponent {
     if (this.mediaRecorder && this.isRecording) {
       this.mediaRecorder.stop();
       this.isRecording = false;
-      this.uploadAudio();
-    }
-  }
-
-  uploadAudio(): void {
-    if (this.audioBlob) {
-      this.isUploading = true;
-
-      this.audioUploadService.uploadAudio(this.audioBlob).subscribe({
-        next: (obj: FileUploadResultDto) => {
-          alert('Audio uploaded successfully!');
-          this.isUploading = false;
-          this.audioBlob = null; // Clear the blob after upload
-
-          this.input!.url = obj.url; 
-        },
-        error: (err: unknown) => {
-          console.error('Error uploading audio:', err);
-          this.isUploading = false;
-        },
-      });
     }
   }
 

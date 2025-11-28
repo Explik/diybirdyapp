@@ -6,4 +6,5 @@
 
 <app-exercise-input-record-audio 
     *ngIf="input" 
-    [input]="input"></app-exercise-input-record-audio>
+    [input]="input"
+    (recordingFinished)="handleRecordingFinished()"></app-exercise-input-record-audio>

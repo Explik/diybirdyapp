@@ -72,11 +72,11 @@ export class ExerciseComponentService {
             case "write-sentence-using-word-exercise":
             case "write-translated-sentence-exercise":
             case "write-flashcard-exercise":
-            case "pronounce-flashcard-exercise":
             case "listen-and-write-exercise":
                 return ExerciseNavigationCheckAnswerContainerComponent; 
             case "select-flashcard-exercise":
             case "listen-and-select-exercise":
+            case "pronounce-flashcard-exercise":
                 return ExerciseNavigationSkipOnlyContainerComponent;
             default: 
                 return null; 

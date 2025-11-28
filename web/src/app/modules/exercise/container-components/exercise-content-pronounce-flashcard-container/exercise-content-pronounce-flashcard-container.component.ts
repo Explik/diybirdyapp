@@ -30,4 +30,11 @@ export class ExerciseContentPronounceFlashcardContainerComponent {
       this.input = data; 
     });
   }  
+
+  handleRecordingFinished(): void {
+    if (!this.input?.url) 
+      throw new Error('Input.url should be defined after recording is finished');
+
+    this.exerciseService.checkAnswerAsync(); 
+  }
 }
