@@ -16,6 +16,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component(ExerciseEvaluationTypes.CORRECT_SPEECH_TO_TEXT + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEvaluationStrategy {
     @Autowired
@@ -53,15 +55,36 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
         // Save answer
         var answerVertex = answerVertexFactory.create(traversalSource, answerModel);
 
-        // Generate feedback
-        var isCorrect = transcribedText.equalsIgnoreCase(correctTextVertex.getValue());
-        var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isCorrect);
-        exerciseFeedback.setMessage("Expected: " + correctTextVertex.getValue() + ", Transcribed: " + transcribedText);
-
         var exercise = new ExerciseDto();
         exercise.setId(exerciseVertex.getId());
         exercise.setType(exerciseVertex.getExerciseType().getId());
-        exercise.setFeedback(exerciseFeedback);
+
+        // Generate general feedback
+        var isCorrect = transcribedText.equalsIgnoreCase(correctTextVertex.getValue());
+
+        if (!transcribedText.isBlank()) {
+            // Generate exercise feedback
+            var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isCorrect);
+            exerciseFeedback.setMessage("Answer submitted successfully");
+
+            exercise.setFeedback(exerciseFeedback);
+
+            // Input feedback will be generated below
+            var inputFeedback = new ExerciseInputRecordAudioDto.ExerciseInputRecordAudioFeedbackDto();
+            inputFeedback.setCorrectValues(List.of(correctTextVertex.getValue()));
+            inputFeedback.setIncorrectValues(isCorrect ? List.of() : List.of(transcribedText));
+
+            var exerciseInput = new ExerciseInputRecordAudioDto();
+            exerciseInput.setFeedback(inputFeedback);
+
+            exercise.setInput(exerciseInput);
+        }
+        else {
+            var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();
+            exerciseFeedback.setMessage("Could not transcribe audio. Please try again.");
+
+            exercise.setFeedback(exerciseFeedback);
+        }
 
         return exercise;
     }

@@ -7,10 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ExerciseInputRecordAudioFeedbackDto } from './exercise-input-record-audio-feedback-dto';
 import { ExerciseInputDto } from './exercise-input-dto';
 
 
 export interface ExerciseInputRecordAudioDto extends ExerciseInputDto { 
     url: string;
+    feedback?: ExerciseInputRecordAudioFeedbackDto;
 }
 

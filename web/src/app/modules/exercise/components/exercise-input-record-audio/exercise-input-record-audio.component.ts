@@ -1,22 +1,24 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AudioUploadService } from '../../../../shared/services/audioUpload.service';
 import { CommonModule } from '@angular/common';
-import { ExerciseInputRecordAudioDto, FileUploadResultDto } from '../../../../shared/api-client';
+import { ExerciseInputRecordAudioDto, ExerciseInputRecordAudioFeedbackDto, FileUploadResultDto } from '../../../../shared/api-client';
+import { IconComponent } from "../../../../shared/components/icon/icon.component";
 
 @Component({
   selector: 'app-exercise-input-record-audio',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './exercise-input-record-audio.component.html'
 })
-export class ExerciseInputRecordAudioComponent {
+export class ExerciseInputRecordAudioComponent implements OnInit, OnChanges, OnDestroy {
   isRecording = false;
   audioBlob: Blob | null = null;
   mediaRecorder!: MediaRecorder;
   audioChunks: Blob[] = [];
-  isUploading = false;
+
+  feedbackValues: { state: string, value: string}[] = []; 
   
-  @Input() input?: ExerciseInputRecordAudioDto;
+  @Input({required: true}) input?: ExerciseInputRecordAudioDto;
   @Output()  recordingFinished: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private audioUploadService: AudioUploadService) {}
@@ -25,6 +27,14 @@ export class ExerciseInputRecordAudioComponent {
     // Check if navigator.mediaDevices is available
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('Your browser does not support audio recording.');
+    }
+
+    this.updateValues(this.input);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['input']) {
+      this.updateValues(changes['input'].currentValue);
     }
   }
 
@@ -73,4 +83,16 @@ export class ExerciseInputRecordAudioComponent {
       this.stopRecording();
     }
   }
+
+  updateValues(newValue: ExerciseInputRecordAudioDto | undefined) {
+      const feedbackValues: { state: string, value: string}[] = [];
+  
+      if (newValue?.feedback?.correctValues) 
+        feedbackValues.push(...newValue.feedback.correctValues.map(value => ({ state: 'success', value })));
+      
+      if (newValue?.feedback?.incorrectValues) 
+        feedbackValues.push(...newValue.feedback.incorrectValues.map(value => ({ state: 'failure', value })));
+  
+      this.feedbackValues = feedbackValues;
+    }
 }

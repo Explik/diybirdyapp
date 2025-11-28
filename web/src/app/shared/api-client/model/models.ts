@@ -21,6 +21,7 @@ export * from './exercise-input-dto';
 export * from './exercise-input-feedback-text-dto';
 export * from './exercise-input-pair-options-dto';
 export * from './exercise-input-record-audio-dto';
+export * from './exercise-input-record-audio-feedback-dto';
 export * from './exercise-input-record-video-dto';
 export * from './exercise-input-select-options-dto';
 export * from './exercise-input-select-placeholders-dto';

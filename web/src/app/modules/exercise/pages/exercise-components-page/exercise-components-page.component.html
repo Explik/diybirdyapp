@@ -61,8 +61,10 @@
     <app-exercise-input-pair-options [input]="pairOptionsValueWithIncorrectFeedback" />
     <br>
 
-    <p>Record audio</p>
+    <p>Record audio (without feedback)</p>
     <app-exercise-input-record-audio [input]="audioValue"></app-exercise-input-record-audio>
+    <p>Record audio (with feedback)</p>
+    <app-exercise-input-record-audio [input]="audioValueWithFeedback"></app-exercise-input-record-audio>
 
     <p>Record video</p>
     <app-exercise-input-record-video [input]="videoValue"></app-exercise-input-record-video>    
