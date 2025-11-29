@@ -41,7 +41,7 @@
   <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list"
     [ngClass]="{'dragging': currentDragIndex !== undefined}" formArrayName="flashcards">
     <ng-container *ngFor="let fc of flashcardsControls; let i = index">
-      <div [formGroupName]="i" cdkDrag (cdkDragStarted)="handleDragStart(i)" (cdkDragEnded)="handleDragEnd()">
+      <div [formGroupName]="i" cdkDrag [cdkDragStartDelay]="{touch: 50, mouse: 0}" (cdkDragStarted)="handleDragStart(i)" (cdkDragEnded)="handleDragEnd()">
         <app-flashcard-edit class="flashcard-item block mb-4">
           <ng-container header>
             <div class="inline-block">
