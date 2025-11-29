@@ -90,10 +90,6 @@
             <app-video-input formControlName="leftVideoContent"></app-video-input>
             <app-form-error *ngIf="fc.get('leftVideoContent')?.errors?.['video.required']" i18n class="text-red-600 text-sm">Front video required</app-form-error>
           </app-form-field>
-          <app-form-field *ngIf="fc.get('leftContentType')?.value === 'audio'" left>
-            <app-audio-input formControlName="leftAudioContent"></app-audio-input>
-            <app-form-error *ngIf="fc.get('leftAudioContent')?.errors?.['audio.required']" i18n class="text-red-600 text-sm">Front audio required</app-form-error>
-          </app-form-field>
 
           <app-form-field *ngIf="fc.get('rightContentType')?.value === 'text'" right>
               <app-text-input formControlName="rightTextContent" (rows)="1"></app-text-input>
