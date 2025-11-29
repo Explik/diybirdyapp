@@ -15,6 +15,7 @@ export class ExerciseInputRecordAudioComponent implements OnInit, OnChanges, OnD
   audioBlob: Blob | null = null;
   mediaRecorder!: MediaRecorder;
   audioChunks: Blob[] = [];
+  mediaStream: MediaStream | null = null;
 
   feedbackValues: { state: string, value: string}[] = []; 
   
@@ -48,8 +49,8 @@ export class ExerciseInputRecordAudioComponent implements OnInit, OnChanges, OnD
 
   async startRecording(): Promise<void> {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(this.mediaStream);
       this.audioChunks = [];
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) this.audioChunks.push(event.data);
@@ -62,6 +63,9 @@ export class ExerciseInputRecordAudioComponent implements OnInit, OnChanges, OnD
           (this.input as any).files = [new File(this.audioChunks, 'audio.webm')]; 
           this.recordingFinished?.emit();
         }
+        
+        // Release the microphone
+        this.releaseMediaStream();
       };
       this.mediaRecorder.start();
       this.isRecording = true;
@@ -77,11 +81,20 @@ export class ExerciseInputRecordAudioComponent implements OnInit, OnChanges, OnD
     }
   }
 
+  releaseMediaStream(): void {
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach(track => track.stop());
+      this.mediaStream = null;
+    }
+  }
+
   ngOnDestroy(): void {
     // Stop recording if the component is destroyed
     if (this.isRecording) {
       this.stopRecording();
     }
+    // Release the microphone
+    this.releaseMediaStream();
   }
 
   updateValues(newValue: ExerciseInputRecordAudioDto | undefined) {
