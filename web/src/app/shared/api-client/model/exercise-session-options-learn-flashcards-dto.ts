@@ -9,13 +9,15 @@
  */
 import { ExerciseSessionOptionsDto } from './exercise-session-options-dto';
 import { ExerciseSessionOptionsLanguageOptionDto } from './exercise-session-options-language-option-dto';
-import { ExerciseTypeOption } from './exercise-type-option';
 
 
 export interface ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOptionsDto { 
     answerLanguageIds?: Array<string>;
-    exerciseTypesIds?: Array<string>;
-    availableExerciseTypes?: Array<ExerciseTypeOption>;
+    includeReviewExercises?: boolean;
+    includeMultipleChoiceExercises?: boolean;
+    includeWritingExercises?: boolean;
+    includeListeningExercises?: boolean;
+    includePronunciationExercises?: boolean;
     retypeCorrectAnswerEnabled?: boolean;
     availableAnswerLanguages?: Array<ExerciseSessionOptionsLanguageOptionDto>;
 }

@@ -34,8 +34,12 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         model.setAvailableAnswerLanguages(getFlashcardLanguages(optionsVertex));
         model.setAnswerLanguageIds(getAnswerLanguageIds(optionsVertex));
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
-        model.setAvailableExerciseTypes(getAvailableExerciseTypeOptions());
-        model.setExerciseTypesIds(getExerciseTypeIds(optionsVertex));
+
+        model.setIncludeReviewExercises(optionsVertex.getIncludeReviewExercises());
+        model.setIncludeMultipleChoiceExercises(optionsVertex.getIncludeMultipleChoiceExercises());
+        model.setIncludeWritingExercises(optionsVertex.getIncludeWritingExercises());
+        model.setIncludeListeningExercises(optionsVertex.getIncludeListeningExercises());
+        model.setIncludePronunciationExercises(optionsVertex.getIncludePronunciationExercises());
 
         return model;
     }
@@ -106,16 +110,5 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
                 .stream()
                 .map(ExerciseTypeVertex::getId)
                 .toArray(String[]::new);
-    }
-
-    private ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption[] getAvailableExerciseTypeOptions() {
-        return new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption[] {
-            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.SELECT_FLASHCARD, "Select Flashcard Deck"),
-            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.WRITE_FLASHCARD, "Write Flashcard"),
-            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.REVIEW_FLASHCARD, "Review Flashcard"),
-            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.PRONOUNCE_FLASHCARD, "Pronounce Flashcard"),
-            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.LISTEN_AND_SELECT, "Listen and Select"),
-            new ExerciseSessionOptionsLearnFlashcardsDto.ExerciseTypeOption(ExerciseTypes.LISTEN_AND_WRITE, "Listen and Write")
-        };
     }
 }

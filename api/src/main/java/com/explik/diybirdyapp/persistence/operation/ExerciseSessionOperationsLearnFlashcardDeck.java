@@ -63,8 +63,16 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
         optionVertex.setType(ExerciseSessionTypes.LEARN_FLASHCARD);
         optionVertex.setRetypeCorrectAnswer(false);
         optionVertex.setTextToSpeechEnabled(false);
+
         for (var languageVertex : flashcardLanguages)
             optionVertex.addAnswerLanguage(languageVertex);
+
+        optionVertex.setIncludeReviewExercises(true);
+        optionVertex.setIncludeMultipleChoiceExercises(true);
+        optionVertex.setIncludeWritingExercises(true);
+        optionVertex.setIncludeListeningExercises(false);
+        optionVertex.setIncludePronunciationExercises(true);
+
         for (var exerciseTypeVertex : getInitialExerciseTypes(traversalSource))
             optionVertex.addExerciseType(exerciseTypeVertex);
 

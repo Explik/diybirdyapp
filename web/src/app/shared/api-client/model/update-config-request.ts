@@ -12,7 +12,6 @@ import { ExerciseSessionOptionsLearnFlashcardsDto } from './exercise-session-opt
 import { ExerciseSessionOptionsReviewFlashcardsDto } from './exercise-session-options-review-flashcards-dto';
 import { ExerciseSessionOptionsWriteFlashcardsDto } from './exercise-session-options-write-flashcards-dto';
 import { ExerciseSessionOptionsLanguageOptionDto } from './exercise-session-options-language-option-dto';
-import { ExerciseTypeOption } from './exercise-type-option';
 
 
 /**

@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, AbstractControl
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { LabelComponent } from '../../../../shared/components/label/label.component';
 import { SlideToogleComponent } from "../../../../shared/components/slide-toogle/slide-toogle.component";
-import { ExerciseSessionOptionsLanguageOptionDto, ExerciseSessionOptionsLearnFlashcardsDto, ExerciseTypeOption } from '../../../../shared/api-client';
+import { ExerciseSessionOptionsLanguageOptionDto, ExerciseSessionOptionsLearnFlashcardsDto } from '../../../../shared/api-client';
 import { SessionOptionsComponent } from '../../models/component.interface';
 import { Subscription } from 'rxjs';
 import { FormErrorComponent } from "../../../../shared/components/form-error/form-error.component";
@@ -22,17 +22,20 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
 
   form: FormGroup;
   availableAnswerLanguages: Array<ExerciseSessionOptionsLanguageOptionDto> = [];
-  availableExerciseTypes: Array<ExerciseTypeOption> = [];
   private sub: Subscription | undefined = undefined;
   private displayNames: Intl.DisplayNames;
 
   constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
       answerLanguageIds: this.fb.array([], this.atLeastOneSelectedValidator),
-      exerciseTypeIds: this.fb.array([]),
+      includeReviewExercises: [false],
+      includeMultipleChoiceExercises: [false],
+      includeWritingExercises: [false],
+      includeListeningExercises: [false],
+      includePronunciationExercises: [false],
       retypeCorrectAnswerEnabled: [false],
       textToSpeechEnabled: [false]
-    });
+    }, { validators: this.atLeastOneExerciseTypeValidator });
     this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
   }
 
@@ -59,15 +62,10 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
     return this.form.get('answerLanguageIds') as FormArray;
   }
 
-  get exerciseTypeIds(): FormArray {
-    return this.form.get('exerciseTypeIds') as FormArray;
-  }
-
   private patchFormFromOptions() {
     const options = this.options || ({} as ExerciseSessionOptionsLearnFlashcardsDto);
 
     this.availableAnswerLanguages = options.availableAnswerLanguages || [];
-    this.availableExerciseTypes = options.availableExerciseTypes || [];
 
     // Rebuild answerLanguageIds form array
     const answerLangArray = this.form.get('answerLanguageIds') as FormArray;
@@ -78,15 +76,12 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       answerLangArray.push(this.fb.control(isSelected), { emitEvent: false });
     });
 
-    // Rebuild exerciseTypeIds form array
-    const exerciseTypeArray = this.form.get('exerciseTypeIds') as FormArray;
-    exerciseTypeArray.clear({ emitEvent: false });
-    this.availableExerciseTypes.forEach(type => {
-      const isSelected = options.exerciseTypesIds?.includes(type.id || '') || false;
-      exerciseTypeArray.push(this.fb.control(isSelected), { emitEvent: false });
-    });
-
     this.form.patchValue({
+      includeReviewExercises: options.includeReviewExercises || false,
+      includeMultipleChoiceExercises: options.includeMultipleChoiceExercises || false,
+      includeWritingExercises: options.includeWritingExercises || false,
+      includeListeningExercises: options.includeListeningExercises || false,
+      includePronunciationExercises: options.includePronunciationExercises || false,
       retypeCorrectAnswerEnabled: options.retypeCorrectAnswerEnabled || false,
       textToSpeechEnabled: options.textToSpeechEnabled || false
     }, { emitEvent: false });
@@ -99,18 +94,14 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       return control && control.value;
     });
 
-    const exerciseTypeArray = this.form.get('exerciseTypeIds') as FormArray;
-    const selectedExerciseTypes = this.availableExerciseTypes
-      .filter((_, i) => {
-        const control = exerciseTypeArray.at(i);
-        return control && control.value;
-      })
-      .map(type => type.id || '');
-
     return {
       type: this.options?.type,
       answerLanguageIds: selectedLangs.map(lang => lang.id),
-      exerciseTypesIds: selectedExerciseTypes,
+      includeReviewExercises: !!this.form.get('includeReviewExercises')?.value,
+      includeMultipleChoiceExercises: !!this.form.get('includeMultipleChoiceExercises')?.value,
+      includeWritingExercises: !!this.form.get('includeWritingExercises')?.value,
+      includeListeningExercises: !!this.form.get('includeListeningExercises')?.value,
+      includePronunciationExercises: !!this.form.get('includePronunciationExercises')?.value,
       retypeCorrectAnswerEnabled: !!this.form.get('retypeCorrectAnswerEnabled')?.value,
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsLearnFlashcardsDto;
@@ -127,5 +118,16 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
     const formArray = control as FormArray;
     const hasAtLeastOne = formArray.controls.some(ctrl => ctrl.value === true);
     return hasAtLeastOne ? null : { atLeastOneRequired: true };
+  }
+
+  private atLeastOneExerciseTypeValidator(control: AbstractControl): ValidationErrors | null {
+    const group = control as FormGroup;
+    const hasAtLeastOne = 
+      group.get('includeReviewExercises')?.value ||
+      group.get('includeMultipleChoiceExercises')?.value ||
+      group.get('includeWritingExercises')?.value ||
+      group.get('includeListeningExercises')?.value ||
+      group.get('includePronunciationExercises')?.value;
+    return hasAtLeastOne ? null : { atLeastOneExerciseTypeRequired: true };
   }
 }
