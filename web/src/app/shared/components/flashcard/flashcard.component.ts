@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'app-flashcard',
@@ -10,11 +10,15 @@ import { Component, HostListener, Input } from '@angular/core';
 })
 export class FlashcardComponent {
     @Input() side: 'front' | 'back' = 'front';
+    @Output() sideChange = new EventEmitter<'front' | 'back'>();
+
     @Input() isFlippable: boolean = true;
 
     flip() {
-        if (this.isFlippable)
+        if (this.isFlippable) {
             this.side = (this.side === 'front') ? 'back' : 'front';
+            this.sideChange.emit(this.side);
+        }
     }
 
     @HostListener('click')
