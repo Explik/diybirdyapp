@@ -10,11 +10,12 @@ import { FlashcardReviewContainerComponent } from '../../components/flashcard-re
 import { EditFlashcard, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 import { FlashcardViewContainerComponent } from '../../components/flashcard-view-container/flashcard-view-container.component';
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
+import { RowButtonComponent } from '../../../../shared/components/row-button/row-button.component';
 
 @Component({
   selector: 'app-flashcard-deck-view-page',
   standalone: true,
-  imports: [RouterModule, CommonModule, FlashcardViewContainerComponent, FlashcardReviewContainerComponent, ButtonComponent],
+  imports: [RouterModule, CommonModule, FlashcardViewContainerComponent, FlashcardReviewContainerComponent, ButtonComponent, RowButtonComponent],
   templateUrl: './flashcard-deck-view-page.component.html',
   styleUrl: './flashcard-deck-view-page.component.css'
 })
