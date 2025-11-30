@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.builder;
 
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
+import com.explik.diybirdyapp.persistence.vertexFactory.SpeechToTextConfigVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.TextToSpeechConfigVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.TranslateConfigVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -15,6 +16,7 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
     private String name;
     private String isoCode;
     private final List<GoogleTextToSpeechConfigs> googleTextToSpeechConfigs = new ArrayList<>();
+    private final List<GoogleSpeechToTextConfig> googleSpeechToTextConfigs = new ArrayList<>();
     private final List<GoogleTranslateConfig> googleTranslateConfigs = new ArrayList<>();
 
 
@@ -35,6 +37,11 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
 
     public LanguageVertexBuilder withGoogleTextToSpeech(String languageCode, String voiceName) {
         this.googleTextToSpeechConfigs.add(new GoogleTextToSpeechConfigs(languageCode, voiceName));
+        return this;
+    }
+
+    public LanguageVertexBuilder withGoogleSpeechToText(String languageCode) {
+        googleSpeechToTextConfigs.add(new GoogleSpeechToTextConfig(languageCode));
         return this;
     }
 
@@ -62,6 +69,12 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
                     new TextToSpeechConfigVertexFactory.Options(UUID.randomUUID().toString(), config.languageCode, config.voiceName, languageVertex));
         }
 
+        for (var config : this.googleSpeechToTextConfigs) {
+            this.factories.speechToTextConfigVertexFactory.create(
+                    traversalSource,
+                    new SpeechToTextConfigVertexFactory.Options(UUID.randomUUID().toString(), config.languageCode, languageVertex));
+        }
+
         for (var config : this.googleTranslateConfigs) {
             this.factories.translationConfigVertexFactory.create(
                     traversalSource,
@@ -72,6 +85,8 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
     }
 
     private record GoogleTextToSpeechConfigs(String languageCode, String voiceName) {}
+
+    private record GoogleSpeechToTextConfig (String languageCode) { }
 
     private record GoogleTranslateConfig (String languageCode) { }
 }

@@ -6,22 +6,22 @@
         class="mt-8 mb-4"></app-flashcard-review-container>
     
     <ng-container *ngIf="hasFlashcards; else noFlashcards">
-        <div class="my-4">   
-            <app-button i18n (click)="selectFlashcards()" class="mr-2">
+        <div class="my-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">   
+            <app-row-button i18n (click)="selectFlashcards()" class="w-full">
                 Select flashcards
-            </app-button>
+            </app-row-button>
 
-            <app-button i18n (click)="reviewFlashcards()" class="mr-2">
+            <app-row-button i18n (click)="reviewFlashcards()" class="w-full">
                 Review flashcards
-            </app-button>
+            </app-row-button>
 
-            <app-button i18n (click)="writeFlashcards()" class="mr-2">
+            <app-row-button i18n (click)="writeFlashcards()" class="w-full">
                 Write flashcards
-            </app-button>
+            </app-row-button>
 
-            <app-button i18n (click)="learnFlashcards()" class="mr-2">
+            <app-row-button i18n (click)="learnFlashcards()" class="w-full">
                 Learn flashcards
-            </app-button>
+            </app-row-button>
         </div>
         
         <div class="flex justify-end items-center w-full mb-2">

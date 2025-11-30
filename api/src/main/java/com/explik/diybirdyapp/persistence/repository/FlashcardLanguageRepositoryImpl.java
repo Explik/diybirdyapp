@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.model.admin.ConfigurationDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationGoogleSpeechToTextDto;
 import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTextToSpeechDto;
 import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTranslateDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
@@ -180,8 +181,9 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
             return createGoogleTextToSpeechConfigModel(languageId, vertex);
         if (vertex.getType().equals(ConfigurationTypes.GOOGLE_TRANSLATE))
             return createGoogleTranslateConfigModel(languageId, vertex);
+        if (vertex.getType().equals(ConfigurationTypes.GOOGLE_SPEECH_TO_TEXT))
+            return createGoogleSpeechToTextConfigModel(languageId, vertex);
 
-        // TODO SpeechToTextConfigurationModel mapping here// TODO SpeechToTextConfigurationModel mapping here
         throw new IllegalArgumentException("Unsupported configuration type: " + vertex.getType());
     }
 
@@ -191,6 +193,14 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
         model.setLanguageId(languageId);
         model.setLanguageCode(vertex.getPropertyValue("languageCode"));
         model.setVoiceName(vertex.getPropertyValue("voiceName"));
+        return model;
+    }
+
+    private static ConfigurationGoogleSpeechToTextDto createGoogleSpeechToTextConfigModel(String languageId, ConfigurationVertex vertex) {
+        var model = new ConfigurationGoogleSpeechToTextDto();
+        model.setId(vertex.getId());
+        model.setLanguageId(languageId);
+        model.setLanguageCode(vertex.getPropertyValue("languageCode"));
         return model;
     }
 
@@ -211,6 +221,10 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
             updateGoogleTranslateConfigVertex(vertex, googleTranslateModel);
             return;
         }
+        if (model instanceof ConfigurationGoogleSpeechToTextDto googleSpeechToTextModel) {
+            updateGoogleSpeechToTextConfigVertex(vertex, googleSpeechToTextModel);
+            return;
+        }
 
         // TODO SpeechToTextConfigurationModel mapping here
         throw new IllegalArgumentException("Unsupported configuration model type: " + model.getClass().getName());
@@ -220,6 +234,11 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
         vertex.setType(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
         vertex.setPropertyValue("languageCode", model.getLanguageCode());
         vertex.setPropertyValue("voiceName", model.getVoiceName());
+    }
+
+    private static void updateGoogleSpeechToTextConfigVertex(ConfigurationVertex vertex, ConfigurationGoogleSpeechToTextDto model) {
+        vertex.setType(ConfigurationTypes.GOOGLE_SPEECH_TO_TEXT);
+        vertex.setPropertyValue("languageCode", model.getLanguageCode());
     }
 
     private static void updateGoogleTranslateConfigVertex(ConfigurationVertex vertex, ConfigurationGoogleTranslateDto model) {

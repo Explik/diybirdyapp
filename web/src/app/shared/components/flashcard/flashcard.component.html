@@ -1,4 +1,4 @@
-<div class="flashcard w-96 h-64 perspective" [class.cursor-pointer]="isFlippable" [attr.tabindex]="isFlippable ? 0 : null">
+<div class="flashcard block w-full min-w-[280px] max-w-[calc(100vw-2rem)] aspect-[3/2] sm:w-96 sm:h-64 sm:aspect-auto sm:max-w-none perspective" [class.cursor-pointer]="isFlippable" [attr.tabindex]="isFlippable ? 0 : null">
     <div class="flashcard-inner absolute w-full h-full transition-transform duration-500"
         [ngClass]="{ 'rotate-y-180': side === 'back' }">
         <!-- Front Side -->

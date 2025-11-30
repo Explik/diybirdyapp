@@ -40,7 +40,7 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         if (exerciseVertex == null)
             return null;
 
-        var exerciseType = exerciseVertex.getType();
+        var exerciseType = exerciseVertex.getExerciseType().getId();
         var exerciseSchema = ExerciseSchemas.getByType(exerciseType);
         var exerciseFactory = abstractModelFactory.create(exerciseSchema);
         var retrievalContext = new ExerciseRetrievalContextProvider().get(vertex);

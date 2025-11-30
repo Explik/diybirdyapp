@@ -33,12 +33,14 @@ public class ExerciseAbstractModelFactory {
             throw new RuntimeException("Vertex is null");
         if (schema == null)
             throw new RuntimeException("Schema is null");
-        if (!vertex.getType().equals(schema.getExerciseType()))
-            throw new RuntimeException("Vertex type does not match schema type (Expected: " + schema.getExerciseType() + ", Actual: " + vertex.getType() + ")");
+
+        var exerciseType = vertex.getExerciseType().getId();
+        if (!exerciseType.equals(schema.getExerciseType()))
+            throw new RuntimeException("Vertex type does not match schema type (Expected: " + schema.getExerciseType() + ", Actual: " + exerciseType + ")");
 
         var instance = new ExerciseDto();
         instance.setId(vertex.getId());
-        instance.setType(vertex.getType());
+        instance.setType(exerciseType);
 
         if (schema.getContentType() != null) {
             var content = createContent(vertex, context, schema);

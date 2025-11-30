@@ -50,7 +50,7 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
         optionVertex.setId(UUID.randomUUID().toString());
         optionVertex.setType(ExerciseSessionTypes.SELECT_FLASHCARD_DECK);
         optionVertex.setTextToSpeechEnabled(false);
-        optionVertex.setInitialFlashcardLanguageId(flashcardLanguages[0].getId());
+        optionVertex.setInitialFlashcardLanguageId(flashcardLanguages.getFirst().getId());
         vertex.setOptions(optionVertex);
 
         // Generate first exercise

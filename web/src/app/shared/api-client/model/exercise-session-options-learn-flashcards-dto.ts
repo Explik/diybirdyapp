@@ -8,11 +8,17 @@
  * Do not edit the class manually.
  */
 import { ExerciseSessionOptionsDto } from './exercise-session-options-dto';
+import { ExerciseSessionOptionsLanguageOptionDto } from './exercise-session-options-language-option-dto';
 
 
 export interface ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOptionsDto { 
     answerLanguageIds?: Array<string>;
-    availableAnswerLanguageIds?: Array<string>;
+    includeReviewExercises?: boolean;
+    includeMultipleChoiceExercises?: boolean;
+    includeWritingExercises?: boolean;
+    includeListeningExercises?: boolean;
+    includePronunciationExercises?: boolean;
     retypeCorrectAnswerEnabled?: boolean;
+    availableAnswerLanguages?: Array<ExerciseSessionOptionsLanguageOptionDto>;
 }
 

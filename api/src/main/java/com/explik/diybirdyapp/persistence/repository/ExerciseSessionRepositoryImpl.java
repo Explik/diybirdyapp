@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.repository;
 
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
@@ -8,6 +9,7 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,8 +108,47 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             languages.forEach(vertex::addAnswerLanguage);
         }
 
-        if (model.getRetypeCorrectAnswerEnabled() != vertex.getRetypeCorrectAnswer())
-            vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
+        vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
+
+        // Update inclusion flags and exercise types
+        vertex.setIncludeReviewExercises(model.getIncludeReviewExercises());
+        vertex.setIncludeMultipleChoiceExercises(model.getIncludeMultipleChoiceExercises());
+        vertex.setIncludeWritingExercises(model.getIncludeWritingExercises());
+        vertex.setIncludeListeningExercises(model.getIncludeListeningExercises());
+        vertex.setIncludePronunciationExercises(model.getIncludePronunciationExercises());
+
+        vertex.getExerciseTypes().forEach(vertex::removeExerciseType);
+        for (var exerciseTypeVertex : getExerciseTypesFromModel(model))
+            vertex.addExerciseType(exerciseTypeVertex);
+    }
+
+    private List<ExerciseTypeVertex> getExerciseTypesFromModel(ExerciseSessionOptionsLearnFlashcardsDto model) {
+        var exerciseTypeIds = new ArrayList<String>();
+
+        if (model.getIncludeReviewExercises())
+            exerciseTypeIds.add(ExerciseTypes.REVIEW_FLASHCARD);
+
+        if (model.getIncludeMultipleChoiceExercises()) {
+            exerciseTypeIds.add(ExerciseTypes.SELECT_FLASHCARD);
+
+            if (model.getIncludeListeningExercises())
+                exerciseTypeIds.add(ExerciseTypes.LISTEN_AND_SELECT);
+        }
+
+        if (model.getIncludeWritingExercises()) {
+            exerciseTypeIds.add(ExerciseTypes.WRITE_FLASHCARD);
+
+            if (model.getIncludeListeningExercises())
+                exerciseTypeIds.add(ExerciseTypes.LISTEN_AND_WRITE);
+        }
+
+        if (model.getIncludePronunciationExercises())
+            exerciseTypeIds.add(ExerciseTypes.PRONOUNCE_FLASHCARD);
+
+        return exerciseTypeIds
+                .stream()
+                .map(id -> ExerciseTypeVertex.findById(traversalSource, id))
+                .toList();
     }
 
     private void updateReviewSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsReviewFlashcardsDto model) {
@@ -152,6 +193,17 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             var vertex = LanguageVertex.findById(traversalSource, languageId);
             if (vertex == null)
                 throw new IllegalArgumentException("No language with id " + languageId);
+            buffer.add(vertex);
+        }
+        return buffer;
+    }
+
+    private List<ExerciseTypeVertex> getExerciseTypesByIds(String[] exerciseTypeIds) {
+        var buffer = new ArrayList<ExerciseTypeVertex>();
+        for (var exerciseTypeId : exerciseTypeIds) {
+            var vertex = ExerciseTypeVertex.findById(traversalSource, exerciseTypeId);
+            if (vertex == null)
+                throw new IllegalArgumentException("No exercise type with id " + exerciseTypeId);
             buffer.add(vertex);
         }
         return buffer;

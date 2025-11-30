@@ -8,7 +8,7 @@ public class ExerciseAnswerModel<T extends ExerciseInputDto> {
     private String exerciseId;
     private String sessionId;
     private T answer;
-    private Map<String, Object> properties = Map.of();
+    private Map<String, Object> properties = new java.util.HashMap<>();
 
     public String getExerciseId() {
         return exerciseId;

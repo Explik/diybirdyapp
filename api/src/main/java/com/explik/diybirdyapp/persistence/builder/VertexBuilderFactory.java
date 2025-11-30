@@ -28,6 +28,9 @@ public class VertexBuilderFactory {
     private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
 
     @Autowired
+    private SpeechToTextConfigVertexFactory speechToTextConfigVertexFactory;
+
+    @Autowired
     private TranslateConfigVertexFactory translationConfigVertexFactory;
 
     public TextContentVertexBuilder createTextContentVertexBuilder() {
@@ -55,6 +58,7 @@ public class VertexBuilderFactory {
         factories.flashcardDeckVertexFactory = flashcardDeckVertexFactory;
         factories.languageVertexFactory = languageVertexFactory;
         factories.textToSpeechConfigVertexFactory = textToSpeechConfigVertexFactory;
+        factories.speechToTextConfigVertexFactory = speechToTextConfigVertexFactory;
         factories.translationConfigVertexFactory = translationConfigVertexFactory;
 
         builder.injectFactories(factories);

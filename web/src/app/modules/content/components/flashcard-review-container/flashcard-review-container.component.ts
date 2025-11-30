@@ -18,6 +18,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button.com
 export class FlashcardReviewContainerComponent {
   @Input() flashcards: any[] = [];
   currentIndex: number = 0;
+  currentSide: 'front' | 'back' = 'front';
   
   constructor(private service: AudioPlayingService) {}
 
@@ -29,6 +30,7 @@ export class FlashcardReviewContainerComponent {
   previousFlashcard() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
+      this.currentSide = 'front';
     }
   }
 
@@ -36,6 +38,7 @@ export class FlashcardReviewContainerComponent {
     var nonDeletedFlashcards = this.flashcards.filter(flashcard => flashcard.state !== 'deleted');
     if (this.currentIndex < nonDeletedFlashcards.length - 1) {
       this.currentIndex++;
+      this.currentSide = 'front';
     }
   }
 

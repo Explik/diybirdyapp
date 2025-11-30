@@ -80,10 +80,17 @@ export class FlashcardEditContainerComponent {
   }
 
   handleRearrangeFlashcard(event: CdkDragDrop<Partial<EditFlashcardImpl>[]>): void {
+    // Update the data model
     moveItemInArray(this.flashcardDeck!.flashcards, event.previousIndex, event.currentIndex);
     this.flashcardDeck!.flashcards
       .filter(s => s.state !== 'deleted')
       .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
+    
+    // Update the FormArray to reflect the new order in the UI
+    const formArray = this.getFlashcardsFormArray();
+    const movedControl = formArray.at(event.previousIndex);
+    formArray.removeAt(event.previousIndex);
+    formArray.insert(event.currentIndex, movedControl);
   }
 
   handleAddFlashcard() {

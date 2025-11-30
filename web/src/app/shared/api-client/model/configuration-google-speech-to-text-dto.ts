@@ -11,5 +11,6 @@ import { ConfigurationDto } from './configuration-dto';
 
 
 export interface ConfigurationGoogleSpeechToTextDto extends ConfigurationDto { 
+    languageCode?: string;
 }
 

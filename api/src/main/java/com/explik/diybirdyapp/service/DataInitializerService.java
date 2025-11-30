@@ -72,6 +72,7 @@ public class DataInitializerService {
                 .withIsoCode("DA")
                 .withGoogleTranslate("da-DK")
                 .withGoogleTextToSpeech("da-DK", "da-DK-Wavenet-A")
+                .withGoogleSpeechToText("da-DK")
                 .build(traversalSource);
 
         builderFactory.createLanguageVertexBuilder()
@@ -80,6 +81,7 @@ public class DataInitializerService {
                 .withIsoCode("EN")
                 .withGoogleTranslate("en-US")
                 .withGoogleTextToSpeech("en-US", "en-US-Wavenet-A")
+                .withGoogleSpeechToText("en-US")
                 .build(traversalSource);
 
         builderFactory.createLanguageVertexBuilder()
@@ -88,6 +90,7 @@ public class DataInitializerService {
                 .withIsoCode("ZH")
                 .withGoogleTranslate("zh-CN")
                 .withGoogleTextToSpeech("cmn-cn", "cmn-CN-Chirp3-HD-Achird")
+                .withGoogleSpeechToText("cmn-CN")
                 .build(traversalSource);
     }
 
@@ -204,6 +207,10 @@ public class DataInitializerService {
                 .withBackText("Random option 1", langVertex)
                 .build(traversalSource);
 
+        var audioContentVertex1 = audioContentVertexFactory.create(
+                traversalSource,
+                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex));
+
         // Setting up exercise parameters
         var shortTextContentParameters = new ExerciseContentParameters()
                 .withContent(builderFactory.createTextContentVertexBuilder()
@@ -219,6 +226,9 @@ public class DataInitializerService {
 
         var flashcardSideContentParameters = new ExerciseContentParameters()
                 .withFlashcardContent(flashcardVertex1, "front");
+
+        var audioContentParameters = new ExerciseContentParameters()
+                .withContent(audioContentVertex1);
 
         var arrangeTextOptionsParameters = new ExerciseInputParametersArrangeTextOptions()
                 .withOptions(wordTextContents);
@@ -262,6 +272,25 @@ public class DataInitializerService {
                 .create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE)
                 .create(traversalSource, selectFlashcardExerciseParameters);
 
+        // Exercise - Listen and select exercise
+        var listenAndSelectFlashcardExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.LISTEN_AND_SELECT)
+                .withSession(null)
+                .withContent(audioContentParameters)
+                .withSelectOptionsInput(selectFlashcardParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.LISTEN_AND_SELECT_EXERCISE)
+                .create(traversalSource, listenAndSelectFlashcardExerciseParameters);
+
+        // Exercise - Listen and write exercise
+        var listenAndWriteFlashcardExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.LISTEN_AND_WRITE)
+                .withSession(null)
+                .withContent(audioContentParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.LISTEN_AND_WRITE_EXERCISE)
+                .create(traversalSource, listenAndWriteFlashcardExerciseParameters);
+
         // Exercise - Flashcard review exercise
         var reviewFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.REVIEW_FLASHCARD)
@@ -270,6 +299,15 @@ public class DataInitializerService {
         exerciseAbstractVertexFactory
                 .create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE)
                 .create(traversalSource, reviewFlashcardExerciseParameters);
+
+        // Exercise - Write flashcard exercise
+        var writeFlashcardExerciseParameters = new ExerciseParameters()
+                .withId(ExerciseTypes.WRITE_FLASHCARD)
+                .withSession(null)
+                .withContent(flashcardSideContentParameters);
+        exerciseAbstractVertexFactory
+                .create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE)
+                .create(traversalSource, writeFlashcardExerciseParameters);
 
         // Exercise - Flashcard pronounce exercise
         var pronounceFlashcardExerciseParameters = new ExerciseParameters()

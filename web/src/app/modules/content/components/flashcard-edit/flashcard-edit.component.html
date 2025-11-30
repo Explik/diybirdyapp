@@ -1,18 +1,20 @@
-<div class="flashcard-edit-item p-6 border border-black rounded-lg space-x-4 bg-white" style="box-shadow: 3px 3px;">
-    <div class="mb-2">
+<div class="flashcard-edit-item p-6 border border-black rounded-lg bg-white overflow-hidden" style="box-shadow: 3px 3px;">
+    <div class="mb-2 min-w-[360px] overflow-x-auto">
         <ng-content select="[header]" />
     </div>
 
-    <div class="flex items-center">
+    <div class="flex flex-col md:flex-row md:items-center md:space-x-4 overflow-x-auto">
         <!-- Left Language Abbreviation and Text Field -->
-        <div class="left-side flex flex-col flex-grow basis-64">
+        <div class="left-side flex flex-col flex-grow md:basis-64">
             <ng-content select="[left]" />
         </div>
 
-        <div class="flex flex-col p-4"></div>
+        <!-- Separator - hidden on desktop, dotted line on mobile -->
+        <div class="hidden md:flex flex-col p-4"></div>
+        <div class="my-8 border-t-2 border-dotted border-gray-400 md:hidden"></div>
 
         <!-- Right Language Abbreviation and Text Field -->
-        <div class="right-side flex flex-col flex-grow basis-64">
+        <div class="right-side flex flex-col flex-grow md:basis-64">
             <ng-content select="[right]" />
         </div>
     </div>

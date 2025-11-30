@@ -81,14 +81,7 @@ public class FlashcardDeckVertex extends ContentVertex {
         else removeEdges(EDGE_OWNER);
     }
 
-    public String[] getFlashcardLanguageIds() {
-        return Arrays
-                .stream(getFlashcardLanguages())
-                .map(LanguageVertex::getId)
-                .toArray(String[]::new);
-    }
-
-    public LanguageVertex[] getFlashcardLanguages() {
+    public List<LanguageVertex> getFlashcardLanguages() {
         var languages = new ArrayList<LanguageVertex>();
         for (var flashcard : this.getFlashcards()) {
             var leftContent = flashcard.getLeftContent();
@@ -99,7 +92,15 @@ public class FlashcardDeckVertex extends ContentVertex {
             if (rightContent instanceof TextContentVertex rightTextContent)
                 languages.add(rightTextContent.getLanguage());
         }
-        return languages.stream().distinct().toArray(LanguageVertex[]::new);
+
+        var distinctLanguages = new ArrayList<LanguageVertex>();
+        for (var language : languages) {
+            if (distinctLanguages.stream().noneMatch(l -> l.getId().equals(language.getId()))) {
+                distinctLanguages.add(language);
+            }
+        }
+
+        return distinctLanguages;
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {
