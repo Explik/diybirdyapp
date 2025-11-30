@@ -27,6 +27,17 @@ export class ExerciseComponentsPageComponent {
     url: ''
   }
 
+  audioValueWithFeedback: ExerciseInputRecordAudioDto = {
+    id: '1',
+    sessionId: '1',
+    type: 'audio',
+    url: '',
+    feedback: {
+      correctValues: ['Hello world'],
+      incorrectValues: ['Goodbye world']
+    }
+  }
+
   videoValue: ExerciseInputRecordVideoDto = {
     id: '1',
     sessionId: '1',

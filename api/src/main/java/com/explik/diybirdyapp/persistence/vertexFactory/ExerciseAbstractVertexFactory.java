@@ -124,6 +124,12 @@ public class ExerciseAbstractVertexFactory {
             if (inputText != null)
                 vertex.addCorrectOption(inputText.getCorrectOption());
         }
+        else if (inputType.equals(ExerciseInputTypes.RECORD_AUDIO)) {
+            var inputText = options.getRecordAudioInput();
+
+            if (inputText != null)
+                vertex.addCorrectOption(inputText.getCorrectOption());
+        }
         else throw new IllegalArgumentException("Unsupported input type: " + inputType);
     }
 }

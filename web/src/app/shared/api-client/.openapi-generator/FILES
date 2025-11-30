@@ -51,6 +51,7 @@ model/exercise-input-dto.ts
 model/exercise-input-feedback-text-dto.ts
 model/exercise-input-pair-options-dto.ts
 model/exercise-input-record-audio-dto.ts
+model/exercise-input-record-audio-feedback-dto.ts
 model/exercise-input-record-video-dto.ts
 model/exercise-input-select-options-dto.ts
 model/exercise-input-select-placeholders-dto.ts
@@ -65,7 +66,6 @@ model/exercise-session-options-review-flashcards-dto.ts
 model/exercise-session-options-select-flashcards-dto.ts
 model/exercise-session-options-write-flashcards-dto.ts
 model/exercise-session-progress-dto.ts
-model/exercise-type-option.ts
 model/file-upload-result-dto.ts
 model/flashcard-content-audio-dto.ts
 model/flashcard-content-dto.ts

@@ -14,27 +14,60 @@
 		</app-form-field>
 
 		<app-form-field>
-			<app-label i18n>Exercise types</app-label>
-			<div formArrayName="exerciseTypeIds">
-				<div *ngFor="let type of availableExerciseTypes; let i = index" class="flex items-center mb-2">
-					<input type="checkbox" [formControlName]="i" id="exercise-type-{{i}}" />
-					<label for="exercise-type-{{i}}" class="ml-2">{{ type.name }}</label>
-				</div>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Review exercises</app-label>
+				<app-slide-toogle formControlName="includeReviewExercises"></app-slide-toogle>
+			</div>
+		</app-form-field>
+
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Multiple choice exercises</app-label>
+				<app-slide-toogle formControlName="includeMultipleChoiceExercises"></app-slide-toogle>
+			</div>
+		</app-form-field>
+
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Writing exercises</app-label>
+				<app-slide-toogle formControlName="includeWritingExercises"></app-slide-toogle>
+			</div>
+		</app-form-field>
+
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Listening exercises</app-label>
+				<app-slide-toogle formControlName="includeListeningExercises"></app-slide-toogle>
+			</div>
+		</app-form-field>
+
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Pronunciation exercises</app-label>
+				<app-slide-toogle formControlName="includePronunciationExercises"></app-slide-toogle>
+			</div>
+		</app-form-field>
+
+		<app-form-error *ngIf="form.errors?.['atLeastOneExerciseTypeRequired']" i18n>
+			Please select at least one exercise type
+		</app-form-error>
+	</div>
+
+	<div>
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Text to speech</app-label>
+				<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
 			</div>
 		</app-form-field>
 	</div>
 
 	<div>
 		<app-form-field>
-			<app-label i18n>Text to speech</app-label>
-			<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
-		</app-form-field>
-	</div>
-
-	<div>
-		<app-form-field>
-			<app-label i18n>Retype correct answer</app-label>
-			<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Retype correct answer</app-label>
+				<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
+			</div>
 		</app-form-field>
 	</div>
 </form>

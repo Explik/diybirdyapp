@@ -7,10 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ConfigurationDto } from './configuration-dto';
 
 
-export interface ConfigurationGoogleSpeechToTextDto extends ConfigurationDto { 
-    languageCode?: string;
+export interface ExerciseInputRecordAudioFeedbackDto { 
+    correctValues: Array<string>;
+    incorrectValues: Array<string>;
 }
 

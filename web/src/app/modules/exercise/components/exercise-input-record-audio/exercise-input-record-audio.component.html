@@ -1,11 +1,21 @@
 <div class="w-full max-w-xl">
     <button
       (click)="toggleRecording()"
-      [disabled]="isUploading"
+      [disabled]="input?.feedback"
       [attr.aria-pressed]="isRecording"
       class="w-full p-2 bg-red-500 text-white rounded-lg flex flex-col items-center justify-center disabled:bg-gray-500">
       <span class="mdi mdi-microphone text-xl"></span>
       <ng-container *ngIf="!isRecording" i18n>Start Recording</ng-container>
       <ng-container *ngIf="isRecording" i18n>Stop Recording</ng-container>
     </button>
+
+    <ng-container *ngIf="input?.feedback">
+      @for(feedbackValue of feedbackValues; track feedbackValue) {
+      <div class="flex items-center space-x-2 w-full mt-2">
+        <app-icon *ngIf="feedbackValue!.state === 'success'" icon="mark-correct"></app-icon>
+        <app-icon *ngIf="feedbackValue!.state === 'failure'" icon="mark-incorrect"></app-icon>
+        <span class="text-gray-800">{{ feedbackValue.value }}</span>
+      </div>
+      }
+  </ng-container>
   </div>

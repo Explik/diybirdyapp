@@ -108,15 +108,47 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
             languages.forEach(vertex::addAnswerLanguage);
         }
 
-        if (model.getExerciseTypesIds() != null && model.getExerciseTypesIds().length > 0) {
-            var exerciseTypes = getExerciseTypesByIds(model.getExerciseTypesIds());
+        vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
 
-            vertex.getExerciseTypes().forEach(vertex::removeExerciseType);
-            exerciseTypes.forEach(vertex::addExerciseType);
+        // Update inclusion flags and exercise types
+        vertex.setIncludeReviewExercises(model.getIncludeReviewExercises());
+        vertex.setIncludeMultipleChoiceExercises(model.getIncludeMultipleChoiceExercises());
+        vertex.setIncludeWritingExercises(model.getIncludeWritingExercises());
+        vertex.setIncludeListeningExercises(model.getIncludeListeningExercises());
+        vertex.setIncludePronunciationExercises(model.getIncludePronunciationExercises());
+
+        vertex.getExerciseTypes().forEach(vertex::removeExerciseType);
+        for (var exerciseTypeVertex : getExerciseTypesFromModel(model))
+            vertex.addExerciseType(exerciseTypeVertex);
+    }
+
+    private List<ExerciseTypeVertex> getExerciseTypesFromModel(ExerciseSessionOptionsLearnFlashcardsDto model) {
+        var exerciseTypeIds = new ArrayList<String>();
+
+        if (model.getIncludeReviewExercises())
+            exerciseTypeIds.add(ExerciseTypes.REVIEW_FLASHCARD);
+
+        if (model.getIncludeMultipleChoiceExercises()) {
+            exerciseTypeIds.add(ExerciseTypes.SELECT_FLASHCARD);
+
+            if (model.getIncludeListeningExercises())
+                exerciseTypeIds.add(ExerciseTypes.LISTEN_AND_SELECT);
         }
 
-        if (model.getRetypeCorrectAnswerEnabled() != vertex.getRetypeCorrectAnswer())
-            vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
+        if (model.getIncludeWritingExercises()) {
+            exerciseTypeIds.add(ExerciseTypes.WRITE_FLASHCARD);
+
+            if (model.getIncludeListeningExercises())
+                exerciseTypeIds.add(ExerciseTypes.LISTEN_AND_WRITE);
+        }
+
+        if (model.getIncludePronunciationExercises())
+            exerciseTypeIds.add(ExerciseTypes.PRONOUNCE_FLASHCARD);
+
+        return exerciseTypeIds
+                .stream()
+                .map(id -> ExerciseTypeVertex.findById(traversalSource, id))
+                .toList();
     }
 
     private void updateReviewSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsReviewFlashcardsDto model) {

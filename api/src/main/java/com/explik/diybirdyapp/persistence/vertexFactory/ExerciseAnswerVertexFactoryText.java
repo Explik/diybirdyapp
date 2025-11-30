@@ -31,6 +31,10 @@ public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAn
             var textContentVertex = (TextContentVertex)flashcardVertex.getSide(flashcardSide);
             languageVertex = textContentVertex.getLanguage();
         }
+        else if (content instanceof AudioContentVertex) {
+            // TODO implement audio answer handling
+            return null;
+        }
         else throw new RuntimeException("Unsupported content type for exercise: " + content.getClass().getSimpleName());
 
         var textVertex = textContentVertexFactory.create(

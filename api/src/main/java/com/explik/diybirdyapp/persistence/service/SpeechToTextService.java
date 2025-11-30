@@ -34,7 +34,7 @@ public class SpeechToTextService {
             // Builds the sync recognize request
             RecognitionConfig config =
                     RecognitionConfig.newBuilder()
-                            .setEncoding(AudioEncoding.LINEAR16)
+                            .setEncoding(AudioEncoding.WEBM_OPUS)
                             //.setSampleRateHertz(16000)
                             .setLanguageCode(langId)
                             .build();

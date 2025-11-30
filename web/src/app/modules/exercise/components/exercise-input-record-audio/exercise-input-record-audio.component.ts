@@ -1,22 +1,26 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AudioUploadService } from '../../../../shared/services/audioUpload.service';
 import { CommonModule } from '@angular/common';
-import { ExerciseInputRecordAudioDto, FileUploadResultDto } from '../../../../shared/api-client';
+import { ExerciseInputRecordAudioDto, ExerciseInputRecordAudioFeedbackDto, FileUploadResultDto } from '../../../../shared/api-client';
+import { IconComponent } from "../../../../shared/components/icon/icon.component";
 
 @Component({
   selector: 'app-exercise-input-record-audio',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './exercise-input-record-audio.component.html'
 })
-export class ExerciseInputRecordAudioComponent {
+export class ExerciseInputRecordAudioComponent implements OnInit, OnChanges, OnDestroy {
   isRecording = false;
   audioBlob: Blob | null = null;
   mediaRecorder!: MediaRecorder;
   audioChunks: Blob[] = [];
-  isUploading = false;
+  mediaStream: MediaStream | null = null;
 
-  @Input() input?: ExerciseInputRecordAudioDto;
+  feedbackValues: { state: string, value: string}[] = []; 
+  
+  @Input({required: true}) input?: ExerciseInputRecordAudioDto;
+  @Output()  recordingFinished: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private audioUploadService: AudioUploadService) {}
 
@@ -24,6 +28,14 @@ export class ExerciseInputRecordAudioComponent {
     // Check if navigator.mediaDevices is available
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       alert('Your browser does not support audio recording.');
+    }
+
+    this.updateValues(this.input);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['input']) {
+      this.updateValues(changes['input'].currentValue);
     }
   }
 
@@ -37,8 +49,8 @@ export class ExerciseInputRecordAudioComponent {
 
   async startRecording(): Promise<void> {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(this.mediaStream);
       this.audioChunks = [];
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) this.audioChunks.push(event.data);
@@ -49,7 +61,11 @@ export class ExerciseInputRecordAudioComponent {
         if (this.input) {
           this.input.url = 'audio.webm'; 
           (this.input as any).files = [new File(this.audioChunks, 'audio.webm')]; 
+          this.recordingFinished?.emit();
         }
+        
+        // Release the microphone
+        this.releaseMediaStream();
       };
       this.mediaRecorder.start();
       this.isRecording = true;
@@ -62,27 +78,13 @@ export class ExerciseInputRecordAudioComponent {
     if (this.mediaRecorder && this.isRecording) {
       this.mediaRecorder.stop();
       this.isRecording = false;
-      this.uploadAudio();
     }
   }
 
-  uploadAudio(): void {
-    if (this.audioBlob) {
-      this.isUploading = true;
-
-      this.audioUploadService.uploadAudio(this.audioBlob).subscribe({
-        next: (obj: FileUploadResultDto) => {
-          alert('Audio uploaded successfully!');
-          this.isUploading = false;
-          this.audioBlob = null; // Clear the blob after upload
-
-          this.input!.url = obj.url; 
-        },
-        error: (err: unknown) => {
-          console.error('Error uploading audio:', err);
-          this.isUploading = false;
-        },
-      });
+  releaseMediaStream(): void {
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach(track => track.stop());
+      this.mediaStream = null;
     }
   }
 
@@ -91,5 +93,19 @@ export class ExerciseInputRecordAudioComponent {
     if (this.isRecording) {
       this.stopRecording();
     }
+    // Release the microphone
+    this.releaseMediaStream();
   }
+
+  updateValues(newValue: ExerciseInputRecordAudioDto | undefined) {
+      const feedbackValues: { state: string, value: string}[] = [];
+  
+      if (newValue?.feedback?.correctValues) 
+        feedbackValues.push(...newValue.feedback.correctValues.map(value => ({ state: 'success', value })));
+      
+      if (newValue?.feedback?.incorrectValues) 
+        feedbackValues.push(...newValue.feedback.incorrectValues.map(value => ({ state: 'failure', value })));
+  
+      this.feedbackValues = feedbackValues;
+    }
 }
