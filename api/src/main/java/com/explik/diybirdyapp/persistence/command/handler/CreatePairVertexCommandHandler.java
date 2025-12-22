@@ -18,7 +18,9 @@ public class CreatePairVertexCommandHandler implements CommandHandler<CreatePair
     public void handle(CreatePairVertexCommand command) {
         var vertex = PairVertex.create(traversalSource);
         vertex.setId(command.getId());
-        vertex.setLeftContent(command.getLeft());
-        vertex.setRightContent(command.getRight());
+        var leftVertex = com.explik.diybirdyapp.persistence.vertex.AbstractVertex.getById(traversalSource, command.getLeftId());
+        var rightVertex = com.explik.diybirdyapp.persistence.vertex.AbstractVertex.getById(traversalSource, command.getRightId());
+        vertex.setLeftContent(leftVertex);
+        vertex.setRightContent(rightVertex);
     }
 }

@@ -314,7 +314,7 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
         var createCommand = new CreatePronunciationVertexCommand();
         createCommand.setId(UUID.randomUUID().toString());
         createCommand.setAudioUrl(filePath);
-        createCommand.setSourceVertex(textContentVertex);
+        createCommand.setSourceVertex(textContentVertex.getId());
         createPronunciationVertexCommandHandler.handle(createCommand);
 
         return null;

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.persistence.command.CreateWordVertexCommand;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertex.WordVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,13 @@ public class CreateWordVertexCommandHandler implements CommandHandler<CreateWord
         var vertex = new WordVertex(traversalSource, graphVertex);
         vertex.setId(command.getId());
         vertex.setValues(new String[] { command.getValue() });
-        vertex.addExample(command.getMainExample());
-        vertex.setTextContent(command.getMainExample());
-        vertex.setLanguage(command.getLanguageVertex());
+        var mainExample = com.explik.diybirdyapp.persistence.vertex.TextContentVertex.findById(traversalSource, command.getMainExampleId());
+        vertex.addExample(mainExample);
+        vertex.setTextContent(mainExample);
+        var languageVertex = LanguageVertex.findById(traversalSource, command.getLanguageVertexId());
+        vertex.setLanguage(languageVertex);
 
         // Make the main example vertex static so it can't be changed later
-        command.getMainExample().makeStatic();
+        mainExample.makeStatic();
     }
 }

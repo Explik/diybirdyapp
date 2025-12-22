@@ -21,7 +21,8 @@ public class CreateFlashcardDeckVertexCommandHandler implements CommandHandler<C
         vertex.setId(command.getId());
         vertex.setName(command.getName());
 
-        for(var flashcard : command.getFlashcards()) {
+        for(var flashcardId : command.getFlashcardIds()) {
+            var flashcard = com.explik.diybirdyapp.persistence.vertex.FlashcardVertex.findById(traversalSource, flashcardId);
             vertex.addFlashcard(flashcard);
         }
     }

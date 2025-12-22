@@ -25,10 +25,14 @@ public class UpdateFlashcardVertexCommandHandler implements CommandHandler<Updat
         if (vertex.isStatic())
             vertex = copy(vertex);
 
-        if (command.getLeftContent() != null)
-            vertex.setLeftContent(command.getLeftContent());
-        if (command.getRightContent() != null)
-            vertex.setRightContent(command.getRightContent());
+        if (command.getLeftContentId() != null) {
+            var leftContent = com.explik.diybirdyapp.persistence.vertex.ContentVertex.getById(traversalSource, command.getLeftContentId());
+            vertex.setLeftContent(leftContent);
+        }
+        if (command.getRightContentId() != null) {
+            var rightContent = com.explik.diybirdyapp.persistence.vertex.ContentVertex.getById(traversalSource, command.getRightContentId());
+            vertex.setRightContent(rightContent);
+        }
     }
 
     private FlashcardVertex copy(FlashcardVertex existingVertex) {

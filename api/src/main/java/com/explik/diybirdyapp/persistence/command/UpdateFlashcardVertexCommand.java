@@ -1,11 +1,9 @@
 package com.explik.diybirdyapp.persistence.command;
 
-import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
-
 public class UpdateFlashcardVertexCommand implements AtomicCommand {
     private String id;
-    private ContentVertex leftContent;
-    private ContentVertex rightContent;
+    private String leftContentId;
+    private String rightContentId;
 
     public String getId() {
         return id;
@@ -15,19 +13,19 @@ public class UpdateFlashcardVertexCommand implements AtomicCommand {
         this.id = id;
     }
 
-    public ContentVertex getLeftContent() {
-        return leftContent;
+    public String getLeftContentId() {
+        return leftContentId;
     }
 
-    public void setLeftContent(ContentVertex leftContent) {
-        this.leftContent = leftContent;
+    public void setLeftContent(String leftContentId) {
+        this.leftContentId = leftContentId;
     }
 
-    public ContentVertex getRightContent() {
-        return rightContent;
+    public String getRightContentId() {
+        return rightContentId;
     }
 
-    public void setRightContent(ContentVertex rightContent) {
-        this.rightContent = rightContent;
+    public void setRightContent(String rightContentId) {
+        this.rightContentId = rightContentId;
     }
 }

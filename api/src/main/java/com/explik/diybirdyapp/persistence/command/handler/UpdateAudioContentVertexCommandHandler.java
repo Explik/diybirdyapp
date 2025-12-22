@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.persistence.command.UpdateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,10 @@ public class UpdateAudioContentVertexCommandHandler implements CommandHandler<Up
 
         if (command.getUrl() != null)
             vertex.setUrl(command.getUrl());
-        if (command.getLanguageVertex() != null)
-            vertex.setLanguage(command.getLanguageVertex());
+        if (command.getLanguageVertexId() != null) {
+            var languageVertex = LanguageVertex.findById(traversalSource, command.getLanguageVertexId());
+            vertex.setLanguage(languageVertex);
+        }
     }
 
     private AudioContentVertex copy(AudioContentVertex existingVertex) {

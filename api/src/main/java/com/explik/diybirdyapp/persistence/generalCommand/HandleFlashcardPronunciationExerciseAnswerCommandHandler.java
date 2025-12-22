@@ -29,7 +29,7 @@ public class HandleFlashcardPronunciationExerciseAnswerCommandHandler implements
         var createCommand = new CreatePronunciationVertexCommand();
         createCommand.setId(command.getAnswerId());
         // TODO : change to audio content vertex
-        createCommand.setSourceVertex(textContentVertex);
+        createCommand.setSourceVertex(textContentVertex.getId());
         createPronunciationVertexCommandCommandHandler.handle(createCommand);
     }
 }

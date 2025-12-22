@@ -83,7 +83,7 @@ public class GenerateAudioForFlashcardCommandHandler implements AsyncCommandHand
         var createCommand = new CreatePronunciationVertexCommand();
         createCommand.setId(UUID.randomUUID().toString());
         createCommand.setAudioUrl(filePath);
-        createCommand.setSourceVertex(textContentVertex);
+        createCommand.setSourceVertex(textContentVertex.getId());
         createPronunciationVertexCommandCommandHandler.handle(createCommand);
     }
 }

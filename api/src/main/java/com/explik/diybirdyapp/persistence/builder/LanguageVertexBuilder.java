@@ -71,7 +71,7 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
             createConfigCommand.setId(UUID.randomUUID().toString());
             createConfigCommand.setLanguageCode(config.languageCode);
             createConfigCommand.setVoiceName(config.voiceName);
-            createConfigCommand.setLanguageVertex(languageVertex);
+            createConfigCommand.setLanguageVertexId(languageVertex.getId());
             this.factories.createTextToSpeechConfigVertexCommandHandler.handle(createConfigCommand);
         }
 
@@ -79,7 +79,7 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
             var createConfigCommand = new CreateSpeechToTextConfigVertexCommand();
             createConfigCommand.setId(UUID.randomUUID().toString());
             createConfigCommand.setLanguageCode(config.languageCode);
-            createConfigCommand.setLanguageVertex(languageVertex);
+            createConfigCommand.setLanguageVertexId(languageVertex.getId());
             this.factories.createSpeechToTextConfigVertexCommandHandler.handle(createConfigCommand);
         }
 
@@ -87,7 +87,7 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
             var createConfigCommand = new CreateTranslateConfigVertexCommand();
             createConfigCommand.setId(UUID.randomUUID().toString());
             createConfigCommand.setLanguageCode(config.languageCode);
-            createConfigCommand.setLanguageVertex(languageVertex);
+            createConfigCommand.setLanguageVertexId(languageVertex.getId());
             this.factories.createTranslateConfigVertexCommandHandler.handle(createConfigCommand);
         }
 

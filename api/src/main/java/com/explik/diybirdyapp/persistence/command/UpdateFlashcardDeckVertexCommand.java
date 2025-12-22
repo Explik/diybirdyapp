@@ -1,13 +1,11 @@
 package com.explik.diybirdyapp.persistence.command;
 
-import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-
 import java.util.List;
 
 public class UpdateFlashcardDeckVertexCommand implements AtomicCommand {
     private String id;
     private String name;
-    private List<FlashcardVertex> flashcards;
+    private List<String> flashcardIds;
 
     public String getId() {
         return id;
@@ -25,11 +23,11 @@ public class UpdateFlashcardDeckVertexCommand implements AtomicCommand {
         this.name = name;
     }
 
-    public List<FlashcardVertex> getFlashcards() {
-        return flashcards;
+    public List<String> getFlashcardIds() {
+        return flashcardIds;
     }
 
-    public void setFlashcards(List<FlashcardVertex> flashcards) {
-        this.flashcards = flashcards;
+    public void setFlashcards(List<String> flashcardIds) {
+        this.flashcardIds = flashcardIds;
     }
 }

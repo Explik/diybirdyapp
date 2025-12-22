@@ -40,7 +40,7 @@ public class AddAudioToTextContentCommandHandler implements SyncCommandHandler<A
         var createCommand = new CreatePronunciationVertexCommand();
         createCommand.setId(UUID.randomUUID().toString());
         createCommand.setAudioUrl(audioUrl);
-        createCommand.setSourceVertex(textContentVertex);
+        createCommand.setSourceVertex(textContentVertex.getId());
         createPronunciationVertexCommandCommandHandler.handle(createCommand);
 
         return new FileContentCommandResult(audioUrl.getBytes(), "audio/mpeg");

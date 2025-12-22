@@ -17,11 +17,9 @@ import com.explik.diybirdyapp.persistence.query.GetAllFlashcardsQuery;
 import com.explik.diybirdyapp.persistence.query.GetFlashcardByIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import picocli.CommandLine;
 
 import java.util.List;
 import java.util.UUID;
@@ -86,8 +84,8 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var id = UUID.randomUUID().toString();
         var createCommand = new CreateFlashcardVertexCommand();
         createCommand.setId(id);
-        createCommand.setLeftContent(leftContentVertex);
-        createCommand.setRightContent(rightContentVertex);
+        createCommand.setLeftContentId(leftContentVertex);
+        createCommand.setRightContentId(rightContentVertex);
         createFlashcardVertexCommandHandler.handle(createCommand);
         var flashcardVertex = FlashcardVertex.findById(traversalSource, id);
 
@@ -253,7 +251,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var id = UUID.randomUUID().toString();
         var createCommand = new CreateTextContentVertexCommand();
         createCommand.setId(id);
-        createCommand.setLanguage(languageVertex);
+        createCommand.setLanguage(languageVertex.getId());
         createCommand.setValue(model.getText() != null ? model.getText() : "");
         createTextContentVertexCommandHandler.handle(createCommand);
 
@@ -266,7 +264,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         
         if (model.getLanguageId() != null) {
             var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
-            updateCommand.setLanguage(languageVertex);
+            updateCommand.setLanguage(languageVertex.getId());
         }
         if (model.getText() != null) {
             updateCommand.setValue(model.getText());
@@ -284,7 +282,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var createCommand = new CreateVideoContentVertexCommand();
         createCommand.setId(id);
         createCommand.setUrl(url);
-        createCommand.setLanguageVertex(languageVertex);
+        createCommand.setLanguageVertexId(languageVertex.getId());
         createVideoContentVertexCommandHandler.handle(createCommand);
 
         return VideoContentVertex.getById(traversalSource, id);

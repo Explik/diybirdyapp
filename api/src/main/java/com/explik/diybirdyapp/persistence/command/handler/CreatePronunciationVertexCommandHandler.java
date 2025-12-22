@@ -19,18 +19,20 @@ public class CreatePronunciationVertexCommandHandler implements CommandHandler<C
 
     @Override
     public void handle(CreatePronunciationVertexCommand command) {
+        var sourceVertex = com.explik.diybirdyapp.persistence.vertex.TextContentVertex.findById(traversalSource, command.getSourceVertexId());
+        
         var audioVertex = AudioContentVertex.create(traversalSource);
         audioVertex.setId(UUID.randomUUID().toString());
         audioVertex.setUrl(command.getAudioUrl());
-        audioVertex.setLanguage(command.getSourceVertex().getLanguage());
+        audioVertex.setLanguage(sourceVertex.getLanguage());
 
         var vertex = PronunciationVertex.create(traversalSource);
         vertex.setId(command.getId());
         vertex.setAudioContent(audioVertex);
 
-        command.getSourceVertex().addPronunciation(vertex);
-        if (!command.getSourceVertex().hasMainPronunciation())
-            command.getSourceVertex().setMainPronunciation(vertex);
-        command.getSourceVertex().makeStatic();
+        sourceVertex.addPronunciation(vertex);
+        if (!sourceVertex.hasMainPronunciation())
+            sourceVertex.setMainPronunciation(vertex);
+        sourceVertex.makeStatic();
     }
 }

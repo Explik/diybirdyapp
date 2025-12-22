@@ -1,11 +1,9 @@
 package com.explik.diybirdyapp.persistence.command;
 
-import com.explik.diybirdyapp.persistence.vertex.AbstractVertex;
-
 public class CreatePairVertexCommand implements AtomicCommand {
     private String id;
-    private AbstractVertex left;
-    private AbstractVertex right;
+    private String leftId;
+    private String rightId;
 
     public String getId() {
         return id;
@@ -15,19 +13,19 @@ public class CreatePairVertexCommand implements AtomicCommand {
         this.id = id;
     }
 
-    public AbstractVertex getLeft() {
-        return left;
+    public String getLeftId() {
+        return leftId;
     }
 
-    public void setLeft(AbstractVertex left) {
-        this.left = left;
+    public void setLeft(String leftId) {
+        this.leftId = leftId;
     }
 
-    public AbstractVertex getRight() {
-        return right;
+    public String getRightId() {
+        return rightId;
     }
 
-    public void setRight(AbstractVertex right) {
-        this.right = right;
+    public void setRight(String rightId) {
+        this.rightId = rightId;
     }
 }

@@ -1,11 +1,9 @@
 package com.explik.diybirdyapp.persistence.command;
 
-import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-
 public class CreateTextContentVertexCommand implements AtomicCommand {
     private String id;
     private String value;
-    private LanguageVertex language;
+    private String languageId;
 
     public String getId() {
         return id;
@@ -23,11 +21,11 @@ public class CreateTextContentVertexCommand implements AtomicCommand {
         this.value = value;
     }
 
-    public LanguageVertex getLanguage() {
-        return language;
+    public String getLanguageId() {
+        return languageId;
     }
 
-    public void setLanguage(LanguageVertex language) {
-        this.language = language;
+    public void setLanguage(String languageId) {
+        this.languageId = languageId;
     }
 }

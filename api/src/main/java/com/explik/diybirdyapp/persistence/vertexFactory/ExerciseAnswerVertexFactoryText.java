@@ -43,7 +43,7 @@ public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAn
         var createCommand = new CreateTextContentVertexCommand();
         createCommand.setId(textId);
         createCommand.setValue(answerInput.getText());
-        createCommand.setLanguage(languageVertex);
+        createCommand.setLanguage(languageVertex.getId());
         createTextContentVertexCommandHandler.handle(createCommand);
         var textVertex = TextContentVertex.findById(traversalSource, textId);
 

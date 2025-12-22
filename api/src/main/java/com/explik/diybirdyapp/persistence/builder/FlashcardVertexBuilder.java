@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.persistence.builder;
 
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
-import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
@@ -125,8 +124,8 @@ public class FlashcardVertexBuilder extends VertexBuilderBase<FlashcardVertex> i
 
         var createCommand = new CreateFlashcardVertexCommand();
         createCommand.setId(id);
-        createCommand.setLeftContent(frontContent);
-        createCommand.setRightContent(backContent);
+        createCommand.setLeftContentId(frontContent.getId());
+        createCommand.setRightContentId(backContent.getId());
         factories.createFlashcardVertexCommandHandler.handle(createCommand);
         return FlashcardVertex.findById(traversalSource, id);
     }

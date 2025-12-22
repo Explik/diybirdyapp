@@ -46,8 +46,8 @@ public class ExtractWordsFromFlashcardCommandHandler implements AsyncCommandHand
                 var createCommand = new CreateWordVertexCommand();
                 createCommand.setId(null);
                 createCommand.setValue(wordValue);
-                createCommand.setMainExample(textContent);
-                createCommand.setLanguageVertex(language);
+                createCommand.setMainExample(textContent.getId());
+                createCommand.setLanguageVertex(language.getId());
                 createWordVertexCommandHandler.handle(createCommand);
             }
             else word.addExample(textContent);

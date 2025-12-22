@@ -123,7 +123,7 @@ public class DataInitializerService {
         var createVideoCommand = new CreateVideoContentVertexCommand();
         createVideoCommand.setId("videoContentVertex1");
         createVideoCommand.setUrl("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
-        createVideoCommand.setLanguageVertex(langVertex2);
+        createVideoCommand.setLanguageVertexId(langVertex2.getId());
         createVideoContentVertexCommandHandler.handle(createVideoCommand);
 
         var videoContentVertex1 = VideoContentVertex.getById(traversalSource, "videoContentVertex1");

@@ -19,7 +19,9 @@ public class CreateFlashcardVertexCommandHandler implements CommandHandler<Creat
         var graphVertex = traversalSource.addV(FlashcardVertex.LABEL).next();
         var vertex = new FlashcardVertex(traversalSource, graphVertex);
         vertex.setId(command.getId());
-        vertex.setLeftContent(command.getLeftContent());
-        vertex.setRightContent(command.getRightContent());
+        var leftContent = com.explik.diybirdyapp.persistence.vertex.ContentVertex.getById(traversalSource, command.getLeftContentId());
+        var rightContent = com.explik.diybirdyapp.persistence.vertex.ContentVertex.getById(traversalSource, command.getRightContentId());
+        vertex.setLeftContent(leftContent);
+        vertex.setRightContent(rightContent);
     }
 }

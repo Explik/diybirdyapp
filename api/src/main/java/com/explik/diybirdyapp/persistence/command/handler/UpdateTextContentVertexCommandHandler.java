@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.persistence.command.UpdateTextContentVertexCommand;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,10 @@ public class UpdateTextContentVertexCommandHandler implements CommandHandler<Upd
 
         if (command.getValue() != null)
             vertex.setValue(command.getValue());
-        if (command.getLanguage() != null)
-            vertex.setLanguage(command.getLanguage());
+        if (command.getLanguageId() != null) {
+            var languageVertex = LanguageVertex.findById(traversalSource, command.getLanguageId());
+            vertex.setLanguage(languageVertex);
+        }
     }
 
     private TextContentVertex copy(TextContentVertex existingVertex) {

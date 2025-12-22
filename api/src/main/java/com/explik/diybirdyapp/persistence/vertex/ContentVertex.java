@@ -39,4 +39,6 @@ public class ContentVertex extends AbstractVertex {
 
         super.setProperty(propertyKey, value);
     }
+
+
 }

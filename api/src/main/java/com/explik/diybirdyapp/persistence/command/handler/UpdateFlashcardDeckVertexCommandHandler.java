@@ -28,12 +28,13 @@ public class UpdateFlashcardDeckVertexCommandHandler implements CommandHandler<U
         if (command.getName() != null)
             vertex.setName(command.getName());
 
-        if (command.getFlashcards() != null) {
+        if (command.getFlashcardIds() != null) {
             // Clear existing flashcards and add new ones
             for(var flashcard : vertex.getFlashcards()) {
                 vertex.removeFlashcard(flashcard);
             }
-            for(var flashcard : command.getFlashcards()) {
+            for(var flashcardId : command.getFlashcardIds()) {
+                var flashcard = com.explik.diybirdyapp.persistence.vertex.FlashcardVertex.findById(traversalSource, flashcardId);
                 vertex.addFlashcard(flashcard);
             }
         }

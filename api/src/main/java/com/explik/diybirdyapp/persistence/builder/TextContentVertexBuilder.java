@@ -42,7 +42,7 @@ public class TextContentVertexBuilder extends VertexBuilderBase<TextContentVerte
         var createCommand = new CreateTextContentVertexCommand();
         createCommand.setId(id);
         createCommand.setValue(this.value);
-        createCommand.setLanguage(language);
+        createCommand.setLanguage(language.getId());
         this.factories.createTextContentVertexCommandHandler.handle(createCommand);
         
         return TextContentVertex.findById(traversalSource, id);

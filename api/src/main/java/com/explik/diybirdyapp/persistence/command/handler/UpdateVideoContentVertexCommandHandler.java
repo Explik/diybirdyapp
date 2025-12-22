@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.persistence.command.UpdateVideoContentVertexCommand;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertex.VideoContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,10 @@ public class UpdateVideoContentVertexCommandHandler implements CommandHandler<Up
 
         if (command.getUrl() != null)
             vertex.setUrl(command.getUrl());
-        if (command.getLanguageVertex() != null)
-            vertex.setLanguage(command.getLanguageVertex());
+        if (command.getLanguageVertexId() != null) {
+            var languageVertex = LanguageVertex.findById(traversalSource, command.getLanguageVertexId());
+            vertex.setLanguage(languageVertex);
+        }
     }
 
     private VideoContentVertex copy(VideoContentVertex existingVertex) {
