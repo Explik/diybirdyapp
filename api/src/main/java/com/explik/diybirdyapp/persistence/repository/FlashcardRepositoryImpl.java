@@ -4,9 +4,11 @@ import com.explik.diybirdyapp.model.content.*;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateVideoContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateImageContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.UpdateVideoContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -39,7 +41,10 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     TextContentVertexFactory textContentVertexFactory;
 
     @Autowired
-    VideoContentVertexFactory videoContentVertexFactory;
+    CommandHandler<CreateVideoContentVertexCommand> createVideoContentVertexCommandHandler;
+
+    @Autowired
+    CommandHandler<UpdateVideoContentVertexCommand> updateVideoContentVertexCommandHandler;
 
     @Autowired
     CommandHandler<CreateFlashcardVertexCommand> createFlashcardVertexCommandHandler;
@@ -265,21 +270,23 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var url = model.getVideoFileName();
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
 
-        return videoContentVertexFactory.create(
-                traversalSource,
-                new VideoContentVertexFactory.Options(UUID.randomUUID().toString(), url, languageVertex));
+        var id = UUID.randomUUID().toString();
+        var createCommand = new CreateVideoContentVertexCommand();
+        createCommand.setId(id);
+        createCommand.setUrl(url);
+        createCommand.setLanguageVertex(languageVertex);
+        createVideoContentVertexCommandHandler.handle(createCommand);
+
+        return VideoContentVertex.getById(traversalSource, id);
     }
 
     private VideoContentVertex updateVideoContent(VideoContentVertex vertex, FlashcardContentVideoDto model) {
-        if (vertex.isStatic()) {
-            var newVertex = videoContentVertexFactory.copy(vertex);
-            newVertex.setUrl(model.getVideoUrl());
-            return newVertex;
-        }
-        else {
-            vertex.setUrl(model.getVideoUrl());
-            return vertex;
-        }
+        var updateCommand = new UpdateVideoContentVertexCommand();
+        updateCommand.setId(model.getId());
+        updateCommand.setUrl(model.getVideoUrl());
+        updateVideoContentVertexCommandHandler.handle(updateCommand);
+
+        return VideoContentVertex.getById(traversalSource, model.getId());
     }
 
     private static LanguageVertex getLanguageVertex(GraphTraversalSource traversalSource, String languageId) {

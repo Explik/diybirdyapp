@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.persistence.builder.*;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateVideoContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
@@ -46,7 +47,7 @@ public class DataInitializerService {
     private PronunciationVertexFactory pronunciationVertexFactory;
 
     @Autowired
-    private VideoContentVertexFactory videoImageContentVertexFactory;
+    private CommandHandler<CreateVideoContentVertexCommand> createVideoContentVertexCommandHandler;
 
     @Autowired
     private VertexBuilderFactory builderFactory;
@@ -128,9 +129,13 @@ public class DataInitializerService {
 
         var audioContentVertex1 = AudioContentVertex.getById(traversalSource, "audioContentVertex1");
 
-        var videoContentVertex1 = videoImageContentVertexFactory.create(
-                traversalSource,
-                new VideoContentVertexFactory.Options("videoContentVertex1", "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", langVertex2));
+        var createVideoCommand = new CreateVideoContentVertexCommand();
+        createVideoCommand.setId("videoContentVertex1");
+        createVideoCommand.setUrl("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+        createVideoCommand.setLanguageVertex(langVertex2);
+        createVideoContentVertexCommandHandler.handle(createVideoCommand);
+
+        var videoContentVertex1 = VideoContentVertex.getById(traversalSource, "videoContentVertex1");
 
         // Flashcard deck 1
         builderFactory.createFlashcardDeckVertexBuilder()
