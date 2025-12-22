@@ -1,9 +1,10 @@
 package com.explik.diybirdyapp.persistence.builder;
 
+import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
 import java.util.UUID;
@@ -38,9 +39,13 @@ public class TextContentVertexBuilder extends VertexBuilderBase<TextContentVerte
         var id = (this.id != null) ? this.id : UUID.randomUUID().toString();
         var language = getOrCreateLanguage(traversalSource);
 
-        return this.factories.textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options(id, this.value, language));
+        var createCommand = new CreateTextContentVertexCommand();
+        createCommand.setId(id);
+        createCommand.setValue(this.value);
+        createCommand.setLanguage(language);
+        this.factories.createTextContentVertexCommandHandler.handle(createCommand);
+        
+        return TextContentVertex.findById(traversalSource, id);
     }
 
     private LanguageVertex getOrCreateLanguage(GraphTraversalSource traversalSource) {

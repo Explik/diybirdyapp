@@ -6,7 +6,7 @@ import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
-import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
+import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
@@ -125,7 +125,7 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
 
         @Autowired
-        TextContentVertexFactory textContentVertexFactory;
+        CommandHandler<CreateTextContentVertexCommand> createTextContentVertexCommandHandler;
 
         @Bean
         public GraphTraversalSource traversalSource() {
@@ -153,10 +153,33 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
             createLanguageVertexCommandHandler.handle(createLang3Command);
             var lang3 = LanguageVertex.getById(traversal, "lang3");
 
-            var content1 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content1", "", lang1));
-            var content2 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content2", "", lang2));
-            var content3 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content3", "", lang3));
-            var content4 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content4", "", lang1));
+            var createContent1Command = new CreateTextContentVertexCommand();
+            createContent1Command.setId("content1");
+            createContent1Command.setValue("");
+            createContent1Command.setLanguage(lang1);
+            createTextContentVertexCommandHandler.handle(createContent1Command);
+            var content1 = TextContentVertex.getById(traversal, "content1");
+
+            var createContent2Command = new CreateTextContentVertexCommand();
+            createContent2Command.setId("content2");
+            createContent2Command.setValue("");
+            createContent2Command.setLanguage(lang2);
+            createTextContentVertexCommandHandler.handle(createContent2Command);
+            var content2 = TextContentVertex.getById(traversal, "content2");
+
+            var createContent3Command = new CreateTextContentVertexCommand();
+            createContent3Command.setId("content3");
+            createContent3Command.setValue("");
+            createContent3Command.setLanguage(lang3);
+            createTextContentVertexCommandHandler.handle(createContent3Command);
+            var content3 = TextContentVertex.getById(traversal, "content3");
+
+            var createContent4Command = new CreateTextContentVertexCommand();
+            createContent4Command.setId("content4");
+            createContent4Command.setValue("");
+            createContent4Command.setLanguage(lang1);
+            createTextContentVertexCommandHandler.handle(createContent4Command);
+            var content4 = TextContentVertex.getById(traversal, "content4");
 
             var createFlashcard0Command = new CreateFlashcardVertexCommand();
             createFlashcard0Command.setId("pre-existent-id");

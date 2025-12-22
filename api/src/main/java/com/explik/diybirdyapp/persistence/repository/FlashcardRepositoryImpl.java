@@ -4,10 +4,12 @@ import com.explik.diybirdyapp.model.content.*;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateVideoContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateImageContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.UpdateTextContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateVideoContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
@@ -38,7 +40,10 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     CommandHandler<UpdateImageContentVertexCommand> updateImageContentVertexCommandHandler;
 
     @Autowired
-    TextContentVertexFactory textContentVertexFactory;
+    CommandHandler<CreateTextContentVertexCommand> createTextContentVertexCommandHandler;
+
+    @Autowired
+    CommandHandler<UpdateTextContentVertexCommand> updateTextContentVertexCommandHandler;
 
     @Autowired
     CommandHandler<CreateVideoContentVertexCommand> createVideoContentVertexCommandHandler;
@@ -245,25 +250,30 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
     private TextContentVertex createTextContent(FlashcardContentTextDto model) {
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
-        var textContentVertex = TextContentVertex.create(traversalSource);
-        textContentVertex.setId(UUID.randomUUID().toString());
-        textContentVertex.setLanguage(languageVertex);
-        textContentVertex.setValue(model.getText() != null ? model.getText() : "");
+        var id = UUID.randomUUID().toString();
+        var createCommand = new CreateTextContentVertexCommand();
+        createCommand.setId(id);
+        createCommand.setLanguage(languageVertex);
+        createCommand.setValue(model.getText() != null ? model.getText() : "");
+        createTextContentVertexCommandHandler.handle(createCommand);
 
-        return textContentVertex;
+        return TextContentVertex.findById(traversalSource, id);
     }
 
     private TextContentVertex updateTextContent(TextContentVertex vertex, FlashcardContentTextDto model) {
-        var updateVertex = vertex.isStatic() ? textContentVertexFactory.copy(vertex) : vertex;
-
+        var updateCommand = new UpdateTextContentVertexCommand();
+        updateCommand.setId(vertex.getId());
+        
         if (model.getLanguageId() != null) {
             var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
-            updateVertex.setLanguage(languageVertex);
+            updateCommand.setLanguage(languageVertex);
         }
         if (model.getText() != null) {
-            updateVertex.setValue(model.getText());
+            updateCommand.setValue(model.getText());
         }
-        return updateVertex;
+        updateTextContentVertexCommandHandler.handle(updateCommand);
+        
+        return TextContentVertex.findById(traversalSource, vertex.getId());
     }
 
     private VideoContentVertex createVideoContent(FlashcardContentUploadVideoDto model) {

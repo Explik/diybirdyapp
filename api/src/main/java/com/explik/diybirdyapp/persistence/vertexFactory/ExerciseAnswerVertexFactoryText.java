@@ -2,6 +2,8 @@ package com.explik.diybirdyapp.persistence.vertexFactory;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseInputWriteTextDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
+import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import java.util.UUID;
 @Component
 public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAnswerVertex, ExerciseAnswerModel<ExerciseInputWriteTextDto>> {
     @Autowired
-    private TextContentVertexFactory textContentVertexFactory;
+    private CommandHandler<CreateTextContentVertexCommand> createTextContentVertexCommandHandler;
 
     @Override
     public ExerciseAnswerVertex create(GraphTraversalSource traversalSource, ExerciseAnswerModel<ExerciseInputWriteTextDto> answerModel) {
@@ -37,9 +39,13 @@ public class ExerciseAnswerVertexFactoryText implements VertexFactory<ExerciseAn
         }
         else throw new RuntimeException("Unsupported content type for exercise: " + content.getClass().getSimpleName());
 
-        var textVertex = textContentVertexFactory.create(
-                traversalSource,
-                new TextContentVertexFactory.Options(UUID.randomUUID().toString(), answerInput.getText(), languageVertex));
+        var textId = UUID.randomUUID().toString();
+        var createCommand = new CreateTextContentVertexCommand();
+        createCommand.setId(textId);
+        createCommand.setValue(answerInput.getText());
+        createCommand.setLanguage(languageVertex);
+        createTextContentVertexCommandHandler.handle(createCommand);
+        var textVertex = TextContentVertex.findById(traversalSource, textId);
 
         var answerId = (answerInput.getId() != null) ? answerInput.getId() : UUID.randomUUID().toString();
         var exerciseAnswerVertex = ExerciseAnswerVertex.create(traversalSource);
