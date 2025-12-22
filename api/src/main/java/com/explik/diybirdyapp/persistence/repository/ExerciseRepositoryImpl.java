@@ -6,6 +6,11 @@ import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
+import com.explik.diybirdyapp.persistence.query.GetAllExercisesQuery;
+import com.explik.diybirdyapp.persistence.query.GetExerciseByIdsQuery;
+import com.explik.diybirdyapp.persistence.query.handler.GetAllExercisesQueryHandler;
+import com.explik.diybirdyapp.persistence.query.handler.GetExerciseByIdsQueryHandler;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationContext;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -21,6 +26,12 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     private final GraphTraversalSource traversalSource;
 
     @Autowired
+    private QueryHandler<GetExerciseByIdsQuery, ExerciseDto> getExerciseByIdsQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetAllExercisesQuery, List<ExerciseDto>> getAllExercisesQueryHandler;
+
+    @Autowired
     private GenericProvider<ContextualModelFactory<ExerciseVertex, ExerciseDto, ExerciseRetrievalContext>> exerciseModelFactoryProvider;
 
     @Autowired
@@ -32,31 +43,17 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
 
     @Override
     public ExerciseDto get(String id, String sessionId) {
-        var vertex = ExerciseVertex.getById(traversalSource, id);
-        var exerciseType = vertex.getExerciseType().getId();
-        var exerciseFactory = exerciseModelFactoryProvider.get(exerciseType);
+        var query = new GetExerciseByIdsQuery();
+        query.setId(id);
+        query.setSessionId(sessionId);
 
-        if (sessionId == null)
-            return exerciseFactory.create(vertex, ExerciseRetrievalContext.createDefault());
-
-        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
-        if (sessionVertex == null)
-            throw new IllegalArgumentException("Session with ID " + sessionId + " does not exist");
-
-        var context = generateRetrievalContext(sessionVertex);
-        return exerciseFactory.create(vertex, context);
+        return getExerciseByIdsQueryHandler.handle(query);
     }
 
     @Override
     public List<ExerciseDto> getAll() {
-        // Null indicates generic exercise model factory
-        var factory = exerciseModelFactoryProvider.get(null);
-        var vertices = ExerciseVertex.getAll(traversalSource);
-
-        return vertices
-                .stream()
-                .map(e -> factory.create(e, ExerciseRetrievalContext.createDefault()))
-                .toList();
+        var query = new GetAllExercisesQuery();
+        return getAllExercisesQueryHandler.handle(query);
     }
 
     @Override
@@ -70,11 +67,6 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
         var strategyContext = getEvaluationContext(answer);
 
         return strategy.evaluate(exerciseVertex, strategyContext);
-    }
-
-    private ExerciseRetrievalContext generateRetrievalContext(ExerciseSessionVertex sessionVertex) {
-        var provider = new ExerciseRetrievalContextProvider();
-        return provider.get(sessionVertex);
     }
 
     private ExerciseEvaluationContext getEvaluationContext(ExerciseAnswerModel answer) {
