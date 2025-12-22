@@ -7,8 +7,6 @@ The backend consists of the following layers:
 - Commands / Command Handlers
 - Queries / Query Handlers
 - Helper Classes
-- VertexFactories
-- VertexBuilders
 - Vertices
 - ModelFactories
 
@@ -17,10 +15,10 @@ The services are responsible for handling the business logic and orchestrating c
 The commands/command handlers are responsible for handling write operations on the graph (mutations).
 The queries/query handlers are responsible for handling read operations from the graph.
 The helper classes are responsible for shared logic between services (e.g., evaluation, configuration mapping, session management).
-The vertex factories are responsible for creating vertices per data subtype.
-The vertex builders are responsible for creating clusters of associated vertices.
 The vertices are responsible for handling the graph representation of the data per data subtype.
 The model factories are responsible for creating models from the graph representation of the data.
+
+**Note:** Vertex factories and vertex builders have been deprecated and replaced with commands. All vertex creation should now be done through commands and command handlers to maintain consistency with the command/query separation pattern.
 
 ## Inter-layer communication
 The different layers communicate with each other using models (located in /src/models). The models class names either end with "Model" or "DTO". Model indicates that the model is used internally in the system, while DTO indicates that the model is used for data transfer (e.g. between frontend and backend). NB DTOs must always be a flat data structure (JSON-like). DTOs are sometimes mapped to models, but only when necessary. Most of the time, DTOs are directly mapped to the graph representation, since this reduces complexity and improve traceability, performance and reduces the overall amount of code.
@@ -108,11 +106,15 @@ TextContent2-->Exercise
 The system separates commands (operations that mutate the graph) and queries (operations that read from the graph). Both commands and queries are implemented so they are serializable.
 
 **Commands** are used for all write operations:
-- Creating new vertices (flashcards, languages, configurations, users, etc.)
+- Creating new vertices (flashcards, languages, configurations, users, exercises, etc.)
 - Updating existing vertices
 - Deleting vertices
 - Creating relationships between vertices
-- Examples: `CreateFlashcardContentCommand`, `UpdateLanguageCommand`, `DeleteConfigurationCommand`
+- Examples: `CreateFlashcardContentCommand`, `UpdateLanguageCommand`, `DeleteConfigurationCommand`, `CreateExerciseVertexCommand`, `CreateExerciseAnswerTextCommand`
+
+Commands can be either:
+- **Atomic Commands**: Single operations that modify the graph
+- **Composite Commands**: Complex operations composed of multiple atomic commands (e.g., `CreateExerciseVertexCommand` which may create pairs and other related vertices)
 
 **Queries** are used for all read operations:
 - Fetching single entities by ID

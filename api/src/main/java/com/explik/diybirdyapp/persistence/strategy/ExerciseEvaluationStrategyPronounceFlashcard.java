@@ -6,11 +6,12 @@ import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerAudioCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.service.SpeechToTextService;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryAudio;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
     GraphTraversalSource traversalSource;
 
     @Autowired
-    ExerciseAnswerVertexFactoryAudio answerVertexFactory;
+    CommandHandler<CreateExerciseAnswerAudioCommand> createExerciseAnswerAudioCommandHandler;
 
     @Autowired
     SpeechToTextService speechToTextService;
@@ -42,17 +43,15 @@ public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEva
         var textToSpeechId = (String)textToSpeechConfig.getPropertyValue("languageCode");
 
         // Transcribe answer
-        var answerModel = new ExerciseAnswerModel<ExerciseInputRecordAudioDto>();
-        answerModel.setExerciseId(context.getExerciseId());
-        answerModel.setSessionId(context.getSessionId());
-        answerModel.setInput(input);
-
         var audioContentUrl = input.getUrl();
         var transcribedText = speechToTextService.generateTranscription(audioContentUrl, textToSpeechId);
-        answerModel.setProperty("transcription", transcribedText);
 
         // Save answer
-        var answerVertex = answerVertexFactory.create(traversalSource, answerModel);
+        var command = new CreateExerciseAnswerAudioCommand();
+        command.setExerciseId(context.getExerciseId());
+        command.setSessionId(context.getSessionId());
+        command.setAudioUrl(audioContentUrl);
+        createExerciseAnswerAudioCommandHandler.handle(command);
 
         var exercise = new ExerciseDto();
         exercise.setId(exerciseVertex.getId());

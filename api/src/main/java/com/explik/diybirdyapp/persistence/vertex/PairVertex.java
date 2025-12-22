@@ -48,4 +48,9 @@ public class PairVertex extends AbstractVertex {
         var vertex = traversalSource.addV(LABEL).next();
         return new PairVertex(traversalSource, vertex);
     }
+
+    public static PairVertex findById(GraphTraversalSource traversalSource, String id) {
+        var vertex = traversalSource.V().has(PairVertex.PROPERTY_ID, id).tryNext().orElse(null);
+        return vertex != null ? new PairVertex(traversalSource, vertex) : null;
+    }
 }

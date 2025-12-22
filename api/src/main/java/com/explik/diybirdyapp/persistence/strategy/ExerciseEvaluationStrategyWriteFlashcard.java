@@ -5,9 +5,10 @@ import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputWriteTextDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerTextCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryText;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private ExerciseAnswerVertexFactoryText answerVertexFactory;
+    private CommandHandler<CreateExerciseAnswerTextCommand> createExerciseAnswerTextCommandHandler;
 
     @Override
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
@@ -30,12 +31,12 @@ public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluat
             throw new RuntimeException("Answer model type is ExerciseInputTextModel");
 
         // Save answer
-        var answerModel = new ExerciseAnswerModel<ExerciseInputWriteTextDto>();
-        answerModel.setExerciseId(context.getExerciseId());
-        answerModel.setSessionId(context.getSessionId());
-        answerModel.setInput(input);
+        var command = new CreateExerciseAnswerTextCommand();
+        command.setExerciseId(context.getExerciseId());
+        command.setSessionId(context.getSessionId());
+        command.setText(input.getText());
 
-        answerVertexFactory.create(traversalSource, answerModel);
+        createExerciseAnswerTextCommandHandler.handle(command);
 
         // Generate feedback
         return createExerciseWithFeedback(exerciseVertex, input, context);

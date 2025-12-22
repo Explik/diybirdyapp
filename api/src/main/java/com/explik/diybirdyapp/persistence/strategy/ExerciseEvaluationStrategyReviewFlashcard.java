@@ -5,11 +5,12 @@ import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectReviewOptionsDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerRecognizabilityRatingCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionStateVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAnswerVertexFactoryRecognizabilityRating;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class ExerciseEvaluationStrategyReviewFlashcard implements ExerciseEvalua
     GraphTraversalSource traversalSource;
 
     @Autowired
-    ExerciseAnswerVertexFactoryRecognizabilityRating answerVertexFactory;
+    CommandHandler<CreateExerciseAnswerRecognizabilityRatingCommand> createExerciseAnswerRecognizabilityRatingCommandHandler;
 
     @Override
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
@@ -30,12 +31,12 @@ public class ExerciseEvaluationStrategyReviewFlashcard implements ExerciseEvalua
             throw new RuntimeException("Answer model type is not recognizability rating");
 
         // Save answer to graph
-        var answerModel = new ExerciseAnswerModel<ExerciseInputSelectReviewOptionsDto>();
-        answerModel.setExerciseId(context.getExerciseId());
-        answerModel.setSessionId(context.getSessionId());
-        answerModel.setInput(input);
+        var command = new CreateExerciseAnswerRecognizabilityRatingCommand();
+        command.setExerciseId(context.getExerciseId());
+        command.setSessionId(context.getSessionId());
+        command.setRating(input.getRating());
 
-        answerVertexFactory.create(traversalSource, answerModel);
+        createExerciseAnswerRecognizabilityRatingCommandHandler.handle(command);
 
         // Update spaced repetition data (if applicable)
         updateSpacedRepetitionData(exerciseVertex, input);
