@@ -1,9 +1,10 @@
 package com.explik.diybirdyapp.persistence.builder;
 
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,8 +81,11 @@ public class FlashcardDeckVertexBuilder extends VertexBuilderBase<FlashcardDeckV
             vertices.add(vertex);
         }
 
-        return this.factories.flashcardDeckVertexFactory.create(
-                traversalSource,
-                new FlashcardDeckVertexFactory.Options(id, name, vertices));
+        var createCommand = new CreateFlashcardDeckVertexCommand();
+        createCommand.setId(id);
+        createCommand.setName(name);
+        createCommand.setFlashcards(vertices);
+        this.factories.createFlashcardDeckVertexCommandHandler.handle(createCommand);
+        return FlashcardDeckVertex.getById(traversalSource, id);
     }
 }

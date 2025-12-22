@@ -1,8 +1,9 @@
 package com.explik.diybirdyapp.persistence.vertex.manager;
 
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
-import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardDeckVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
@@ -118,7 +119,7 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         FlashcardVertexFactory flashcardVertexFactory;
 
         @Autowired
-        FlashcardDeckVertexFactory flashcardDeckVertexFactory;
+        CommandHandler<CreateFlashcardDeckVertexCommand> createFlashcardDeckVertexCommandHandler;
 
         @Autowired
         LanguageVertexFactory languageVertexFactory;
@@ -145,10 +146,29 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
             var flashcard2 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard2", content2, content3));
             var flashcard3 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard3", content3, content4));
 
-            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options(EMPTY_FLASHCARD_DECK_ID, "", List.of()));
-            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options(ONE_CARD_FLASHCARD_DECK_ID, "", List.of(flashcard1)));
-            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options(TWO_CARD_FLASHCARD_DECK_ID, "", List.of(flashcard1, flashcard2)));
-            flashcardDeckVertexFactory.create(traversal, new FlashcardDeckVertexFactory.Options(MULTI_CARD_FLASHCARD_DECK_ID, "", List.of(flashard0, flashcard1, flashcard2, flashcard3)));
+            var createEmptyDeckCommand = new CreateFlashcardDeckVertexCommand();
+            createEmptyDeckCommand.setId(EMPTY_FLASHCARD_DECK_ID);
+            createEmptyDeckCommand.setName("");
+            createEmptyDeckCommand.setFlashcards(List.of());
+            createFlashcardDeckVertexCommandHandler.handle(createEmptyDeckCommand);
+
+            var createOneCardDeckCommand = new CreateFlashcardDeckVertexCommand();
+            createOneCardDeckCommand.setId(ONE_CARD_FLASHCARD_DECK_ID);
+            createOneCardDeckCommand.setName("");
+            createOneCardDeckCommand.setFlashcards(List.of(flashcard1));
+            createFlashcardDeckVertexCommandHandler.handle(createOneCardDeckCommand);
+
+            var createTwoCardDeckCommand = new CreateFlashcardDeckVertexCommand();
+            createTwoCardDeckCommand.setId(TWO_CARD_FLASHCARD_DECK_ID);
+            createTwoCardDeckCommand.setName("");
+            createTwoCardDeckCommand.setFlashcards(List.of(flashcard1, flashcard2));
+            createFlashcardDeckVertexCommandHandler.handle(createTwoCardDeckCommand);
+
+            var createMultiCardDeckCommand = new CreateFlashcardDeckVertexCommand();
+            createMultiCardDeckCommand.setId(MULTI_CARD_FLASHCARD_DECK_ID);
+            createMultiCardDeckCommand.setName("");
+            createMultiCardDeckCommand.setFlashcards(List.of(flashard0, flashcard1, flashcard2, flashcard3));
+            createFlashcardDeckVertexCommandHandler.handle(createMultiCardDeckCommand);
 
             return traversal;
         }

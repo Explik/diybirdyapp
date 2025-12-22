@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.builder;
 
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class VertexBuilderFactory {
     private FlashcardVertexFactory flashcardVertexFactory;
 
     @Autowired
-    private FlashcardDeckVertexFactory flashcardDeckVertexFactory;
+    private CommandHandler<CreateFlashcardDeckVertexCommand> createFlashcardDeckVertexCommandHandler;
 
     @Autowired
     private LanguageVertexFactory languageVertexFactory;
@@ -56,7 +57,7 @@ public class VertexBuilderFactory {
         factories.textContentVertexFactory = textContentVertexFactory;
         factories.pronunciationVertexFactory = pronunciationVertexFactory;
         factories.flashcardVertexFactory = flashcardVertexFactory;
-        factories.flashcardDeckVertexFactory = flashcardDeckVertexFactory;
+        factories.createFlashcardDeckVertexCommandHandler = createFlashcardDeckVertexCommandHandler;
         factories.languageVertexFactory = languageVertexFactory;
         factories.textToSpeechConfigVertexFactory = textToSpeechConfigVertexFactory;
         factories.speechToTextConfigVertexFactory = speechToTextConfigVertexFactory;
