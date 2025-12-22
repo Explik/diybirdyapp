@@ -2,8 +2,8 @@ package com.explik.diybirdyapp.eventConsumer;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.event.ExerciseAnsweredEvent;
-import com.explik.diybirdyapp.persistence.command.AsyncCommandHandler;
-import com.explik.diybirdyapp.persistence.command.HandleFlashcardPronunciationExerciseAnswerCommand;
+import com.explik.diybirdyapp.persistence.generalCommand.AsyncCommandHandler;
+import com.explik.diybirdyapp.persistence.generalCommand.HandleFlashcardPronunciationExerciseAnswerCommand;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;

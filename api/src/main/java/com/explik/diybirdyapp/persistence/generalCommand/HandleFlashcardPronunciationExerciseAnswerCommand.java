@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.command;
+package com.explik.diybirdyapp.persistence.generalCommand;
 
 public class HandleFlashcardPronunciationExerciseAnswerCommand {
     private final String exerciseId;

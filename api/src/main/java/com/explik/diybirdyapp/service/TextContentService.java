@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.persistence.command.*;
+import com.explik.diybirdyapp.persistence.generalCommand.*;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

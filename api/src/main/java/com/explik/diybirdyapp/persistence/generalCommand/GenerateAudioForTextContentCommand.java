@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.command;
+package com.explik.diybirdyapp.persistence.generalCommand;
 
 public class GenerateAudioForTextContentCommand {
     private String textContentId;

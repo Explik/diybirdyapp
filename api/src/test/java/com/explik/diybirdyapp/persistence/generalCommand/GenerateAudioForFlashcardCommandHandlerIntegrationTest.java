@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.command;
+package com.explik.diybirdyapp.persistence.generalCommand;
 
 import com.explik.diybirdyapp.TestDataConstants;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;

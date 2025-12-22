@@ -1,7 +1,4 @@
-package com.explik.diybirdyapp.persistence.command;
-
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.springframework.beans.factory.annotation.Autowired;
+package com.explik.diybirdyapp.persistence.generalCommand;
 
 public class ExtractWordsFromFlashcardCommand {
     private final String flashcardId;

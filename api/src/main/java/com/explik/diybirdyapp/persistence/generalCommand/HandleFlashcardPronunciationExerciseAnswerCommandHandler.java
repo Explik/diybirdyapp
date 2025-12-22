@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.command;
+package com.explik.diybirdyapp.persistence.generalCommand;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;

@@ -2,9 +2,9 @@ package com.explik.diybirdyapp.eventConsumer;
 
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
-import com.explik.diybirdyapp.persistence.command.AsyncCommandHandler;
-import com.explik.diybirdyapp.persistence.command.ExtractWordsFromFlashcardCommand;
-import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
+import com.explik.diybirdyapp.persistence.generalCommand.AsyncCommandHandler;
+import com.explik.diybirdyapp.persistence.generalCommand.ExtractWordsFromFlashcardCommand;
+import com.explik.diybirdyapp.persistence.generalCommand.GenerateAudioForFlashcardCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

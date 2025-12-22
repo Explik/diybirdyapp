@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.command;
+package com.explik.diybirdyapp.persistence.generalCommand;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
@@ -11,8 +11,10 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
-public class GenerateAudioForTextContentCommandHandler implements SyncCommandHandler<GenerateAudioForTextContentCommand, FileContentCommandResult>{
+public class GenerateAudioForFlashcardCommandHandler implements AsyncCommandHandler<GenerateAudioForFlashcardCommand> {
     @Autowired
     private GraphTraversalSource traversalSource;
 
@@ -26,17 +28,14 @@ public class GenerateAudioForTextContentCommandHandler implements SyncCommandHan
     private TextToSpeechService textToSpeechService;
 
     @Override
-    public FileContentCommandResult handle(GenerateAudioForTextContentCommand command) {
-        var textContentId = command.getTextContentId();
-        if (textContentId == null || textContentId.isEmpty())
-            throw new RuntimeException("Text content ID is empty");
+    public void handleAsync(GenerateAudioForFlashcardCommand command) {
+        var flashcardVertex = getFlashcardVertex(command.getFlashcardId());
 
-        var textContentVertex = TextContentVertex.findById(traversalSource, textContentId);
-        if (textContentVertex == null)
-            throw new RuntimeException("Text content not found: " + command.getTextContentId());
-
-        byte[] audioContent = fetchAudioContent(textContentVertex);
-        return new FileContentCommandResult(audioContent, "audio/wav");
+        boolean failOnMissingVoice = command.getFailOnMissingVoice();
+        if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent)
+            saveAudioContent(leftTextContent, failOnMissingVoice);
+        if (flashcardVertex.getRightContent() instanceof TextContentVertex rightTextContent)
+            saveAudioContent(rightTextContent, failOnMissingVoice);
     }
 
     private FlashcardVertex getFlashcardVertex(String flashcardId) {
@@ -62,16 +61,29 @@ public class GenerateAudioForTextContentCommandHandler implements SyncCommandHan
         );
     }
 
-    private byte[] fetchAudioContent(TextContentVertex textContentVertex) {
+    private void saveAudioContent(TextContentVertex textContentVertex, boolean failOnMissingVoice) {
         var voiceConfig = generateVoiceConfig(textContentVertex);
-        if (voiceConfig == null)
-            throw new RuntimeException("No text to speech config found for text content: " + textContentVertex.getId());
+        if (voiceConfig == null) {
+            if (failOnMissingVoice)
+                throw new RuntimeException("No text to speech config found for text content: " + textContentVertex.getId());
+            else return;
+        }
 
+        var filePath = textContentVertex.getId() + ".wav";
         try {
-            return textToSpeechService.generateAudio(voiceConfig);
+            textToSpeechService.generateAudioFile(voiceConfig, filePath);
         }
         catch (Exception e) {
             throw new RuntimeException("Failed to generate audio for text content: " + textContentVertex.getId(), e);
         }
+
+        // Save audio path to graph
+        var audioVertex = audioContentVertexFactory.create(
+                traversalSource,
+                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), filePath, textContentVertex.getLanguage()));
+
+        pronunciationVertexFactory.create(
+                traversalSource,
+                new PronunciationVertexFactory.Options(UUID.randomUUID().toString(), textContentVertex, audioVertex));
     }
 }
