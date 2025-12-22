@@ -2,6 +2,8 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.model.content.VoiceModel;
+import com.explik.diybirdyapp.persistence.query.GetVoiceByLanguageIdQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -12,31 +14,17 @@ import org.springframework.stereotype.Component;
 public class VoiceRepositoryImpl implements VoiceRepository {
     private final GraphTraversalSource traversalSource;
 
+    @Autowired
+    private QueryHandler<GetVoiceByLanguageIdQuery, VoiceModel> getVoiceByLanguageIdQueryHandler;
+
     public VoiceRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
     }
 
     @Override
     public VoiceModel get(String languageId) {
-        var languageVertex = LanguageVertex.findById(traversalSource, languageId);
-        if (languageVertex == null)
-            return null;
-
-        var voiceConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
-        var voiceConfig = voiceConfigs.stream().findFirst().orElse(null);
-        if (voiceConfig == null)
-            return null;
-
-        return createModel(languageVertex, voiceConfig);
-    }
-
-    private static VoiceModel createModel(LanguageVertex langVertex, ConfigurationVertex configVertex) {
-        var model = new VoiceModel();
-        model.setLanguageId(langVertex.getId());
-        model.setLanguageName(langVertex.getName());
-        model.setVoiceId(configVertex.getId());
-        model.setVoiceName(configVertex.getPropertyValue("voiceName"));
-        model.setVoiceLanguageCode(configVertex.getPropertyValue("languageCode"));
-        return model;
+        var query = new GetVoiceByLanguageIdQuery();
+        query.setLanguageId(languageId);
+        return getVoiceByLanguageIdQueryHandler.handle(query);
     }
 }

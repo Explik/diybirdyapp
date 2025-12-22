@@ -13,6 +13,9 @@ import com.explik.diybirdyapp.persistence.command.UpdateTextContentVertexCommand
 import com.explik.diybirdyapp.persistence.command.UpdateVideoContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
+import com.explik.diybirdyapp.persistence.query.GetAllFlashcardsQuery;
+import com.explik.diybirdyapp.persistence.query.GetFlashcardByIdQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -26,6 +29,12 @@ import java.util.UUID;
 @Component
 public class FlashcardRepositoryImpl implements FlashcardRepository {
     private final GraphTraversalSource traversalSource;
+
+    @Autowired
+    private QueryHandler<GetFlashcardByIdQuery, FlashcardDto> getFlashcardByIdQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetAllFlashcardsQuery, List<FlashcardDto>> getAllFlashcardsQueryHandler;
 
     @Autowired
     CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
@@ -107,25 +116,16 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
     @Override
     public FlashcardDto get(String id) {
-        var vertex = FlashcardVertex.findById(traversalSource, id);
-        return flashcardCardModelFactory.create(vertex);
+        var query = new GetFlashcardByIdQuery();
+        query.setId(id);
+        return getFlashcardByIdQueryHandler.handle(query);
     }
 
     @Override
     public List<FlashcardDto> getAll(String deckId) {
-        List<FlashcardVertex> vertices;
-
-        if (deckId != null) {
-            vertices = FlashcardVertex.findByDeckId(traversalSource, deckId);
-        }
-        else {
-            vertices = FlashcardVertex.findAll(traversalSource);
-        }
-
-        return vertices
-            .stream()
-            .map(v -> flashcardCardModelFactory.create(v))
-            .toList();
+        var query = new GetAllFlashcardsQuery();
+        query.setDeckId(deckId);
+        return getAllFlashcardsQueryHandler.handle(query);
     }
 
     @Override

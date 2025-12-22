@@ -5,6 +5,9 @@ import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
+import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
+import com.explik.diybirdyapp.persistence.query.GetExerciseSessionConfigQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
@@ -21,6 +24,12 @@ import java.util.List;
 @Component
 public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository {
     private final GraphTraversalSource traversalSource;
+
+    @Autowired
+    private QueryHandler<GetExerciseSessionByIdQuery, ExerciseSessionDto> getExerciseSessionByIdQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetExerciseSessionConfigQuery, ExerciseSessionOptionsDto> getExerciseSessionConfigQueryHandler;
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
@@ -45,8 +54,9 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
 
     @Override
     public ExerciseSessionDto get(String id) {
-        var vertex = getSessionVertex(id);
-        return sessionModelFactory.create(vertex);
+        var query = new GetExerciseSessionByIdQuery();
+        query.setId(id);
+        return getExerciseSessionByIdQueryHandler.handle(query);
     }
 
     public ExerciseSessionDto nextExercise(String modelId) {
@@ -61,10 +71,9 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
 
     @Override
     public ExerciseSessionOptionsDto getConfig(String sessionId) {
-        var sessionVertex = getSessionVertex(sessionId);
-        var optionsVertex = sessionVertex.getOptions();
-
-        return sessionOptionsModelFactory.create(optionsVertex);
+        var query = new GetExerciseSessionConfigQuery();
+        query.setSessionId(sessionId);
+        return getExerciseSessionConfigQueryHandler.handle(query);
     }
 
     public ExerciseSessionDto updateConfig(String modelId, ExerciseSessionOptionsDto config) {

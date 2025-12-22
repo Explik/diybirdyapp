@@ -6,6 +6,11 @@ import com.explik.diybirdyapp.model.admin.ConfigurationGoogleSpeechToTextDto;
 import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTextToSpeechDto;
 import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTranslateDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
+import com.explik.diybirdyapp.persistence.query.GetAllLanguagesQuery;
+import com.explik.diybirdyapp.persistence.query.GetConfigurationByIdQuery;
+import com.explik.diybirdyapp.persistence.query.GetLanguageByIdQuery;
+import com.explik.diybirdyapp.persistence.query.GetLanguageConfigsQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -18,6 +23,18 @@ import java.util.UUID;
 @Component
 public class FlashcardLanguageRepositoryImpl implements LanguageRepository, ConfigurationRepository {
     private final GraphTraversalSource traversalSource;
+
+    @Autowired
+    private QueryHandler<GetLanguageByIdQuery, FlashcardLanguageDto> getLanguageByIdQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetAllLanguagesQuery, List<FlashcardLanguageDto>> getAllLanguagesQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetConfigurationByIdQuery, ConfigurationDto> getConfigurationByIdQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetLanguageConfigsQuery, List<ConfigurationDto>> getLanguageConfigsQueryHandler;
 
     public FlashcardLanguageRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
@@ -44,20 +61,16 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
 
     @Override
     public FlashcardLanguageDto getById(String languageId) {
-        var vertex = LanguageVertex.findById(traversalSource, languageId);
-        if (vertex == null)
-            throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
-
-        return createLanguageModel(vertex);
+        var query = new GetLanguageByIdQuery();
+        query.setLanguageId(languageId);
+        return getLanguageByIdQueryHandler.handle(query);
     }
 
     @Override
     public ConfigurationDto get(String configId) {
-        var configurationVertex = ConfigurationVertex.findById(traversalSource, configId);
-        if (configurationVertex == null)
-            throw new IllegalArgumentException("Configuration with id " + configId + " does not exist");
-
-        return createConfigModel(null, configurationVertex);
+        var query = new GetConfigurationByIdQuery();
+        query.setConfigId(configId);
+        return getConfigurationByIdQueryHandler.handle(query);
     }
 
     @Override
@@ -96,31 +109,16 @@ public class FlashcardLanguageRepositoryImpl implements LanguageRepository, Conf
 
     @Override
     public List<FlashcardLanguageDto> getAll() {
-        var vertices = LanguageVertex.findAll(traversalSource);
-
-        return vertices
-            .stream()
-            .map(FlashcardLanguageRepositoryImpl::createLanguageModel)
-            .toList();
+        var query = new GetAllLanguagesQuery();
+        return getAllLanguagesQueryHandler.handle(query);
     }
 
     @Override
     public List<ConfigurationDto> getLanguageConfigs(String languageId, String configurationType) {
-        var languageVertex = LanguageVertex.findById(traversalSource, languageId);
-        if (languageVertex == null)
-            throw new IllegalArgumentException("Language with id " + languageId + " does not exist");
-
-        List<ConfigurationVertex> configurationVertices;
-        if (configurationType == null) {
-            configurationVertices = ConfigurationVertex.findByLanguage(languageVertex);
-        } else {
-            configurationVertices = ConfigurationVertex.findByLanguageAndType(languageVertex, configurationType);
-        }
-
-        return configurationVertices
-            .stream()
-            .map(v -> createConfigModel(languageId, v))
-            .toList();
+        var query = new GetLanguageConfigsQuery();
+        query.setLanguageId(languageId);
+        query.setConfigurationType(configurationType);
+        return getLanguageConfigsQueryHandler.handle(query);
     }
 
     @Override

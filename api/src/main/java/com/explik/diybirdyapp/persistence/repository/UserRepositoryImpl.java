@@ -3,6 +3,8 @@ package com.explik.diybirdyapp.persistence.repository;
 import com.explik.diybirdyapp.exception.RoleNotFoundException;
 import com.explik.diybirdyapp.exception.UserAlreadyExistsException;
 import com.explik.diybirdyapp.model.user.UserModel;
+import com.explik.diybirdyapp.persistence.query.FindUserByEmailQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.UserRoleVertex;
 import com.explik.diybirdyapp.persistence.vertex.UserVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -17,21 +19,14 @@ public class UserRepositoryImpl implements UserRepository {
     @Autowired
     GraphTraversalSource traversalSource;
 
+    @Autowired
+    private QueryHandler<FindUserByEmailQuery, Optional<UserModel>> findUserByEmailQueryHandler;
+
     @Override
     public Optional<UserModel> findByEmail(String username) {
-        var userVertex = UserVertex.findWithEmail(traversalSource, username);
-        if (userVertex == null)
-            return Optional.empty();
-
-        var userModel = new UserModel();
-        userModel.setId(userVertex.getId());
-        userModel.setEmail(userVertex.getEmail());
-        userModel.setPasswordHash(userVertex.getPasswordHash());
-
-        var userRoles = userVertex.getRoles().stream().map(UserRoleVertex::getName).toList();
-        userModel.setRoles(userRoles);
-
-        return Optional.of(userModel);
+        var query = new FindUserByEmailQuery();
+        query.setEmail(username);
+        return findUserByEmailQueryHandler.handle(query);
     }
 
     @Override

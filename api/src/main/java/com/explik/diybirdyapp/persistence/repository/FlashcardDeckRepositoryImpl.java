@@ -1,6 +1,9 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
+import com.explik.diybirdyapp.persistence.query.GetAllFlashcardDecksQuery;
+import com.explik.diybirdyapp.persistence.query.GetFlashcardDeckQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.UserVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -13,6 +16,12 @@ import java.util.UUID;
 @Component
 public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
     private final GraphTraversalSource traversalSource;
+
+    @Autowired
+    private QueryHandler<GetFlashcardDeckQuery, FlashcardDeckDto> getFlashcardDeckQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetAllFlashcardDecksQuery, List<FlashcardDeckDto>> getAllFlashcardDecksQueryHandler;
 
     public FlashcardDeckRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
         this.traversalSource = traversalSource;
@@ -38,28 +47,17 @@ public class FlashcardDeckRepositoryImpl implements FlashcardDeckRepository {
 
     @Override
     public FlashcardDeckDto get(String userId, String id) {
-        var query = traversalSource.V().has(FlashcardDeckVertex.LABEL, FlashcardDeckVertex.PROPERTY_ID, id);
-
-        if (!query.hasNext())
-            throw new IllegalArgumentException("Flashcard with id " + id + " not found");
-
-        var vertex = new FlashcardDeckVertex(traversalSource, query.next());
-        if (!isDeckOwner(userId, vertex))
-            throw new IllegalArgumentException("FlashcardDeck with id " + id + " not found");
-
-        return createModel(vertex);
+        var query = new GetFlashcardDeckQuery();
+        query.setUserId(userId);
+        query.setDeckId(id);
+        return getFlashcardDeckQueryHandler.handle(query);
     }
 
     @Override
     public List<FlashcardDeckDto> getAll(String userId) {
-        var vertices = traversalSource.V().hasLabel(FlashcardDeckVertex.LABEL).toList();
-
-        return vertices
-            .stream()
-            .map(v -> new FlashcardDeckVertex(traversalSource, v))
-                .filter(deck -> isDeckOwner(userId, deck))
-                .map(FlashcardDeckRepositoryImpl::createModel)
-            .toList();
+        var query = new GetAllFlashcardDecksQuery();
+        query.setUserId(userId);
+        return getAllFlashcardDecksQueryHandler.handle(query);
     }
 
     @Override
