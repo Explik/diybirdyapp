@@ -115,7 +115,7 @@ public class DataInitializerService {
         var createAudioCommand = new CreateAudioContentVertexCommand();
         createAudioCommand.setId("audioContentVertex1");
         createAudioCommand.setUrl("https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3");
-        createAudioCommand.setLanguageVertex(langVertex1);
+        createAudioCommand.setLanguageVertexId(langVertex1.getId());
         createAudioContentVertexCommandCommandHandler.handle(createAudioCommand);
 
         var audioContentVertex1 = AudioContentVertex.getById(traversalSource, "audioContentVertex1");
@@ -212,7 +212,7 @@ public class DataInitializerService {
         var createAudioCommand = new CreateAudioContentVertexCommand();
         createAudioCommand.setId("audioContentVertex1");
         createAudioCommand.setUrl("https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3");
-        createAudioCommand.setLanguageVertex(langVertex);
+        createAudioCommand.setLanguageVertexId(langVertex.getId());
         createAudioContentVertexCommandCommandHandler.handle(createAudioCommand);
 
         var audioContentVertex1 = AudioContentVertex.getById(traversalSource, "audioContentVertex1");

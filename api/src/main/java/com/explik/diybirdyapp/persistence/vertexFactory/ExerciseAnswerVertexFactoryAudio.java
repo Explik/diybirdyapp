@@ -31,7 +31,7 @@ public class ExerciseAnswerVertexFactoryAudio implements VertexFactory<ExerciseA
         var createAudioCommand = new CreateAudioContentVertexCommand();
         createAudioCommand.setId(audioId);
         createAudioCommand.setUrl(answerInput.getUrl());
-        createAudioCommand.setLanguageVertex(language);
+        createAudioCommand.setLanguageVertexId(language.getId());
         createAudioContentVertexCommandHandler.handle(createAudioCommand);
 
         var audioVertex = AudioContentVertex.getById(traversalSource, audioId);

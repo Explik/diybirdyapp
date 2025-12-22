@@ -85,3 +85,6 @@ Exercise(Exercise)
 Flashcard-->TextContent1
 TextContent2-->Exercise
 ```
+
+### Command/query separation
+The system separates commands (operations that mutate the graph) and queries (operations that read from the graph). Both commands and queries are implemented so they are serializable. 

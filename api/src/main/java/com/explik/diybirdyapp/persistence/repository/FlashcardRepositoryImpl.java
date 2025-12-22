@@ -212,7 +212,7 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var createCommand = new CreateAudioContentVertexCommand();
         createCommand.setId(id);
         createCommand.setUrl(url);
-        createCommand.setLanguageVertex(languageVertex);
+        createCommand.setLanguageVertexId(languageVertex.getId());
         createAudioContentVertexCommandHandler.handle(createCommand);
 
         return AudioContentVertex.getById(traversalSource, id);
