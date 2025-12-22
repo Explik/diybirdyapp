@@ -1,10 +1,10 @@
 package com.explik.diybirdyapp.persistence.vertex.manager;
 
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
-import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
 import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -116,7 +116,7 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         public static final String MULTI_CARD_FLASHCARD_DECK_ID = "multi-card-flashcard-deck-id";
 
         @Autowired
-        FlashcardVertexFactory flashcardVertexFactory;
+        CommandHandler<CreateFlashcardVertexCommand> createFlashcardVertexCommandHandler;
 
         @Autowired
         CommandHandler<CreateFlashcardDeckVertexCommand> createFlashcardDeckVertexCommandHandler;
@@ -158,10 +158,33 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
             var content3 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content3", "", lang3));
             var content4 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content4", "", lang1));
 
-            var flashard0 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("pre-existent-id", content1, content2));
-            var flashcard1 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard1", content1, content2));
-            var flashcard2 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard2", content2, content3));
-            var flashcard3 = flashcardVertexFactory.create(traversal, new FlashcardVertexFactory.Options("flashcard3", content3, content4));
+            var createFlashcard0Command = new CreateFlashcardVertexCommand();
+            createFlashcard0Command.setId("pre-existent-id");
+            createFlashcard0Command.setLeftContent(content1);
+            createFlashcard0Command.setRightContent(content2);
+            createFlashcardVertexCommandHandler.handle(createFlashcard0Command);
+            var flashard0 = FlashcardVertex.getById(traversal, "pre-existent-id");
+            
+            var createFlashcard1Command = new CreateFlashcardVertexCommand();
+            createFlashcard1Command.setId("flashcard1");
+            createFlashcard1Command.setLeftContent(content1);
+            createFlashcard1Command.setRightContent(content2);
+            createFlashcardVertexCommandHandler.handle(createFlashcard1Command);
+            var flashcard1 = FlashcardVertex.getById(traversal, "flashcard1");
+            
+            var createFlashcard2Command = new CreateFlashcardVertexCommand();
+            createFlashcard2Command.setId("flashcard2");
+            createFlashcard2Command.setLeftContent(content2);
+            createFlashcard2Command.setRightContent(content3);
+            createFlashcardVertexCommandHandler.handle(createFlashcard2Command);
+            var flashcard2 = FlashcardVertex.getById(traversal, "flashcard2");
+            
+            var createFlashcard3Command = new CreateFlashcardVertexCommand();
+            createFlashcard3Command.setId("flashcard3");
+            createFlashcard3Command.setLeftContent(content3);
+            createFlashcard3Command.setRightContent(content4);
+            createFlashcardVertexCommandHandler.handle(createFlashcard3Command);
+            var flashcard3 = FlashcardVertex.getById(traversal, "flashcard3");
 
             var createEmptyDeckCommand = new CreateFlashcardDeckVertexCommand();
             createEmptyDeckCommand.setId(EMPTY_FLASHCARD_DECK_ID);

@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.builder;
 
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
@@ -20,7 +21,7 @@ public class VertexBuilderFactory {
     private PronunciationVertexFactory pronunciationVertexFactory;
 
     @Autowired
-    private FlashcardVertexFactory flashcardVertexFactory;
+    private CommandHandler<CreateFlashcardVertexCommand> createFlashcardVertexCommandHandler;
 
     @Autowired
     private CommandHandler<CreateFlashcardDeckVertexCommand> createFlashcardDeckVertexCommandHandler;
@@ -57,7 +58,7 @@ public class VertexBuilderFactory {
         var factories = new VertexBuilderFactories();
         factories.textContentVertexFactory = textContentVertexFactory;
         factories.pronunciationVertexFactory = pronunciationVertexFactory;
-        factories.flashcardVertexFactory = flashcardVertexFactory;
+        factories.createFlashcardVertexCommandHandler = createFlashcardVertexCommandHandler;
         factories.createFlashcardDeckVertexCommandHandler = createFlashcardDeckVertexCommandHandler;
         factories.createLanguageVertexCommandHandler = createLanguageVertexCommandHandler;
         factories.textToSpeechConfigVertexFactory = textToSpeechConfigVertexFactory;

@@ -2,8 +2,10 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.content.*;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.UpdateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateImageContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
@@ -40,7 +42,10 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     VideoContentVertexFactory videoContentVertexFactory;
 
     @Autowired
-    FlashcardVertexFactory flashcardVertexFactory;
+    CommandHandler<CreateFlashcardVertexCommand> createFlashcardVertexCommandHandler;
+
+    @Autowired
+    CommandHandler<UpdateFlashcardVertexCommand> updateFlashcardVertexCommandHandler;
 
     @Autowired
     FlashcardModelFactory flashcardCardModelFactory;
@@ -58,7 +63,14 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
 
         var leftContentVertex = createContent(flashcardModel.getFrontContent());
         var rightContentVertex = createContent(flashcardModel.getBackContent());
-        var flashcardVertex = flashcardVertexFactory.create(traversalSource, new FlashcardVertexFactory.Options(UUID.randomUUID().toString(), leftContentVertex, rightContentVertex));
+        
+        var id = UUID.randomUUID().toString();
+        var createCommand = new CreateFlashcardVertexCommand();
+        createCommand.setId(id);
+        createCommand.setLeftContent(leftContentVertex);
+        createCommand.setRightContent(rightContentVertex);
+        createFlashcardVertexCommandHandler.handle(createCommand);
+        var flashcardVertex = FlashcardVertex.findById(traversalSource, id);
 
         if (flashcardModel.getDeckId() != null) {
             var flashcardDeckVertex = getFlashcardDeckVertex(traversalSource, flashcardModel.getDeckId());
