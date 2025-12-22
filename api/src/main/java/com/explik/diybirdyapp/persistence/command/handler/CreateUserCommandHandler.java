@@ -1,10 +1,9 @@
-package com.explik.diybirdyapp.persistence.repository;
+package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.exception.RoleNotFoundException;
 import com.explik.diybirdyapp.exception.UserAlreadyExistsException;
-import com.explik.diybirdyapp.model.user.UserModel;
-import com.explik.diybirdyapp.persistence.query.FindUserByEmailQuery;
-import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
+import com.explik.diybirdyapp.persistence.command.CreateUserCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.UserRoleVertex;
 import com.explik.diybirdyapp.persistence.vertex.UserVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -12,25 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Component
-public class UserRepositoryImpl implements UserRepository {
-    @Autowired
-    GraphTraversalSource traversalSource;
+public class CreateUserCommandHandler implements CommandHandler<CreateUserCommand> {
+    private final GraphTraversalSource traversalSource;
 
-    @Autowired
-    private QueryHandler<FindUserByEmailQuery, Optional<UserModel>> findUserByEmailQueryHandler;
-
-    @Override
-    public Optional<UserModel> findByEmail(String username) {
-        var query = new FindUserByEmailQuery();
-        query.setEmail(username);
-        return findUserByEmailQueryHandler.handle(query);
+    public CreateUserCommandHandler(@Autowired GraphTraversalSource traversalSource) {
+        this.traversalSource = traversalSource;
     }
 
     @Override
-    public void createUser(UserModel model) {
+    public void handle(CreateUserCommand command) {
+        var model = command.getUser();
+
         // Validate user does not already exist
         var existingUser = UserVertex.findWithEmail(traversalSource, model.getEmail());
         if (existingUser != null)
@@ -55,15 +48,5 @@ public class UserRepositoryImpl implements UserRepository {
         for (var role : roleVertices) {
             userVertex.addRole(role);
         }
-    }
-
-    @Override
-    public void createUserRole(String roleName) {
-        var existingRole = UserRoleVertex.findByName(traversalSource, roleName);
-        if (existingRole != null)
-            return;
-
-        var roleVertex = UserRoleVertex.create(traversalSource);
-        roleVertex.setName(roleName);
     }
 }

@@ -4,7 +4,6 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.builder.*;
 import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
@@ -47,7 +46,7 @@ public class DataInitializerService {
     private ExerciseAbstractVertexFactory exerciseAbstractVertexFactory;
 
     @Autowired
-    private UserRepository userRepository;
+    private CommandHandler<CreateUserRoleCommand> createUserRoleCommandHandler;
 
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
@@ -346,6 +345,8 @@ public class DataInitializerService {
 
     public void addInitialUserData() {
         // Create user role "ROLE_USER"
-        userRepository.createUserRole("ROLE_USER");
+        var command = new CreateUserRoleCommand();
+        command.setRoleName("ROLE_USER");
+        createUserRoleCommandHandler.handle(command);
     }
 }

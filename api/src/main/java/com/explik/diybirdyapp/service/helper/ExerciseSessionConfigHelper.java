@@ -1,17 +1,11 @@
-package com.explik.diybirdyapp.persistence.repository;
+package com.explik.diybirdyapp.service.helper;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.*;
+import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
-import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
-import com.explik.diybirdyapp.persistence.provider.GenericProvider;
-import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
-import com.explik.diybirdyapp.persistence.query.GetExerciseSessionConfigQuery;
-import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -21,61 +15,27 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Helper class for managing exercise session configurations.
+ * Handles the logic for updating session options based on session type.
+ */
 @Component
-public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository {
-    private final GraphTraversalSource traversalSource;
+public class ExerciseSessionConfigHelper {
+    @Autowired
+    private GraphTraversalSource traversalSource;
 
     @Autowired
-    private QueryHandler<GetExerciseSessionByIdQuery, ExerciseSessionDto> getExerciseSessionByIdQueryHandler;
+    private ExerciseSessionModelFactory sessionModelFactory;
 
     @Autowired
-    private QueryHandler<GetExerciseSessionConfigQuery, ExerciseSessionOptionsDto> getExerciseSessionConfigQueryHandler;
+    private ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsDto> sessionOptionsModelFactory;
 
-    @Autowired
-    ExerciseSessionModelFactory sessionModelFactory;
-
-    @Autowired
-    ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsDto> sessionOptionsModelFactory;
-
-    @Autowired
-    GenericProvider<ExerciseSessionOperations> sessionOperationProvider;
-
-    public ExerciseSessionRepositoryImpl(@Autowired GraphTraversalSource traversalSource) {
-        this.traversalSource = traversalSource;
-    }
-
-    @Override
-    public ExerciseSessionDto add(ExerciseSessionDto model) {
-        var sessionType = model.getType();
-        var sessionManager = sessionOperationProvider.get(sessionType);
-
-        return sessionManager.init(traversalSource, ExerciseCreationContext.createDefault(model));
-    }
-
-    @Override
-    public ExerciseSessionDto get(String id) {
-        var query = new GetExerciseSessionByIdQuery();
-        query.setId(id);
-        return getExerciseSessionByIdQueryHandler.handle(query);
-    }
-
-    public ExerciseSessionDto nextExercise(String modelId) {
-        var sessionVertex = getSessionVertex(modelId);
-        var sessionType = sessionVertex.getType();
-        var sessionManager = sessionOperationProvider.get(sessionType);
-
-        var context = ExerciseCreationContext.createDefault(sessionModelFactory.create(sessionVertex));
-
-        return sessionManager.nextExercise(traversalSource, context);
-    }
-
-    @Override
-    public ExerciseSessionOptionsDto getConfig(String sessionId) {
-        var query = new GetExerciseSessionConfigQuery();
-        query.setSessionId(sessionId);
-        return getExerciseSessionConfigQueryHandler.handle(query);
-    }
-
+    /**
+     * Updates the configuration for an exercise session.
+     * @param modelId The ID of the session to update
+     * @param config The new configuration
+     * @return The updated session DTO
+     */
     public ExerciseSessionDto updateConfig(String modelId, ExerciseSessionOptionsDto config) {
         var sessionVertex = getSessionVertex(modelId);
         var sessionOptions = sessionVertex.getOptions();
@@ -199,20 +159,7 @@ public class ExerciseSessionRepositoryImpl implements ExerciseSessionRepository 
     private List<LanguageVertex> getLanguagesByIds(String[] languageIds) {
         var buffer = new ArrayList<LanguageVertex>();
         for (var languageId : languageIds) {
-            var vertex = LanguageVertex.findById(traversalSource, languageId);
-            if (vertex == null)
-                throw new IllegalArgumentException("No language with id " + languageId);
-            buffer.add(vertex);
-        }
-        return buffer;
-    }
-
-    private List<ExerciseTypeVertex> getExerciseTypesByIds(String[] exerciseTypeIds) {
-        var buffer = new ArrayList<ExerciseTypeVertex>();
-        for (var exerciseTypeId : exerciseTypeIds) {
-            var vertex = ExerciseTypeVertex.findById(traversalSource, exerciseTypeId);
-            if (vertex == null)
-                throw new IllegalArgumentException("No exercise type with id " + exerciseTypeId);
+            var vertex = getLanguageById(languageId);
             buffer.add(vertex);
         }
         return buffer;
