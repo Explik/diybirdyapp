@@ -38,12 +38,6 @@ public class DataInitializerService {
     private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
-    private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
-
-    @Autowired
-    private WordVertexFactory wordVertexFactory;
-
-    @Autowired
     private PronunciationVertexFactory pronunciationVertexFactory;
 
     @Autowired

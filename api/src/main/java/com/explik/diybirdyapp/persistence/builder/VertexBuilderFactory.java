@@ -4,7 +4,10 @@ import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexComman
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateSpeechToTextConfigVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTranslateConfigVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +34,13 @@ public class VertexBuilderFactory {
     private CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
 
     @Autowired
-    private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
+    private CommandHandler<CreateTextToSpeechConfigVertexCommand> createTextToSpeechConfigVertexCommandHandler;
 
     @Autowired
-    private SpeechToTextConfigVertexFactory speechToTextConfigVertexFactory;
+    private CommandHandler<CreateSpeechToTextConfigVertexCommand> createSpeechToTextConfigVertexCommandHandler;
 
     @Autowired
-    private TranslateConfigVertexFactory translationConfigVertexFactory;
+    private CommandHandler<CreateTranslateConfigVertexCommand> createTranslateConfigVertexCommandHandler;
 
     public TextContentVertexBuilder createTextContentVertexBuilder() {
         return injectFactories(new TextContentVertexBuilder());
@@ -62,9 +65,9 @@ public class VertexBuilderFactory {
         factories.createFlashcardVertexCommandHandler = createFlashcardVertexCommandHandler;
         factories.createFlashcardDeckVertexCommandHandler = createFlashcardDeckVertexCommandHandler;
         factories.createLanguageVertexCommandHandler = createLanguageVertexCommandHandler;
-        factories.textToSpeechConfigVertexFactory = textToSpeechConfigVertexFactory;
-        factories.speechToTextConfigVertexFactory = speechToTextConfigVertexFactory;
-        factories.translationConfigVertexFactory = translationConfigVertexFactory;
+        factories.createTextToSpeechConfigVertexCommandHandler = createTextToSpeechConfigVertexCommandHandler;
+        factories.createSpeechToTextConfigVertexCommandHandler = createSpeechToTextConfigVertexCommandHandler;
+        factories.createTranslateConfigVertexCommandHandler = createTranslateConfigVertexCommandHandler;
 
         builder.injectFactories(factories);
 

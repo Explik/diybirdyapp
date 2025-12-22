@@ -1,9 +1,10 @@
 package com.explik.diybirdyapp.persistence.generalCommand;
 
+import com.explik.diybirdyapp.persistence.command.CreateWordVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.WordVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.WordVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ public class ExtractWordsFromFlashcardCommandHandler implements AsyncCommandHand
     GraphTraversalSource traversalSource;
 
     @Autowired
-    WordVertexFactory wordVertexFactory;
+    CommandHandler<CreateWordVertexCommand> createWordVertexCommandHandler;
 
     @Override
     public void handleAsync(ExtractWordsFromFlashcardCommand command) {
@@ -42,9 +43,12 @@ public class ExtractWordsFromFlashcardCommandHandler implements AsyncCommandHand
             var word = WordVertex.findByValue(traversalSource, wordValue);
 
             if (word == null) {
-                wordVertexFactory.create(
-                        traversalSource,
-                        new WordVertexFactory.Options(null, wordValue, textContent, language));
+                var createCommand = new CreateWordVertexCommand();
+                createCommand.setId(null);
+                createCommand.setValue(wordValue);
+                createCommand.setMainExample(textContent);
+                createCommand.setLanguageVertex(language);
+                createWordVertexCommandHandler.handle(createCommand);
             }
             else word.addExample(textContent);
         }
