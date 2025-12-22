@@ -2,7 +2,9 @@ package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.content.*;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.UpdateImageContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -26,7 +28,10 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     CommandHandler<UpdateAudioContentVertexCommand> updateAudioContentVertexCommandHandler;
 
     @Autowired
-    ImageContentVertexFactory imageContentVertexFactory;
+    CommandHandler<CreateImageContentVertexCommand> createImageContentVertexCommandHandler;
+
+    @Autowired
+    CommandHandler<UpdateImageContentVertexCommand> updateImageContentVertexCommandHandler;
 
     @Autowired
     TextContentVertexFactory textContentVertexFactory;
@@ -203,21 +208,22 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     private ImageContentVertex createImageContent(FlashcardContentUploadImageDto model) {
         var url = model.getImageFileName();
 
-        return imageContentVertexFactory.create(
-                traversalSource,
-                new ImageContentVertexFactory.Options(UUID.randomUUID().toString(), url));
+        var id = UUID.randomUUID().toString();
+        var createCommand = new CreateImageContentVertexCommand();
+        createCommand.setId(id);
+        createCommand.setUrl(url);
+        createImageContentVertexCommandHandler.handle(createCommand);
+
+        return ImageContentVertex.findById(traversalSource, id);
     }
 
     private ImageContentVertex updateImageContent(ImageContentVertex vertex, FlashcardContentImageDto model) {
-        if (vertex.isStatic()) {
-            var newVertex = imageContentVertexFactory.copy(vertex);
-            newVertex.setUrl(model.getImageUrl());
-            return newVertex;
-        }
-        else {
-            vertex.setUrl(model.getImageUrl());
-            return vertex;
-        }
+        var updateCommand = new UpdateImageContentVertexCommand();
+        updateCommand.setId(model.getId());
+        updateCommand.setUrl(model.getImageUrl());
+        updateImageContentVertexCommandHandler.handle(updateCommand);
+
+        return ImageContentVertex.findById(traversalSource, model.getId());
     }
 
     private TextContentVertex createTextContent(FlashcardContentTextDto model) {

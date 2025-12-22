@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.service;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.builder.*;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
@@ -23,6 +24,9 @@ public class DataInitializerService {
     private GraphTraversalSource traversalSource;
 
     @Autowired
+    private CommandHandler<CreateImageContentVertexCommand> createImageContentVertexCommandHandler;
+
+    @Autowired
     private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandCommandHandler;
 
     @Autowired
@@ -39,9 +43,6 @@ public class DataInitializerService {
 
     @Autowired
     private PronunciationVertexFactory pronunciationVertexFactory;
-
-    @Autowired
-    private ImageContentVertexFactory imageContentVertexFactory;
 
     @Autowired
     private VideoContentVertexFactory videoImageContentVertexFactory;
@@ -111,9 +112,12 @@ public class DataInitializerService {
         textVertex0.setValue("Bereshit");
         textVertex0.setLanguage(langVertex1);
 
-        var imageVertex1 = imageContentVertexFactory.create(
-                traversalSource,
-                new ImageContentVertexFactory.Options("imageVertex1", "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"));
+        var createImageCommand = new CreateImageContentVertexCommand();
+        createImageCommand.setId("imageVertex1");
+        createImageCommand.setUrl("https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY");
+        createImageContentVertexCommandHandler.handle(createImageCommand);
+
+        var imageVertex1 = ImageContentVertex.findById(traversalSource, "imageVertex1");
 
         var createAudioCommand = new CreateAudioContentVertexCommand();
         createAudioCommand.setId("audioContentVertex1");
