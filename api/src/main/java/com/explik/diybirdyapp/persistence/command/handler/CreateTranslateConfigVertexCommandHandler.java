@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateTranslateConfigVertexCommandHandler implements AtomicCommandHandler<CreateTranslateConfigVertexCommand> {
+public class CreateTranslateConfigVertexCommandHandler implements CommandHandler<CreateTranslateConfigVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreateTranslateConfigVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

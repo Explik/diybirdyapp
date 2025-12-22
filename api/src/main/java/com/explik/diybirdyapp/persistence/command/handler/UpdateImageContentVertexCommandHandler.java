@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class UpdateImageContentVertexCommandHandler implements AtomicCommandHandler<UpdateImageContentVertexCommand> {
+public class UpdateImageContentVertexCommandHandler implements CommandHandler<UpdateImageContentVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public UpdateImageContentVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

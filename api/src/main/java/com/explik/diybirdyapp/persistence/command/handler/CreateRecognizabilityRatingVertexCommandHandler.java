@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateRecognizabilityRatingVertexCommandHandler implements AtomicCommandHandler<CreateRecognizabilityRatingVertexCommand> {
+public class CreateRecognizabilityRatingVertexCommandHandler implements CommandHandler<CreateRecognizabilityRatingVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreateRecognizabilityRatingVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

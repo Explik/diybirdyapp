@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class UpdateAudioContentVertexCommandHandler implements AtomicCommandHandler<UpdateAudioContentVertexCommand> {
+public class UpdateAudioContentVertexCommandHandler implements CommandHandler<UpdateAudioContentVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public UpdateAudioContentVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

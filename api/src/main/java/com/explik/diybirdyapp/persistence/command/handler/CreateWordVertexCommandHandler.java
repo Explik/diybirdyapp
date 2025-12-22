@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateWordVertexCommandHandler implements AtomicCommandHandler<CreateWordVertexCommand> {
+public class CreateWordVertexCommandHandler implements CommandHandler<CreateWordVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreateWordVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreatePairVertexCommandHandler implements AtomicCommandHandler<CreatePairVertexCommand> {
+public class CreatePairVertexCommandHandler implements CommandHandler<CreatePairVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreatePairVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

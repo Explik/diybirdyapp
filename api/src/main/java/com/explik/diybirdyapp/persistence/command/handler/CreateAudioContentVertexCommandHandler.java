@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateAudioContentVertexCommandHandler implements AtomicCommandHandler<CreateAudioContentVertexCommand> {
+public class CreateAudioContentVertexCommandHandler implements CommandHandler<CreateAudioContentVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreateAudioContentVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

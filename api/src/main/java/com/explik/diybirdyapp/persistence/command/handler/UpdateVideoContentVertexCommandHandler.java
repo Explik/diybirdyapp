@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class UpdateVideoContentVertexCommandHandler implements AtomicCommandHandler<UpdateVideoContentVertexCommand> {
+public class UpdateVideoContentVertexCommandHandler implements CommandHandler<UpdateVideoContentVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public UpdateVideoContentVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

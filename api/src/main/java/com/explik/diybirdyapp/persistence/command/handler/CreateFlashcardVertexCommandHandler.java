@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateFlashcardVertexCommandHandler implements AtomicCommandHandler<CreateFlashcardVertexCommand> {
+public class CreateFlashcardVertexCommandHandler implements CommandHandler<CreateFlashcardVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreateFlashcardVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

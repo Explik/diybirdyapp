@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class UpdateFlashcardDeckVertexCommandHandler implements AtomicCommandHandler<UpdateFlashcardDeckVertexCommand> {
+public class UpdateFlashcardDeckVertexCommandHandler implements CommandHandler<UpdateFlashcardDeckVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public UpdateFlashcardDeckVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

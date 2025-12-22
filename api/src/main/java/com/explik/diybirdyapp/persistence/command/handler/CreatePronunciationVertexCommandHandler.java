@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreatePronunciationVertexCommandHandler implements AtomicCommandHandler<CreatePronunciationVertexCommand> {
+public class CreatePronunciationVertexCommandHandler implements CommandHandler<CreatePronunciationVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreatePronunciationVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreateVideoContentVertexCommandHandler implements AtomicCommandHandler<CreateVideoContentVertexCommand> {
+public class CreateVideoContentVertexCommandHandler implements CommandHandler<CreateVideoContentVertexCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreateVideoContentVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {
