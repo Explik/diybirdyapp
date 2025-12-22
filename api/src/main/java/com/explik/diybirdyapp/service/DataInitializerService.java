@@ -2,6 +2,8 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.builder.*;
+import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -21,6 +23,9 @@ public class DataInitializerService {
     private GraphTraversalSource traversalSource;
 
     @Autowired
+    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandCommandHandler;
+
+    @Autowired
     private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
@@ -34,9 +39,6 @@ public class DataInitializerService {
 
     @Autowired
     private PronunciationVertexFactory pronunciationVertexFactory;
-
-    @Autowired
-    private AudioContentVertexFactory audioContentVertexFactory;
 
     @Autowired
     private ImageContentVertexFactory imageContentVertexFactory;
@@ -113,9 +115,13 @@ public class DataInitializerService {
                 traversalSource,
                 new ImageContentVertexFactory.Options("imageVertex1", "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"));
 
-        var audioContentVertex1 = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex1));
+        var createAudioCommand = new CreateAudioContentVertexCommand();
+        createAudioCommand.setId("audioContentVertex1");
+        createAudioCommand.setUrl("https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3");
+        createAudioCommand.setLanguageVertex(langVertex1);
+        createAudioContentVertexCommandCommandHandler.handle(createAudioCommand);
+
+        var audioContentVertex1 = AudioContentVertex.getById(traversalSource, "audioContentVertex1");
 
         var videoContentVertex1 = videoImageContentVertexFactory.create(
                 traversalSource,
@@ -207,9 +213,13 @@ public class DataInitializerService {
                 .withBackText("Random option 1", langVertex)
                 .build(traversalSource);
 
-        var audioContentVertex1 = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex));
+        var createAudioCommand = new CreateAudioContentVertexCommand();
+        createAudioCommand.setId("audioContentVertex1");
+        createAudioCommand.setUrl("https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3");
+        createAudioCommand.setLanguageVertex(langVertex);
+        createAudioContentVertexCommandCommandHandler.handle(createAudioCommand);
+
+        var audioContentVertex1 = AudioContentVertex.getById(traversalSource, "audioContentVertex1");
 
         // Setting up exercise parameters
         var shortTextContentParameters = new ExerciseContentParameters()

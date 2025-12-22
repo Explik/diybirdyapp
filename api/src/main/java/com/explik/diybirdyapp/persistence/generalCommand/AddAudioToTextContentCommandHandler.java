@@ -1,7 +1,9 @@
 package com.explik.diybirdyapp.persistence.generalCommand;
 
+import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
+import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ public class AddAudioToTextContentCommandHandler implements SyncCommandHandler<A
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private AudioContentVertexFactory audioContentVertexFactory;
+    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
 
     @Autowired
     private PronunciationVertexFactory pronunciationVertexFactory;
@@ -34,9 +36,14 @@ public class AddAudioToTextContentCommandHandler implements SyncCommandHandler<A
         if (textContentVertex == null)
             throw new RuntimeException("Text content not found: " + command.getTextId());
 
-        var audioVertex = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), audioUrl, textContentVertex.getLanguage()));
+        var audioId = UUID.randomUUID().toString();
+        var createAudioCommand = new CreateAudioContentVertexCommand();
+        createAudioCommand.setId(audioId);
+        createAudioCommand.setUrl(audioUrl);
+        createAudioCommand.setLanguageVertex(textContentVertex.getLanguage());
+        createAudioContentVertexCommandHandler.handle(createAudioCommand);
+
+        var audioVertex = AudioContentVertex.getById(traversalSource, audioId);
 
         pronunciationVertexFactory.create(
                 traversalSource,

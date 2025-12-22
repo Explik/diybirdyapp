@@ -1,11 +1,13 @@
 package com.explik.diybirdyapp.persistence.generalCommand;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
+import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ public class GenerateAudioForFlashcardCommandHandler implements AsyncCommandHand
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private AudioContentVertexFactory audioContentVertexFactory;
+    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
 
     @Autowired
     private PronunciationVertexFactory pronunciationVertexFactory;
@@ -78,9 +80,13 @@ public class GenerateAudioForFlashcardCommandHandler implements AsyncCommandHand
         }
 
         // Save audio path to graph
-        var audioVertex = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), filePath, textContentVertex.getLanguage()));
+        var createAudioCommand = new CreateAudioContentVertexCommand();
+        createAudioCommand.setId(UUID.randomUUID().toString());
+        createAudioCommand.setUrl(filePath);
+        createAudioCommand.setLanguageVertex(textContentVertex.getLanguage());
+        createAudioContentVertexCommandHandler.handle(createAudioCommand);
+
+        var audioVertex = AudioContentVertex.getById(traversalSource, createAudioCommand.getId());
 
         pronunciationVertexFactory.create(
                 traversalSource,

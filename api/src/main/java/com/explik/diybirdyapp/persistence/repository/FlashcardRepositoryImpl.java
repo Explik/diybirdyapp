@@ -1,12 +1,16 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.content.*;
+import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.UpdateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import picocli.CommandLine;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +20,10 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
     private final GraphTraversalSource traversalSource;
 
     @Autowired
-    AudioContentVertexFactory audioContentVertexFactory;
+    CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
+
+    @Autowired
+    CommandHandler<UpdateAudioContentVertexCommand> updateAudioContentVertexCommandHandler;
 
     @Autowired
     ImageContentVertexFactory imageContentVertexFactory;
@@ -174,21 +181,23 @@ public class FlashcardRepositoryImpl implements FlashcardRepository {
         var url = model.getAudioFileName();
         var languageVertex = getLanguageVertex(traversalSource, model.getLanguageId());
 
-        return audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), url, languageVertex));
+        var id = UUID.randomUUID().toString();
+        var createCommand = new CreateAudioContentVertexCommand();
+        createCommand.setId(id);
+        createCommand.setUrl(url);
+        createCommand.setLanguageVertex(languageVertex);
+        createAudioContentVertexCommandHandler.handle(createCommand);
+
+        return AudioContentVertex.getById(traversalSource, id);
     }
 
     private AudioContentVertex updateAudioContent(AudioContentVertex vertex, FlashcardContentAudioDto model) {
-        if (vertex.isStatic()) {
-            var newVertex = audioContentVertexFactory.copy(vertex);
-            newVertex.setUrl(model.getAudioUrl());
-            return newVertex;
-        }
-        else {
-            vertex.setUrl(model.getAudioUrl());
-            return vertex;
-        }
+        var updateCommand = new UpdateAudioContentVertexCommand();
+        updateCommand.setId(model.getId());
+        updateCommand.setUrl(model.getAudioUrl());
+        updateAudioContentVertexCommandHandler.handle(updateCommand);
+
+        return AudioContentVertex.getById(traversalSource, model.getId());
     }
 
     private ImageContentVertex createImageContent(FlashcardContentUploadImageDto model) {

@@ -1,5 +1,7 @@
 package com.explik.diybirdyapp.persistence.builder;
 
+import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -7,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class VertexBuilderFactory {
     @Autowired
-    private AudioContentVertexFactory audioContentVertexFactory;
+    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
 
     @Autowired
     private TextContentVertexFactory textContentVertexFactory;
@@ -52,7 +54,6 @@ public class VertexBuilderFactory {
     private <T extends VertexBuilderBase<?>> T injectFactories(T builder) {
         var factories = new VertexBuilderFactories();
         factories.textContentVertexFactory = textContentVertexFactory;
-        factories.audioContentVertexFactory = audioContentVertexFactory;
         factories.pronunciationVertexFactory = pronunciationVertexFactory;
         factories.flashcardVertexFactory = flashcardVertexFactory;
         factories.flashcardDeckVertexFactory = flashcardDeckVertexFactory;

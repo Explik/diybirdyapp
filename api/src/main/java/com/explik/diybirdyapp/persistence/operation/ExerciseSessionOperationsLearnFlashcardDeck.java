@@ -4,13 +4,13 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
-import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import com.explik.diybirdyapp.persistence.vertexFactory.AudioContentVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSessionOperations {
     @Autowired
+    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
+
+    @Autowired
     private ExerciseAbstractVertexFactory abstractVertexFactory;
 
     @Autowired
     private ExerciseSessionModelFactory sessionModelFactory;
-
-    @Autowired
-    private AudioContentVertexFactory audioContentVertexFactory;
 
     @Autowired
     private PronunciationVertexFactory pronunciationVertexFactory;
@@ -311,9 +311,14 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
         }
 
         // Save pronunciation to graph
-        var audioVertex = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options(UUID.randomUUID().toString(), filePath, textContentVertex.getLanguage()));
+        var audioId = UUID.randomUUID().toString();
+        var createAudioCommand = new CreateAudioContentVertexCommand();
+        createAudioCommand.setId(audioId);
+        createAudioCommand.setUrl(filePath);
+        createAudioCommand.setLanguageVertex(textContentVertex.getLanguage());
+        createAudioContentVertexCommandHandler.handle(createAudioCommand);
+
+        var audioVertex = AudioContentVertex.getById(traversalSource, audioId);
 
         pronunciationVertexFactory.create(
                 traversalSource,
