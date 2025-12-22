@@ -1,13 +1,6 @@
 package com.explik.diybirdyapp.persistence.builder;
 
-import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateSpeechToTextConfigVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateTranslateConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +15,7 @@ public class VertexBuilderFactory {
     private CommandHandler<CreateTextContentVertexCommand> createTextContentVertexCommandHandler;
 
     @Autowired
-    private PronunciationVertexFactory pronunciationVertexFactory;
+    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandCommandHandler;
 
     @Autowired
     private CommandHandler<CreateFlashcardVertexCommand> createFlashcardVertexCommandHandler;
@@ -61,7 +54,6 @@ public class VertexBuilderFactory {
     private <T extends VertexBuilderBase<?>> T injectFactories(T builder) {
         var factories = new VertexBuilderFactories();
         factories.createTextContentVertexCommandHandler = createTextContentVertexCommandHandler;
-        factories.pronunciationVertexFactory = pronunciationVertexFactory;
         factories.createFlashcardVertexCommandHandler = createFlashcardVertexCommandHandler;
         factories.createFlashcardDeckVertexCommandHandler = createFlashcardDeckVertexCommandHandler;
         factories.createLanguageVertexCommandHandler = createLanguageVertexCommandHandler;

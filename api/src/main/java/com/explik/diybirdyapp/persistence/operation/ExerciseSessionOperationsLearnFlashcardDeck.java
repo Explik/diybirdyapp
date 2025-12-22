@@ -6,13 +6,13 @@ import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +28,13 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
     private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
 
     @Autowired
+    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandHandler;
+
+    @Autowired
     private ExerciseAbstractVertexFactory abstractVertexFactory;
 
     @Autowired
     private ExerciseSessionModelFactory sessionModelFactory;
-
-    @Autowired
-    private PronunciationVertexFactory pronunciationVertexFactory;
 
     @Autowired
     private TextToSpeechService textToSpeechService;
@@ -311,20 +311,13 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
         }
 
         // Save pronunciation to graph
-        var audioId = UUID.randomUUID().toString();
-        var createAudioCommand = new CreateAudioContentVertexCommand();
-        createAudioCommand.setId(audioId);
-        createAudioCommand.setUrl(filePath);
-        createAudioCommand.setLanguageVertex(textContentVertex.getLanguage());
-        createAudioContentVertexCommandHandler.handle(createAudioCommand);
+        var createCommand = new CreatePronunciationVertexCommand();
+        createCommand.setId(UUID.randomUUID().toString());
+        createCommand.setAudioUrl(filePath);
+        createCommand.setSourceVertex(textContentVertex);
+        createPronunciationVertexCommandHandler.handle(createCommand);
 
-        var audioVertex = AudioContentVertex.getById(traversalSource, audioId);
-
-        pronunciationVertexFactory.create(
-                traversalSource,
-                new PronunciationVertexFactory.Options(UUID.randomUUID().toString(), textContentVertex, audioVertex));
-
-        return audioVertex;
+        return null;
     }
 
     private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {

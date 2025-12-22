@@ -2,10 +2,7 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.builder.*;
-import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
-import com.explik.diybirdyapp.persistence.command.CreateVideoContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
@@ -38,7 +35,7 @@ public class DataInitializerService {
     private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
-    private PronunciationVertexFactory pronunciationVertexFactory;
+    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandCommandHandler;
 
     @Autowired
     private CommandHandler<CreateVideoContentVertexCommand> createVideoContentVertexCommandHandler;
@@ -180,11 +177,6 @@ public class DataInitializerService {
         wordVertex1.setLanguage(textVertex0.getLanguage());
         wordVertex1.addExample(textVertex0);
         wordVertex1.setTextContent(textVertex0);
-
-        // Pronunciation concept
-        var pronunciationVertex1 = pronunciationVertexFactory.create(
-                traversalSource,
-                new PronunciationVertexFactory.Options("pronunciationVertex1", textVertex0, audioContentVertex1));
     }
 
     public void addInitialExerciseData() {

@@ -5,8 +5,8 @@ import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 
 public class CreatePronunciationVertexCommand implements AtomicCommand {
     private String id;
+    private String audioUrl;
     private TextContentVertex sourceVertex;
-    private AudioContentVertex audioContentVertex;
 
     public String getId() {
         return id;
@@ -16,19 +16,19 @@ public class CreatePronunciationVertexCommand implements AtomicCommand {
         this.id = id;
     }
 
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
+
     public TextContentVertex getSourceVertex() {
         return sourceVertex;
     }
 
     public void setSourceVertex(TextContentVertex sourceVertex) {
         this.sourceVertex = sourceVertex;
-    }
-
-    public AudioContentVertex getAudioContentVertex() {
-        return audioContentVertex;
-    }
-
-    public void setAudioContentVertex(AudioContentVertex audioContentVertex) {
-        this.audioContentVertex = audioContentVertex;
     }
 }

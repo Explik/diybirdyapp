@@ -1,10 +1,13 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
+import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class CreatePronunciationVertexCommandHandler implements CommandHandler<CreatePronunciationVertexCommand> {
@@ -16,9 +19,14 @@ public class CreatePronunciationVertexCommandHandler implements CommandHandler<C
 
     @Override
     public void handle(CreatePronunciationVertexCommand command) {
+        var audioVertex = AudioContentVertex.create(traversalSource);
+        audioVertex.setId(UUID.randomUUID().toString());
+        audioVertex.setUrl(command.getAudioUrl());
+        audioVertex.setLanguage(command.getSourceVertex().getLanguage());
+
         var vertex = PronunciationVertex.create(traversalSource);
         vertex.setId(command.getId());
-        vertex.setAudioContent(command.getAudioContentVertex());
+        vertex.setAudioContent(audioVertex);
 
         command.getSourceVertex().addPronunciation(vertex);
         if (!command.getSourceVertex().hasMainPronunciation())

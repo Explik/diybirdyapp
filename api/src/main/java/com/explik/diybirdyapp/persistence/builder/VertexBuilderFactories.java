@@ -19,5 +19,4 @@ public class VertexBuilderFactories {
     public CommandHandler<CreateTextContentVertexCommand> createTextContentVertexCommandHandler;
     public CommandHandler<CreateTextToSpeechConfigVertexCommand> createTextToSpeechConfigVertexCommandHandler;
     public CommandHandler<CreateTranslateConfigVertexCommand> createTranslateConfigVertexCommandHandler;
-    public PronunciationVertexFactory pronunciationVertexFactory;
 }

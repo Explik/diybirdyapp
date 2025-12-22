@@ -2,12 +2,12 @@ package com.explik.diybirdyapp.persistence.generalCommand;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,12 +16,6 @@ import org.springframework.stereotype.Component;
 public class GenerateAudioForTextContentCommandHandler implements SyncCommandHandler<GenerateAudioForTextContentCommand, FileContentCommandResult>{
     @Autowired
     private GraphTraversalSource traversalSource;
-
-    @Autowired
-    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
-
-    @Autowired
-    private PronunciationVertexFactory pronunciationVertexFactory;
 
     @Autowired
     private TextToSpeechService textToSpeechService;

@@ -1,10 +1,11 @@
 package com.explik.diybirdyapp.persistence.generalCommand;
 
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.PronunciationVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class HandleFlashcardPronunciationExerciseAnswerCommandHandler implements
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private PronunciationVertexFactory pronunciationVertexFactory;
+    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandCommandHandler;
 
     @Override
     public void handleAsync(HandleFlashcardPronunciationExerciseAnswerCommand command) {
@@ -24,15 +25,11 @@ public class HandleFlashcardPronunciationExerciseAnswerCommandHandler implements
             throw new RuntimeException("Exercise is not a pronunciation exercise");
 
         var textContentVertex = (TextContentVertex)exerciseVertex.getContent();
-        var audioContent = AudioContentVertex.getById(traversalSource, command.getAnswerId());
 
-        pronunciationVertexFactory.create(
-                traversalSource,
-                new PronunciationVertexFactory.Options(
-                        command.getAnswerId(),
-                        textContentVertex,
-                        audioContent
-                )
-        );
+        var createCommand = new CreatePronunciationVertexCommand();
+        createCommand.setId(command.getAnswerId());
+        // TODO : change to audio content vertex
+        createCommand.setSourceVertex(textContentVertex);
+        createPronunciationVertexCommandCommandHandler.handle(createCommand);
     }
 }
