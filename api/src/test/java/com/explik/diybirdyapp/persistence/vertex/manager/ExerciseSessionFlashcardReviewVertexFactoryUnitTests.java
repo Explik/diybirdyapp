@@ -5,7 +5,7 @@ import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
+import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
 import com.explik.diybirdyapp.persistence.vertexFactory.TextContentVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -122,7 +122,7 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
         CommandHandler<CreateFlashcardDeckVertexCommand> createFlashcardDeckVertexCommandHandler;
 
         @Autowired
-        LanguageVertexFactory languageVertexFactory;
+        CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
 
         @Autowired
         TextContentVertexFactory textContentVertexFactory;
@@ -132,9 +132,26 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
             var graph = TinkerGraph.open();
             var traversal = graph.traversal();
 
-            var lang1 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang1", "", ""));
-            var lang2 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang2", "", ""));
-            var lang3 = languageVertexFactory.create(traversal, new LanguageVertexFactory.Options("lang3", "", ""));
+            var createLang1Command = new CreateLanguageVertexCommand();
+            createLang1Command.setId("lang1");
+            createLang1Command.setName("");
+            createLang1Command.setIsoCode("");
+            createLanguageVertexCommandHandler.handle(createLang1Command);
+            var lang1 = LanguageVertex.getById(traversal, "lang1");
+
+            var createLang2Command = new CreateLanguageVertexCommand();
+            createLang2Command.setId("lang2");
+            createLang2Command.setName("");
+            createLang2Command.setIsoCode("");
+            createLanguageVertexCommandHandler.handle(createLang2Command);
+            var lang2 = LanguageVertex.getById(traversal, "lang2");
+
+            var createLang3Command = new CreateLanguageVertexCommand();
+            createLang3Command.setId("lang3");
+            createLang3Command.setName("");
+            createLang3Command.setIsoCode("");
+            createLanguageVertexCommandHandler.handle(createLang3Command);
+            var lang3 = LanguageVertex.getById(traversal, "lang3");
 
             var content1 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content1", "", lang1));
             var content2 = textContentVertexFactory.create(traversal, new TextContentVertexFactory.Options("content2", "", lang2));

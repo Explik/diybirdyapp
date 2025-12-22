@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.builder;
 
+import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.SpeechToTextConfigVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.TextToSpeechConfigVertexFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.TranslateConfigVertexFactory;
@@ -59,9 +59,12 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
         var name = (this.name != null) ? this.name : "Language-" + id;
         var isoCode = (this.isoCode != null) ? this.isoCode : "Lang-" + id;
 
-        var languageVertex = this.factories.languageVertexFactory.create(
-                traversalSource,
-                new LanguageVertexFactory.Options(id, name, isoCode));
+        var createCommand = new CreateLanguageVertexCommand();
+        createCommand.setId(id);
+        createCommand.setName(name);
+        createCommand.setIsoCode(isoCode);
+        this.factories.createLanguageVertexCommandHandler.handle(createCommand);
+        var languageVertex = LanguageVertex.findById(traversalSource, id);
 
         for(var config : this.googleTextToSpeechConfigs) {
             this.factories.textToSpeechConfigVertexFactory.create(

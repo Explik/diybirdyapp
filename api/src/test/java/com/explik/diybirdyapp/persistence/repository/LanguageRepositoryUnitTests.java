@@ -1,7 +1,8 @@
 package com.explik.diybirdyapp.persistence.repository;
 
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
-import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
+import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;
@@ -98,17 +99,18 @@ public class LanguageRepositoryUnitTests {
     @TestConfiguration
     static class Configuration {
         @Autowired
-        LanguageVertexFactory languageVertexFactory;
+        CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
 
         @Bean
         public GraphTraversalSource traversalSource() {
             var graph = TinkerGraph.open();
             var traversal = graph.traversal();
 
-            languageVertexFactory.create(traversal, new LanguageVertexFactory.Options(
-                    PRE_EXISTENT_ID,
-                    PRE_EXISTENT_NAME,
-                    PRE_EXISTENT_ABBREVIATION));
+            var createCommand = new CreateLanguageVertexCommand();
+            createCommand.setId(PRE_EXISTENT_ID);
+            createCommand.setName(PRE_EXISTENT_NAME);
+            createCommand.setIsoCode(PRE_EXISTENT_ABBREVIATION);
+            createLanguageVertexCommandHandler.handle(createCommand);
 
             return traversal;
         }

@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.builder.*;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateImageContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.repository.UserRepository;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
@@ -30,10 +31,10 @@ public class DataInitializerService {
     private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandCommandHandler;
 
     @Autowired
-    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
+    private CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
 
     @Autowired
-    private LanguageVertexFactory languageVertexFactory;
+    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
     private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;

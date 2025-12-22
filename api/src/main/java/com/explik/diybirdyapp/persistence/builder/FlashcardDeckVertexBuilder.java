@@ -86,6 +86,6 @@ public class FlashcardDeckVertexBuilder extends VertexBuilderBase<FlashcardDeckV
         createCommand.setName(name);
         createCommand.setFlashcards(vertices);
         this.factories.createFlashcardDeckVertexCommandHandler.handle(createCommand);
-        return FlashcardDeckVertex.getById(traversalSource, id);
+        return FlashcardDeckVertex.findById(traversalSource, id);
     }
 }
