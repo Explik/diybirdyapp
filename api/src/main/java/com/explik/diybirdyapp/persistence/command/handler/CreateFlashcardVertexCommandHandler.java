@@ -24,4 +24,6 @@ public class CreateFlashcardVertexCommandHandler implements CommandHandler<Creat
         vertex.setLeftContent(leftContent);
         vertex.setRightContent(rightContent);
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.persistence.command.CreatePairVertexCommand;
+import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.PairVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class CreatePairVertexCommandHandler implements CommandHandler<CreatePair
     public void handle(CreatePairVertexCommand command) {
         var vertex = PairVertex.create(traversalSource);
         vertex.setId(command.getId());
-        var leftVertex = com.explik.diybirdyapp.persistence.vertex.AbstractVertex.getById(traversalSource, command.getLeftId());
-        var rightVertex = com.explik.diybirdyapp.persistence.vertex.AbstractVertex.getById(traversalSource, command.getRightId());
+        var leftVertex = ContentVertex.getById(traversalSource, command.getLeftId());
+        var rightVertex = ContentVertex.getById(traversalSource, command.getRightId());
         vertex.setLeftContent(leftVertex);
         vertex.setRightContent(rightVertex);
     }

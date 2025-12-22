@@ -19,7 +19,7 @@ public class CreateTextContentVertexCommandHandler implements CommandHandler<Cre
         var vertex = TextContentVertex.create(traversalSource);
         vertex.setId(command.getId());
         vertex.setValue(command.getValue());
-        var languageVertex = com.explik.diybirdyapp.persistence.vertex.LanguageVertex.getById(traversalSource, command.getLanguageId());
+        var languageVertex = com.explik.diybirdyapp.persistence.vertex.LanguageVertex.findById(traversalSource, command.getLanguageId());
         vertex.setLanguage(languageVertex);
     }
 }
