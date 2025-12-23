@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.query.handler;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

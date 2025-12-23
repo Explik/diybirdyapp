@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.modelFactory;
+package com.explik.diybirdyapp.persistence.query.modelFactory;
 
 import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputArrangeTextOptionsDto;

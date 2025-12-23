@@ -2,12 +2,9 @@ package com.explik.diybirdyapp.service.helper;
 
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
-import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
-import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationContext;
 import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

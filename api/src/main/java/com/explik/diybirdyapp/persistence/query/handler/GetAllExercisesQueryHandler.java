@@ -2,7 +2,7 @@ package com.explik.diybirdyapp.persistence.query.handler;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
-import com.explik.diybirdyapp.persistence.modelFactory.ContextualModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.ContextualModelFactory;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.query.GetAllExercisesQuery;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;

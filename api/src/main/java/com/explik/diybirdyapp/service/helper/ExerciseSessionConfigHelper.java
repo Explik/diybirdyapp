@@ -2,8 +2,8 @@ package com.explik.diybirdyapp.service.helper;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.*;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
-import com.explik.diybirdyapp.persistence.modelFactory.ModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;

@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.persistence.query.handler;
 
 import com.explik.diybirdyapp.model.content.FlashcardDto;
-import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.query.GetFlashcardByIdQuery;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.modelFactory;
+package com.explik.diybirdyapp.persistence.query.modelFactory;
 
 import com.explik.diybirdyapp.model.content.*;
 import com.explik.diybirdyapp.persistence.vertex.*;

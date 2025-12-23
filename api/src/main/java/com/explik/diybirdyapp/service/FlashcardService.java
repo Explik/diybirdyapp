@@ -5,7 +5,7 @@ import com.explik.diybirdyapp.model.content.FlashcardDto;
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardContentCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateFlashcardContentCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.query.GetAllFlashcardsQuery;
 import com.explik.diybirdyapp.persistence.query.GetFlashcardByIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;

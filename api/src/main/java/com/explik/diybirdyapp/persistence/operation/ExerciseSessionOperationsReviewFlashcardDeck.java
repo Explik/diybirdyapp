@@ -12,7 +12,7 @@ import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseContentParameters;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseParameters;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
