@@ -39,12 +39,12 @@ public class ExerciseEvaluationManagerReviewFlashcard implements ExerciseEvaluat
         if (contentVertex == null)
             throw new IllegalArgumentException("Exercise content is null");
 
-        var command = new CreateOrUpdateSuperMemo2StateCommand();
-        command.setSessionId(answerModel.getSessionId());
-        command.setContentId(contentVertex.getId());
-        command.setRating(answerModel.getRating());
+        var updateStateCommand = new CreateOrUpdateSuperMemo2StateCommand();
+        updateStateCommand.setSessionId(input.getSessionId());
+        updateStateCommand.setContentId(contentVertex.getId());
+        updateStateCommand.setRating(input.getRating());
 
-        createOrUpdateSuperMemo2StateCommandHandler.handle(command);
+        createOrUpdateSuperMemo2StateCommandHandler.handle(updateStateCommand);
 
         // Generate feedback
         var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();

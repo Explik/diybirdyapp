@@ -16,7 +16,7 @@ public class GetCorrectTextValuesForExerciseQueryHandler implements QueryHandler
     @Override
     public CorrectTextValuesForExerciseModel handle(GetCorrectTextValuesForExerciseQuery query) {
         // Get exercise vertex
-        var exerciseVertex = ExerciseVertex.findById(traversalSource, query.getExerciseId());
+        var exerciseVertex = ExerciseVertex.getById(traversalSource, query.getExerciseId());
         if (exerciseVertex == null)
             throw new IllegalArgumentException("Exercise with id " + query.getExerciseId() + " does not exist");
 

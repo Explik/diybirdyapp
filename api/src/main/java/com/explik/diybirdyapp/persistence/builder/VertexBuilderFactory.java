@@ -2,7 +2,6 @@ package com.explik.diybirdyapp.persistence.builder;
 
 import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.vertexFactory.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
