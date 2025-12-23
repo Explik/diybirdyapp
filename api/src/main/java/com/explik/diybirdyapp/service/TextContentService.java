@@ -1,6 +1,6 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.persistence.generalCommand.*;
+import com.explik.diybirdyapp.model.FileContentCommandResult;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,20 +15,9 @@ public class TextContentService {
     @Autowired
     AudioContentService audioContentService;
 
-    @Autowired
-    SyncCommandHandler<FetchAudioForTextContentCommand, FileContentCommandResult> fetchCommandHandler;
-
-    @Autowired
-    SyncCommandHandler<GenerateAudioForTextContentCommand, FileContentCommandResult> generateCommandHandler;
-
     public FileContentCommandResult getPronunciation(String id) {
-        var fetchExistingCommand = new FetchAudioForTextContentCommand(id);
-        var existingResult = fetchCommandHandler.handle(fetchExistingCommand);
-        if (existingResult != null)
-            return existingResult;
-
-        var generateCommand = new GenerateAudioForTextContentCommand(id);
-        return generateCommandHandler.handle(generateCommand);
+        var audio = audioContentService.getAudioForTextContent(id);
+        return new FileContentCommandResult(audio.getData(), audio.getContentType());
     }
 
     public void uploadPronunciation(String id, String originalFileName, byte[] fileData) {

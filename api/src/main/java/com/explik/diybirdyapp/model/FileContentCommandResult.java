@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.generalCommand;
+package com.explik.diybirdyapp.model;
 
 public class FileContentCommandResult {
     private final byte[] content;

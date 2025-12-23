@@ -1,13 +1,18 @@
-package com.explik.diybirdyapp.persistence.generalCommand;
+package com.explik.diybirdyapp.persistence.query.handler;
 
+import com.explik.diybirdyapp.model.content.AudioFileModel;
+import com.explik.diybirdyapp.persistence.query.GetAudioForTextContentQuery;
 import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Query handler for fetching audio pronunciation data for text content.
+ */
 @Component
-public class FetchAudioForTextContentCommandHandler implements SyncCommandHandler<FetchAudioForTextContentCommand, FileContentCommandResult> {
+public class GetAudioForTextContentQueryHandler implements QueryHandler<GetAudioForTextContentQuery, AudioFileModel> {
     @Autowired
     private GraphTraversalSource traversalSource;
 
@@ -15,22 +20,21 @@ public class FetchAudioForTextContentCommandHandler implements SyncCommandHandle
     private BinaryStorageService binaryStorageService;
 
     @Override
-    public FileContentCommandResult handle(FetchAudioForTextContentCommand command) {
-        var textContentId = command.getTextId();
-        if (textContentId == null || textContentId.isEmpty())
-            throw new RuntimeException("Text ID is empty");
-
-        var textContentVertex = TextContentVertex.findById(traversalSource, command.getTextId());
-        if (textContentVertex == null)
-            throw new RuntimeException("Text content not found: " + command.getTextId());
+    public AudioFileModel handle(GetAudioForTextContentQuery query) {
+        var textContentVertex = TextContentVertex.findById(traversalSource, query.getTextContentId());
+        if (textContentVertex == null) {
+            return null;
+        }
 
         var mainPronunciation = textContentVertex.getMainPronunciation();
-        if (mainPronunciation == null)
+        if (mainPronunciation == null) {
             return null;
+        }
 
         var audioContentVertex = mainPronunciation.getAudioContent();
-        if (audioContentVertex == null)
+        if (audioContentVertex == null) {
             return null;
+        }
 
         var url = audioContentVertex.getUrl();
         var fileData = binaryStorageService.get(url);
@@ -42,6 +46,6 @@ public class FetchAudioForTextContentCommandHandler implements SyncCommandHandle
             default -> "application/octet-stream";
         };
 
-        return new FileContentCommandResult(fileData, contentType);
+        return new AudioFileModel(fileData, contentType);
     }
 }

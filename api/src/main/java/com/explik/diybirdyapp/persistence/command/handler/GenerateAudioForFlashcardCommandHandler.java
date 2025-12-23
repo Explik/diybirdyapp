@@ -1,11 +1,9 @@
-package com.explik.diybirdyapp.persistence.generalCommand;
+package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
-import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
-import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
+import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
-import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
@@ -15,36 +13,33 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+/**
+ * Command handler for generating audio pronunciation for flashcards.
+ * Processes both left and right sides of the flashcard if they contain text content.
+ */
 @Component
-public class GenerateAudioForFlashcardCommandHandler implements AsyncCommandHandler<GenerateAudioForFlashcardCommand> {
+public class GenerateAudioForFlashcardCommandHandler implements CommandHandler<GenerateAudioForFlashcardCommand> {
     @Autowired
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
-
-    @Autowired
-    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandCommandHandler;
+    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandHandler;
 
     @Autowired
     private TextToSpeechService textToSpeechService;
 
     @Override
-    public void handleAsync(GenerateAudioForFlashcardCommand command) {
-        var flashcardVertex = getFlashcardVertex(command.getFlashcardId());
+    public void handle(GenerateAudioForFlashcardCommand command) {
+        var flashcardVertex = FlashcardVertex.findById(traversalSource, command.getFlashcardId());
+        if (flashcardVertex == null) {
+            throw new RuntimeException("Flashcard not found: " + command.getFlashcardId());
+        }
 
         boolean failOnMissingVoice = command.getFailOnMissingVoice();
         if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent)
             saveAudioContent(leftTextContent, failOnMissingVoice);
         if (flashcardVertex.getRightContent() instanceof TextContentVertex rightTextContent)
             saveAudioContent(rightTextContent, failOnMissingVoice);
-    }
-
-    private FlashcardVertex getFlashcardVertex(String flashcardId) {
-        var flashcardVertex = FlashcardVertex.findById(traversalSource, flashcardId);
-        if (flashcardVertex == null)
-            throw new RuntimeException("Flashcard not found: " + flashcardId);
-        return flashcardVertex;
     }
 
     private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
@@ -84,6 +79,6 @@ public class GenerateAudioForFlashcardCommandHandler implements AsyncCommandHand
         createCommand.setId(UUID.randomUUID().toString());
         createCommand.setAudioUrl(filePath);
         createCommand.setSourceVertex(textContentVertex.getId());
-        createPronunciationVertexCommandCommandHandler.handle(createCommand);
+        createPronunciationVertexCommandHandler.handle(createCommand);
     }
 }

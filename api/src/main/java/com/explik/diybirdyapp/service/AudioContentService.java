@@ -1,7 +1,11 @@
 package com.explik.diybirdyapp.service;
 
+import com.explik.diybirdyapp.model.content.AudioFileModel;
 import com.explik.diybirdyapp.persistence.command.AddAudioToTextContentCommand;
+import com.explik.diybirdyapp.persistence.command.GenerateAudioForTextContentCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
+import com.explik.diybirdyapp.persistence.command.handler.GenerateAudioForTextContentCommandHandler;
+import com.explik.diybirdyapp.persistence.query.GetAudioForTextContentQuery;
 import com.explik.diybirdyapp.persistence.query.GetTextContentByIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
@@ -12,7 +16,7 @@ import java.util.UUID;
 
 /**
  * Service for managing audio content associated with text content.
- * Handles coordination and business logic for adding audio pronunciations to text.
+ * Handles coordination and business logic for adding, fetching, and generating audio pronunciations.
  */
 @Component
 public class AudioContentService {
@@ -20,7 +24,13 @@ public class AudioContentService {
     private QueryHandler<GetTextContentByIdQuery, TextContentVertex> getTextContentByIdQueryHandler;
 
     @Autowired
+    private QueryHandler<GetAudioForTextContentQuery, AudioFileModel> getAudioForTextContentQueryHandler;
+
+    @Autowired
     private CommandHandler<AddAudioToTextContentCommand> addAudioToTextContentCommandHandler;
+
+    @Autowired
+    private GenerateAudioForTextContentCommandHandler generateAudioForTextContentCommandHandler;
 
     /**
      * Adds audio pronunciation to a text content vertex.
@@ -55,5 +65,34 @@ public class AudioContentService {
         command.setAudioUrl(audioUrl);
         
         addAudioToTextContentCommandHandler.handle(command);
+    }
+
+    /**
+     * Gets audio pronunciation for text content, generating it if it doesn't exist.
+     *
+     * @param textContentId The ID of the text content
+     * @return AudioFileModel containing the audio data and content type
+     */
+    public AudioFileModel getAudioForTextContent(String textContentId) {
+        // Validate input
+        if (textContentId == null || textContentId.isEmpty()) {
+            throw new RuntimeException("Text content ID is required");
+        }
+
+        // Try to fetch existing audio
+        var query = new GetAudioForTextContentQuery();
+        query.setTextContentId(textContentId);
+        var existingAudio = getAudioForTextContentQueryHandler.handle(query);
+        
+        if (existingAudio != null) {
+            return existingAudio;
+        }
+
+        // Generate audio if it doesn't exist
+        var command = new GenerateAudioForTextContentCommand();
+        command.setTextContentId(textContentId);
+        var audioData = generateAudioForTextContentCommandHandler.handleAndReturnAudio(command);
+        
+        return new AudioFileModel(audioData, "audio/wav");
     }
 }

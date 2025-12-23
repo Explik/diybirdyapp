@@ -2,9 +2,9 @@ package com.explik.diybirdyapp.eventConsumer;
 
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
-import com.explik.diybirdyapp.persistence.generalCommand.AsyncCommandHandler;
-import com.explik.diybirdyapp.persistence.generalCommand.ExtractWordsFromFlashcardCommand;
-import com.explik.diybirdyapp.persistence.generalCommand.GenerateAudioForFlashcardCommand;
+import com.explik.diybirdyapp.persistence.command.ExtractWordsFromFlashcardCommand;
+import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +17,24 @@ public class FlashcardEventConsumer {
     private static final Logger Logger = LoggerFactory.getLogger(FlashcardEventConsumer.class);
 
     @Autowired
-    AsyncCommandHandler<ExtractWordsFromFlashcardCommand> wordCommandHandler;
+    CommandHandler<ExtractWordsFromFlashcardCommand> wordCommandHandler;
 
     @Autowired
-    AsyncCommandHandler<GenerateAudioForFlashcardCommand> audioCommandHandler;
+    CommandHandler<GenerateAudioForFlashcardCommand> audioCommandHandler;
 
     @Async
     @EventListener
     public void handleFlashcardAddedEvent(FlashcardAddedEvent event) {
         Logger.info("Flashcard added event received: " + event.getFlashcardId());
 
-        wordCommandHandler.handleAsync(
-                new ExtractWordsFromFlashcardCommand(event.getFlashcardId()));
+        var extractWordsCommand = new ExtractWordsFromFlashcardCommand();
+        extractWordsCommand.setFlashcardId(event.getFlashcardId());
+        wordCommandHandler.handle(extractWordsCommand);
 
-        audioCommandHandler.handleAsync(
-                new GenerateAudioForFlashcardCommand(event.getFlashcardId()));
+        var generateAudioCommand = new GenerateAudioForFlashcardCommand();
+        generateAudioCommand.setFlashcardId(event.getFlashcardId());
+        generateAudioCommand.setFailOnMissingVoice(false);
+        audioCommandHandler.handle(generateAudioCommand);
     }
 
     @Async
@@ -39,10 +42,13 @@ public class FlashcardEventConsumer {
     public void handleFlashcardUpdatedEvent(FlashcardUpdatedEvent event) {
         Logger.info("Flashcard updated event received: " + event.getFlashcardId());
 
-        wordCommandHandler.handleAsync(
-                new ExtractWordsFromFlashcardCommand(event.getFlashcardId()));
+        var extractWordsCommand = new ExtractWordsFromFlashcardCommand();
+        extractWordsCommand.setFlashcardId(event.getFlashcardId());
+        wordCommandHandler.handle(extractWordsCommand);
 
-        audioCommandHandler.handleAsync(
-                new GenerateAudioForFlashcardCommand(event.getFlashcardId()));
+        var generateAudioCommand = new GenerateAudioForFlashcardCommand();
+        generateAudioCommand.setFlashcardId(event.getFlashcardId());
+        generateAudioCommand.setFailOnMissingVoice(false);
+        audioCommandHandler.handle(generateAudioCommand);
     }
 }

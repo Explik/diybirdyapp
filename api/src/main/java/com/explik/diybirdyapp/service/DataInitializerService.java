@@ -168,7 +168,7 @@ public class DataInitializerService {
                         .withFrontText("Verden")
                         .withBackText("World"))
                 .build(traversalSource);
-æ
+
         // Word concepts
         var wordVertex1 = WordVertex.create(traversalSource);
         wordVertex1.setId("wordVertex1");
