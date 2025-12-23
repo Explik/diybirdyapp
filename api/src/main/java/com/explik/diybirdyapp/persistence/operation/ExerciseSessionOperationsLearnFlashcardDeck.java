@@ -8,6 +8,8 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
+import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.schema.parameter.*;
@@ -42,6 +44,9 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
 
     @Autowired
     private TextToSpeechService textToSpeechService;
+
+    @Autowired
+    private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -322,7 +327,9 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
             return existingPronunciation.getAudioContent();
 
         // Generate pronunciation file
-        var voiceConfig = generateVoiceConfig(textContentVertex);
+        var query = new GenerateVoiceConfigQuery();
+        query.setTextContentVertexId(textContentVertex.getId());
+        var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
         if (voiceConfig == null)
             return null;
 
@@ -344,22 +351,6 @@ public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSess
         createPronunciationVertexCommandHandler.handle(createCommand);
 
         return null;
-    }
-
-    private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
-        var languageVertex = textContentVertex.getLanguage();
-
-        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
-        if (textToSpeechConfigs.isEmpty())
-            return null;
-
-        var textToSpeechConfig = textToSpeechConfigs.getFirst();
-        return new TextToSpeechService.Text(
-                textContentVertex.getValue(),
-                textToSpeechConfig.getPropertyValue("languageCode"),
-                textToSpeechConfig.getPropertyValue("voiceName"),
-                "LINEAR16"
-        );
     }
 
     private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {

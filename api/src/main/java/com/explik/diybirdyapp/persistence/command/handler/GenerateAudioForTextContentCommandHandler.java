@@ -2,6 +2,8 @@ package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.command.GenerateAudioForTextContentCommand;
+import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
@@ -22,6 +24,9 @@ public class GenerateAudioForTextContentCommandHandler implements CommandHandler
     @Autowired
     private TextToSpeechService textToSpeechService;
 
+    @Autowired
+    private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
+
     @Override
     public void handle(GenerateAudioForTextContentCommand command) {
         throw new UnsupportedOperationException("Use handleAndReturnAudio method instead");
@@ -35,38 +40,18 @@ public class GenerateAudioForTextContentCommandHandler implements CommandHandler
      * @return The generated audio bytes
      */
     public byte[] handleAndReturnAudio(GenerateAudioForTextContentCommand command) {
-        var textContentVertex = TextContentVertex.findById(traversalSource, command.getTextContentId());
-        if (textContentVertex == null) {
-            throw new RuntimeException("Text content not found: " + command.getTextContentId());
-        }
+        var query = new GenerateVoiceConfigQuery();
+        query.setTextContentVertexId(command.getTextContentId());
 
-        var voiceConfig = generateVoiceConfig(textContentVertex);
-        if (voiceConfig == null) {
-            throw new RuntimeException("No text to speech config found for text content: " + textContentVertex.getId());
-        }
+        var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
+        if (voiceConfig == null)
+            throw new RuntimeException("No text to speech config found for text content: " + command.getTextContentId());
 
         try {
             return textToSpeechService.generateAudio(voiceConfig);
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to generate audio for text content: " + textContentVertex.getId(), e);
+            throw new RuntimeException("Failed to generate audio for text content: " + command.getTextContentId(), e);
         }
-    }
-
-    private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
-        var languageVertex = textContentVertex.getLanguage();
-
-        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
-        if (textToSpeechConfigs.isEmpty()) {
-            return null;
-        }
-
-        var textToSpeechConfig = textToSpeechConfigs.getFirst();
-        return new TextToSpeechService.Text(
-                textContentVertex.getValue(),
-                textToSpeechConfig.getPropertyValue("languageCode"),
-                textToSpeechConfig.getPropertyValue("voiceName"),
-                "LINEAR16"
-        );
     }
 }

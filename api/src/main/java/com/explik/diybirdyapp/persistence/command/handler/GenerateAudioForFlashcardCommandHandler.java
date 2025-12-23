@@ -3,6 +3,8 @@ package com.explik.diybirdyapp.persistence.command.handler;
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
+import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
@@ -28,6 +30,9 @@ public class GenerateAudioForFlashcardCommandHandler implements CommandHandler<G
     @Autowired
     private TextToSpeechService textToSpeechService;
 
+    @Autowired
+    private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
+
     @Override
     public void handle(GenerateAudioForFlashcardCommand command) {
         var flashcardVertex = FlashcardVertex.findById(traversalSource, command.getFlashcardId());
@@ -42,24 +47,11 @@ public class GenerateAudioForFlashcardCommandHandler implements CommandHandler<G
             saveAudioContent(rightTextContent, failOnMissingVoice);
     }
 
-    private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
-        var languageVertex = textContentVertex.getLanguage();
-
-        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
-        if (textToSpeechConfigs.isEmpty())
-            return null;
-
-        var textToSpeechConfig = textToSpeechConfigs.getFirst();
-        return new TextToSpeechService.Text(
-                textContentVertex.getValue(),
-                textToSpeechConfig.getPropertyValue("languageCode"),
-                textToSpeechConfig.getPropertyValue("voiceName"),
-                "LINEAR16"
-        );
-    }
 
     private void saveAudioContent(TextContentVertex textContentVertex, boolean failOnMissingVoice) {
-        var voiceConfig = generateVoiceConfig(textContentVertex);
+        var query = new GenerateVoiceConfigQuery();
+        query.setTextContentVertexId(textContentVertex.getId());
+        var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
         if (voiceConfig == null) {
             if (failOnMissingVoice)
                 throw new RuntimeException("No text to speech config found for text content: " + textContentVertex.getId());

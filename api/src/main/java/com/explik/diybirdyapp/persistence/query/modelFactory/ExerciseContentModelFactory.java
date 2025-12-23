@@ -3,6 +3,8 @@ package com.explik.diybirdyapp.persistence.query.modelFactory;
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
+import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Component;
 public class ExerciseContentModelFactory implements ContextualModelFactory<ExerciseVertex, ExerciseContentDto, ExerciseRetrievalContext> {
     @Autowired
     private TextToSpeechService textToSpeechService;
+
+    @Autowired
+    private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
 
     @Override
     public ExerciseContentDto create(ExerciseVertex exerciseVertex, ExerciseRetrievalContext context) {
@@ -86,7 +91,9 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
             model.setPronunciationUrl(vertex.getMainPronunciation().getAudioContent().getUrl());
         }
         else if (context.getTextToSpeechEnabled()) {
-            var voiceConfig = generateVoiceConfig(vertex);
+            var query = new GenerateVoiceConfigQuery();
+            query.setTextContentVertexId(vertex.getId());
+            var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
             if (voiceConfig == null)
                 return model;
 
@@ -117,19 +124,4 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         return model;
     }
 
-    private TextToSpeechService.Text generateVoiceConfig(TextContentVertex textContentVertex) {
-        var languageVertex = textContentVertex.getLanguage();
-
-        var textToSpeechConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
-        if (textToSpeechConfigs.isEmpty())
-            return null;
-
-        var textToSpeechConfig = textToSpeechConfigs.getFirst();
-        return new TextToSpeechService.Text(
-                textContentVertex.getValue(),
-                textToSpeechConfig.getPropertyValue("languageCode"),
-                textToSpeechConfig.getPropertyValue("voiceName"),
-                "LINEAR16"
-        );
-    }
 }
