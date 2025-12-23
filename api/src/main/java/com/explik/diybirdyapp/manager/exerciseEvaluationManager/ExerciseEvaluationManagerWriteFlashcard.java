@@ -6,8 +6,10 @@ import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputWriteTextDto;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerTextCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
+import com.explik.diybirdyapp.persistence.query.GetCorrectTextValuesForExerciseQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
+import com.explik.diybirdyapp.persistence.query.modelFactory.CorrectTextValuesForExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,9 @@ public class ExerciseEvaluationManagerWriteFlashcard implements ExerciseEvaluati
 
     @Autowired
     private CommandHandler<CreateExerciseAnswerTextCommand> createExerciseAnswerTextCommandHandler;
+
+    @Autowired
+    private QueryHandler<GetCorrectTextValuesForExerciseQuery, CorrectTextValuesForExerciseModel> getCorrectTextValuesForExerciseQueryHandler;
 
     @Override
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
@@ -37,14 +42,19 @@ public class ExerciseEvaluationManagerWriteFlashcard implements ExerciseEvaluati
 
         createExerciseAnswerTextCommandHandler.handle(command);
 
+        // Fetch correct text values using query
+        var query = new GetCorrectTextValuesForExerciseQuery();
+        query.setExerciseId(context.getExerciseId());
+        
+        var correctTextValuesModel = getCorrectTextValuesForExerciseQueryHandler.handle(query);
+
         // Generate feedback
-        return createExerciseWithFeedback(exerciseVertex, input, context);
+        return createExerciseWithFeedback(correctTextValuesModel, input, context);
     }
 
-    private static ExerciseDto createExerciseWithFeedback(ExerciseVertex exerciseVertex, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext context) {
+    private static ExerciseDto createExerciseWithFeedback(CorrectTextValuesForExerciseModel correctTextValuesModel, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext context) {
         // Compare correct options and answer (CASE INSENSITIVE)
-        var correctOptions = exerciseVertex.getCorrectOptions().stream().map(v -> (TextContentVertex)v).toList();
-        var correctOptionValues = correctOptions.stream().map(TextContentVertex::getValue).toList();
+        var correctOptionValues = correctTextValuesModel.getCorrectTextValues();
         var isAnswerCorrect = correctOptionValues.stream().anyMatch(v -> v.equalsIgnoreCase(answerModel.getText()));
         var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isAnswerCorrect);
         exerciseFeedback.setMessage("Answer submitted successfully");
@@ -60,8 +70,8 @@ public class ExerciseEvaluationManagerWriteFlashcard implements ExerciseEvaluati
         input.setFeedback(inputFeedback);
 
         var exercise = new ExerciseDto();
-        exercise.setId(exerciseVertex.getId());
-        exercise.setType(exerciseVertex.getExerciseType().getId());
+        exercise.setId(correctTextValuesModel.getExerciseId());
+        exercise.setType(correctTextValuesModel.getExerciseType());
         exercise.setFeedback(exerciseFeedback);
         exercise.setInput(input);
         return exercise;
