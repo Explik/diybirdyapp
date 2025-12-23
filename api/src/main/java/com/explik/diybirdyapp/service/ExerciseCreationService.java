@@ -5,7 +5,7 @@ import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchema;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
+import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseParameters;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

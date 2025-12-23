@@ -10,11 +10,11 @@ import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexComma
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
+import com.explik.diybirdyapp.persistence.schema.parameter.*;
 import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

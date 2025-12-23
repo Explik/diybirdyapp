@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.vertexFactory.parameter;
+package com.explik.diybirdyapp.persistence.schema.parameter;
 
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
