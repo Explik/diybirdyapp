@@ -90,6 +90,22 @@ Transcription--hasSystem-->TranscriptionSystem
 Properties:
 - id: string
 
+### Translation
+A translation represents a single instance of a conversion from one language to another.
+
+```mermaid
+graph LR
+SourceVertex(<T> Content)
+TargetVertex(<T> Content)
+Translation(Translation)
+
+Translation--hasSourceContent-->SourceVertex
+Translation--hasTargetContent-->TargetVertex
+```
+
+Properties:
+- id: string: string
+
 ## Configuration 
 ### TextToSpeechConfig
 Represents the configuration for Google Text-to-speech API.

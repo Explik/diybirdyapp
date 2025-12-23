@@ -26,15 +26,12 @@ public class TranscriptionVertex extends AbstractVertex {
         setProperty(PROPERTY_ID, id);
     }
 
-    public void setSourceContent(AbstractVertex sourceContent) {
+    public void setSourceContent(ContentVertex sourceContent) {
         addEdgeOneToOne(EDGE_HAS_SOURCE_CONTENT, sourceContent);
     }
 
-    public AbstractVertex getSourceContent() {
-        var vertexQuery = traversalSource.V(vertex).out(EDGE_HAS_SOURCE_CONTENT);
-        if (!vertexQuery.hasNext())
-            return null;
-        return new AbstractVertex(traversalSource, vertexQuery.next());
+    public ContentVertex getSourceContent() {
+        return VertexHelper.getOutgoingModel(this, EDGE_HAS_SOURCE_CONTENT, VertexHelper::createContent);
     }
 
     public void setTextContent(TextContentVertex textContent) {
@@ -42,10 +39,7 @@ public class TranscriptionVertex extends AbstractVertex {
     }
 
     public TextContentVertex getTextContent() {
-        var vertexQuery = traversalSource.V(vertex).out(EDGE_HAS_TEXT_CONTENT);
-        if (!vertexQuery.hasNext())
-            return null;
-        return new TextContentVertex(traversalSource, vertexQuery.next());
+        return VertexHelper.getOutgoingModel(this, EDGE_HAS_TEXT_CONTENT, TextContentVertex::new);
     }
 
     public void setSystem(TranscriptionSystemVertex system) {
@@ -53,10 +47,7 @@ public class TranscriptionVertex extends AbstractVertex {
     }
 
     public TranscriptionSystemVertex getSystem() {
-        var vertexQuery = traversalSource.V(vertex).out(EDGE_HAS_SYSTEM);
-        if (!vertexQuery.hasNext())
-            return null;
-        return new TranscriptionSystemVertex(traversalSource, vertexQuery.next());
+        return VertexHelper.getOutgoingModel(this, EDGE_HAS_SYSTEM, TranscriptionSystemVertex::new);
     }
 
     public static TranscriptionVertex create(GraphTraversalSource traversalSource) {
