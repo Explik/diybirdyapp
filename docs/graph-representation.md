@@ -52,7 +52,6 @@ AudioContent(AudioContent)
 TextContent(TextContent)
 Pronunciation(Pronunciation)
 
-TextContent--hasPronunciation-->Pronunciation
 Pronunciation--hasAudioContent-->TextContent
 Pronunciation--hasTextContent-->TextContent
 ```
