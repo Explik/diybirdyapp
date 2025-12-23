@@ -1,8 +1,6 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.model.admin.ConfigurationDto;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageConfigCommand;
-import com.explik.diybirdyapp.persistence.generalCommand.SyncCommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import com.explik.diybirdyapp.service.helper.ConfigurationMappingHelper;
@@ -13,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class CreateLanguageConfigCommandHandler implements SyncCommandHandler<CreateLanguageConfigCommand, ConfigurationDto> {
+public class CreateLanguageConfigCommandHandler implements CommandHandler<CreateLanguageConfigCommand> {
     private final GraphTraversalSource traversalSource;
 
     public CreateLanguageConfigCommandHandler(@Autowired GraphTraversalSource traversalSource) {
@@ -21,7 +19,7 @@ public class CreateLanguageConfigCommandHandler implements SyncCommandHandler<Cr
     }
 
     @Override
-    public ConfigurationDto handle(CreateLanguageConfigCommand command) {
+    public void handle(CreateLanguageConfigCommand command) {
         var languageId = command.getLanguageId();
         var configModel = command.getConfig();
 
@@ -37,6 +35,7 @@ public class CreateLanguageConfigCommandHandler implements SyncCommandHandler<Cr
         ConfigurationMappingHelper.updateConfigVertex(configurationVertex, configModel);
         configurationVertex.addLanguage(languageVertex);
 
-        return ConfigurationMappingHelper.createConfigModel(languageId, configurationVertex);
+        // Store result ID for query
+        command.setResultId(configurationVertex.getId());
     }
 }

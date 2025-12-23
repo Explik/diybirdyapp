@@ -1,8 +1,6 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.persistence.command.AddFlashcardDeckCommand;
-import com.explik.diybirdyapp.persistence.generalCommand.SyncCommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.UserVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class AddFlashcardDeckCommandHandler implements SyncCommandHandler<AddFlashcardDeckCommand, FlashcardDeckDto> {
+public class AddFlashcardDeckCommandHandler implements CommandHandler<AddFlashcardDeckCommand> {
     private final GraphTraversalSource traversalSource;
 
     public AddFlashcardDeckCommandHandler(@Autowired GraphTraversalSource traversalSource) {
@@ -20,7 +18,7 @@ public class AddFlashcardDeckCommandHandler implements SyncCommandHandler<AddFla
     }
 
     @Override
-    public FlashcardDeckDto handle(AddFlashcardDeckCommand command) {
+    public void handle(AddFlashcardDeckCommand command) {
         // Fetch owner vertex
         var userVertex = UserVertex.findWithEmail(traversalSource, command.getUserId());
         if (userVertex == null)
@@ -39,14 +37,7 @@ public class AddFlashcardDeckCommandHandler implements SyncCommandHandler<AddFla
         
         flashcardDeckVertex.setOwner(userVertex);
 
-        return createModel(flashcardDeckVertex);
-    }
-
-    private static FlashcardDeckDto createModel(FlashcardDeckVertex v) {
-        var model = new FlashcardDeckDto();
-        model.setId(v.getId());
-        model.setName(v.getName());
-        model.setDescription(v.getDescription());
-        return model;
+        // Store result ID for query
+        command.setResultId(flashcardDeckVertex.getId());
     }
 }

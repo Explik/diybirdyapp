@@ -1,15 +1,40 @@
 package com.explik.diybirdyapp.persistence.command;
 
-import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
+public class AddLanguageCommand implements AtomicCommand {
+    private String id;
+    private String name;
+    private String isoCode;
+    private String resultId;
 
-public class AddLanguageCommand {
-    private FlashcardLanguageDto language;
-
-    public FlashcardLanguageDto getLanguage() {
-        return language;
+    public String getId() {
+        return id;
     }
 
-    public void setLanguage(FlashcardLanguageDto language) {
-        this.language = language;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIsoCode() {
+        return isoCode;
+    }
+
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
+    }
+
+    public String getResultId() {
+        return resultId;
+    }
+
+    public void setResultId(String resultId) {
+        this.resultId = resultId;
     }
 }

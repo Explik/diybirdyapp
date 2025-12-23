@@ -1,15 +1,13 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.persistence.command.UpdateFlashcardDeckCommand;
-import com.explik.diybirdyapp.persistence.generalCommand.SyncCommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UpdateFlashcardDeckCommandHandler implements SyncCommandHandler<UpdateFlashcardDeckCommand, FlashcardDeckDto> {
+public class UpdateFlashcardDeckCommandHandler implements CommandHandler<UpdateFlashcardDeckCommand> {
     private final GraphTraversalSource traversalSource;
 
     public UpdateFlashcardDeckCommandHandler(@Autowired GraphTraversalSource traversalSource) {
@@ -17,7 +15,7 @@ public class UpdateFlashcardDeckCommandHandler implements SyncCommandHandler<Upd
     }
 
     @Override
-    public FlashcardDeckDto handle(UpdateFlashcardDeckCommand command) {
+    public void handle(UpdateFlashcardDeckCommand command) {
         if (command.getDeckId() == null)
             throw new IllegalArgumentException("FlashcardDeck is missing id");
 
@@ -36,15 +34,8 @@ public class UpdateFlashcardDeckCommandHandler implements SyncCommandHandler<Upd
             vertex.setDescription(command.getDescription());
         }
 
-        return createModel(vertex);
-    }
-
-    private static FlashcardDeckDto createModel(FlashcardDeckVertex v) {
-        var model = new FlashcardDeckDto();
-        model.setId(v.getId());
-        model.setName(v.getName());
-        model.setDescription(v.getDescription());
-        return model;
+        // Store result ID for query
+        command.setResultId(vertex.getId());
     }
 
     private static boolean isDeckOwner(String userId, FlashcardDeckVertex v) {

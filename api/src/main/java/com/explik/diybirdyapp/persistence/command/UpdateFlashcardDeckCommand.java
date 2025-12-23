@@ -5,6 +5,7 @@ public class UpdateFlashcardDeckCommand implements AtomicCommand {
     private String deckId;
     private String name;
     private String description;
+    private String resultId;
 
     public String getUserId() {
         return userId;
@@ -36,5 +37,13 @@ public class UpdateFlashcardDeckCommand implements AtomicCommand {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getResultId() {
+        return resultId;
+    }
+
+    public void setResultId(String resultId) {
+        this.resultId = resultId;
     }
 }

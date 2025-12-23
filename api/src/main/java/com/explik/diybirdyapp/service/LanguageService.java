@@ -5,8 +5,8 @@ import com.explik.diybirdyapp.model.admin.ConfigurationIdentifierDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.generalCommand.SyncCommandHandler;
 import com.explik.diybirdyapp.persistence.query.GetAllLanguagesQuery;
+import com.explik.diybirdyapp.persistence.query.GetConfigurationByIdQuery;
 import com.explik.diybirdyapp.persistence.query.GetLanguageByIdQuery;
 import com.explik.diybirdyapp.persistence.query.GetLanguageConfigsQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
@@ -27,16 +27,19 @@ public class LanguageService {
     private QueryHandler<GetLanguageConfigsQuery, List<ConfigurationDto>> getLanguageConfigsQueryHandler;
 
     @Autowired
-    private SyncCommandHandler<AddLanguageCommand, FlashcardLanguageDto> addLanguageCommandHandler;
+    private QueryHandler<GetConfigurationByIdQuery, ConfigurationDto> getConfigurationByIdQueryHandler;
 
     @Autowired
-    private SyncCommandHandler<UpdateLanguageCommand, FlashcardLanguageDto> updateLanguageCommandHandler;
+    private CommandHandler<AddLanguageCommand> addLanguageCommandHandler;
 
     @Autowired
-    private SyncCommandHandler<CreateLanguageConfigCommand, ConfigurationDto> createLanguageConfigCommandHandler;
+    private CommandHandler<UpdateLanguageCommand> updateLanguageCommandHandler;
 
     @Autowired
-    private SyncCommandHandler<AttachLanguageConfigCommand, ConfigurationDto> attachLanguageConfigCommandHandler;
+    private CommandHandler<CreateLanguageConfigCommand> createLanguageConfigCommandHandler;
+
+    @Autowired
+    private CommandHandler<AttachLanguageConfigCommand> attachLanguageConfigCommandHandler;
 
     @Autowired
     private CommandHandler<DetachLanguageConfigCommand> detachLanguageConfigCommandHandler;
@@ -49,14 +52,28 @@ public class LanguageService {
 
     public FlashcardLanguageDto create(FlashcardLanguageDto languageModel) {
         var command = new AddLanguageCommand();
-        command.setLanguage(languageModel);
-        return addLanguageCommandHandler.handle(command);
+        command.setId(languageModel.getId());
+        command.setName(languageModel.getName());
+        command.setIsoCode(languageModel.getIsoCode());
+        addLanguageCommandHandler.handle(command);
+        
+        // Query the created language
+        var query = new GetLanguageByIdQuery();
+        query.setLanguageId(command.getResultId());
+        return getLanguageByIdQueryHandler.handle(query);
     }
 
     public FlashcardLanguageDto update(FlashcardLanguageDto languageModel) {
         var command = new UpdateLanguageCommand();
-        command.setLanguage(languageModel);
-        return updateLanguageCommandHandler.handle(command);
+        command.setId(languageModel.getId());
+        command.setName(languageModel.getName());
+        command.setIsoCode(languageModel.getIsoCode());
+        updateLanguageCommandHandler.handle(command);
+        
+        // Query the updated language
+        var query = new GetLanguageByIdQuery();
+        query.setLanguageId(command.getResultId());
+        return getLanguageByIdQueryHandler.handle(query);
     }
 
     public List<FlashcardLanguageDto> getAll() {
@@ -75,14 +92,24 @@ public class LanguageService {
         var command = new CreateLanguageConfigCommand();
         command.setLanguageId(languageId);
         command.setConfig(configModel);
-        return createLanguageConfigCommandHandler.handle(command);
+        createLanguageConfigCommandHandler.handle(command);
+        
+        // Query the created config
+        var query = new GetConfigurationByIdQuery();
+        query.setConfigId(command.getResultId());
+        return getConfigurationByIdQueryHandler.handle(query);
     }
 
     public ConfigurationDto attachLanguageConfig(String languageId, ConfigurationIdentifierDto configDto) {
         var command = new AttachLanguageConfigCommand();
         command.setLanguageId(languageId);
         command.setConfigId(configDto.getId());
-        return attachLanguageConfigCommandHandler.handle(command);
+        attachLanguageConfigCommandHandler.handle(command);
+        
+        // Query the attached config
+        var query = new GetConfigurationByIdQuery();
+        query.setConfigId(command.getResultId());
+        return getConfigurationByIdQueryHandler.handle(query);
     }
 
     public void detachLanguageConfig(String languageId, ConfigurationIdentifierDto configDto) {

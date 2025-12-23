@@ -5,7 +5,6 @@ import com.explik.diybirdyapp.persistence.command.AddFlashcardDeckCommand;
 import com.explik.diybirdyapp.persistence.command.DeleteFlashcardDeckCommand;
 import com.explik.diybirdyapp.persistence.command.UpdateFlashcardDeckCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.generalCommand.SyncCommandHandler;
 import com.explik.diybirdyapp.persistence.query.GetAllFlashcardDecksQuery;
 import com.explik.diybirdyapp.persistence.query.GetFlashcardDeckQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
@@ -23,10 +22,10 @@ public class FlashcardDeckService {
     private QueryHandler<GetAllFlashcardDecksQuery, List<FlashcardDeckDto>> getAllFlashcardDecksQueryHandler;
 
     @Autowired
-    private SyncCommandHandler<AddFlashcardDeckCommand, FlashcardDeckDto> addFlashcardDeckCommandHandler;
+    private CommandHandler<AddFlashcardDeckCommand> addFlashcardDeckCommandHandler;
 
     @Autowired
-    private SyncCommandHandler<UpdateFlashcardDeckCommand, FlashcardDeckDto> updateFlashcardDeckCommandHandler;
+    private CommandHandler<UpdateFlashcardDeckCommand> updateFlashcardDeckCommandHandler;
 
     @Autowired
     private CommandHandler<DeleteFlashcardDeckCommand> deleteFlashcardDeckCommandHandler;
@@ -37,7 +36,13 @@ public class FlashcardDeckService {
         command.setDeckId(model.getId());
         command.setName(model.getName());
         command.setDescription(model.getDescription());
-        return addFlashcardDeckCommandHandler.handle(command);
+        addFlashcardDeckCommandHandler.handle(command);
+        
+        // Query the created deck
+        var query = new GetFlashcardDeckQuery();
+        query.setUserId(userId);
+        query.setDeckId(command.getResultId());
+        return getFlashcardDeckQueryHandler.handle(query);
     }
 
     public FlashcardDeckDto get(String userId, String id) {
@@ -59,7 +64,13 @@ public class FlashcardDeckService {
         command.setDeckId(flashcardDeckModel.getId());
         command.setName(flashcardDeckModel.getName());
         command.setDescription(flashcardDeckModel.getDescription());
-        return updateFlashcardDeckCommandHandler.handle(command);
+        updateFlashcardDeckCommandHandler.handle(command);
+        
+        // Query the updated deck
+        var query = new GetFlashcardDeckQuery();
+        query.setUserId(userId);
+        query.setDeckId(command.getResultId());
+        return getFlashcardDeckQueryHandler.handle(query);
     }
 
     public void delete(String userId, String id) {
