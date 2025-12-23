@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
@@ -47,44 +48,35 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     @Autowired
     private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
 
+    @Autowired
+    private CommandHandler<CreateLearnFlashcardSessionCommand> createLearnFlashcardSessionCommandHandler;
+
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var options = context.getSessionModel();
 
-        // Resolve neighboring vertices
-        var flashcardDeckVertex = FlashcardDeckVertex.findById(traversalSource, options.getFlashcardDeckId());
-        if (flashcardDeckVertex == null)
-            throw new IllegalArgumentException("Flashcard deck with id" + options.getFlashcardDeckId() + "not found");
-        if (flashcardDeckVertex.getFlashcards().isEmpty())
-            throw new IllegalArgumentException("Flashcard deck with id" + options.getFlashcardDeckId() + "is empty");
+        // Create session using command
+        var command = new CreateLearnFlashcardSessionCommand();
+        command.setId(options.getId());
+        command.setFlashcardDeckId(options.getFlashcardDeckId());
+        command.setRetypeCorrectAnswer(false);
+        command.setTextToSpeechEnabled(false);
+        command.setIncludeReviewExercises(true);
+        command.setIncludeMultipleChoiceExercises(true);
+        command.setIncludeWritingExercises(true);
+        command.setIncludeListeningExercises(false);
+        command.setIncludePronunciationExercises(true);
+        
+        var exerciseTypeIds = getInitialExerciseTypes(traversalSource).stream()
+                .map(ExerciseTypeVertex::getId)
+                .toList();
+        command.setExerciseTypeIds(exerciseTypeIds);
+        
+        createLearnFlashcardSessionCommandHandler.handle(command);
 
-        // Create/init the session vertex
-        var sessionId = options.getId() != null ? options.getId() : java.util.UUID.randomUUID().toString();
-        var vertex = ExerciseSessionVertex.create(traversalSource);
-        vertex.setId(sessionId);
-        vertex.setType(ExerciseSessionTypes.LEARN_FLASHCARD);
-        vertex.setFlashcardDeck(flashcardDeckVertex);
-
-        var flashcardLanguages = flashcardDeckVertex.getFlashcardLanguages();
-        var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
-        optionVertex.setId(UUID.randomUUID().toString());
-        optionVertex.setType(ExerciseSessionTypes.LEARN_FLASHCARD);
-        optionVertex.setRetypeCorrectAnswer(false);
-        optionVertex.setTextToSpeechEnabled(false);
-
-        for (var languageVertex : flashcardLanguages)
-            optionVertex.addAnswerLanguage(languageVertex);
-
-        optionVertex.setIncludeReviewExercises(true);
-        optionVertex.setIncludeMultipleChoiceExercises(true);
-        optionVertex.setIncludeWritingExercises(true);
-        optionVertex.setIncludeListeningExercises(false);
-        optionVertex.setIncludePronunciationExercises(true);
-
-        for (var exerciseTypeVertex : getInitialExerciseTypes(traversalSource))
-            optionVertex.addExerciseType(exerciseTypeVertex);
-
-        vertex.setOptions(optionVertex);
+        // Load the created session
+        var sessionId = options.getId() != null ? options.getId() : command.getId();
+        var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
 
         // Generate first exercise
         nextExerciseVertex(traversalSource, vertex);

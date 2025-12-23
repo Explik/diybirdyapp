@@ -11,6 +11,7 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
+import com.explik.diybirdyapp.persistence.command.CreateReviewFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseContentParameters;
@@ -31,34 +32,27 @@ public class ExerciseSessionManagerReviewFlashcardDeck implements ExerciseSessio
     private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
 
     @Autowired
+    private CommandHandler<CreateReviewFlashcardSessionCommand> createReviewFlashcardSessionCommandHandler;
+
+    @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var options = context.getSessionModel();
 
-        // Resolve neighboring vertices
-        var flashcardDeckVertex = FlashcardDeckVertex.findById(traversalSource, options.getFlashcardDeckId());
-        if (flashcardDeckVertex == null)
-            throw new IllegalArgumentException("Flashcard deck with id" + options.getFlashcardDeckId() + "not found");
-        if (flashcardDeckVertex.getFlashcards().isEmpty())
-            throw new IllegalArgumentException("Flashcard deck with id" + options.getFlashcardDeckId() + "is empty");
+        // Create session using command
+        var command = new CreateReviewFlashcardSessionCommand();
+        command.setId(options.getId());
+        command.setFlashcardDeckId(options.getFlashcardDeckId());
+        command.setTextToSpeechEnabled(false);
+        command.setAlgorithm("SuperMemo2");
+        
+        createReviewFlashcardSessionCommandHandler.handle(command);
 
-        // Create the vertex
-        var sessionId = options.getId() != null ? options.getId() : java.util.UUID.randomUUID().toString();
-        var vertex = ExerciseSessionVertex.create(traversalSource);
-        vertex.setId(sessionId);
-        vertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
-        vertex.setFlashcardDeck(flashcardDeckVertex);
-
-        var flashcardLanguages = flashcardDeckVertex.getFlashcardLanguages();
-        var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
-        optionVertex.setId(UUID.randomUUID().toString());
-        optionVertex.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
-        optionVertex.setTextToSpeechEnabled(false);
-        optionVertex.setInitialFlashcardLanguageId(flashcardLanguages.getFirst().getId());
-        optionVertex.setAlgorithm("SuperMemo2");
-        vertex.setOptions(optionVertex);
+        // Load the created session
+        var sessionId = options.getId() != null ? options.getId() : command.getId();
+        var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
 
         // Generate first exercise
         nextExerciseVertex(traversalSource, vertex);

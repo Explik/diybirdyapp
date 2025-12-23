@@ -8,6 +8,7 @@ import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionMode
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
+import com.explik.diybirdyapp.persistence.command.CreateWriteFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseContentParameters;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
@@ -28,33 +29,27 @@ public class ExerciseSessionsManagerWriteFlashcardDeck implements ExerciseSessio
     private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
 
     @Autowired
+    private CommandHandler<CreateWriteFlashcardSessionCommand> createWriteFlashcardSessionCommandHandler;
+
+    @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var options = context.getSessionModel();
 
-        // Resolve neighboring vertices
-        var flashcardDeckVertex = FlashcardDeckVertex.findById(traversalSource, options.getFlashcardDeckId());
-        if (flashcardDeckVertex == null)
-            throw new IllegalArgumentException("Flashcard deck with id" + options.getFlashcardDeckId() + "not found");
-        if (flashcardDeckVertex.getFlashcards().isEmpty())
-            throw new IllegalArgumentException("Flashcard deck with id" + options.getFlashcardDeckId() + "is empty");
+        // Create session using command
+        var command = new CreateWriteFlashcardSessionCommand();
+        command.setId(options.getId());
+        command.setFlashcardDeckId(options.getFlashcardDeckId());
+        command.setTextToSpeechEnabled(false);
+        command.setRetypeCorrectAnswer(false);
+        
+        createWriteFlashcardSessionCommandHandler.handle(command);
 
-        // Create the vertex
-        var sessionId = options.getId() != null ? options.getId() : java.util.UUID.randomUUID().toString();
-        var vertex = ExerciseSessionVertex.create(traversalSource);
-        vertex.setId(sessionId);
-        vertex.setType(ExerciseSessionTypes.WRITE_FLASHCARD);
-        vertex.setFlashcardDeck(flashcardDeckVertex);
-
-        var optionVertex = ExerciseSessionOptionsVertex.create(traversalSource);
-        optionVertex.setId(UUID.randomUUID().toString());
-        optionVertex.setType(ExerciseSessionTypes.WRITE_FLASHCARD);
-        optionVertex.setTextToSpeechEnabled(false);
-        optionVertex.addAnswerLanguage(flashcardDeckVertex.getFlashcardLanguages().getFirst());
-        optionVertex.setRetypeCorrectAnswer(false);
-        vertex.setOptions(optionVertex);
+        // Load the created session
+        var sessionId = options.getId() != null ? options.getId() : command.getId();
+        var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
 
         // Generate first exercise
         nextExerciseVertex(traversalSource, vertex);
