@@ -7,8 +7,10 @@ import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
-import com.explik.diybirdyapp.persistence.vertexFactory.*;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
+import com.explik.diybirdyapp.service.ExerciseCreationService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,7 +45,10 @@ public class DataInitializerService {
     private VertexBuilderFactory builderFactory;
 
     @Autowired
-    private ExerciseAbstractVertexFactory exerciseAbstractVertexFactory;
+    private ExerciseCreationService exerciseCreationService;
+
+    @Autowired
+    private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
 
     @Autowired
     private CommandHandler<CreateUserRoleCommand> createUserRoleCommandHandler;
@@ -254,8 +259,8 @@ public class DataInitializerService {
                 .withSession(null)
                 .withTargetLanguage("example")
                 .withContent(shortTextContentParameters);
-        var writeSentenceUsingWordFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.WRITE_SENTENCE_USING_WORD_EXERCISE);
-        writeSentenceUsingWordFactory.create(traversalSource, writeSentenceUsingWordParameters);
+        var writeSentenceCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.WRITE_SENTENCE_USING_WORD_EXERCISE, writeSentenceUsingWordParameters);
+        createExerciseCommandHandler.handle(writeSentenceCommand);
 
         // Exercise - Write translated sentence
         var writeTranslatedSentenceExerciseParameters = new ExerciseParameters()
@@ -263,9 +268,8 @@ public class DataInitializerService {
                 .withSession(null)
                 .withTargetLanguage("Danish")
                 .withContent(longTextContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.WRITE_TRANSLATED_SENTENCE_EXERCISE)
-                .create(traversalSource, writeTranslatedSentenceExerciseParameters);
+        var writeTranslatedCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.WRITE_TRANSLATED_SENTENCE_EXERCISE, writeTranslatedSentenceExerciseParameters);
+        createExerciseCommandHandler.handle(writeTranslatedCommand);
 
         // Exercise - Select flashcard exercise
         var selectFlashcardExerciseParameters = new ExerciseParameters()
@@ -273,9 +277,8 @@ public class DataInitializerService {
                 .withSession(null)
                 .withContent(flashcardSideContentParameters)
                 .withSelectOptionsInput(selectFlashcardParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE)
-                .create(traversalSource, selectFlashcardExerciseParameters);
+        var selectFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE, selectFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(selectFlashcardCommand);
 
         // Exercise - Listen and select exercise
         var listenAndSelectFlashcardExerciseParameters = new ExerciseParameters()
@@ -283,45 +286,40 @@ public class DataInitializerService {
                 .withSession(null)
                 .withContent(audioContentParameters)
                 .withSelectOptionsInput(selectFlashcardParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.LISTEN_AND_SELECT_EXERCISE)
-                .create(traversalSource, listenAndSelectFlashcardExerciseParameters);
+        var listenAndSelectCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.LISTEN_AND_SELECT_EXERCISE, listenAndSelectFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(listenAndSelectCommand);
 
         // Exercise - Listen and write exercise
         var listenAndWriteFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.LISTEN_AND_WRITE)
                 .withSession(null)
                 .withContent(audioContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.LISTEN_AND_WRITE_EXERCISE)
-                .create(traversalSource, listenAndWriteFlashcardExerciseParameters);
+        var listenAndWriteCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.LISTEN_AND_WRITE_EXERCISE, listenAndWriteFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(listenAndWriteCommand);
 
         // Exercise - Flashcard review exercise
         var reviewFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.REVIEW_FLASHCARD)
                 .withSession(null)
                 .withContent(flashcardContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE)
-                .create(traversalSource, reviewFlashcardExerciseParameters);
+        var reviewFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE, reviewFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(reviewFlashcardCommand);
 
         // Exercise - Write flashcard exercise
         var writeFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.WRITE_FLASHCARD)
                 .withSession(null)
                 .withContent(flashcardSideContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE)
-                .create(traversalSource, writeFlashcardExerciseParameters);
+        var writeFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE, writeFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(writeFlashcardCommand);
 
         // Exercise - Flashcard pronounce exercise
         var pronounceFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.PRONOUNCE_FLASHCARD)
                 .withSession(null)
                 .withContent(flashcardContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE)
-                .create(traversalSource, pronounceFlashcardExerciseParameters);
+        var pronounceFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE, pronounceFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(pronounceFlashcardCommand);
 
         // Exercise - Arrange all words in translation exercise
         var arrangeWordsInTranslationExerciseParameters = new ExerciseParameters()
@@ -329,18 +327,16 @@ public class DataInitializerService {
                 .withSession(null)
                 .withContent(longTextContentParameters)
                 .withArrangeTextOptionsInput(arrangeTextOptionsParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.ARRANGE_WORDS_IN_TRANSLATION)
-                .create(traversalSource, arrangeWordsInTranslationExerciseParameters);
+        var arrangeWordsCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.ARRANGE_WORDS_IN_TRANSLATION, arrangeWordsInTranslationExerciseParameters);
+        createExerciseCommandHandler.handle(arrangeWordsCommand);
 
         // Exercise - Tap pairs exercise
         var tapPairsExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.TAP_PAIRS)
                 .withSession(null)
                 .withPairOptionsInput(pairFlashcardParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.TAP_PAIRS_EXERCISE)
-                .create(traversalSource, tapPairsExerciseParameters);
+        var tapPairsCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.TAP_PAIRS_EXERCISE, tapPairsExerciseParameters);
+        createExerciseCommandHandler.handle(tapPairsCommand);
     }
 
     public void addInitialUserData() {

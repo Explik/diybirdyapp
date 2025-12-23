@@ -10,10 +10,12 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
+import com.explik.diybirdyapp.service.ExerciseCreationService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,10 @@ import java.util.UUID;
 @Component(ExerciseSessionTypes.REVIEW_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSessionOperations {
     @Autowired
-    private ExerciseAbstractVertexFactory abstractVertexFactory;
+    private ExerciseCreationService exerciseCreationService;
+
+    @Autowired
+    private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
@@ -99,8 +104,11 @@ public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSes
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
                 .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
-        var exerciseFactory = abstractVertexFactory.create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE);
-
-        return exerciseFactory.create(traversalSource, exerciseParameters);
+        
+        var command = exerciseCreationService.createExerciseCommand(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE, exerciseParameters);
+        createExerciseCommandHandler.handle(command);
+        
+        var exerciseId = exerciseParameters.getId() != null ? exerciseParameters.getId() : command.getId();
+        return ExerciseVertex.getById(traversalSource, exerciseId);
     }
 }

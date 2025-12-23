@@ -7,8 +7,10 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import com.explik.diybirdyapp.persistence.vertexFactory.ExerciseAbstractVertexFactory;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseContentParameters;
+import com.explik.diybirdyapp.service.ExerciseCreationService;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseInputParametersSelectOptions;
 import com.explik.diybirdyapp.persistence.vertexFactory.parameter.ExerciseParameters;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -22,7 +24,10 @@ import java.util.stream.Collectors;
 @Component(ExerciseSessionTypes.SELECT_FLASHCARD_DECK + ComponentTypes.OPERATIONS)
 public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSessionOperations {
     @Autowired
-    private ExerciseAbstractVertexFactory abstractVertexFactory;
+    private ExerciseCreationService exerciseCreationService;
+
+    @Autowired
+    private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
@@ -102,8 +107,12 @@ public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSes
                             .withCorrectOptions(List.of(correctContentVertex))
                             .withIncorrectOptions(incorrectContentVertices)
                     );
-            var exerciseVertexFactory = abstractVertexFactory.create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE);
-            return exerciseVertexFactory.create(traversalSource, exerciseParameters);
+            
+            var command = exerciseCreationService.createExerciseCommand(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE, exerciseParameters);
+            createExerciseCommandHandler.handle(command);
+            
+            var exerciseId = exerciseParameters.getId() != null ? exerciseParameters.getId() : command.getId();
+            return ExerciseVertex.getById(traversalSource, exerciseId);
         } else {
             // If no flashcards are found, the session is complete
             sessionVertex.setCompleted(true);
