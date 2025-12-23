@@ -2,6 +2,8 @@
 This document describes the data representation used for the Tinkerpop graph. 
 
 ## Concepts
+In general concepts point to content, configuration, or other concepts, but content should not point to concepts.
+
 ### Language
 A language represents a common group of content and concepts, like words, text, pronunciation, etc. 
 ```mermaid

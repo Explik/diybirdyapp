@@ -313,7 +313,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
 
     private AudioContentVertex tryFetchOrGeneratePronunciation(GraphTraversalSource traversalSource, TextContentVertex textContentVertex) {
-        var existingPronunciation = textContentVertex.getMainPronunciation();
+        var existingPronunciation = PronunciationVertex.findByTextContentId(traversalSource, textContentVertex.getId());
         if (existingPronunciation != null)
             return existingPronunciation.getAudioContent();
 

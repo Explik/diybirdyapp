@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.query.handler;
 
 import com.explik.diybirdyapp.model.content.AudioFileModel;
 import com.explik.diybirdyapp.persistence.query.GetAudioForTextContentQuery;
+import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
 import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -21,12 +22,7 @@ public class GetAudioForTextContentQueryHandler implements QueryHandler<GetAudio
 
     @Override
     public AudioFileModel handle(GetAudioForTextContentQuery query) {
-        var textContentVertex = TextContentVertex.findById(traversalSource, query.getTextContentId());
-        if (textContentVertex == null) {
-            return null;
-        }
-
-        var mainPronunciation = textContentVertex.getMainPronunciation();
+        var mainPronunciation = PronunciationVertex.findByTextContentId(traversalSource, query.getTextContentId());
         if (mainPronunciation == null) {
             return null;
         }
