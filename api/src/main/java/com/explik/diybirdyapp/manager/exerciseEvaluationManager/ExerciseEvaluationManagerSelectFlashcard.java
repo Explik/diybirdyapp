@@ -1,8 +1,7 @@
-package com.explik.diybirdyapp.persistence.strategy;
+package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
-import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsDto;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component(ExerciseEvaluationTypes.CORRECT_OPTIONS + ComponentTypes.STRATEGY)
-public class ExerciseEvaluationStrategySelectFlashcard implements ExerciseEvaluationStrategy {
+public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluationManager {
     @Autowired
     private GraphTraversalSource traversalSource;
 

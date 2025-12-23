@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.operation;
+package com.explik.diybirdyapp.manager.exerciseSessionManager;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 

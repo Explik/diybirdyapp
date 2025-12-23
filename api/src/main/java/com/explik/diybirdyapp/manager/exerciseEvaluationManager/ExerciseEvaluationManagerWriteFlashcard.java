@@ -1,10 +1,9 @@
-package com.explik.diybirdyapp.persistence.strategy;
+package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputWriteTextDto;
-import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerTextCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component(ExerciseEvaluationTypes.CORRECT_TEXT + ComponentTypes.STRATEGY)
-public class ExerciseEvaluationStrategyWriteFlashcard implements ExerciseEvaluationStrategy {
+public class ExerciseEvaluationManagerWriteFlashcard implements ExerciseEvaluationManager {
     @Autowired
     private GraphTraversalSource traversalSource;
 

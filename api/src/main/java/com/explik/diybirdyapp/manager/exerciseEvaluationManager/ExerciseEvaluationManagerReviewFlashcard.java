@@ -1,10 +1,9 @@
-package com.explik.diybirdyapp.persistence.strategy;
+package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectReviewOptionsDto;
-import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerRecognizabilityRatingCommand;
 import com.explik.diybirdyapp.persistence.command.CreateOrUpdateSuperMemo2StateCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
@@ -13,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component(ExerciseEvaluationTypes.RECOGNIZABILITY + ComponentTypes.STRATEGY)
-public class ExerciseEvaluationStrategyReviewFlashcard implements ExerciseEvaluationStrategy {
+public class ExerciseEvaluationManagerReviewFlashcard implements ExerciseEvaluationManager {
     @Autowired
     CommandHandler<CreateExerciseAnswerRecognizabilityRatingCommand> createExerciseAnswerRecognizabilityRatingCommandHandler;
 

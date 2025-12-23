@@ -2,18 +2,18 @@ package com.explik.diybirdyapp.persistence.provider;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
-import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
+import com.explik.diybirdyapp.manager.exerciseEvaluationManager.ExerciseEvaluationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class ExerciseEvaluationStrategyProvider implements GenericProvider<ExerciseEvaluationStrategy> {
+public class ExerciseEvaluationStrategyProvider implements GenericProvider<ExerciseEvaluationManager> {
     @Autowired
-    private Map<String, ExerciseEvaluationStrategy> exerciseManagers;
+    private Map<String, ExerciseEvaluationManager> exerciseManagers;
 
     @Override
-    public ExerciseEvaluationStrategy get(String exerciseType) {
+    public ExerciseEvaluationManager get(String exerciseType) {
         if (exerciseType == null)
             throw new RuntimeException("Exercise type is required");
 

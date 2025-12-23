@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.operation;
+package com.explik.diybirdyapp.manager.exerciseSessionManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component(ExerciseSessionTypes.REVIEW_FLASHCARD + ComponentTypes.OPERATIONS)
-public class ExerciseSessionOperationsReviewFlashcardDeck implements ExerciseSessionOperations {
+public class ExerciseSessionManagerReviewFlashcardDeck implements ExerciseSessionManager {
     @Autowired
     private ExerciseCreationService exerciseCreationService;
 

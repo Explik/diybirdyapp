@@ -3,8 +3,8 @@ package com.explik.diybirdyapp.service.helper;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
-import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationContext;
-import com.explik.diybirdyapp.persistence.strategy.ExerciseEvaluationStrategy;
+import com.explik.diybirdyapp.manager.exerciseEvaluationManager.ExerciseEvaluationContext;
+import com.explik.diybirdyapp.manager.exerciseEvaluationManager.ExerciseEvaluationManager;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -21,7 +21,7 @@ public class ExerciseEvaluationHelper {
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private GenericProvider<ExerciseEvaluationStrategy> evaluationStrategyProvider;
+    private GenericProvider<ExerciseEvaluationManager> evaluationStrategyProvider;
 
     /**
      * Evaluates an exercise answer and returns the result.

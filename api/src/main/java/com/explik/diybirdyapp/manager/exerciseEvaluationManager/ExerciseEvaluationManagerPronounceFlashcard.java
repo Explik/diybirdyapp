@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.strategy;
+package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ConfigurationTypes;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component(ExerciseEvaluationTypes.CORRECT_SPEECH_TO_TEXT + ComponentTypes.STRATEGY)
-public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEvaluationStrategy {
+public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEvaluationManager {
     @Autowired
     CommandHandler<CreateExerciseAnswerAudioCommand> createExerciseAnswerAudioCommandHandler;
 

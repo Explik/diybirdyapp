@@ -3,8 +3,8 @@ package com.explik.diybirdyapp.service;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
-import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperations;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseCreationContext;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionConfigQuery;
@@ -27,7 +27,7 @@ public class ExerciseSessionService {
     private QueryHandler<GetExerciseSessionConfigQuery, ExerciseSessionOptionsDto> getExerciseSessionConfigQueryHandler;
 
     @Autowired
-    private GenericProvider<ExerciseSessionOperations> sessionOperationProvider;
+    private GenericProvider<ExerciseSessionManager> sessionOperationProvider;
 
     @Autowired
     private ExerciseSessionModelFactory sessionModelFactory;

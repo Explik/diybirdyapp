@@ -7,7 +7,7 @@ import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.schema.parameter.*;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManagerReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class DataInitializerService {
     private CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
 
     @Autowired
-    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
+    private ExerciseSessionManagerReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
     private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandCommandHandler;

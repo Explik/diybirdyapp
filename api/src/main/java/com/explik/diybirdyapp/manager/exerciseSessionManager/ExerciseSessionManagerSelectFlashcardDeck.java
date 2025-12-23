@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.operation;
+package com.explik.diybirdyapp.manager.exerciseSessionManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component(ExerciseSessionTypes.SELECT_FLASHCARD_DECK + ComponentTypes.OPERATIONS)
-public class ExerciseSessionOperationsSelectFlashcardDeck implements ExerciseSessionOperations {
+public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessionManager {
     @Autowired
     private ExerciseCreationService exerciseCreationService;
 

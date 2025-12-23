@@ -3,8 +3,8 @@ package com.explik.diybirdyapp.persistence.vertex.manager;
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.operation.ExerciseCreationContext;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseCreationContext;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManagerReviewFlashcardDeck;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -25,7 +25,7 @@ public class ExerciseSessionFlashcardReviewVertexFactoryUnitTests {
     GraphTraversalSource traversalSource;
 
     @Autowired
-    ExerciseSessionOperationsReviewFlashcardDeck factory;
+    ExerciseSessionManagerReviewFlashcardDeck factory;
 
     @Test
     public void givenEmptyFlashcardDeck_whenInit_thenThrowsException() {

@@ -1,7 +1,6 @@
-package com.explik.diybirdyapp.persistence.operation;
+package com.explik.diybirdyapp.manager.exerciseSessionManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
@@ -26,7 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
-public class ExerciseSessionOperationsLearnFlashcardDeck implements ExerciseSessionOperations {
+public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSessionManager {
     @Autowired
     private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
 

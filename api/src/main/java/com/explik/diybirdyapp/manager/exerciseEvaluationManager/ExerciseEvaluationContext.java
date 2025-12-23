@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.strategy;
+package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
