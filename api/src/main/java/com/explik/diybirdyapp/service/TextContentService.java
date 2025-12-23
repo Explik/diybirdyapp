@@ -13,7 +13,7 @@ public class TextContentService {
     BinaryStorageService binaryStorageService;
 
     @Autowired
-    SyncCommandHandler<AddAudioToTextContentCommand, FileContentCommandResult> addAudioCommandHandler;
+    AudioContentService audioContentService;
 
     @Autowired
     SyncCommandHandler<FetchAudioForTextContentCommand, FileContentCommandResult> fetchCommandHandler;
@@ -38,8 +38,7 @@ public class TextContentService {
         binaryStorageService.set(newFileName, fileData);
 
         try {
-            var command = new AddAudioToTextContentCommand(id, newFileName);
-            addAudioCommandHandler.handle(command);
+            audioContentService.addAudioToTextContent(id, newFileName);
         }
         catch (Exception e) {
             binaryStorageService.delete(newFileName);
