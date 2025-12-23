@@ -510,6 +510,20 @@ def upload_local_deck(deck_metadata):
             else:
                 print(f"Warning: Pronunciation file not found: {pronunciation_path}")
         
+        # Upload transcription separately using /text-content/{id}/add-transcription
+        # Check front content for transcription
+        if 'transcription' in front_content:
+            front_content_id = server_flashcard.get('frontContent', {}).get('id')
+            if front_content_id:
+                _upload_transcription(
+                    front_content_id, 
+                    front_content['transcription'].get('transcription'),
+                    front_content['transcription'].get('transcriptionSystem')
+                )
+                print(f"  Uploaded front transcription for flashcard {flashcard_dto['id']}")
+            else:
+                print(f"Warning: No front content ID found in server response for flashcard {flashcard_dto['id']}")
+        
         # Check back content for pronunciation
         if 'pronunciation' in back_content and 'content' in back_content['pronunciation']:
             pronunciation_path = os.path.join(deck_dir, back_content['pronunciation']['content'])
@@ -523,6 +537,19 @@ def upload_local_deck(deck_metadata):
                     print(f"Warning: No back content ID found in server response for flashcard {flashcard_dto['id']}")
             else:
                 print(f"Warning: Pronunciation file not found: {pronunciation_path}")
+        
+        # Check back content for transcription
+        if 'transcription' in back_content:
+            back_content_id = server_flashcard.get('backContent', {}).get('id')
+            if back_content_id:
+                _upload_transcription(
+                    back_content_id,
+                    back_content['transcription'].get('transcription'),
+                    back_content['transcription'].get('transcriptionSystem')
+                )
+                print(f"  Uploaded back transcription for flashcard {flashcard_dto['id']}")
+            else:
+                print(f"Warning: No back content ID found in server response for flashcard {flashcard_dto['id']}")
     
     print(f"✅ Successfully uploaded deck '{deck_data['name']}' with {len(deck_data['flashcards'])} flashcards")
     return server_deck
@@ -548,3 +575,30 @@ def _upload_pronunciation(text_content_id, audio_file_path):
         
         if response.status_code != 200:
             raise Exception(f"Failed to upload pronunciation: {response.text}")
+
+
+def _upload_transcription(text_content_id, transcription, transcription_system):
+    """
+    Helper function to upload transcription for a text content.
+    
+    Args:
+        text_content_id: The ID of the text content
+        transcription: The transcription text
+        transcription_system: The transcription system (e.g., "pinyin", "romaji", "IPA")
+    """
+    backend_url = get_backend_url()
+    
+    payload = {
+        "transcription": transcription,
+        "transcriptionSystem": transcription_system
+    }
+    
+    response = requests.post(
+        f"{backend_url}/text-content/{text_content_id}/add-transcription",
+        json=payload,
+        cookies=_get_request_cookies()
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"Failed to upload transcription: {response.text}")
+

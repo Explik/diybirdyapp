@@ -233,6 +233,25 @@ if st.session_state.anki_deck is not None:
                 if front_pronunciation_field:
                     front_pronunciation_string = format_field_values(anki_deck, front_pronunciation_field, 50)
                     st.caption(f"Examples: **{front_pronunciation_string}**")
+                
+                # Transcription field for text content
+                front_transcription_field = st.selectbox(
+                    "Transcription field (optional)",
+                    key="front_transcription_field",
+                    options=all_fields,
+                    help="Select a field containing transcription (e.g., pinyin, romaji)"
+                )
+                if front_transcription_field:
+                    front_transcription_string = format_field_values(anki_deck, front_transcription_field, 50)
+                    st.caption(f"Examples: **{front_transcription_string}**")
+                    
+                    # Transcription system input
+                    front_transcription_system = st.text_input(
+                        "Transcription system",
+                        key="front_transcription_system",
+                        placeholder="e.g., pinyin, romaji, IPA",
+                        help="Specify the transcription system used"
+                    )
     
     with cols[1]:
         st.markdown("#### Back Side")
@@ -281,6 +300,25 @@ if st.session_state.anki_deck is not None:
                 if back_pronunciation_field:
                     back_pronunciation_string = format_field_values(anki_deck, back_pronunciation_field, 50)
                     st.caption(f"Examples: **{back_pronunciation_string}**")
+                
+                # Transcription field for text content
+                back_transcription_field = st.selectbox(
+                    "Transcription field (optional)",
+                    key="back_transcription_field",
+                    options=all_fields,
+                    help="Select a field containing transcription (e.g., pinyin, romaji)"
+                )
+                if back_transcription_field:
+                    back_transcription_string = format_field_values(anki_deck, back_transcription_field, 50)
+                    st.caption(f"Examples: **{back_transcription_string}**")
+                    
+                    # Transcription system input
+                    back_transcription_system = st.text_input(
+                        "Transcription system",
+                        key="back_transcription_system",
+                        placeholder="e.g., pinyin, romaji, IPA",
+                        help="Specify the transcription system used"
+                    )
     
     # Step 3: Preview
     st.markdown("---")
@@ -306,6 +344,13 @@ if st.session_state.anki_deck is not None:
             if front_content_type == "Text":
                 front_value = strip_anki_formatting(card.get_raw_value(front_field))
                 st.info(front_value)
+                if front_transcription_field:
+                    try:
+                        transcription_value = strip_anki_formatting(card.get_raw_value(front_transcription_field))
+                        if transcription_value:
+                            st.caption(f"📝 Transcription: {transcription_value}")
+                    except Exception:
+                        pass
                 if front_pronunciation_field:
                     try:
                         if card.has_media(front_pronunciation_field):
@@ -339,6 +384,13 @@ if st.session_state.anki_deck is not None:
             if back_content_type == "Text":
                 back_value = strip_anki_formatting(card.get_raw_value(back_field))
                 st.info(back_value)
+                if back_transcription_field:
+                    try:
+                        transcription_value = strip_anki_formatting(card.get_raw_value(back_transcription_field))
+                        if transcription_value:
+                            st.caption(f"📝 Transcription: {transcription_value}")
+                    except Exception:
+                        pass
                 if back_pronunciation_field:
                     try:
                         if card.has_media(back_pronunciation_field):
@@ -457,6 +509,21 @@ if st.session_state.anki_deck is not None:
                                 except Exception:
                                     pass  # Skip if audio not available
                             
+                            # Handle front transcription for text content
+                            if front_content_type == "Text" and front_transcription_field and front_transcription_system:
+                                try:
+                                    transcription_text = strip_anki_formatting(flashcard.get_raw_value(front_transcription_field))
+                                    if transcription_text:
+                                        deck_storage.add_transcription(
+                                            deck_dir=deck_dir,
+                                            flashcard_id=flashcard_obj["id"],
+                                            side="front",
+                                            transcription=transcription_text,
+                                            transcription_system=front_transcription_system
+                                        )
+                                except Exception:
+                                    pass  # Skip if transcription not available
+                            
                             # Handle back media content
                             if back_content_type in ["Audio", "Image", "Video"]:
                                 try:
@@ -487,6 +554,21 @@ if st.session_state.anki_deck is not None:
                                         pronunciation_count += 1
                                 except Exception:
                                     pass  # Skip if audio not available
+                            
+                            # Handle back transcription for text content
+                            if back_content_type == "Text" and back_transcription_field and back_transcription_system:
+                                try:
+                                    transcription_text = strip_anki_formatting(flashcard.get_raw_value(back_transcription_field))
+                                    if transcription_text:
+                                        deck_storage.add_transcription(
+                                            deck_dir=deck_dir,
+                                            flashcard_id=flashcard_obj["id"],
+                                            side="back",
+                                            transcription=transcription_text,
+                                            transcription_system=back_transcription_system
+                                        )
+                                except Exception:
+                                    pass  # Skip if transcription not available
                             
                             successful_cards += 1
                             

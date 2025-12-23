@@ -43,9 +43,11 @@ This application helps you create flashcard decks from various sources with auto
 - Includes flashcard data and media files
 - Validates deck structure before import
 
-**📦 Create deck from .anki file** *(Coming Soon)*
+**� Create deck from .anki file**
 - Import existing Anki decks
-- Preserve card formatting and media
+- Support for text, audio, image, and video content
+- Preserve pronunciation audio and transcription
+- Auto-detect content types from fields
 
 **🔊 Add pronunciation to flashcards**
 - Manual recording for each flashcard
