@@ -1,16 +1,16 @@
 package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 
 import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerAudioCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
+import com.explik.diybirdyapp.persistence.query.GetCorrectExerciseAnswerSpeakModelForExerciseQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
+import com.explik.diybirdyapp.persistence.query.modelFactory.CorrectExerciseAnswerSpeakModel;
 import com.explik.diybirdyapp.service.storageService.SpeechToTextService;
-import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +24,9 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
     @Autowired
     SpeechToTextService speechToTextService;
 
+    @Autowired
+    QueryHandler<GetCorrectExerciseAnswerSpeakModelForExerciseQuery, CorrectExerciseAnswerSpeakModel> commandHandler;
+
     @Override
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
@@ -31,11 +34,13 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
         if (!(context.getInput()instanceof ExerciseInputRecordAudioDto input))
             throw new RuntimeException("Input model type is not audio");
 
-        // Fetch expected text
-        var correctTextVertex = (TextContentVertex)exerciseVertex.getCorrectOptions().getFirst();
-        var correctLanguageVertex = correctTextVertex.getLanguage();
-        var textToSpeechConfig = ConfigurationVertex.findByLanguageAndType(correctLanguageVertex, ConfigurationTypes.GOOGLE_SPEECH_TO_TEXT).getFirst();
-        var textToSpeechId = (String)textToSpeechConfig.getPropertyValue("languageCode");
+        // Fetch speech-to-text configuration and correct text values using query
+        var query = new GetCorrectExerciseAnswerSpeakModelForExerciseQuery();
+        query.setExerciseId(exerciseVertex.getId());
+        
+        var config = commandHandler.handle(query);
+        var textToSpeechId = config.getLanguageCode();
+        var correctTextValues = config.getCorrectTextValues();
 
         // Transcribe answer
         var audioContentUrl = input.getUrl();
@@ -52,8 +57,9 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
         exercise.setId(exerciseVertex.getId());
         exercise.setType(exerciseVertex.getExerciseType().getId());
 
-        // Generate general feedback
-        var isCorrect = transcribedText.equalsIgnoreCase(correctTextVertex.getValue());
+        // Generate general feedback (check if transcribed text matches any correct option)
+        var isCorrect = correctTextValues.stream()
+                .anyMatch(correctValue -> correctValue.equalsIgnoreCase(transcribedText));
 
         if (!transcribedText.isBlank()) {
             // Generate exercise feedback
@@ -64,7 +70,7 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
 
             // Input feedback will be generated below
             var inputFeedback = new ExerciseInputRecordAudioDto.ExerciseInputRecordAudioFeedbackDto();
-            inputFeedback.setCorrectValues(List.of(correctTextVertex.getValue()));
+            inputFeedback.setCorrectValues(correctTextValues);
             inputFeedback.setIncorrectValues(isCorrect ? List.of() : List.of(transcribedText));
 
             var exerciseInput = new ExerciseInputRecordAudioDto();
