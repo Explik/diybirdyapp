@@ -11,7 +11,6 @@ import com.explik.diybirdyapp.service.storageService.SpeechToTextService;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +18,6 @@ import java.util.List;
 
 @Component(ExerciseEvaluationTypes.CORRECT_SPEECH_TO_TEXT + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationStrategyPronounceFlashcard implements ExerciseEvaluationStrategy {
-    @Autowired
-    GraphTraversalSource traversalSource;
-
     @Autowired
     CommandHandler<CreateExerciseAnswerAudioCommand> createExerciseAnswerAudioCommandHandler;
 
