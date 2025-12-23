@@ -50,6 +50,7 @@ public class ContentVertex extends AbstractVertex {
         var vertexLabel = vertex.label();
         return switch (vertexLabel) {
             case AudioContentVertex.LABEL -> new AudioContentVertex(traversalSource, vertex);
+            case FlashcardVertex.LABEL -> new FlashcardVertex(traversalSource, vertex);
             case ImageContentVertex.LABEL -> new ImageContentVertex(traversalSource, vertex);
             case TextContentVertex.LABEL -> new TextContentVertex(traversalSource, vertex);
             case VideoContentVertex.LABEL -> new VideoContentVertex(traversalSource, vertex);
