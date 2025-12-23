@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.persistence.command.handler;
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
-import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;

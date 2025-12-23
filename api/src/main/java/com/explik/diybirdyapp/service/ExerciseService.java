@@ -6,7 +6,7 @@ import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.query.GetAllExercisesQuery;
 import com.explik.diybirdyapp.persistence.query.GetExerciseByIdsQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
-import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
+import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import com.explik.diybirdyapp.service.helper.ExerciseEvaluationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

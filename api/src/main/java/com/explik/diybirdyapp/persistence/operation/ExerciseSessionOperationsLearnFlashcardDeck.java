@@ -11,7 +11,7 @@ import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.schema.parameter.*;
-import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;

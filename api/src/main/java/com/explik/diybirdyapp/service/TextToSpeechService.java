@@ -1,12 +1,11 @@
-package com.explik.diybirdyapp.persistence.service;
+package com.explik.diybirdyapp.service;
 
+import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.protobuf.ByteString;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 
 @Service

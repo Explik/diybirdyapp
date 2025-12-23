@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.FileContentCommandResult;
-import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
+import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

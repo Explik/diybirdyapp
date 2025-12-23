@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.service;
+package com.explik.diybirdyapp.service.storageService;
 
 public interface BinaryStorageService {
     byte[] get(String key);

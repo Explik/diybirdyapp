@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.persistence.modelFactory;
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
-import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

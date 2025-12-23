@@ -2,7 +2,7 @@ package com.explik.diybirdyapp.persistence.command.handler;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.command.GenerateAudioForTextContentCommand;
-import com.explik.diybirdyapp.persistence.service.TextToSpeechService;
+import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

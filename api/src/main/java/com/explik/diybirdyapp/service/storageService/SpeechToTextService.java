@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.persistence.service;
+package com.explik.diybirdyapp.service.storageService;
 
 import com.google.cloud.speech.v1.RecognitionAudio;
 import com.google.cloud.speech.v1.RecognitionConfig;

@@ -9,7 +9,7 @@ import com.explik.diybirdyapp.persistence.modelFactory.FlashcardModelFactory;
 import com.explik.diybirdyapp.persistence.query.GetAllFlashcardsQuery;
 import com.explik.diybirdyapp.persistence.query.GetFlashcardByIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
-import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
+import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
