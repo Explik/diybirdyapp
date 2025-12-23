@@ -35,20 +35,6 @@ public class ExerciseEvaluationManagerReviewFlashcard implements ExerciseEvaluat
         createExerciseAnswerRecognizabilityRatingCommandHandler.handle(command);
 
         // Update spaced repetition data (if applicable)
-        updateSpacedRepetitionData(exerciseVertex, input);
-
-        // Generate feedback
-        var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();
-
-        var exercise = new ExerciseDto();
-        exercise.setId(exerciseVertex.getId());
-        exercise.setType(exerciseVertex.getExerciseType().getId());
-        exercise.setFeedback(exerciseFeedback);
-
-        return exercise;
-    }
-
-    private void updateSpacedRepetitionData(ExerciseVertex exerciseVertex, ExerciseInputSelectReviewOptionsDto answerModel) {
         var contentVertex = exerciseVertex.getContent();
         if (contentVertex == null)
             throw new IllegalArgumentException("Exercise content is null");
@@ -59,5 +45,15 @@ public class ExerciseEvaluationManagerReviewFlashcard implements ExerciseEvaluat
         command.setRating(answerModel.getRating());
 
         createOrUpdateSuperMemo2StateCommandHandler.handle(command);
+
+        // Generate feedback
+        var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();
+
+        var exercise = new ExerciseDto();
+        exercise.setId(exerciseVertex.getId());
+        exercise.setType(exerciseVertex.getExerciseType().getId());
+        exercise.setFeedback(exerciseFeedback);
+
+        return exercise;
     }
 }
