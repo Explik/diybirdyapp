@@ -56,8 +56,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         var options = context.getSessionModel();
 
         // Create session using command
+        var sessionId = (options.getId() != null) ? options.getId() : UUID.randomUUID().toString();
         var command = new CreateLearnFlashcardSessionCommand();
-        command.setId(options.getId());
+        command.setId(sessionId);
         command.setFlashcardDeckId(options.getFlashcardDeckId());
         command.setRetypeCorrectAnswer(false);
         command.setTextToSpeechEnabled(false);
@@ -75,7 +76,6 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         createLearnFlashcardSessionCommandHandler.handle(command);
 
         // Load the created session
-        var sessionId = options.getId() != null ? options.getId() : command.getId();
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
 
         // Generate first exercise

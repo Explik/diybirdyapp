@@ -41,15 +41,15 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         var options = context.getSessionModel();
 
         // Create session using command
+        var sessionId = (options.getId() != null) ? options.getId() : UUID.randomUUID().toString();
         var command = new CreateSelectFlashcardSessionCommand();
-        command.setId(options.getId());
+        command.setId(sessionId);
         command.setFlashcardDeckId(options.getFlashcardDeckId());
         command.setTextToSpeechEnabled(false);
         
         createSelectFlashcardSessionCommandHandler.handle(command);
 
         // Load the created session
-        var sessionId = options.getId() != null ? options.getId() : command.getId();
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
 
         // Generate first exercise
