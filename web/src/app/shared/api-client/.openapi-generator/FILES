@@ -92,6 +92,7 @@ model/select-placeholders-input-part.ts
 model/signup-dto.ts
 model/submit-answer-request.ts
 model/submit-answer-rich-request.ts
+model/text-content-transcription-dto.ts
 model/update-config-request.ts
 model/update1-request.ts
 model/upload-file-request.ts

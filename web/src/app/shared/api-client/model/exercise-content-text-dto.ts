@@ -13,5 +13,6 @@ import { ExerciseContentDto } from './exercise-content-dto';
 export interface ExerciseContentTextDto extends ExerciseContentDto { 
     text?: string;
     pronunciationUrl?: string;
+    transcription?: string;
 }
 
