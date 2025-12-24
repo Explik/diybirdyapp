@@ -14,9 +14,9 @@ public class TranscriptionVertex extends AbstractVertex {
 
     public static final String PROPERTY_ID = "id";
 
-    public static final String EDGE_HAS_SOURCE_CONTENT = "hasSourceContent";
-    public static final String EDGE_HAS_TEXT_CONTENT = "hasTextContent";
-    public static final String EDGE_HAS_SYSTEM = "hasSystem";
+    public static final String EDGE_SOURCE_CONTENT = "hasSourceContent";
+    public static final String EDGE_TEXT_CONTENT = "hasTextContent";
+    public static final String EDGE_SYSTEM = "hasSystem";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -27,27 +27,27 @@ public class TranscriptionVertex extends AbstractVertex {
     }
 
     public void setSourceContent(ContentVertex sourceContent) {
-        addEdgeOneToOne(EDGE_HAS_SOURCE_CONTENT, sourceContent);
+        addEdgeOneToOne(EDGE_SOURCE_CONTENT, sourceContent);
     }
 
     public ContentVertex getSourceContent() {
-        return VertexHelper.getOutgoingModel(this, EDGE_HAS_SOURCE_CONTENT, VertexHelper::createContent);
+        return VertexHelper.getOutgoingModel(this, EDGE_SOURCE_CONTENT, VertexHelper::createContent);
     }
 
     public void setTextContent(TextContentVertex textContent) {
-        addEdgeOneToOne(EDGE_HAS_TEXT_CONTENT, textContent);
+        addEdgeOneToOne(EDGE_TEXT_CONTENT, textContent);
     }
 
     public TextContentVertex getTextContent() {
-        return VertexHelper.getOutgoingModel(this, EDGE_HAS_TEXT_CONTENT, TextContentVertex::new);
+        return VertexHelper.getOutgoingModel(this, EDGE_TEXT_CONTENT, TextContentVertex::new);
     }
 
     public void setSystem(TranscriptionSystemVertex system) {
-        addEdgeOneToOne(EDGE_HAS_SYSTEM, system);
+        addEdgeOneToOne(EDGE_SYSTEM, system);
     }
 
     public TranscriptionSystemVertex getSystem() {
-        return VertexHelper.getOutgoingModel(this, EDGE_HAS_SYSTEM, TranscriptionSystemVertex::new);
+        return VertexHelper.getOutgoingModel(this, EDGE_SYSTEM, TranscriptionSystemVertex::new);
     }
 
     public static TranscriptionVertex create(GraphTraversalSource traversalSource) {
@@ -68,5 +68,16 @@ public class TranscriptionVertex extends AbstractVertex {
         return vertices.stream()
                 .map(v -> new TranscriptionVertex(traversalSource, v))
                 .toList();
+    }
+
+    public static TranscriptionVertex findBySourceContentId(GraphTraversalSource traversalSource, String contentId) {
+        var vertexQuery = traversalSource.V()
+                .hasLabel(LABEL)
+                .out(EDGE_SOURCE_CONTENT)
+                .has(ContentVertex.PROPERTY_ID, contentId)
+                .inE(EDGE_SOURCE_CONTENT)
+                .outV();
+        
+        return vertexQuery.hasNext() ? new TranscriptionVertex(traversalSource, vertexQuery.next()) : null;
     }
 }

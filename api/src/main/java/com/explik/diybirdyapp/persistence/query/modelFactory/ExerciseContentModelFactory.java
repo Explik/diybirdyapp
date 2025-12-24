@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.query.modelFactory;
 
-import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
 import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
@@ -104,6 +103,13 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
                 model.setPronunciationUrl(filePath);
             }
             catch (Exception e) { }
+        }
+
+        var transcriptionVertex = TranscriptionVertex.findBySourceContentId(
+                vertex.getUnderlyingSource(),
+                vertex.getId());
+        if (transcriptionVertex != null) {
+            model.setTranscription(transcriptionVertex.getTextContent().getValue());
         }
 
         return model;
