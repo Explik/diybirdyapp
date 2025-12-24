@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.persistence.command;
 
 public class CreateTextToSpeechConfigVertexCommand implements AtomicCommand {
     private String id;
+    private String type;
     private String languageCode;
     private String voiceName;
     private String languageVertexId;
@@ -12,6 +13,14 @@ public class CreateTextToSpeechConfigVertexCommand implements AtomicCommand {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getLanguageCode() {

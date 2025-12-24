@@ -90,6 +90,14 @@ public class DataInitializerService {
                 .withGoogleTextToSpeech("cmn-cn", "cmn-CN-Chirp3-HD-Achird")
                 .withGoogleSpeechToText("cmn-CN")
                 .build(traversalSource);
+
+        builderFactory.createLanguageVertexBuilder()
+                .withId("langVertex4")
+                .withName("Mongolian")
+                .withIsoCode("MN")
+                .withGoogleTranslate("mn-MN")
+                .withMicrosoftTextToSpeech("mn-MN-BataaNeural")
+                .build(traversalSource);
     }
 
     public void addInitialContentAndConcepts() {

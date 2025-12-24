@@ -13,9 +13,6 @@ import java.io.IOException;
 @Service
 public class GoogleTextToSpeechService {
     @Autowired
-    BinaryStorageService storageService;
-
-    @Autowired
     TextToSpeechClient textToSpeechClient;
 
     public byte[] generateAudio(TextToSpeechModel<GoogleTextToSpeechVoiceModel> textToSpeechModel) throws IOException {
@@ -45,12 +42,6 @@ public class GoogleTextToSpeechService {
         ByteString audioContents = response.getAudioContent();
 
         return audioContents.toByteArray();
-    }
-
-    public void generateAudioFile(TextToSpeechModel<GoogleTextToSpeechVoiceModel> textObject, String outputPath) throws IOException {
-        // Write the audio content to the output file
-        var audioBytes = generateAudio(textObject);
-        storageService.set(outputPath, audioBytes);
     }
 }
 
