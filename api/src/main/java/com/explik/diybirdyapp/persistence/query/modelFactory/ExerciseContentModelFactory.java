@@ -1,11 +1,14 @@
 package com.explik.diybirdyapp.persistence.query.modelFactory;
 
 import com.explik.diybirdyapp.model.exercise.*;
+import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
+import com.explik.diybirdyapp.model.internal.VoiceModel;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
-import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
+import com.explik.diybirdyapp.persistence.query.GetTextContentByIdQuery;
+import com.explik.diybirdyapp.persistence.query.GetVoiceByLanguageIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
-import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.persistence.vertex.*;
+import com.explik.diybirdyapp.service.TextToSpeechService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +18,7 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
     private TextToSpeechService textToSpeechService;
 
     @Autowired
-    private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
+    private QueryHandler<GetVoiceByLanguageIdQuery, VoiceModel> generateVoiceConfigQueryHandler;
 
     @Override
     public ExerciseContentDto create(ExerciseVertex exerciseVertex, ExerciseRetrievalContext context) {
@@ -91,15 +94,19 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
             model.setPronunciationUrl(pronunciationVertex.getAudioContent().getUrl());
         }
         else if (context.getTextToSpeechEnabled()) {
-            var query = new GenerateVoiceConfigQuery();
-            query.setTextContentVertexId(vertex.getId());
+            var query = new GetVoiceByLanguageIdQuery();
+            query.setLanguageId(vertex.getLanguage().getId());
             var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
             if (voiceConfig == null)
                 return model;
 
+            var textToSpeechModel = TextToSpeechModel.create(
+                    vertex.getValue(),
+                    voiceConfig);
+
             var filePath = vertex.getId() + ".wav";
             try {
-                textToSpeechService.generateAudioFile(voiceConfig, filePath);
+                textToSpeechService.generateAudioFile(textToSpeechModel, filePath);
                 model.setPronunciationUrl(filePath);
             }
             catch (Exception e) { }

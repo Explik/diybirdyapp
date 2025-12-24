@@ -1,6 +1,8 @@
 package com.explik.diybirdyapp.persistence.service;
 
-import com.explik.diybirdyapp.service.TextToSpeechService;
+import com.explik.diybirdyapp.model.internal.GoogleTextToSpeechVoiceModel;
+import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
+import com.explik.diybirdyapp.service.GoogleTextToSpeechService;
 import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -32,17 +34,17 @@ public class TextToSpeechServiceIntegrationTest {
     }
 
     @Autowired
-    private TextToSpeechService textToSpeechService;
+    private GoogleTextToSpeechService textToSpeechService;
 
     @Test
     public void givenValidConfig_whenGenerateAudioFile_createAudioFile() throws IOException {
-        var textObject = new TextToSpeechService.Text(
-                "Hello, this is a test.",
-                "en-US",
-                "en-US-Wavenet-D",
-                "LINEAR16");
+        var voiceModel = new GoogleTextToSpeechVoiceModel();
+        voiceModel.setVoiceLanguageCode("en-US");
+        voiceModel.setVoiceName("en-US-Wavenet-D");
 
-        textToSpeechService.generateAudioFile(textObject, filePath);
+        var textToSpeechModel = TextToSpeechModel.create("Hello, this is a test.", voiceModel);
+
+        textToSpeechService.generateAudioFile(textToSpeechModel, filePath);
 
         // Check the output file
         assertNotNull(storageService.get(filePath));

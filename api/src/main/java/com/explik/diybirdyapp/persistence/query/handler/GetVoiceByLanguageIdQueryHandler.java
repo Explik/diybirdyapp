@@ -1,7 +1,9 @@
 package com.explik.diybirdyapp.persistence.query.handler;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
-import com.explik.diybirdyapp.model.content.VoiceModel;
+import com.explik.diybirdyapp.model.internal.GoogleTextToSpeechVoiceModel;
+import com.explik.diybirdyapp.model.internal.MicrosoftTextToSpeechVoiceModel;
+import com.explik.diybirdyapp.model.internal.VoiceModel;
 import com.explik.diybirdyapp.persistence.query.GetVoiceByLanguageIdQuery;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
@@ -20,21 +22,51 @@ public class GetVoiceByLanguageIdQueryHandler implements QueryHandler<GetVoiceBy
         if (languageVertex == null)
             return null;
 
-        var voiceConfigs = ConfigurationVertex.findByLanguageAndType(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
-        var voiceConfig = voiceConfigs.stream().findFirst().orElse(null);
-        if (voiceConfig == null)
+        // Try to get Google TTS configuration first, then Microsoft TTS
+        ConfigurationVertex configurationVertex = null;
+
+        if(configurationVertex == null)
+            configurationVertex = getConfiguration(languageVertex, ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
+        if (configurationVertex == null)
+            configurationVertex = getConfiguration(languageVertex, ConfigurationTypes.MICROSOFT_TEXT_TO_SPEECH);
+
+        if (configurationVertex == null)
             return null;
 
-        return createModel(languageVertex, voiceConfig);
+        return createModel(languageVertex, configurationVertex);
+    }
+
+    private static ConfigurationVertex getConfiguration(LanguageVertex languageVertex, String configurationType) {
+        return ConfigurationVertex
+                .findByLanguageAndType(languageVertex, configurationType)
+                .stream()
+                .findFirst()
+                .orElse(null);
     }
 
     private static VoiceModel createModel(LanguageVertex langVertex, ConfigurationVertex configVertex) {
-        var model = new VoiceModel();
+        return switch (configVertex.getType()) {
+            case ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH -> createGoogleModel(langVertex, configVertex);
+            case ConfigurationTypes.MICROSOFT_TEXT_TO_SPEECH -> createMicrosoftModel(langVertex, configVertex);
+            default -> throw new IllegalArgumentException("Unsupported configuration type: " + configVertex.getType());
+        };
+    }
+
+    private static GoogleTextToSpeechVoiceModel createGoogleModel(LanguageVertex langVertex, ConfigurationVertex configVertex) {
+        var model = new GoogleTextToSpeechVoiceModel();
         model.setLanguageId(langVertex.getId());
         model.setLanguageName(langVertex.getName());
         model.setVoiceId(configVertex.getId());
         model.setVoiceName(configVertex.getPropertyValue("voiceName"));
         model.setVoiceLanguageCode(configVertex.getPropertyValue("languageCode"));
+        return model;
+    }
+
+    private static MicrosoftTextToSpeechVoiceModel createMicrosoftModel(LanguageVertex langVertex, ConfigurationVertex configVertex) {
+        var model = new MicrosoftTextToSpeechVoiceModel();
+        model.setLanguageId(langVertex.getId());
+        model.setLanguageName(langVertex.getName());
+        model.setVoiceName(configVertex.getPropertyValue("voiceName"));
         return model;
     }
 }

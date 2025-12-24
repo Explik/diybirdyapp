@@ -1,12 +1,13 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.ConfigurationTypes;
+import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
+import com.explik.diybirdyapp.model.internal.VoiceModel;
 import com.explik.diybirdyapp.persistence.command.GenerateAudioForTextContentCommand;
-import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
+import com.explik.diybirdyapp.persistence.query.GetTextContentByIdQuery;
+import com.explik.diybirdyapp.persistence.query.GetVoiceByLanguageIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
-import com.explik.diybirdyapp.service.TextToSpeechService;
-import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
+import com.explik.diybirdyapp.service.TextToSpeechService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,10 @@ public class GenerateAudioForTextContentCommandHandler implements CommandHandler
     private TextToSpeechService textToSpeechService;
 
     @Autowired
-    private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
+    private QueryHandler<GetTextContentByIdQuery, TextContentVertex> getTextContentByIdQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetVoiceByLanguageIdQuery, VoiceModel> generateVoiceConfigQueryHandler;
 
     @Override
     public void handle(GenerateAudioForTextContentCommand command) {
@@ -40,15 +44,28 @@ public class GenerateAudioForTextContentCommandHandler implements CommandHandler
      * @return The generated audio bytes
      */
     public byte[] handleAndReturnAudio(GenerateAudioForTextContentCommand command) {
-        var query = new GenerateVoiceConfigQuery();
-        query.setTextContentVertexId(command.getTextContentId());
+        // Fetch text for the given ID
+        var textQuery = new GetTextContentByIdQuery();
+        textQuery.setId(command.getTextContentId());
+
+        var textContentVertex = getTextContentByIdQueryHandler.handle(textQuery);
+        if (textContentVertex == null)
+            throw new RuntimeException("Text content not found: " + command.getTextContentId());
+
+        // Fetch voice config for the text's language
+        var query = new GetVoiceByLanguageIdQuery();
+        query.setLanguageId(textContentVertex.getLanguage().getId());
 
         var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
         if (voiceConfig == null)
             throw new RuntimeException("No text to speech config found for text content: " + command.getTextContentId());
 
+        // Generate audio using TTS service
+        var textToSpeechModel = TextToSpeechModel.create(
+                textContentVertex.getValue(),
+                voiceConfig);
         try {
-            return textToSpeechService.generateAudio(voiceConfig);
+            return textToSpeechService.generateAudio(textToSpeechModel);
         }
         catch (Exception e) {
             throw new RuntimeException("Failed to generate audio for text content: " + command.getTextContentId(), e);

@@ -1,54 +1,34 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
+import com.explik.diybirdyapp.model.internal.GoogleTextToSpeechVoiceModel;
+import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.google.cloud.texttospeech.v1.*;
-import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 
 @Service
 public class TextToSpeechService {
     @Autowired
-    BinaryStorageService storageService;
+    GoogleTextToSpeechService googleTextToSpeechService;
 
-    @Autowired
-    TextToSpeechClient textToSpeechClient;
+    public byte[] generateAudio(TextToSpeechModel textToSpeechModel) throws IOException {
+        var voiceModel = textToSpeechModel.getVoice();
 
-    public byte[] generateAudio(Text textObject) throws IOException {
-        // Build the input text
-        SynthesisInput input = SynthesisInput.newBuilder()
-                .setText(textObject.text())
-                .build();
+        if (voiceModel instanceof GoogleTextToSpeechVoiceModel googleVoiceModel)
+            return googleTextToSpeechService.generateAudio(textToSpeechModel);
 
-        // Configure the voice selection
-        VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
-                .setLanguageCode(textObject.languageCode())
-                .setName(textObject.voiceName())
-                .build();
-
-        // Configure the audio settings
-        AudioConfig audioConfig = AudioConfig.newBuilder()
-                .setAudioEncoding(AudioEncoding.valueOf(textObject.audioEncoding))
-                .build();
-
-        // Perform the text-to-speech request
-        SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
-
-        // Get the audio content from the response
-        ByteString audioContents = response.getAudioContent();
-
-        return audioContents.toByteArray();
-
+        throw new UnsupportedOperationException("Text-to-speech voice type not supported");
     }
 
-    public void generateAudioFile(Text textObject, String outputPath) throws IOException {
-        // Write the audio content to the output file
-        var audioBytes = generateAudio(textObject);
-        storageService.set(outputPath, audioBytes);
-    }
+    public void generateAudioFile(TextToSpeechModel textObject, String outputPath) throws IOException {
+        var voiceModel = textObject.getVoice();
 
-    public record Text (String text, String languageCode, String voiceName, String audioEncoding) { }
+        if (voiceModel instanceof GoogleTextToSpeechVoiceModel googleVoiceModel) {
+            googleTextToSpeechService.generateAudioFile(textObject, outputPath);
+            return;
+        }
+
+        throw new UnsupportedOperationException("Text-to-speech voice type not supported");
+    }
 }
-

@@ -4,19 +4,21 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
+import com.explik.diybirdyapp.model.internal.VoiceModel;
 import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.query.GenerateVoiceConfigQuery;
+import com.explik.diybirdyapp.persistence.query.GetVoiceByLanguageIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.schema.parameter.*;
-import com.explik.diybirdyapp.service.TextToSpeechService;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
+import com.explik.diybirdyapp.service.TextToSpeechService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,7 +48,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     private TextToSpeechService textToSpeechService;
 
     @Autowired
-    private QueryHandler<GenerateVoiceConfigQuery, TextToSpeechService.Text> generateVoiceConfigQueryHandler;
+    private QueryHandler<GetVoiceByLanguageIdQuery, VoiceModel> generateVoiceConfigQueryHandler;
 
     @Autowired
     private CommandHandler<CreateLearnFlashcardSessionCommand> createLearnFlashcardSessionCommandHandler;
@@ -318,15 +320,19 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             return existingPronunciation.getAudioContent();
 
         // Generate pronunciation file
-        var query = new GenerateVoiceConfigQuery();
-        query.setTextContentVertexId(textContentVertex.getId());
+        var query = new GetVoiceByLanguageIdQuery();
+        query.setLanguageId(textContentVertex.getLanguage().getId());
+
         var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
         if (voiceConfig == null)
             return null;
 
+        var textToSpeechModel = TextToSpeechModel.create(
+                textContentVertex.getValue(),
+                voiceConfig);
         var filePath = textContentVertex.getId() + ".wav";
         try {
-            textToSpeechService.generateAudioFile(voiceConfig, filePath);
+            textToSpeechService.generateAudioFile(textToSpeechModel, filePath);
         }
         catch (Exception e) {
             System.err.println("Failed to generate audio for text content: " + textContentVertex.getId());
