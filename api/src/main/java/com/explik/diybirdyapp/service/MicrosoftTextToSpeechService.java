@@ -14,15 +14,14 @@ import java.util.Objects;
 
 @Service
 public class MicrosoftTextToSpeechService {
-    private static String speechKey = System.getenv("AZURE_SPEECH_KEY");
-    private static String endpoint = System.getenv("AZURE_SPEECH_REGION"); // Ex. "westeurope"
-
     public byte[] generateAudio(TextToSpeechModel<MicrosoftTextToSpeechVoiceModel> textToSpeechModel) throws IOException {
         try {
             var voiceModel = textToSpeechModel.getVoice();
             var text = textToSpeechModel.getText();
 
-            SpeechConfig speechConfig = SpeechConfig.fromSubscription(speechKey, endpoint);
+            SpeechConfig speechConfig = SpeechConfig.fromSubscription(
+                    System.getenv("AZURE_SPEECH_KEY"),
+                    System.getenv("AZURE_SPEECH_REGION"));
             speechConfig.setSpeechSynthesisVoiceName(voiceModel.getVoiceName());
             speechConfig.setSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
 
