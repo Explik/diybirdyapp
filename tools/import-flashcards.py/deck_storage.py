@@ -223,6 +223,57 @@ class DeckStorage:
         
         return media_path
     
+    def add_transcription(
+        self,
+        deck_dir: str,
+        flashcard_id: str,
+        side: str,  # "front" or "back"
+        transcription: str,
+        transcription_system: str
+    ):
+        """
+        Add transcription to a text content flashcard.
+        
+        Args:
+            deck_dir: Path to the deck directory
+            flashcard_id: ID of the flashcard
+            side: Which side to add transcription to ("front" or "back")
+            transcription: The transcription text
+            transcription_system: The transcription system (e.g., "pinyin", "romaji", "IPA")
+        """
+        deck_path = Path(deck_dir)
+        data_file = deck_path / "data.json"
+        
+        # Load deck data
+        with open(data_file, 'r', encoding='utf-8') as f:
+            deck_data = json.load(f)
+        
+        # Find the flashcard
+        flashcard = next((fc for fc in deck_data['flashcards'] if fc['id'] == flashcard_id), None)
+        
+        if flashcard is None:
+            raise ValueError(f"Flashcard with ID {flashcard_id} not found")
+        
+        # Add transcription to the appropriate side
+        content_key = f"{side}Content"
+        if content_key not in flashcard:
+            raise ValueError(f"Flashcard does not have {content_key}")
+        
+        # Validate that this is text content
+        if flashcard[content_key].get("type") != "text":
+            raise ValueError(f"Transcription can only be added to text content")
+        
+        # Add transcription
+        flashcard[content_key]["transcription"] = {
+            "transcription": transcription,
+            "transcriptionSystem": transcription_system
+        }
+        
+        # Save updated data.json
+        with open(data_file, 'w', encoding='utf-8') as f:
+            json.dump(deck_data, f, indent=2, ensure_ascii=False)
+
+    
     def add_media_content(
         self,
         deck_dir: str,

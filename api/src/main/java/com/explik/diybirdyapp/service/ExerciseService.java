@@ -3,8 +3,11 @@ package com.explik.diybirdyapp.service;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
-import com.explik.diybirdyapp.persistence.repository.ExerciseRepository;
-import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
+import com.explik.diybirdyapp.persistence.query.GetAllExercisesQuery;
+import com.explik.diybirdyapp.persistence.query.GetExerciseByIdsQuery;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
+import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
+import com.explik.diybirdyapp.service.helper.ExerciseEvaluationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +21,20 @@ public class ExerciseService {
     BinaryStorageService binaryStorageService;
 
     @Autowired
-    ExerciseRepository repository;
+    private QueryHandler<GetExerciseByIdsQuery, ExerciseDto> getExerciseByIdsQueryHandler;
+
+    @Autowired
+    private QueryHandler<GetAllExercisesQuery, List<ExerciseDto>> getAllExercisesQueryHandler;
+
+    @Autowired
+    private ExerciseEvaluationHelper evaluationHelper;
 
     public ExerciseDto getExercise(String id, String sessionId) {
-        return repository.get(id, sessionId);
+        var query = new GetExerciseByIdsQuery();
+        query.setId(id);
+        query.setSessionId(sessionId);
+
+        return getExerciseByIdsQueryHandler.handle(query);
     }
 
     public ExerciseDto submitExerciseAnswer(ExerciseAnswerModel answer, MultipartFile[] files) {
@@ -37,7 +50,7 @@ public class ExerciseService {
         validateFiles(answer, files);
         saveFilesIfAny(files);
 
-        return repository.submitAnswer(answer);
+        return evaluationHelper.evaluateAnswer(answer);
     }
 
     private void validateFiles(ExerciseAnswerModel answer, MultipartFile[] files) {
@@ -77,6 +90,7 @@ public class ExerciseService {
     }
 
     public List<ExerciseDto> getExercises() {
-        return repository.getAll();
+        var query = new GetAllExercisesQuery();
+        return getAllExercisesQueryHandler.handle(query);
     }
 }

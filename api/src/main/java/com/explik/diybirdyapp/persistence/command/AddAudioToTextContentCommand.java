@@ -1,19 +1,35 @@
 package com.explik.diybirdyapp.persistence.command;
 
-public class AddAudioToTextContentCommand {
-    private final String textId;
-    private final String audioUrl;
+/**
+ * Command to add audio pronunciation to a text content vertex.
+ * This is an atomic command that creates a pronunciation vertex and links it to the text content.
+ */
+public class AddAudioToTextContentCommand implements AtomicCommand {
+    private String id;
+    private String textContentId;
+    private String audioUrl;
 
-    public AddAudioToTextContentCommand(String textId, String audioUrl) {
-        this.textId = textId;
-        this.audioUrl = audioUrl;
+    public String getId() {
+        return id;
     }
 
-    public String getTextId() {
-        return textId;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTextContentId() {
+        return textContentId;
+    }
+
+    public void setTextContentId(String textContentId) {
+        this.textContentId = textContentId;
     }
 
     public String getAudioUrl() {
         return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
     }
 }

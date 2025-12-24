@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.command;
 
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
-import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
+import com.explik.diybirdyapp.service.LanguageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -22,7 +22,7 @@ public class CreateLanguageCommand implements Runnable {
     public String isoCode;
 
     @Autowired
-    public LanguageRepository languageRepository;
+    public LanguageService languageService;
 
     public void run() {
         var languageId = (id != null) ? id : UUID.randomUUID().toString();
@@ -31,6 +31,6 @@ public class CreateLanguageCommand implements Runnable {
         language.setName(name);
         language.setIsoCode(isoCode);
 
-        languageRepository.add(language);
+        languageService.create(language);
     }
 }

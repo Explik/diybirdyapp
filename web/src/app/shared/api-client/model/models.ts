@@ -61,6 +61,7 @@ export * from './select-placeholders-input-part';
 export * from './signup-dto';
 export * from './submit-answer-request';
 export * from './submit-answer-rich-request';
+export * from './text-content-transcription-dto';
 export * from './update1-request';
 export * from './update-config-request';
 export * from './upload-file-request';

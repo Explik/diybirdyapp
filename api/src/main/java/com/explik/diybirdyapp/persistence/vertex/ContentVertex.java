@@ -39,4 +39,22 @@ public class ContentVertex extends AbstractVertex {
 
         super.setProperty(propertyKey, value);
     }
+
+
+    public static ContentVertex getById(GraphTraversalSource traversalSource, String id) {
+        var vertex = traversalSource.V().has(ContentVertex.PROPERTY_ID, id).tryNext().orElse(null);
+        if (vertex == null) {
+            return null;
+        }
+
+        var vertexLabel = vertex.label();
+        return switch (vertexLabel) {
+            case AudioContentVertex.LABEL -> new AudioContentVertex(traversalSource, vertex);
+            case FlashcardVertex.LABEL -> new FlashcardVertex(traversalSource, vertex);
+            case ImageContentVertex.LABEL -> new ImageContentVertex(traversalSource, vertex);
+            case TextContentVertex.LABEL -> new TextContentVertex(traversalSource, vertex);
+            case VideoContentVertex.LABEL -> new VideoContentVertex(traversalSource, vertex);
+            default -> throw new IllegalStateException("Unknown content vertex label: " + vertexLabel);
+        };
+    }
 }

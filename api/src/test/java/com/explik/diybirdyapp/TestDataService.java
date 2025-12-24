@@ -1,8 +1,9 @@
 package com.explik.diybirdyapp;
 
+import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
-import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
-import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
+import com.explik.diybirdyapp.service.FlashcardDeckService;
+import com.explik.diybirdyapp.service.LanguageService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,10 @@ public class TestDataService {
     GraphTraversalSource traversalSource;
 
     @Autowired
-    LanguageRepository languageRepository;
+    LanguageService languageService;
 
     @Autowired
-    FlashcardDeckRepository flashcardDeckRepository;
+    FlashcardDeckService flashcardDeckService;
 
     public static final String LEFT_LANGUAGE_ID = "language1";
     public static final String RIGHT_LANGUAGE_ID = "language2";
@@ -38,8 +39,8 @@ public class TestDataService {
         languageModel2.setName("Language 2");
         languageModel2.setIsoCode("Lang 2");
 
-        languageRepository.add(languageModel1);
-        languageRepository.add(languageModel2);
+        languageService.create(languageModel1);
+        languageService.create(languageModel2);
     }
 
     public void populateFlashcardDecks() {
@@ -47,6 +48,6 @@ public class TestDataService {
         flashcardDeckModel.setId(FLASHCARD_DECK_1_ID);
         flashcardDeckModel.setName("Deck 1");
 
-        flashcardDeckRepository.add(flashcardDeckModel);
+        flashcardDeckService.add(null, flashcardDeckModel);
     }
 }

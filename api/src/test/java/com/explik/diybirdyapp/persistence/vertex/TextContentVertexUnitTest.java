@@ -55,8 +55,7 @@ public class TextContentVertexUnitTest {
         var vertex = TextContentVertex.create(traversalSource);
         var pronunciationVertex = PronunciationVertex.create(traversalSource);
         pronunciationVertex.setId("pronunciation-id");
-
-        vertex.addPronunciation(pronunciationVertex);
+        pronunciationVertex.setTextContent(vertex);
 
         assertEquals("pronunciation-id", vertex.getPronunciations().get(0).getId());
     }
@@ -66,8 +65,8 @@ public class TextContentVertexUnitTest {
         var vertex = TextContentVertex.create(traversalSource);
         var pronunciationVertex = PronunciationVertex.create(traversalSource);
         pronunciationVertex.setId("pronunciation-id");
+        pronunciationVertex.setTextContent(vertex);
 
-        vertex.addPronunciation(pronunciationVertex);
         vertex.removePronunciation(pronunciationVertex);
 
         assertEquals(0, vertex.getPronunciations().size());

@@ -4,9 +4,9 @@ import com.explik.diybirdyapp.command.dto.ImportFlashcardDeckDTO;
 import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
 import com.explik.diybirdyapp.model.content.FlashcardDto;
 import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
-import com.explik.diybirdyapp.persistence.repository.FlashcardDeckRepository;
-import com.explik.diybirdyapp.persistence.repository.FlashcardRepository;
-import com.explik.diybirdyapp.persistence.repository.LanguageRepository;
+import com.explik.diybirdyapp.service.FlashcardDeckService;
+import com.explik.diybirdyapp.service.FlashcardService;
+import com.explik.diybirdyapp.service.LanguageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +26,13 @@ public class ImportFlashcardDeckCommand implements Runnable {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
-    public FlashcardDeckRepository flashcardDeckRepository;
+    public FlashcardDeckService flashcardDeckService;
 
     @Autowired
-    public FlashcardRepository flashcardCardRepository;
+    public FlashcardService flashcardService;
 
     @Autowired
-    public LanguageRepository languageRepository;
+    public LanguageService languageService;
 
     @CommandLine.Parameters(index = "0", description = "Path to the file to import")
     public File file;
@@ -53,9 +53,9 @@ public class ImportFlashcardDeckCommand implements Runnable {
             populateFlashcards(flashcardDeck, flashcards);
 
             // Save to database
-            flashcardDeckRepository.add(null, flashcardDeck);
+            flashcardDeckService.add(null, flashcardDeck);
             for (var flashcard : flashcards)
-                flashcardCardRepository.add(flashcard);
+                flashcardService.add(flashcard, null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,7 +67,7 @@ public class ImportFlashcardDeckCommand implements Runnable {
     }
 
     private void populateFlashcards(FlashcardDeckDto flashcardDeck, FlashcardDto[] flashcards) {
-        var languages = languageRepository.getAll();
+        var languages = languageService.getAll();
 
         for (var flashcard : flashcards) {
             if (flashcard.getFrontContent() == null)

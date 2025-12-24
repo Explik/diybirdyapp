@@ -1,26 +1,19 @@
 package com.explik.diybirdyapp.persistence.command;
 
-public class GenerateAudioForFlashcardCommand {
-    private final String flashcardId;
-    private final String flashcardSide;
+/**
+ * Command to generate audio pronunciation for flashcard text content using text-to-speech.
+ * Generates audio for both left and right sides of the flashcard if they contain text.
+ */
+public class GenerateAudioForFlashcardCommand implements AtomicCommand {
+    private String flashcardId;
     private boolean failOnMissingVoice;
-
-    public GenerateAudioForFlashcardCommand(String flashcardId) {
-        this.flashcardId = flashcardId;
-        this.flashcardSide = null;
-    }
-
-    public GenerateAudioForFlashcardCommand(String flashcardId, String flashcardSide) {
-        this.flashcardId = flashcardId;
-        this.flashcardSide = flashcardSide;
-    }
 
     public String getFlashcardId() {
         return flashcardId;
     }
 
-    public String getFlashcardSide() {
-        return flashcardSide;
+    public void setFlashcardId(String flashcardId) {
+        this.flashcardId = flashcardId;
     }
 
     public boolean getFailOnMissingVoice() {

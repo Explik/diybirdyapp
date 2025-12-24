@@ -1,9 +1,9 @@
 package com.explik.diybirdyapp.persistence.builder;
 
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.FlashcardVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
 public class FlashcardVertexBuilder extends VertexBuilderBase<FlashcardVertex> implements DefaultDeckInjectable {
@@ -122,8 +122,11 @@ public class FlashcardVertexBuilder extends VertexBuilderBase<FlashcardVertex> i
         }
         else backContent = this.backContent;
 
-        return factories.flashcardVertexFactory.create(
-                traversalSource,
-                new FlashcardVertexFactory.Options(id, frontContent, backContent));
+        var createCommand = new CreateFlashcardVertexCommand();
+        createCommand.setId(id);
+        createCommand.setLeftContentId(frontContent.getId());
+        createCommand.setRightContentId(backContent.getId());
+        factories.createFlashcardVertexCommandHandler.handle(createCommand);
+        return FlashcardVertex.findById(traversalSource, id);
     }
 }

@@ -11,6 +11,7 @@ import { HttpHeaders }                                       from '@angular/comm
 
 import { Observable }                                        from 'rxjs';
 
+import { TextContentTranscriptionDto } from '../model/models';
 import { UploadFileRequest } from '../model/models';
 
 
@@ -21,6 +22,14 @@ import { Configuration }                                     from '../configurat
 export interface TextContentControllerServiceInterface {
     defaultHeaders: HttpHeaders;
     configuration: Configuration;
+
+    /**
+     * 
+     * 
+     * @param id 
+     * @param textContentTranscriptionDto 
+     */
+    addTranscription(id: string, textContentTranscriptionDto: TextContentTranscriptionDto, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 

@@ -36,4 +36,9 @@ public class ImageContentVertex extends ContentVertex {
         var vertex = traversalSource.addV(LABEL).next();
         return new ImageContentVertex(traversalSource, vertex);
     }
+
+    public static ImageContentVertex findById(GraphTraversalSource traversalSource, String id) {
+        var vertex = traversalSource.V().has(ContentVertex.PROPERTY_ID, id).tryNext().orElse(null);
+        return vertex != null ? new ImageContentVertex(traversalSource, vertex) : null;
+    }
 }

@@ -1,10 +1,10 @@
 package com.explik.diybirdyapp.persistence.builder;
 
+import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateSpeechToTextConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTranslateConfigVertexCommand;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
-import com.explik.diybirdyapp.persistence.vertexFactory.LanguageVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.SpeechToTextConfigVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.TextToSpeechConfigVertexFactory;
-import com.explik.diybirdyapp.persistence.vertexFactory.TranslateConfigVertexFactory;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 
 import java.util.ArrayList;
@@ -59,26 +59,36 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
         var name = (this.name != null) ? this.name : "Language-" + id;
         var isoCode = (this.isoCode != null) ? this.isoCode : "Lang-" + id;
 
-        var languageVertex = this.factories.languageVertexFactory.create(
-                traversalSource,
-                new LanguageVertexFactory.Options(id, name, isoCode));
+        var createCommand = new CreateLanguageVertexCommand();
+        createCommand.setId(id);
+        createCommand.setName(name);
+        createCommand.setIsoCode(isoCode);
+        this.factories.createLanguageVertexCommandHandler.handle(createCommand);
+        var languageVertex = LanguageVertex.findById(traversalSource, id);
 
         for(var config : this.googleTextToSpeechConfigs) {
-            this.factories.textToSpeechConfigVertexFactory.create(
-                    traversalSource,
-                    new TextToSpeechConfigVertexFactory.Options(UUID.randomUUID().toString(), config.languageCode, config.voiceName, languageVertex));
+            var createConfigCommand = new CreateTextToSpeechConfigVertexCommand();
+            createConfigCommand.setId(UUID.randomUUID().toString());
+            createConfigCommand.setLanguageCode(config.languageCode);
+            createConfigCommand.setVoiceName(config.voiceName);
+            createConfigCommand.setLanguageVertexId(languageVertex.getId());
+            this.factories.createTextToSpeechConfigVertexCommandHandler.handle(createConfigCommand);
         }
 
         for (var config : this.googleSpeechToTextConfigs) {
-            this.factories.speechToTextConfigVertexFactory.create(
-                    traversalSource,
-                    new SpeechToTextConfigVertexFactory.Options(UUID.randomUUID().toString(), config.languageCode, languageVertex));
+            var createConfigCommand = new CreateSpeechToTextConfigVertexCommand();
+            createConfigCommand.setId(UUID.randomUUID().toString());
+            createConfigCommand.setLanguageCode(config.languageCode);
+            createConfigCommand.setLanguageVertexId(languageVertex.getId());
+            this.factories.createSpeechToTextConfigVertexCommandHandler.handle(createConfigCommand);
         }
 
         for (var config : this.googleTranslateConfigs) {
-            this.factories.translationConfigVertexFactory.create(
-                    traversalSource,
-                    new TranslateConfigVertexFactory.Options(UUID.randomUUID().toString(), config.languageCode, languageVertex));
+            var createConfigCommand = new CreateTranslateConfigVertexCommand();
+            createConfigCommand.setId(UUID.randomUUID().toString());
+            createConfigCommand.setLanguageCode(config.languageCode);
+            createConfigCommand.setLanguageVertexId(languageVertex.getId());
+            this.factories.createTranslateConfigVertexCommandHandler.handle(createConfigCommand);
         }
 
         return languageVertex;

@@ -42,26 +42,6 @@ public class TextContentVertex extends ContentVertex {
         return VertexHelper.getOutgoingModels(this, EDGE_PRONUNCIATION, PronunciationVertex::new);
     }
 
-    public void addPronunciation(AbstractVertex pronunciationVertex) {
-        addEdgeOneToMany(EDGE_PRONUNCIATION, pronunciationVertex);
-    }
-
-    public void removePronunciation(AbstractVertex pronunciationVertex) {
-        removeEdge(EDGE_PRONUNCIATION, pronunciationVertex);
-    }
-
-    public boolean hasMainPronunciation() {
-        return traversalSource.V(vertex).out(EDGE_MAIN_PRONUNCIATION).hasNext();
-    }
-
-    public PronunciationVertex getMainPronunciation() {
-        return VertexHelper.getOptionalOutgoingModel(this, EDGE_MAIN_PRONUNCIATION, PronunciationVertex::new);
-    }
-
-    public void setMainPronunciation(AbstractVertex pronunciationVertex) {
-        addEdgeOneToOne(EDGE_MAIN_PRONUNCIATION, pronunciationVertex);
-    }
-
     public static TextContentVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new TextContentVertex(traversalSource, vertex);
