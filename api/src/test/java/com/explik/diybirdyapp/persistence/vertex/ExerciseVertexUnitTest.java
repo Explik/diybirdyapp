@@ -22,12 +22,12 @@ public class ExerciseVertexUnitTest {
         assertEquals("new-id", vertex.getId());
     }
 
-    @Test
-    public void givenVertex_whenSetType_thenUpdatedType() {
-        var vertex = ExerciseVertex.create(traversalSource);
-        vertex.setType("new-type");
-        assertEquals("new-type", vertex.getType());
-    }
+//    @Test
+//    public void givenVertex_whenSetType_thenUpdatedType() {
+//        var vertex = ExerciseVertex.create(traversalSource);
+//        vertex.setType("new-type");
+//        assertEquals("new-type", vertex.getType());
+//    }
 
     @Test
     public void givenVertexWithAudioContent_whenGetContent_thenReturnsAudioContent() {

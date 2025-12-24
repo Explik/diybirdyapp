@@ -53,11 +53,10 @@ public class PronunciationVertex extends AbstractVertex {
     public static PronunciationVertex findByTextContentId(GraphTraversalSource traversalSource, String textContentId) {
         var vertex = traversalSource.V()
                 .hasLabel(PronunciationVertex.LABEL)
-                .where(__.out(PronunciationVertex.EDGE_TEXT_CONTENT)
-                        .has(TextContentVertex.PROPERTY_ID, textContentId))
-                .tryNext()
-                .orElse(null);
-
-        return vertex != null ? new PronunciationVertex(traversalSource, vertex) : null;
+                .out(EDGE_TEXT_CONTENT)
+                .has(ContentVertex.PROPERTY_ID, textContentId)
+                .inE(EDGE_TEXT_CONTENT)
+                .outV();
+        return vertex.hasNext() ? new PronunciationVertex(traversalSource, vertex.next()) : null;
     }
 }

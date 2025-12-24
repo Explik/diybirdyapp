@@ -77,7 +77,6 @@ public class TranscriptionVertex extends AbstractVertex {
                 .has(ContentVertex.PROPERTY_ID, contentId)
                 .inE(EDGE_SOURCE_CONTENT)
                 .outV();
-        
         return vertexQuery.hasNext() ? new TranscriptionVertex(traversalSource, vertexQuery.next()) : null;
     }
 }

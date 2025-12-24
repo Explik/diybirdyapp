@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.builder;
 
+import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateSpeechToTextConfigVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
@@ -18,7 +19,7 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
     private final List<GoogleTextToSpeechConfigs> googleTextToSpeechConfigs = new ArrayList<>();
     private final List<GoogleSpeechToTextConfig> googleSpeechToTextConfigs = new ArrayList<>();
     private final List<GoogleTranslateConfig> googleTranslateConfigs = new ArrayList<>();
-
+    private final List<MicrosoftTextToSpeechConfig> microsoftTextToSpeechConfigs = new ArrayList<>();
 
     public LanguageVertexBuilder withId(String id) {
         this.id = id;
@@ -50,6 +51,11 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
         return this;
     }
 
+    public LanguageVertexBuilder withMicrosoftTextToSpeech(String voiceName) {
+        this.microsoftTextToSpeechConfigs.add(new MicrosoftTextToSpeechConfig(voiceName));
+        return this;
+    }
+
     @Override
     public LanguageVertex build(GraphTraversalSource traversalSource) {
         if (this.factories == null)
@@ -69,6 +75,7 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
         for(var config : this.googleTextToSpeechConfigs) {
             var createConfigCommand = new CreateTextToSpeechConfigVertexCommand();
             createConfigCommand.setId(UUID.randomUUID().toString());
+            createConfigCommand.setType(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
             createConfigCommand.setLanguageCode(config.languageCode);
             createConfigCommand.setVoiceName(config.voiceName);
             createConfigCommand.setLanguageVertexId(languageVertex.getId());
@@ -91,6 +98,15 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
             this.factories.createTranslateConfigVertexCommandHandler.handle(createConfigCommand);
         }
 
+        for (var config : this.microsoftTextToSpeechConfigs) {
+            var createConfigCommand = new CreateTextToSpeechConfigVertexCommand();
+            createConfigCommand.setId(UUID.randomUUID().toString());
+            createConfigCommand.setType(ConfigurationTypes.MICROSOFT_TEXT_TO_SPEECH);
+            createConfigCommand.setVoiceName(config.voiceName);
+            createConfigCommand.setLanguageVertexId(languageVertex.getId());
+            this.factories.createTextToSpeechConfigVertexCommandHandler.handle(createConfigCommand);
+        }
+
         return languageVertex;
     }
 
@@ -99,4 +115,6 @@ public class LanguageVertexBuilder extends VertexBuilderBase<LanguageVertex> {
     private record GoogleSpeechToTextConfig (String languageCode) { }
 
     private record GoogleTranslateConfig (String languageCode) { }
+
+    private record MicrosoftTextToSpeechConfig (String voiceName) { }
 }

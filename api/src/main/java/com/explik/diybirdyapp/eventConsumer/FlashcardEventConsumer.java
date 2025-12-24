@@ -19,9 +19,6 @@ public class FlashcardEventConsumer {
     @Autowired
     CommandHandler<ExtractWordsFromFlashcardCommand> wordCommandHandler;
 
-    @Autowired
-    CommandHandler<GenerateAudioForFlashcardCommand> audioCommandHandler;
-
     @Async
     @EventListener
     public void handleFlashcardAddedEvent(FlashcardAddedEvent event) {
@@ -31,10 +28,10 @@ public class FlashcardEventConsumer {
         extractWordsCommand.setFlashcardId(event.getFlashcardId());
         wordCommandHandler.handle(extractWordsCommand);
 
-        var generateAudioCommand = new GenerateAudioForFlashcardCommand();
-        generateAudioCommand.setFlashcardId(event.getFlashcardId());
-        generateAudioCommand.setFailOnMissingVoice(false);
-        audioCommandHandler.handle(generateAudioCommand);
+//        var generateAudioCommand = new GenerateAudioForFlashcardCommand();
+//        generateAudioCommand.setFlashcardId(event.getFlashcardId());
+//        generateAudioCommand.setFailOnMissingVoice(false);
+//        audioCommandHandler.handle(generateAudioCommand);
     }
 
     @Async
@@ -46,9 +43,9 @@ public class FlashcardEventConsumer {
         extractWordsCommand.setFlashcardId(event.getFlashcardId());
         wordCommandHandler.handle(extractWordsCommand);
 
-        var generateAudioCommand = new GenerateAudioForFlashcardCommand();
-        generateAudioCommand.setFlashcardId(event.getFlashcardId());
-        generateAudioCommand.setFailOnMissingVoice(false);
-        audioCommandHandler.handle(generateAudioCommand);
+        // var generateAudioCommand = new GenerateAudioForFlashcardCommand();
+        // generateAudioCommand.setFlashcardId(event.getFlashcardId());
+        // generateAudioCommand.setFailOnMissingVoice(false);
+        // audioCommandHandler.handle(generateAudioCommand);
     }
 }

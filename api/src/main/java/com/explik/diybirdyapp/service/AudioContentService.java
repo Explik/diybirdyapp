@@ -2,9 +2,7 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.content.AudioFileModel;
 import com.explik.diybirdyapp.persistence.command.AddAudioToTextContentCommand;
-import com.explik.diybirdyapp.persistence.command.GenerateAudioForTextContentCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.command.handler.GenerateAudioForTextContentCommandHandler;
 import com.explik.diybirdyapp.persistence.query.GetAudioForTextContentQuery;
 import com.explik.diybirdyapp.persistence.query.GetTextContentByIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
@@ -30,7 +28,7 @@ public class AudioContentService {
     private CommandHandler<AddAudioToTextContentCommand> addAudioToTextContentCommandHandler;
 
     @Autowired
-    private GenerateAudioForTextContentCommandHandler generateAudioForTextContentCommandHandler;
+    private SpeechContentService speechContentService;
 
     /**
      * Adds audio pronunciation to a text content vertex.
@@ -83,16 +81,13 @@ public class AudioContentService {
         var query = new GetAudioForTextContentQuery();
         query.setTextContentId(textContentId);
         var existingAudio = getAudioForTextContentQueryHandler.handle(query);
-        
-        if (existingAudio != null) {
+        if (existingAudio != null)
             return existingAudio;
-        }
 
         // Generate audio if it doesn't exist
-        var command = new GenerateAudioForTextContentCommand();
-        command.setTextContentId(textContentId);
-        var audioData = generateAudioForTextContentCommandHandler.handleAndReturnAudio(command);
-        
+        var audioData = speechContentService.generateSpeechForTextContentId(textContentId);
+        if (audioData == null)
+            return null;
         return new AudioFileModel(audioData, "audio/wav");
     }
 }

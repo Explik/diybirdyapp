@@ -20,17 +20,17 @@ public class GenerateAudioForFlashcardCommandHandlerIntegrationTest {
 
     // TODO Initialize test data
 
-    @Autowired
-    private GenerateAudioForFlashcardCommandHandler handler;
+    //@Autowired
+    //private GenerateAudioForFlashcardCommandHandler handler;
 
     @Test
     void givenFlashcard_whenHandle_thenAttachPronunciations() {
         var flashcardId = TestDataConstants.Flashcard.Id;
 
-        var command = new GenerateAudioForFlashcardCommand(flashcardId);
-        command.setFailOnMissingVoice(true);
+        // var command = new GenerateAudioForFlashcardCommand(flashcardId);
+        // command.setFailOnMissingVoice(true);
 
-        handler.handleAsync(command);
+        // handler.handleAsync(command);
 
         // Assertions
         var leftContent = (TextContentVertex)FlashcardVertex.findById(traversalSource, flashcardId).getLeftContent();

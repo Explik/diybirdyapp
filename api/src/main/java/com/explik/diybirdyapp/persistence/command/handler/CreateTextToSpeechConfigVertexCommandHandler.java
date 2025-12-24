@@ -20,7 +20,7 @@ public class CreateTextToSpeechConfigVertexCommandHandler implements CommandHand
     public void handle(CreateTextToSpeechConfigVertexCommand command) {
         var vertex = ConfigurationVertex.create(traversalSource);
         vertex.setId(command.getId());
-        vertex.setType(ConfigurationTypes.GOOGLE_TEXT_TO_SPEECH);
+        vertex.setType(command.getType());
         vertex.setPropertyValue("languageCode", command.getLanguageCode());
         vertex.setPropertyValue("voiceName", command.getVoiceName());
         var languageVertex = LanguageVertex.findById(traversalSource, command.getLanguageVertexId());

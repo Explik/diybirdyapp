@@ -8,7 +8,6 @@ import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand
 import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateTranslateConfigVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.vertexFactory.*;
 
 public class VertexBuilderFactories {
     // Declarations in alphabetical order

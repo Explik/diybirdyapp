@@ -1,10 +1,11 @@
 package com.explik.diybirdyapp.service;
 
+import com.explik.diybirdyapp.model.internal.GoogleTextToSpeechVoiceModel;
+import com.explik.diybirdyapp.model.internal.MicrosoftTextToSpeechVoiceModel;
+import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
 import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.google.cloud.texttospeech.v1.*;
-import com.google.protobuf.ByteString;
 
 import java.io.IOException;
 
@@ -14,41 +15,25 @@ public class TextToSpeechService {
     BinaryStorageService storageService;
 
     @Autowired
-    TextToSpeechClient textToSpeechClient;
+    GoogleTextToSpeechService googleTextToSpeechService;
 
-    public byte[] generateAudio(Text textObject) throws IOException {
-        // Build the input text
-        SynthesisInput input = SynthesisInput.newBuilder()
-                .setText(textObject.text())
-                .build();
+    @Autowired
+    MicrosoftTextToSpeechService microsoftTextToSpeechService;
 
-        // Configure the voice selection
-        VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
-                .setLanguageCode(textObject.languageCode())
-                .setName(textObject.voiceName())
-                .build();
+    public byte[] generateAudio(TextToSpeechModel textToSpeechModel) throws IOException {
+        var voiceModel = textToSpeechModel.getVoice();
 
-        // Configure the audio settings
-        AudioConfig audioConfig = AudioConfig.newBuilder()
-                .setAudioEncoding(AudioEncoding.valueOf(textObject.audioEncoding))
-                .build();
+        if (voiceModel instanceof GoogleTextToSpeechVoiceModel googleVoiceModel)
+            return googleTextToSpeechService.generateAudio(textToSpeechModel);
+        if (voiceModel instanceof MicrosoftTextToSpeechVoiceModel microsoftVoiceModel)
+            return microsoftTextToSpeechService.generateAudio(textToSpeechModel);
 
-        // Perform the text-to-speech request
-        SynthesizeSpeechResponse response = textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
-
-        // Get the audio content from the response
-        ByteString audioContents = response.getAudioContent();
-
-        return audioContents.toByteArray();
-
+        throw new UnsupportedOperationException("Text-to-speech voice type not supported");
     }
 
-    public void generateAudioFile(Text textObject, String outputPath) throws IOException {
+    public void generateAudioFile(TextToSpeechModel textObject, String outputPath) throws IOException {
         // Write the audio content to the output file
         var audioBytes = generateAudio(textObject);
         storageService.set(outputPath, audioBytes);
     }
-
-    public record Text (String text, String languageCode, String voiceName, String audioEncoding) { }
 }
-
