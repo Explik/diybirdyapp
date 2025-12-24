@@ -27,6 +27,8 @@ public class TextContentService {
 
     public FileContentCommandResult getPronunciation(String id) {
         var audio = audioContentService.getAudioForTextContent(id);
+        if (audio == null)
+            return null;
         return new FileContentCommandResult(audio.getData(), audio.getContentType());
     }
 

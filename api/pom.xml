@@ -148,6 +148,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
+		<!-- Microsoft Text To Speech API -->
+		<dependency>
+			<groupId>com.microsoft.cognitiveservices.speech</groupId>
+			<artifactId>client-sdk</artifactId>
+			<version>1.43.0</version>
+		</dependency>
     </dependencies>
 
 	<build>

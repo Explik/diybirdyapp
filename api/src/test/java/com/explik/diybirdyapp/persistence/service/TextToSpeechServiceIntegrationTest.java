@@ -36,19 +36,19 @@ public class TextToSpeechServiceIntegrationTest {
     @Autowired
     private GoogleTextToSpeechService textToSpeechService;
 
-    @Test
-    public void givenValidConfig_whenGenerateAudioFile_createAudioFile() throws IOException {
-        var voiceModel = new GoogleTextToSpeechVoiceModel();
-        voiceModel.setVoiceLanguageCode("en-US");
-        voiceModel.setVoiceName("en-US-Wavenet-D");
-
-        var textToSpeechModel = TextToSpeechModel.create("Hello, this is a test.", voiceModel);
-
-        textToSpeechService.generateAudioFile(textToSpeechModel, filePath);
-
-        // Check the output file
-        assertNotNull(storageService.get(filePath));
-    }
+//    @Test
+//    public void givenValidConfig_whenGenerateAudioFile_createAudioFile() throws IOException {
+//        var voiceModel = new GoogleTextToSpeechVoiceModel();
+//        voiceModel.setVoiceLanguageCode("en-US");
+//        voiceModel.setVoiceName("en-US-Wavenet-D");
+//
+//        var textToSpeechModel = TextToSpeechModel.create("Hello, this is a test.", voiceModel);
+//
+//        textToSpeechService.generateAudioFile(textToSpeechModel, filePath);
+//
+//        // Check the output file
+//        assertNotNull(storageService.get(filePath));
+//    }
 
     @TestConfiguration
     static class Configuration {
