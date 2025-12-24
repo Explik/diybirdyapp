@@ -1,0 +1,29 @@
+package com.explik.diybirdyapp.persistence.command.handler;
+
+import com.explik.diybirdyapp.ConfigurationTypes;
+import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CreateTextToSpeechConfigVertexCommandHandler implements CommandHandler<CreateTextToSpeechConfigVertexCommand> {
+    private final GraphTraversalSource traversalSource;
+
+    public CreateTextToSpeechConfigVertexCommandHandler(@Autowired GraphTraversalSource traversalSource) {
+        this.traversalSource = traversalSource;
+    }
+
+    @Override
+    public void handle(CreateTextToSpeechConfigVertexCommand command) {
+        var vertex = ConfigurationVertex.create(traversalSource);
+        vertex.setId(command.getId());
+        vertex.setType(command.getType());
+        vertex.setPropertyValue("languageCode", command.getLanguageCode());
+        vertex.setPropertyValue("voiceName", command.getVoiceName());
+        var languageVertex = LanguageVertex.findById(traversalSource, command.getLanguageVertexId());
+        vertex.addLanguage(languageVertex);
+    }
+}

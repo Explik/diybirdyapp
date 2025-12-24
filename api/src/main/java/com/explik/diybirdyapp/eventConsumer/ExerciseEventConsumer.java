@@ -2,8 +2,8 @@ package com.explik.diybirdyapp.eventConsumer;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.event.ExerciseAnsweredEvent;
-import com.explik.diybirdyapp.persistence.command.AsyncCommandHandler;
 import com.explik.diybirdyapp.persistence.command.HandleFlashcardPronunciationExerciseAnswerCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -15,7 +15,7 @@ public class ExerciseEventConsumer {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(ExerciseEventConsumer.class);
 
     @Autowired
-    private AsyncCommandHandler<HandleFlashcardPronunciationExerciseAnswerCommand> commandHandler;
+    private CommandHandler<HandleFlashcardPronunciationExerciseAnswerCommand> commandHandler;
 
     @Async
     @EventListener
@@ -23,10 +23,10 @@ public class ExerciseEventConsumer {
         Logger.info("Exercise answered event received: " + event.getExerciseId());
 
         if (event.getExerciseType().equals(ExerciseTypes.PRONOUNCE_FLASHCARD)) {
-            var command = new HandleFlashcardPronunciationExerciseAnswerCommand(
-                    event.getExerciseId(),
-                    event.getAnswerId());
-            commandHandler.handleAsync(command);
+            var command = new HandleFlashcardPronunciationExerciseAnswerCommand();
+            command.setExerciseId(event.getExerciseId());
+            command.setAnswerId(event.getAnswerId());
+            commandHandler.handle(command);
             return;
         }
     }

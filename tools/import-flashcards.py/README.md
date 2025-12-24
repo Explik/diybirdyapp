@@ -124,7 +124,23 @@ Generation options:
 - Deck location shown in summary
 
 ### Create deck from .anki file 
-To be added
+The page "Create deck from .anki file" allows users to import existing Anki deck files (.apkg) and convert them to the internal storage format. The tool supports various content types including text, audio, image, and video flashcards.
+
+**Features:**
+- **Field Mapping**: Select which Anki fields to use for the front and back of flashcards
+- **Auto-Detection**: Automatically detects content type (text, audio, image, or video) from field content
+- **Language Selection**: Specify languages for text, audio, and video content
+- **Pronunciation Support**: Optional pronunciation audio fields for text content
+- **Transcription Support**: Optional transcription fields for text content (e.g., pinyin, romaji, IPA)
+  - Available only for text content
+  - Can be specified for both front and back sides
+  - Requires transcription system specification (e.g., "pinyin", "romaji", "IPA")
+- **Media Preservation**: Automatically extracts and stores media files from the Anki deck
+
+**Transcription Options:**
+When text content is selected for either side:
+- **Transcription field**: Select an Anki field containing the transcription text
+- **Transcription system**: Specify the transcription system used (e.g., "pinyin" for Chinese, "romaji" for Japanese, "IPA" for phonetic transcription)
 
 ### Add pronounciation to flashcards
 The page "Add pronounciation to flashcards" allows users to record their own pronounciation for flashcards in a deck. Alternatively, Google's text-to-speech synthesis can be used to generate pronounciation audio for the flashcards.
@@ -217,6 +233,10 @@ The format for data.json is largely based on the FlashcardDeckDto, FlashcardDto,
                 "languageId": "backend-language-id",
                 "pronounciation": {
                     "content": "media-1.mp4",
+                },
+                "transcription": {
+                    "transcription": "wo1 shi4",
+                    "transcriptionSystem": "pinyin"
                 }
             },
             "rightContent": {
@@ -236,3 +256,4 @@ POST /flashcard-deck/ # Create flashcard deck (using FlashcardDeckDto)
 POST /flashcard # Create text-text flashcard (using FlashcardDto)
 POST /flashcard/rich # Create rich media flashcard (using form with FlashcardDto and media files)
 ```
+

@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import javax.annotation.Nullable;
@@ -42,5 +43,20 @@ public class PronunciationVertex extends AbstractVertex {
     public static PronunciationVertex create(GraphTraversalSource traversalSource) {
         var graphVertex = traversalSource.addV(LABEL).next();
         return new PronunciationVertex(traversalSource, graphVertex);
+    }
+
+    public static PronunciationVertex findById(GraphTraversalSource traversalSource, String id) {
+        var vertex = traversalSource.V().has(PROPERTY_ID, id).tryNext().orElse(null);
+        return vertex != null ? new PronunciationVertex(traversalSource, vertex) : null;
+    }
+
+    public static PronunciationVertex findByTextContentId(GraphTraversalSource traversalSource, String textContentId) {
+        var vertex = traversalSource.V()
+                .hasLabel(PronunciationVertex.LABEL)
+                .out(EDGE_TEXT_CONTENT)
+                .has(ContentVertex.PROPERTY_ID, textContentId)
+                .inE(EDGE_TEXT_CONTENT)
+                .outV();
+        return vertex.hasNext() ? new PronunciationVertex(traversalSource, vertex.next()) : null;
     }
 }

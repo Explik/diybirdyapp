@@ -1,7 +1,7 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.controller.model.FileUploadResultDto;
-import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
+import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;

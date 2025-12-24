@@ -1,16 +1,21 @@
 package com.explik.diybirdyapp.persistence.builder;
 
-import com.explik.diybirdyapp.persistence.vertexFactory.*;
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateFlashcardVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateLanguageVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateSpeechToTextConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTextContentVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTranslateConfigVertexCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 
 public class VertexBuilderFactories {
     // Declarations in alphabetical order
-    public AudioContentVertexFactory audioContentVertexFactory;
-    public FlashcardVertexFactory flashcardVertexFactory;
-    public FlashcardDeckVertexFactory flashcardDeckVertexFactory;
-    public LanguageVertexFactory languageVertexFactory;
-    public PronunciationVertexFactory pronunciationVertexFactory;
-    public TextContentVertexFactory textContentVertexFactory;
-    public TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
-    public SpeechToTextConfigVertexFactory speechToTextConfigVertexFactory;
-    public TranslateConfigVertexFactory translationConfigVertexFactory;
+    public CommandHandler<CreateFlashcardDeckVertexCommand> createFlashcardDeckVertexCommandHandler;
+    public CommandHandler<CreateFlashcardVertexCommand> createFlashcardVertexCommandHandler;
+    public CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
+    public CommandHandler<CreateSpeechToTextConfigVertexCommand> createSpeechToTextConfigVertexCommandHandler;
+    public CommandHandler<CreateTextContentVertexCommand> createTextContentVertexCommandHandler;
+    public CommandHandler<CreateTextToSpeechConfigVertexCommand> createTextToSpeechConfigVertexCommandHandler;
+    public CommandHandler<CreateTranslateConfigVertexCommand> createTranslateConfigVertexCommandHandler;
 }

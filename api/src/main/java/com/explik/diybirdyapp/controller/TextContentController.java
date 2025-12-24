@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
+import com.explik.diybirdyapp.model.content.TextContentTranscriptionDto;
 import com.explik.diybirdyapp.service.TextContentService;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,12 @@ public class TextContentController {
         catch (Exception e) {
             throw new RuntimeException("File upload failed", e);
         }
+    }
+
+    @PostMapping("/text-content/{id}/add-transcription")
+    public void addTranscription(
+            @PathVariable(name = "id") String id,
+            @RequestBody TextContentTranscriptionDto transcription) {
+        textContentService.addTranscription(id, transcription);
     }
 }

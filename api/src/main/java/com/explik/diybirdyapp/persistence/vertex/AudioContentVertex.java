@@ -47,7 +47,7 @@ public class AudioContentVertex extends ContentVertex {
     }
 
     public static AudioContentVertex getById(GraphTraversalSource traversalSource, String id) {
-        var vertex = traversalSource.V().has(ContentVertex.PROPERTY_ID, id).next();
-        return new AudioContentVertex(traversalSource, vertex);
+        var vertex = traversalSource.V().has(ContentVertex.PROPERTY_ID, id).tryNext().orElse(null);
+        return vertex != null ? new AudioContentVertex(traversalSource, vertex) : null;
     }
 }

@@ -1,13 +1,17 @@
 package com.explik.diybirdyapp.persistence.command;
 
-public class LockFlashcardContentCommand {
-    private final String id;
+/**
+ * Command to lock flashcard content, making it static/immutable.
+ * Once locked, the flashcard's content properties cannot be updated.
+ */
+public class LockFlashcardContentCommand implements AtomicCommand {
+    private String flashcardId;
 
-    public LockFlashcardContentCommand(String id) {
-        this.id = id;
+    public String getFlashcardId() {
+        return flashcardId;
     }
 
-    public String getId() {
-        return id;
+    public void setFlashcardId(String flashcardId) {
+        this.flashcardId = flashcardId;
     }
 }

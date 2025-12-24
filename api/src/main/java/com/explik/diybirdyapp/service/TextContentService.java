@@ -1,7 +1,11 @@
 package com.explik.diybirdyapp.service;
 
-import com.explik.diybirdyapp.persistence.command.*;
-import com.explik.diybirdyapp.persistence.service.BinaryStorageService;
+import com.explik.diybirdyapp.model.FileContentCommandResult;
+import com.explik.diybirdyapp.model.content.TextContentTranscriptionDto;
+import com.explik.diybirdyapp.persistence.command.CreateTranscriptionCommand;
+import com.explik.diybirdyapp.persistence.command.CreateTranscriptionSystemCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
+import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,22 +17,19 @@ public class TextContentService {
     BinaryStorageService binaryStorageService;
 
     @Autowired
-    SyncCommandHandler<AddAudioToTextContentCommand, FileContentCommandResult> addAudioCommandHandler;
+    AudioContentService audioContentService;
 
     @Autowired
-    SyncCommandHandler<FetchAudioForTextContentCommand, FileContentCommandResult> fetchCommandHandler;
+    CommandHandler<CreateTranscriptionSystemCommand> createTranscriptionSystemCommandHandler;
 
     @Autowired
-    SyncCommandHandler<GenerateAudioForTextContentCommand, FileContentCommandResult> generateCommandHandler;
+    CommandHandler<CreateTranscriptionCommand> createTranscriptionCommandHandler;
 
     public FileContentCommandResult getPronunciation(String id) {
-        var fetchExistingCommand = new FetchAudioForTextContentCommand(id);
-        var existingResult = fetchCommandHandler.handle(fetchExistingCommand);
-        if (existingResult != null)
-            return existingResult;
-
-        var generateCommand = new GenerateAudioForTextContentCommand(id);
-        return generateCommandHandler.handle(generateCommand);
+        var audio = audioContentService.getAudioForTextContent(id);
+        if (audio == null)
+            return null;
+        return new FileContentCommandResult(audio.getData(), audio.getContentType());
     }
 
     public void uploadPronunciation(String id, String originalFileName, byte[] fileData) {
@@ -38,12 +39,26 @@ public class TextContentService {
         binaryStorageService.set(newFileName, fileData);
 
         try {
-            var command = new AddAudioToTextContentCommand(id, newFileName);
-            addAudioCommandHandler.handle(command);
+            audioContentService.addAudioToTextContent(id, newFileName);
         }
         catch (Exception e) {
             binaryStorageService.delete(newFileName);
             throw new RuntimeException("Failed to add audio for text content", e);
         }
+    }
+
+    public void addTranscription(String id, TextContentTranscriptionDto transcription) {
+        // Create the transcription system if it doesn't exist
+        var createSystemCommand = new CreateTranscriptionSystemCommand();
+        createSystemCommand.setId(transcription.getTranscriptionSystem());
+        createTranscriptionSystemCommandHandler.handle(createSystemCommand);
+
+        // Create the transcription
+        var createTranscriptionCommand = new CreateTranscriptionCommand();
+        createTranscriptionCommand.setId(UUID.randomUUID().toString());
+        createTranscriptionCommand.setSourceContentId(id);
+        createTranscriptionCommand.setTextValue(transcription.getTranscription());
+        createTranscriptionCommand.setTranscriptionSystemId(transcription.getTranscriptionSystem());
+        createTranscriptionCommandHandler.handle(createTranscriptionCommand);
     }
 }

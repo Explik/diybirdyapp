@@ -33,4 +33,9 @@ public class RecognizabilityRatingVertex extends AbstractVertex {
         var vertex = traversalSource.addV(LABEL).next();
         return new RecognizabilityRatingVertex(traversalSource, vertex);
     }
+
+    public static RecognizabilityRatingVertex findById(GraphTraversalSource traversalSource, String ratingId) {
+        var vertex = traversalSource.V().has(PROPERTY_ID, ratingId).tryNext().orElse(null);
+        return vertex != null ? new RecognizabilityRatingVertex(traversalSource, vertex) : null;
+    }
 }

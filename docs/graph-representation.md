@@ -1,7 +1,7 @@
 # Data Representation
 This document describes the data representation used for the Tinkerpop graph. 
 
-## Concepts
+## Metadata 
 ### Language
 A language represents a common group of content and concepts, like words, text, pronunciation, etc. 
 ```mermaid
@@ -13,6 +13,20 @@ Properties:
 - id: string
 - name: string
 - isoCode: string
+
+### TranscriptionSystem
+A transcription system represents a specific system for converting content to text.
+Ex. Pinyin for Chinese, VoiceToText
+````mermaid
+graph LR
+V1(TranscriptionSystem)
+```
+
+Properties:
+- id: string
+
+## Concepts
+In general concepts point to content, configuration, or other concepts, but content should not point to concepts.
 
 ### Word
 A word represents an entry in a language's vocabulary in the system. 
@@ -50,13 +64,47 @@ AudioContent(AudioContent)
 TextContent(TextContent)
 Pronunciation(Pronunciation)
 
-TextContent--hasPronunciation-->Pronunciation
 Pronunciation--hasAudioContent-->TextContent
 Pronunciation--hasTextContent-->TextContent
 ```
 
 Properties:
 - id: string
+
+### Transcription 
+A transcription represents a single instance of a conversion to text. 
+Used for audio-to-text, video-to-text and text-to-text conversions.
+
+```mermaid
+graph LR
+SourceVertex(<T> Content) 
+TextVertex(TextContent)
+Transcription(Transcription)
+TranscriptionSystem(TranscriptionSystem)
+
+Transcription--hasSourceContent-->SourceVertex
+Transcription--hasTextContent-->TextVertex
+Transcription--hasSystem-->TranscriptionSystem
+```
+
+Properties:
+- id: string
+
+### Translation
+A translation represents a single instance of a conversion from one language to another.
+
+```mermaid
+graph LR
+SourceVertex(<T> Content)
+TargetVertex(<T> Content)
+Translation(Translation)
+
+Translation--hasSourceContent-->SourceVertex
+Translation--hasTargetContent-->TargetVertex
+```
+
+Properties:
+- id: string: string
 
 ## Configuration 
 ### TextToSpeechConfig

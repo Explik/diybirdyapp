@@ -2,12 +2,13 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.persistence.builder.*;
-import com.explik.diybirdyapp.persistence.repository.UserRepository;
+import com.explik.diybirdyapp.persistence.command.*;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
+import com.explik.diybirdyapp.persistence.schema.parameter.*;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import com.explik.diybirdyapp.persistence.operation.ExerciseSessionOperationsReviewFlashcardDeck;
-import com.explik.diybirdyapp.persistence.vertexFactory.*;
-import com.explik.diybirdyapp.persistence.vertexFactory.parameter.*;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManagerReviewFlashcardDeck;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,37 +22,34 @@ public class DataInitializerService {
     private GraphTraversalSource traversalSource;
 
     @Autowired
-    private ExerciseSessionOperationsReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
+    private CommandHandler<CreateImageContentVertexCommand> createImageContentVertexCommandHandler;
 
     @Autowired
-    private LanguageVertexFactory languageVertexFactory;
+    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandCommandHandler;
 
     @Autowired
-    private TextToSpeechConfigVertexFactory textToSpeechConfigVertexFactory;
+    private CommandHandler<CreateLanguageVertexCommand> createLanguageVertexCommandHandler;
 
     @Autowired
-    private WordVertexFactory wordVertexFactory;
+    private ExerciseSessionManagerReviewFlashcardDeck exerciseSessionFlashcardReviewVertexFactory;
 
     @Autowired
-    private PronunciationVertexFactory pronunciationVertexFactory;
+    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandCommandHandler;
 
     @Autowired
-    private AudioContentVertexFactory audioContentVertexFactory;
-
-    @Autowired
-    private ImageContentVertexFactory imageContentVertexFactory;
-
-    @Autowired
-    private VideoContentVertexFactory videoImageContentVertexFactory;
+    private CommandHandler<CreateVideoContentVertexCommand> createVideoContentVertexCommandHandler;
 
     @Autowired
     private VertexBuilderFactory builderFactory;
 
     @Autowired
-    private ExerciseAbstractVertexFactory exerciseAbstractVertexFactory;
+    private ExerciseCreationService exerciseCreationService;
 
     @Autowired
-    private UserRepository userRepository;
+    private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
+
+    @Autowired
+    private CommandHandler<CreateUserRoleCommand> createUserRoleCommandHandler;
 
     public void resetInitialData() {
         traversalSource.V().drop().iterate();
@@ -92,6 +90,14 @@ public class DataInitializerService {
                 .withGoogleTextToSpeech("cmn-cn", "cmn-CN-Chirp3-HD-Achird")
                 .withGoogleSpeechToText("cmn-CN")
                 .build(traversalSource);
+
+        builderFactory.createLanguageVertexBuilder()
+                .withId("langVertex4")
+                .withName("Mongolian")
+                .withIsoCode("MN")
+                .withGoogleTranslate("mn-MN")
+                .withMicrosoftTextToSpeech("mn-MN-BataaNeural")
+                .build(traversalSource);
     }
 
     public void addInitialContentAndConcepts() {
@@ -109,17 +115,28 @@ public class DataInitializerService {
         textVertex0.setValue("Bereshit");
         textVertex0.setLanguage(langVertex1);
 
-        var imageVertex1 = imageContentVertexFactory.create(
-                traversalSource,
-                new ImageContentVertexFactory.Options("imageVertex1", "https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY"));
+        var createImageCommand = new CreateImageContentVertexCommand();
+        createImageCommand.setId("imageVertex1");
+        createImageCommand.setUrl("https://fastly.picsum.photos/id/17/2500/1667.jpg?hmac=HD-JrnNUZjFiP2UZQvWcKrgLoC_pc_ouUSWv8kHsJJY");
+        createImageContentVertexCommandHandler.handle(createImageCommand);
 
-        var audioContentVertex1 = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex1));
+        var imageVertex1 = ImageContentVertex.findById(traversalSource, "imageVertex1");
 
-        var videoContentVertex1 = videoImageContentVertexFactory.create(
-                traversalSource,
-                new VideoContentVertexFactory.Options("videoContentVertex1", "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", langVertex2));
+        var createAudioCommand = new CreateAudioContentVertexCommand();
+        createAudioCommand.setId("audioContentVertex1");
+        createAudioCommand.setUrl("https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3");
+        createAudioCommand.setLanguageVertexId(langVertex1.getId());
+        createAudioContentVertexCommandCommandHandler.handle(createAudioCommand);
+
+        var audioContentVertex1 = AudioContentVertex.getById(traversalSource, "audioContentVertex1");
+
+        var createVideoCommand = new CreateVideoContentVertexCommand();
+        createVideoCommand.setId("videoContentVertex1");
+        createVideoCommand.setUrl("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+        createVideoCommand.setLanguageVertexId(langVertex2.getId());
+        createVideoContentVertexCommandHandler.handle(createVideoCommand);
+
+        var videoContentVertex1 = VideoContentVertex.getById(traversalSource, "videoContentVertex1");
 
         // Flashcard deck 1
         builderFactory.createFlashcardDeckVertexBuilder()
@@ -170,11 +187,6 @@ public class DataInitializerService {
         wordVertex1.setLanguage(textVertex0.getLanguage());
         wordVertex1.addExample(textVertex0);
         wordVertex1.setTextContent(textVertex0);
-
-        // Pronunciation concept
-        var pronunciationVertex1 = pronunciationVertexFactory.create(
-                traversalSource,
-                new PronunciationVertexFactory.Options("pronunciationVertex1", textVertex0, audioContentVertex1));
     }
 
     public void addInitialExerciseData() {
@@ -207,9 +219,13 @@ public class DataInitializerService {
                 .withBackText("Random option 1", langVertex)
                 .build(traversalSource);
 
-        var audioContentVertex1 = audioContentVertexFactory.create(
-                traversalSource,
-                new AudioContentVertexFactory.Options("audioContentVertex1", "https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3", langVertex));
+        var createAudioCommand = new CreateAudioContentVertexCommand();
+        createAudioCommand.setId("audioContentVertex1");
+        createAudioCommand.setUrl("https://github.com/rafaelreis-hotmart/Audio-Sample-files/raw/master/sample.mp3");
+        createAudioCommand.setLanguageVertexId(langVertex.getId());
+        createAudioContentVertexCommandCommandHandler.handle(createAudioCommand);
+
+        var audioContentVertex1 = AudioContentVertex.getById(traversalSource, "audioContentVertex1");
 
         // Setting up exercise parameters
         var shortTextContentParameters = new ExerciseContentParameters()
@@ -249,8 +265,8 @@ public class DataInitializerService {
                 .withSession(null)
                 .withTargetLanguage("example")
                 .withContent(shortTextContentParameters);
-        var writeSentenceUsingWordFactory = exerciseAbstractVertexFactory.create(ExerciseSchemas.WRITE_SENTENCE_USING_WORD_EXERCISE);
-        writeSentenceUsingWordFactory.create(traversalSource, writeSentenceUsingWordParameters);
+        var writeSentenceCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.WRITE_SENTENCE_USING_WORD_EXERCISE, writeSentenceUsingWordParameters);
+        createExerciseCommandHandler.handle(writeSentenceCommand);
 
         // Exercise - Write translated sentence
         var writeTranslatedSentenceExerciseParameters = new ExerciseParameters()
@@ -258,9 +274,8 @@ public class DataInitializerService {
                 .withSession(null)
                 .withTargetLanguage("Danish")
                 .withContent(longTextContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.WRITE_TRANSLATED_SENTENCE_EXERCISE)
-                .create(traversalSource, writeTranslatedSentenceExerciseParameters);
+        var writeTranslatedCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.WRITE_TRANSLATED_SENTENCE_EXERCISE, writeTranslatedSentenceExerciseParameters);
+        createExerciseCommandHandler.handle(writeTranslatedCommand);
 
         // Exercise - Select flashcard exercise
         var selectFlashcardExerciseParameters = new ExerciseParameters()
@@ -268,9 +283,8 @@ public class DataInitializerService {
                 .withSession(null)
                 .withContent(flashcardSideContentParameters)
                 .withSelectOptionsInput(selectFlashcardParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE)
-                .create(traversalSource, selectFlashcardExerciseParameters);
+        var selectFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.SELECT_FLASHCARD_EXERCISE, selectFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(selectFlashcardCommand);
 
         // Exercise - Listen and select exercise
         var listenAndSelectFlashcardExerciseParameters = new ExerciseParameters()
@@ -278,45 +292,40 @@ public class DataInitializerService {
                 .withSession(null)
                 .withContent(audioContentParameters)
                 .withSelectOptionsInput(selectFlashcardParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.LISTEN_AND_SELECT_EXERCISE)
-                .create(traversalSource, listenAndSelectFlashcardExerciseParameters);
+        var listenAndSelectCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.LISTEN_AND_SELECT_EXERCISE, listenAndSelectFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(listenAndSelectCommand);
 
         // Exercise - Listen and write exercise
         var listenAndWriteFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.LISTEN_AND_WRITE)
                 .withSession(null)
                 .withContent(audioContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.LISTEN_AND_WRITE_EXERCISE)
-                .create(traversalSource, listenAndWriteFlashcardExerciseParameters);
+        var listenAndWriteCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.LISTEN_AND_WRITE_EXERCISE, listenAndWriteFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(listenAndWriteCommand);
 
         // Exercise - Flashcard review exercise
         var reviewFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.REVIEW_FLASHCARD)
                 .withSession(null)
                 .withContent(flashcardContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE)
-                .create(traversalSource, reviewFlashcardExerciseParameters);
+        var reviewFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE, reviewFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(reviewFlashcardCommand);
 
         // Exercise - Write flashcard exercise
         var writeFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.WRITE_FLASHCARD)
                 .withSession(null)
                 .withContent(flashcardSideContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE)
-                .create(traversalSource, writeFlashcardExerciseParameters);
+        var writeFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.WRITE_FLASHCARD_EXERCISE, writeFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(writeFlashcardCommand);
 
         // Exercise - Flashcard pronounce exercise
         var pronounceFlashcardExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.PRONOUNCE_FLASHCARD)
                 .withSession(null)
                 .withContent(flashcardContentParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE)
-                .create(traversalSource, pronounceFlashcardExerciseParameters);
+        var pronounceFlashcardCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.PRONOUNCE_FLASHCARD_EXERCISE, pronounceFlashcardExerciseParameters);
+        createExerciseCommandHandler.handle(pronounceFlashcardCommand);
 
         // Exercise - Arrange all words in translation exercise
         var arrangeWordsInTranslationExerciseParameters = new ExerciseParameters()
@@ -324,22 +333,22 @@ public class DataInitializerService {
                 .withSession(null)
                 .withContent(longTextContentParameters)
                 .withArrangeTextOptionsInput(arrangeTextOptionsParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.ARRANGE_WORDS_IN_TRANSLATION)
-                .create(traversalSource, arrangeWordsInTranslationExerciseParameters);
+        var arrangeWordsCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.ARRANGE_WORDS_IN_TRANSLATION, arrangeWordsInTranslationExerciseParameters);
+        createExerciseCommandHandler.handle(arrangeWordsCommand);
 
         // Exercise - Tap pairs exercise
         var tapPairsExerciseParameters = new ExerciseParameters()
                 .withId(ExerciseTypes.TAP_PAIRS)
                 .withSession(null)
                 .withPairOptionsInput(pairFlashcardParameters);
-        exerciseAbstractVertexFactory
-                .create(ExerciseSchemas.TAP_PAIRS_EXERCISE)
-                .create(traversalSource, tapPairsExerciseParameters);
+        var tapPairsCommand = exerciseCreationService.createExerciseCommand(ExerciseSchemas.TAP_PAIRS_EXERCISE, tapPairsExerciseParameters);
+        createExerciseCommandHandler.handle(tapPairsCommand);
     }
 
     public void addInitialUserData() {
         // Create user role "ROLE_USER"
-        userRepository.createUserRole("ROLE_USER");
+        var command = new CreateUserRoleCommand();
+        command.setRoleName("ROLE_USER");
+        createUserRoleCommandHandler.handle(command);
     }
 }
