@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.model.admin.ConfigurationDto;
+import com.explik.diybirdyapp.model.admin.ConfigurationOptionsDto;
 import com.explik.diybirdyapp.service.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +30,14 @@ public class ConfigurationController {
     @DeleteMapping("/config/{id}")
     public void deleteConfigById(@PathVariable("id") String configId) {
         service.deleteById(configId);
+    }
+
+    @PostMapping("/config/available-options")
+    public ResponseEntity<ConfigurationOptionsDto> getAvailableOptions(@RequestBody ConfigurationOptionsDto configOptionsDto) {
+        var options = service.getAvailableOptions(configOptionsDto);
+        if (options == null)
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(options);
     }
 }

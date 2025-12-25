@@ -1,10 +1,7 @@
 package com.explik.diybirdyapp.persistence.query.handler;
 
 import com.explik.diybirdyapp.ConfigurationTypes;
-import com.explik.diybirdyapp.model.admin.ConfigurationDto;
-import com.explik.diybirdyapp.model.admin.ConfigurationGoogleSpeechToTextDto;
-import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTextToSpeechDto;
-import com.explik.diybirdyapp.model.admin.ConfigurationGoogleTranslateDto;
+import com.explik.diybirdyapp.model.admin.*;
 import com.explik.diybirdyapp.persistence.query.GetLanguageConfigsQuery;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
@@ -45,6 +42,8 @@ public class GetLanguageConfigsQueryHandler implements QueryHandler<GetLanguageC
             return createGoogleTranslateConfigModel(languageId, vertex);
         if (vertex.getType().equals(ConfigurationTypes.GOOGLE_SPEECH_TO_TEXT))
             return createGoogleSpeechToTextConfigModel(languageId, vertex);
+        if (vertex.getType().equals(ConfigurationTypes.MICROSOFT_TEXT_TO_SPEECH))
+            return createMicrosoftTextToSpeechConfigModel(languageId, vertex);
 
         throw new IllegalArgumentException("Unsupported configuration type: " + vertex.getType());
     }
@@ -71,6 +70,14 @@ public class GetLanguageConfigsQueryHandler implements QueryHandler<GetLanguageC
         model.setId(vertex.getId());
         model.setLanguageId(languageId);
         model.setLanguageCode(vertex.getPropertyValue("languageCode"));
+        return model;
+    }
+
+    private static ConfigurationMicrosoftTextToSpeechDto createMicrosoftTextToSpeechConfigModel(String languageId, ConfigurationVertex vertex) {
+        var model = new ConfigurationMicrosoftTextToSpeechDto();
+        model.setId(vertex.getId());
+        model.setLanguageId(languageId);
+        model.setVoiceName(vertex.getPropertyValue("voiceName"));
         return model;
     }
 }

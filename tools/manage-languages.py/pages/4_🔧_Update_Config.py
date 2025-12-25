@@ -6,12 +6,17 @@ Allows users to update existing configurations for languages.
 import streamlit as st
 import sys
 from pathlib import Path
+import importlib
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from login_utils import render_login_sidebar, require_login
+# Import and force reload to pick up latest changes
+from shared import language_client
+importlib.reload(language_client)
 from shared.language_client import LanguageClient, CONFIG_TYPES
+
+from login_utils import render_login_sidebar, require_login
 from config_editor import render_config_editor, validate_config_data
 
 st.set_page_config(page_title="Update Config", page_icon="🔧", layout="wide")
@@ -149,8 +154,10 @@ else:
 st.markdown("---")
 
 # Configuration Details
-config_data = render_config_editor(selected_config_type_key, selected_config)
+config_data = render_config_editor(selected_config_type_key, selected_config, language_client=client)
 
+if config_data is None:
+    st.stop()
 
 update_button = st.button("💾 Save Changes", type="primary")
 

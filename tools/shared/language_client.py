@@ -226,6 +226,27 @@ class LanguageClient:
             return True, "Language updated successfully"
         except Exception as e:
             return False, f"Failed to update language: {str(e)}"
+    
+    def get_available_config_options(self, selected_options: List[str]) -> Dict:
+        """
+        Get available configuration options based on previous selections.
+        
+        Args:
+            selected_options: List of previously selected options (empty for initial call)
+            
+        Returns:
+            Dictionary with 'selection', 'selectedOptions', 'availableOptions', 'lastSelection'
+            
+        Raises:
+            Exception: If the request fails
+        """
+        url = f"{self.base_url}/config/available-options"
+        payload = {
+            "selectedOptions": selected_options
+        }
+        response = requests.post(url, json=payload, cookies=self._get_cookies(), timeout=self.timeout)
+        response.raise_for_status()
+        return response.json()
 
 
 # Configuration type constants
