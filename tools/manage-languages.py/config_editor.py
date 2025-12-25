@@ -202,7 +202,126 @@ def render_config_editor(config_type_key, existing_config=None, language_client=
     
     elif config_type_key == "microsoft-text-to-speech":
         st.markdown("**Microsoft Text-to-Speech Configuration**")
-        st.info("This configuration type has no additional fields.")
+        
+        # Initialize variables
+        locale = ""
+        voice_name = ""
+        
+        # Step 1: Select Locale
+        if 'ms_tts_locales' not in st.session_state:
+            try:
+                with st.spinner("Loading available locales from backend..."):
+                    response = language_client.get_available_config_options([config_type_key])
+                    
+                    # Debug: Show response
+                    with st.expander("Debug: API Response", expanded=False):
+                        st.json(response)
+                    
+                    options = response.get("availableOptions", [])
+                    if not options:
+                        st.warning(f"⚠️ API returned no options. Response keys: {list(response.keys())}")
+                    
+                    st.session_state['ms_tts_locales'] = [opt["id"] for opt in options]
+            except Exception as e:
+                st.error(f"Failed to fetch locales: {str(e)}")
+                import traceback
+                st.code(traceback.format_exc())
+                st.session_state['ms_tts_locales'] = []
+        
+        locales = st.session_state.get('ms_tts_locales', [])
+        
+        if not locales:
+            st.warning("No locales available. Please check your backend configuration and Azure credentials.")
+        else:
+            # Find default index if editing existing config
+            # Note: For Microsoft TTS, we need to derive locale from voice name if editing
+            existing_voice = existing_config.get('voiceName', '') if existing_config else ''
+            default_locale_index = 0
+            
+            # Try to extract locale from voice name (e.g., "en-US-JennyNeural" -> "en-US")
+            if existing_voice:
+                parts = existing_voice.split('-')
+                if len(parts) >= 2:
+                    existing_locale = f"{parts[0]}-{parts[1]}"
+                    if existing_locale in locales:
+                        default_locale_index = locales.index(existing_locale)
+            
+            selected_locale = st.selectbox(
+                "Locale",
+                options=locales,
+                index=default_locale_index,
+                format_func=format_language_code_display,
+                help="Select the locale for text-to-speech",
+                key="ms_tts_locale_selector"
+            )
+            
+            locale = selected_locale
+            
+            # Step 2: Show voice dropdown only after locale is selected
+            if selected_locale:
+                # Clear voices cache if locale changed
+                cache_key = f'ms_tts_voices_{selected_locale}'
+                if cache_key not in st.session_state:
+                    try:
+                        with st.spinner(f"Loading available voices for {selected_locale}..."):
+                            response = language_client.get_available_config_options([config_type_key, selected_locale])
+                            options = response.get("availableOptions", [])
+                            st.session_state[cache_key] = options
+                    except Exception as e:
+                        st.error(f"Failed to fetch voices: {str(e)}")
+                        import traceback
+                        st.code(traceback.format_exc())
+                        st.session_state[cache_key] = []
+                
+                voices = st.session_state.get(cache_key, [])
+                
+                if not voices:
+                    st.warning("No voices available for this locale.")
+                else:
+                    # Create voice options with display text
+                    voice_options = {}
+                    for voice in voices:
+                        voice_data = voice["option"]
+                        name = voice_data.get("name", "")
+                        display_name = voice_data.get("displayName", name)
+                        gender = voice_data.get("gender", "")
+                        voice_type = voice_data.get("voiceType", "")
+                        
+                        # Build display text
+                        display_parts = [display_name]
+                        if gender:
+                            display_parts.append(gender)
+                        if voice_type:
+                            display_parts.append(voice_type)
+                        
+                        display_text = " - ".join(display_parts)
+                        voice_options[name] = display_text
+                    
+                    voice_names = list(voice_options.keys())
+                    
+                    # Find default index if editing existing config
+                    default_voice_index = 0
+                    if existing_voice and existing_voice in voice_names:
+                        default_voice_index = voice_names.index(existing_voice)
+                    
+                    selected_voice_name = st.selectbox(
+                        "Voice",
+                        options=voice_names,
+                        index=default_voice_index,
+                        format_func=lambda x: voice_options[x],
+                        help=f"Select a voice for {selected_locale}. Showing {len(voices)} available voice(s).",
+                        key="ms_tts_voice_selector"
+                    )
+                    
+                    # Show additional voice details
+                    selected_voice_data = next((v["option"] for v in voices if v["option"]["name"] == selected_voice_name), None)
+                    if selected_voice_data and selected_voice_data.get("styles"):
+                        with st.expander("Available Speaking Styles"):
+                            st.write(", ".join(selected_voice_data["styles"]))
+                    
+                    voice_name = selected_voice_name
+        
+        config_data["voiceName"] = voice_name
     
     elif config_type_key == "google-speech-to-text":
         st.markdown("**Google Speech-to-Text Configuration**")
@@ -280,6 +399,10 @@ def validate_config_data(config_type_key, config_data):
             return False, "Language Code is required for Google Text-to-Speech"
         if not config_data.get("voiceName"):
             return False, "Voice Name is required for Google Text-to-Speech"
+    
+    elif config_type_key == "microsoft-text-to-speech":
+        if not config_data.get("voiceName"):
+            return False, "Voice Name is required for Microsoft Text-to-Speech"
     
     elif config_type_key == "google-translate":
         if not config_data.get("languageCode"):

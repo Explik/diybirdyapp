@@ -65,6 +65,19 @@ public interface ConfigurationManager {
 - **Handles:** Requests where first selected option is `"google-translate"`
 - **Data Source:** Google Cloud Translation API via `TranslationServiceClient`
 
+#### MicrosoftTextToSpeechConfigurationManager
+**Location:** `api/src/main/java/com/explik/diybirdyapp/manager/configurationManager/MicrosoftTextToSpeechConfigurationManager.java`
+
+- **Purpose:** Manages Microsoft Text-to-Speech configuration selection
+- **Selection Flow:**
+  1. **Step 1:** User selects configuration type → Returns available locales
+  2. **Step 2:** User selects locale → Returns available voices for that locale
+  3. **Step 3:** User selects voice → Returns final `ConfigurationMicrosoftTextToSpeechDto` object
+- **Handles:** Requests where first selected option is `"microsoft-text-to-speech"`
+- **Data Source:** Azure Speech Service REST API (voices list endpoint)
+- **Requirements:** Requires `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` environment variables
+- **Implementation Notes:** Uses Java's HttpClient to call the REST API directly for fetching voices
+
 ### 3. Service Integration
 **Location:** `api/src/main/java/com/explik/diybirdyapp/service/ConfigurationService.java`
 
@@ -273,6 +286,17 @@ The implementation uses **Translation API v2** (not v3) for simplicity and consi
 - **Consistent with tools** - Python tools (`locale-manager.py`, etc.) also use v2
 
 The v2 API uses the `com.google.cloud.translate.Translate` client instead of `TranslationServiceClient`.
+
+### Microsoft Azure Speech Service
+The implementation uses the **REST API** for listing voices instead of the Java SDK:
+- **Simpler Implementation** - Direct HTTP call without complex SDK initialization
+- **Lightweight** - No need to create and manage Speech SDK client instances for configuration purposes
+- **Standard Approach** - Follows Microsoft's documented REST API pattern
+- **Environment Variables** - Uses `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` for authentication
+
+The REST API endpoint format: `https://{region}.tts.speech.microsoft.com/cognitiveservices/voices/list`
+
+For actual speech synthesis, the Java SDK (`com.microsoft.cognitiveservices.speech`) is still used in `MicrosoftTextToSpeechService`.
 
 ## Benefits
 
