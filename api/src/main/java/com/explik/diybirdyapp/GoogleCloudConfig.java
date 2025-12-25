@@ -2,6 +2,8 @@ package com.explik.diybirdyapp;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.speech.v1.SpeechClient;
+import com.google.cloud.speech.v1.SpeechSettings;
 import com.google.cloud.texttospeech.v1.TextToSpeechClient;
 import com.google.cloud.texttospeech.v1.TextToSpeechSettings;
 import com.google.cloud.translate.Translate;
@@ -24,6 +26,17 @@ public class GoogleCloudConfig {
                 .build();
 
         return TextToSpeechClient.create(settings);
+    }
+
+    @Bean
+    public SpeechClient speechClient() throws IOException {
+        GoogleCredentials credentials = getGoogleCredentials();
+        
+        SpeechSettings settings = SpeechSettings.newBuilder()
+                .setCredentialsProvider(() -> credentials)
+                .build();
+
+        return SpeechClient.create(settings);
     }
 
     @Bean

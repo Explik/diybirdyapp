@@ -325,7 +325,52 @@ def render_config_editor(config_type_key, existing_config=None, language_client=
     
     elif config_type_key == "google-speech-to-text":
         st.markdown("**Google Speech-to-Text Configuration**")
-        st.info("This configuration type has no additional fields.")
+        
+        # Initialize variables
+        language_code = ""
+        
+        # Fetch available languages from backend
+        if 'stt_language_codes' not in st.session_state:
+            try:
+                with st.spinner("Loading available languages from backend..."):
+                    response = language_client.get_available_config_options([config_type_key])
+                    
+                    # Debug: Show response
+                    with st.expander("Debug: API Response", expanded=False):
+                        st.json(response)
+                    
+                    options = response.get("availableOptions", [])
+                    if not options:
+                        st.warning(f"⚠️ API returned no options. Response keys: {list(response.keys())}")
+                    
+                    st.session_state['stt_language_codes'] = [opt["id"] for opt in options]
+            except Exception as e:
+                st.error(f"Failed to fetch language codes: {str(e)}")
+                import traceback
+                st.code(traceback.format_exc())
+                st.session_state['stt_language_codes'] = []
+        
+        language_codes = st.session_state.get('stt_language_codes', [])
+        
+        if not language_codes:
+            st.warning("No language codes available. Please check your backend configuration.")
+        else:
+            # Find default index if editing existing config
+            existing_lang_code = existing_config.get('languageCode', '') if existing_config else ''
+            default_lang_index = 0
+            if existing_lang_code and existing_lang_code in language_codes:
+                default_lang_index = language_codes.index(existing_lang_code)
+            
+            language_code = st.selectbox(
+                "Language",
+                options=language_codes,
+                index=default_lang_index,
+                format_func=format_language_code_display,
+                help=f"Select the language for speech recognition. Showing {len(language_codes)} available language(s).",
+                key="stt_language_selector"
+            )
+        
+        config_data["languageCode"] = language_code
     
     elif config_type_key == "google-translate":
         st.markdown("**Google Translate Configuration**")
@@ -403,6 +448,10 @@ def validate_config_data(config_type_key, config_data):
     elif config_type_key == "microsoft-text-to-speech":
         if not config_data.get("voiceName"):
             return False, "Voice Name is required for Microsoft Text-to-Speech"
+    
+    elif config_type_key == "google-speech-to-text":
+        if not config_data.get("languageCode"):
+            return False, "Language Code is required for Google Speech-to-Text"
     
     elif config_type_key == "google-translate":
         if not config_data.get("languageCode"):
