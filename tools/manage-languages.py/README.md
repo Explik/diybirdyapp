@@ -72,21 +72,6 @@ The "Create/Update Config" page allows you to manage language configurations:
 4. **Fill in details**: Provide required fields (varies by type)
 5. **Save**: Click "Save Configuration" to persist changes
 
-#### Configuration Types
-
-**Google Text-to-Speech**
-- Language Code (e.g., `en-US`, `es-ES`)
-- Voice Name (e.g., `en-US-Wavenet-A`)
-
-**Microsoft Text-to-Speech**
-- No additional fields required
-
-**Google Speech-to-Text**
-- No additional fields required
-
-**Google Translate**
-- No additional fields required
-
 ## Technical Details
 
 ### API Endpoints Used
@@ -96,27 +81,7 @@ The "Create/Update Config" page allows you to manage language configurations:
 - `POST /language/{id}/create-config` - Create a new configuration
 - `POST /language/{id}/attach-config` - Attach existing configuration
 - `POST /language/{id}/detach-config` - Detach configuration
-
-### Project Structure
-
-```
-manage-languages.py/
-├── app.py                          # Main application entry point
-├── login_utils.py                  # Login and authentication utilities
-├── config.py                       # Configuration settings
-├── requirements.txt                # Python dependencies
-├── run.ps1                         # Launch script
-├── README.md                       # This file
-└── pages/
-    ├── 1_🗣️_View_Languages.py     # View languages page
-    └── 2_⚙️_Create_Update_Config.py # Create/update config page
-```
-
-### Shared Modules
-
-This tool uses shared modules from `../shared/`:
-- `auth.py` - Authentication and session management
-- `language_client.py` - Language and configuration API client
+- `POST /config/available-options` - Fetch available configuration options
 
 ## Troubleshooting
 
