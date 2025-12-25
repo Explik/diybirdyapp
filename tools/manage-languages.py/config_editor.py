@@ -19,11 +19,27 @@ def format_language_code_display(lang_code: str) -> str:
         'is': 'Icelandic', 'it': 'Italian', 'ja': 'Japanese', 'kn': 'Kannada',
         'ko': 'Korean', 'lt': 'Lithuanian', 'lv': 'Latvian', 'ml': 'Malayalam',
         'mr': 'Marathi', 'ms': 'Malay', 'nb': 'Norwegian', 'nl': 'Dutch',
-        'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian', 'ru': 'Russian',
-        'sk': 'Slovak', 'sl': 'Slovenian', 'sr': 'Serbian', 'sv': 'Swedish',
-        'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai', 'tr': 'Turkish',
-        'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese', 'zh': 'Chinese',
-        'cmn': 'Chinese (Mandarin)', 'yue': 'Chinese (Cantonese)'
+        'no': 'Norwegian', 'pl': 'Polish', 'pt': 'Portuguese', 'ro': 'Romanian',
+        'ru': 'Russian', 'sk': 'Slovak', 'sl': 'Slovenian', 'sr': 'Serbian',
+        'sv': 'Swedish', 'ta': 'Tamil', 'te': 'Telugu', 'th': 'Thai',
+        'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu', 'vi': 'Vietnamese',
+        'zh': 'Chinese', 'zh-CN': 'Chinese (Simplified)', 'zh-TW': 'Chinese (Traditional)',
+        'cmn': 'Chinese (Mandarin)', 'yue': 'Chinese (Cantonese)',
+        'iw': 'Hebrew', 'jw': 'Javanese', 'fa': 'Persian', 'ne': 'Nepali',
+        'si': 'Sinhala', 'km': 'Khmer', 'lo': 'Lao', 'my': 'Burmese',
+        'ka': 'Georgian', 'am': 'Amharic', 'az': 'Azerbaijani', 'eu': 'Basque',
+        'be': 'Belarusian', 'bs': 'Bosnian', 'ceb': 'Cebuano', 'co': 'Corsican',
+        'eo': 'Esperanto', 'fy': 'Frisian', 'gd': 'Scots Gaelic', 'gl': 'Galician',
+        'ha': 'Hausa', 'haw': 'Hawaiian', 'hmn': 'Hmong', 'ht': 'Haitian Creole',
+        'ig': 'Igbo', 'ga': 'Irish', 'jv': 'Javanese', 'kk': 'Kazakh', 'ky': 'Kyrgyz',
+        'ku': 'Kurdish', 'la': 'Latin', 'lb': 'Luxembourgish', 'mg': 'Malagasy',
+        'mi': 'Maori', 'mk': 'Macedonian', 'mn': 'Mongolian', 'mt': 'Maltese',
+        'ny': 'Chichewa', 'or': 'Odia', 'ps': 'Pashto', 'pa': 'Punjabi',
+        'sm': 'Samoan', 'sn': 'Shona', 'sd': 'Sindhi', 'so': 'Somali',
+        'st': 'Sesotho', 'su': 'Sundanese', 'sw': 'Swahili', 'tg': 'Tajik',
+        'tl': 'Tagalog', 'tt': 'Tatar', 'tk': 'Turkmen', 'ug': 'Uyghur',
+        'uz': 'Uzbek', 'cy': 'Welsh', 'xh': 'Xhosa', 'yi': 'Yiddish',
+        'yo': 'Yoruba', 'zu': 'Zulu'
     }
     
     # Country/region mappings
@@ -47,14 +63,14 @@ def format_language_code_display(lang_code: str) -> str:
     
     parts = lang_code.split('-')
     if len(parts) == 2:
-        lang = lang_names.get(parts[0], parts[0])
+        lang = lang_names.get(parts[0], 'Unidentified')
         region = region_names.get(parts[1], parts[1])
         return f"{lang} ({region}) - {lang_code}"
     elif len(parts) == 1:
-        lang = lang_names.get(parts[0], parts[0])
+        lang = lang_names.get(parts[0], 'Unidentified')
         return f"{lang} - {lang_code}"
     
-    return lang_code
+    return f"Unidentified - {lang_code}"
 
 
 def render_config_editor(config_type_key, existing_config=None, language_client=None):
@@ -195,43 +211,48 @@ def render_config_editor(config_type_key, existing_config=None, language_client=
     elif config_type_key == "google-translate":
         st.markdown("**Google Translate Configuration**")
         
-        # Initialize session state
-        state_key = f"config_options_{config_type_key}"
-        if state_key not in st.session_state:
-            st.session_state[state_key] = {
-                "selected_options": [config_type_key]
-            }
+        # Initialize variables
+        language_code = ""
         
-        state = st.session_state[state_key]
-        
-        # Fetch all languages on first load
-        if 'translate_all_languages' not in st.session_state:
+        # Fetch available languages from backend
+        if 'translate_language_codes' not in st.session_state:
             try:
                 with st.spinner("Loading available languages from backend..."):
-                    response = language_client.get_available_config_options(state["selected_options"])
+                    response = language_client.get_available_config_options([config_type_key])
+                    
+                    # Debug: Show response
+                    with st.expander("Debug: API Response", expanded=False):
+                        st.json(response)
+                    
                     options = response.get("availableOptions", [])
-                    st.session_state['translate_all_languages'] = [opt["id"] for opt in options]
+                    if not options:
+                        st.warning(f"⚠️ API returned no options. Response keys: {list(response.keys())}")
+                    
+                    st.session_state['translate_language_codes'] = [opt["id"] for opt in options]
             except Exception as e:
-                st.error(f"Failed to fetch languages: {str(e)}")
-                st.session_state['translate_all_languages'] = []
+                st.error(f"Failed to fetch language codes: {str(e)}")
+                import traceback
+                st.code(traceback.format_exc())
+                st.session_state['translate_language_codes'] = []
         
-        all_languages = st.session_state.get('translate_all_languages', [])
+        language_codes = st.session_state.get('translate_language_codes', [])
         
-        if not all_languages:
-            st.warning("No languages available. Please check your backend configuration.")
-            language_code = ""
+        if not language_codes:
+            st.warning("No language codes available. Please check your backend configuration.")
         else:
-            # Language Selection
+            # Find default index if editing existing config
             existing_lang_code = existing_config.get('languageCode', '') if existing_config else ''
             default_lang_index = 0
-            if existing_lang_code and existing_lang_code in all_languages:
-                default_lang_index = all_languages.index(existing_lang_code)
+            if existing_lang_code and existing_lang_code in language_codes:
+                default_lang_index = language_codes.index(existing_lang_code)
             
             language_code = st.selectbox(
                 "Language",
-                options=all_languages,
+                options=language_codes,
                 index=default_lang_index,
-                help=f"Select the language for translation. Showing {len(all_languages)} available language(s)."
+                format_func=format_language_code_display,
+                help=f"Select the language for translation. Showing {len(language_codes)} available language(s).",
+                key="translate_language_selector"
             )
         
         config_data["languageCode"] = language_code
