@@ -2,6 +2,4 @@
 
 streamlit>=1.28.0
 requests>=2.31.0
-
-# Note: The shared modules depend on the OpenAPI client
-# Make sure to install it from ../shared/api_client/
+pydantic>=2.12.5

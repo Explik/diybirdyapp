@@ -3,15 +3,14 @@ Page: Create deck from .csv file
 Allows users to create flashcard decks from CSV files.
 """
 
-import streamlit as st
 import csv
 import io
+import streamlit as st
 import sys
 from pathlib import Path
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
-sys.path.append(str(Path(__file__).parent.parent))
 
 from import_client import (
     create_local_flashcard_deck,

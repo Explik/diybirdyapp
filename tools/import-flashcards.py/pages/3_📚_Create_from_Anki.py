@@ -3,15 +3,14 @@ Page: Create deck from .anki file
 Import Anki deck files and convert them to the internal storage format.
 """
 
+import tempfile
+import os
 import streamlit as st
 import sys
 from pathlib import Path
-import tempfile
-import os
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
-sys.path.append(str(Path(__file__).parent.parent))
 
 from login_utils import render_login_sidebar
 from deck_storage import DeckStorage

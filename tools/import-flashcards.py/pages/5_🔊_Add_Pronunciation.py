@@ -3,11 +3,15 @@ Page: Add pronunciation to flashcards
 Allows users to add pronunciation audio to flashcard decks.
 """
 
+import tempfile
+import os
 import streamlit as st
 import sys
 from pathlib import Path
-import tempfile
-import os
+
+# Add parent directory to path to import shared modules
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
