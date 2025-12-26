@@ -39,14 +39,11 @@ if (-not $apiClientInstalled) {
     }
 }
 
-# Check for Google Cloud credentials
-if (-not $env:GOOGLE_APPLICATION_CREDENTIALS) {
-    Write-Host ""
-    Write-Host "⚠️  Warning: GOOGLE_APPLICATION_CREDENTIALS not set" -ForegroundColor Yellow
-    Write-Host "Translation features require Google Cloud credentials" -ForegroundColor Yellow
-    Write-Host "Set it with: `$env:GOOGLE_APPLICATION_CREDENTIALS='path\to\credentials.json'" -ForegroundColor Yellow
-    Write-Host ""
-}
+# Check if backend API is running (translation requires backend)
+Write-Host ""
+Write-Host "ℹ️  Note: Translation features require backend API running" -ForegroundColor Cyan
+Write-Host "Make sure the backend is running at http://localhost:8080" -ForegroundColor Cyan
+Write-Host ""
 
 # Check if API server is running
 try {

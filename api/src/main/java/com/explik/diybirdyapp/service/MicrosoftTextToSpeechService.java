@@ -52,6 +52,7 @@ public class MicrosoftTextToSpeechService {
                     System.out.println("CANCELED: ErrorCode=" + cancellation.getErrorCode());
                     System.out.println("CANCELED: ErrorDetails=" + cancellation.getErrorDetails());
                 }
+                throw new RuntimeException("Speech synthesis cancelled: " + cancellation.getReason());
             }
             return null;
         }

@@ -13,14 +13,8 @@ pip install -e .
 cd ..\..\import-flashcards.py
 ```
 
-### Set up Google Cloud Credentials
-```powershell
-# Set environment variable (replace with your path)
-$env:GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\credentials.json"
-```
-
-### Verify API Server
-Make sure your API server is running on http://localhost:8080
+### Verify API connection
+Make sure your backend API server is running and has translations configured (see language management tool).
 
 ## 2. Run the App
 

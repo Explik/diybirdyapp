@@ -74,43 +74,37 @@ pip install -r requirements.txt
 
 ### 3. Translation Issues
 
-#### Error: "google.auth.exceptions.DefaultCredentialsError"
+#### Error: "Failed to translate text" or API connection errors
 
 **Symptoms:**
 - Translation fails
-- "Could not automatically determine credentials"
+- Cannot connect to backend API
+- "Failed to translate text" error messages
 
 **Solutions:**
 
-1. **Set Google Cloud credentials:**
+1. **Verify backend API is running:**
    ```powershell
-   # Set environment variable (PowerShell)
-   $env:GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\credentials.json"
-   
-   # Verify it's set
-   echo $env:GOOGLE_APPLICATION_CREDENTIALS
+   # Check if backend is accessible
+   Invoke-WebRequest -Uri "http://localhost:8080" -Method GET
    ```
 
-2. **Download credentials from Google Cloud Console:**
-   - Go to https://console.cloud.google.com
-   - Navigate to "IAM & Admin" > "Service Accounts"
-   - Create a service account with Translation API access
-   - Download the JSON key file
-   - Set GOOGLE_APPLICATION_CREDENTIALS to the file path
+2. **Check backend translation service configuration:**
+   - Ensure translation service (Google Translate) is configured in the backend
+   - Verify the backend has proper Google Cloud credentials
+   - Check backend logs for translation errors
 
-3. **Enable the Translation API:**
-   - Go to Google Cloud Console
-   - Navigate to "APIs & Services" > "Library"
-   - Search for "Cloud Translation API"
-   - Click "Enable"
+3. **Verify language configurations:**
+   - Ensure both source and target languages have translation configurations
+   - Check that languages are properly set up in the backend
+   - Use the manage-languages tool to verify configuration
 
-#### Error: "Quota exceeded" or "Resource exhausted"
+#### Error: "No configuration found for language"
 
 **Solution:**
-- Check your Google Cloud quota limits
-- Enable billing on your Google Cloud project
-- Request quota increase if needed
-- Consider using smaller test files first
+- Languages need translation configurations (e.g., google-translate) attached
+- Use the manage-languages tool to create and attach configurations
+- Ensure the backend translation service is properly configured
 
 ### 4. Import/Module Issues
 
@@ -295,7 +289,7 @@ If you continue to have issues:
 
 3. **Test components individually:**
    - Test API connection with curl or Postman
-   - Test Google Translate independently
+   - Test backend translation endpoint directly
    - Verify file can be read by Python
 
 4. **Create a minimal test case:**
@@ -307,12 +301,13 @@ If you continue to have issues:
 
 - [ ] Python 3.8+ installed
 - [ ] Streamlit installed (`pip list | Select-String streamlit`)
-- [ ] API server running (http://localhost:8080 accessible)
-- [ ] Google Cloud credentials set ($env:GOOGLE_APPLICATION_CREDENTIALS)
+- [ ] Backend API server running (http://localhost:8080 accessible)
+- [ ] Backend translation service configured
+- [ ] Languages have translation configurations attached
 - [ ] OpenAPI client installed (`pip list | Select-String openapi-client`)
 - [ ] No firewall blocking localhost connections
 - [ ] In correct directory (import-flashcards.py)
 - [ ] File encoding is UTF-8
 - [ ] Languages configured in API
 
-Still stuck? Check the API logs for more detailed error information!
+Still stuck? Check the backend API logs for more detailed error information!
