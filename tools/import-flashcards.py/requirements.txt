@@ -5,3 +5,4 @@ requests>=2.31.0
 
 # Note: The shared modules depend on the OpenAPI client
 # Make sure to install it from ../shared/api_client/
+openai>=1.0.0
