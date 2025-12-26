@@ -16,12 +16,12 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from openapi_client.models.translation_request_dto import TranslationRequestDto
-from openapi_client.models.translation_response_dto import TranslationResponseDto
+from ..models.translation_request_dto import TranslationRequestDto
+from ..models.translation_response_dto import TranslationResponseDto
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class TranslationControllerApi:

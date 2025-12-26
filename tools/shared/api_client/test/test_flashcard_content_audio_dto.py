@@ -39,6 +39,7 @@ class TestFlashcardContentAudioDto(unittest.TestCase):
             )
         else:
             return FlashcardContentAudioDto(
+                audio_url = '',
         )
         """
 

@@ -193,7 +193,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_translation_controller_api.py
-test/test_translation_request_dto.py
-test/test_translation_response_dto.py
 tox.ini

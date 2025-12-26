@@ -35,6 +35,7 @@ class TestConfigurationGoogleTranslateDto(unittest.TestCase):
         model = ConfigurationGoogleTranslateDto()
         if include_optional:
             return ConfigurationGoogleTranslateDto(
+                language_code = ''
             )
         else:
             return ConfigurationGoogleTranslateDto(

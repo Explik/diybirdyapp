@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
-from openapi_client.models.vocabulary_content_text_dto import VocabularyContentTextDto
+from .vocabulary_content_text_dto import VocabularyContentTextDto
 from typing import Optional, Set
 from typing_extensions import Self
 

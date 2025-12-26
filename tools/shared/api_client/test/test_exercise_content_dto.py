@@ -40,6 +40,8 @@ class TestExerciseContentDto(unittest.TestCase):
             )
         else:
             return ExerciseContentDto(
+                id = '',
+                type = '',
         )
         """
 

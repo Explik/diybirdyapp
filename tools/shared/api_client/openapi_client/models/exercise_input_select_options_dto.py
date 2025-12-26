@@ -19,9 +19,9 @@ import json
 
 from pydantic import ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from openapi_client.models.exercise_input_dto import ExerciseInputDto
-from openapi_client.models.select_option_input_base_option import SelectOptionInputBaseOption
-from openapi_client.models.select_options_input_feedback_dto import SelectOptionsInputFeedbackDto
+from .exercise_input_dto import ExerciseInputDto
+from .select_option_input_base_option import SelectOptionInputBaseOption
+from .select_options_input_feedback_dto import SelectOptionsInputFeedbackDto
 from typing import Optional, Set
 from typing_extensions import Self
 

@@ -38,10 +38,17 @@ class TestExerciseSessionOptionsLearnFlashcardsDto(unittest.TestCase):
                 answer_language_ids = [
                     ''
                     ],
-                available_answer_language_ids = [
-                    ''
-                    ],
-                retype_correct_answer_enabled = True
+                include_review_exercises = True,
+                include_multiple_choice_exercises = True,
+                include_writing_exercises = True,
+                include_listening_exercises = True,
+                include_pronunciation_exercises = True,
+                retype_correct_answer_enabled = True,
+                available_answer_languages = [
+                    openapi_client.models.exercise_session_options_language_option_dto.ExerciseSessionOptionsLanguageOptionDto(
+                        id = '', 
+                        iso_code = '', )
+                    ]
             )
         else:
             return ExerciseSessionOptionsLearnFlashcardsDto(

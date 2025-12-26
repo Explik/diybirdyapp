@@ -35,6 +35,8 @@ class TestConfigurationGoogleTextToSpeechDto(unittest.TestCase):
         model = ConfigurationGoogleTextToSpeechDto()
         if include_optional:
             return ConfigurationGoogleTextToSpeechDto(
+                language_code = '',
+                voice_name = ''
             )
         else:
             return ConfigurationGoogleTextToSpeechDto(

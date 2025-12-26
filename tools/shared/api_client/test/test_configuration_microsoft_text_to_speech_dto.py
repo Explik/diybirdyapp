@@ -35,6 +35,7 @@ class TestConfigurationMicrosoftTextToSpeechDto(unittest.TestCase):
         model = ConfigurationMicrosoftTextToSpeechDto()
         if include_optional:
             return ConfigurationMicrosoftTextToSpeechDto(
+                voice_name = ''
             )
         else:
             return ConfigurationMicrosoftTextToSpeechDto(

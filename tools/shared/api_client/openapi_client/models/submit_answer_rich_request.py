@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictBytes, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
-from openapi_client.models.submit_answer_request import SubmitAnswerRequest
+from .submit_answer_request import SubmitAnswerRequest
 from typing import Optional, Set
 from typing_extensions import Self
 

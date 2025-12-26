@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Any, ClassVar, Dict, List
-from openapi_client.models.pair_option_feedback_pair import PairOptionFeedbackPair
+from .pair_option_feedback_pair import PairOptionFeedbackPair
 from typing import Optional, Set
 from typing_extensions import Self
 

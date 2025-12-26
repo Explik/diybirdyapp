@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from openapi_client.models.option import Option
+from .option import Option
 from typing import Optional, Set
 from typing_extensions import Self
 

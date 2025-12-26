@@ -48,6 +48,12 @@ class TestFlashcardDtoFrontContent(unittest.TestCase):
             )
         else:
             return FlashcardDtoFrontContent(
+                id = '',
+                type = '',
+                audio_url = '',
+                image_url = '',
+                text = '',
+                language_id = '',
         )
         """
 

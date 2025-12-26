@@ -25,12 +25,12 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from openapi_client.models.exercise_content_audio_dto import ExerciseContentAudioDto
-    from openapi_client.models.exercise_content_flashcard_dto import ExerciseContentFlashcardDto
-    from openapi_client.models.exercise_content_flashcard_side_dto import ExerciseContentFlashcardSideDto
-    from openapi_client.models.exercise_content_image_dto import ExerciseContentImageDto
-    from openapi_client.models.exercise_content_text_dto import ExerciseContentTextDto
-    from openapi_client.models.exercise_content_video_dto import ExerciseContentVideoDto
+    from .exercise_content_audio_dto import ExerciseContentAudioDto
+    from .exercise_content_flashcard_dto import ExerciseContentFlashcardDto
+    from .exercise_content_flashcard_side_dto import ExerciseContentFlashcardSideDto
+    from .exercise_content_image_dto import ExerciseContentImageDto
+    from .exercise_content_text_dto import ExerciseContentTextDto
+    from .exercise_content_video_dto import ExerciseContentVideoDto
 
 class ExerciseContentDto(BaseModel):
     """
@@ -104,17 +104,17 @@ class ExerciseContentDto(BaseModel):
         # look up the object type based on discriminator mapping
         object_type = cls.get_discriminator_value(obj)
         if object_type ==  'ExerciseContentAudioDto':
-            return import_module("openapi_client.models.exercise_content_audio_dto").ExerciseContentAudioDto.from_dict(obj)
+            return import_module(".models.exercise_content_audio_dto", package=__package__).ExerciseContentAudioDto.from_dict(obj)
         if object_type ==  'ExerciseContentFlashcardDto':
-            return import_module("openapi_client.models.exercise_content_flashcard_dto").ExerciseContentFlashcardDto.from_dict(obj)
+            return import_module(".models.exercise_content_flashcard_dto", package=__package__).ExerciseContentFlashcardDto.from_dict(obj)
         if object_type ==  'ExerciseContentFlashcardSideDto':
-            return import_module("openapi_client.models.exercise_content_flashcard_side_dto").ExerciseContentFlashcardSideDto.from_dict(obj)
+            return import_module(".models.exercise_content_flashcard_side_dto", package=__package__).ExerciseContentFlashcardSideDto.from_dict(obj)
         if object_type ==  'ExerciseContentImageDto':
-            return import_module("openapi_client.models.exercise_content_image_dto").ExerciseContentImageDto.from_dict(obj)
+            return import_module(".models.exercise_content_image_dto", package=__package__).ExerciseContentImageDto.from_dict(obj)
         if object_type ==  'ExerciseContentTextDto':
-            return import_module("openapi_client.models.exercise_content_text_dto").ExerciseContentTextDto.from_dict(obj)
+            return import_module(".models.exercise_content_text_dto", package=__package__).ExerciseContentTextDto.from_dict(obj)
         if object_type ==  'ExerciseContentVideoDto':
-            return import_module("openapi_client.models.exercise_content_video_dto").ExerciseContentVideoDto.from_dict(obj)
+            return import_module(".models.exercise_content_video_dto", package=__package__).ExerciseContentVideoDto.from_dict(obj)
 
         raise ValueError("ExerciseContentDto failed to lookup discriminator value from " +
                             json.dumps(obj) + ". Discriminator property name: " + cls.__discriminator_property_name +

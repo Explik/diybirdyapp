@@ -36,8 +36,10 @@ class TestExerciseSessionOptionsWriteFlashcardsDto(unittest.TestCase):
         if include_optional:
             return ExerciseSessionOptionsWriteFlashcardsDto(
                 answer_language_id = '',
-                available_answer_language_ids = [
-                    ''
+                available_answer_languages = [
+                    openapi_client.models.exercise_session_options_language_option_dto.ExerciseSessionOptionsLanguageOptionDto(
+                        id = '', 
+                        iso_code = '', )
                     ],
                 retype_correct_answer_enabled = True
             )

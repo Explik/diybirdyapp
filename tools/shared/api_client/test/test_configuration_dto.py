@@ -36,8 +36,8 @@ class TestConfigurationDto(unittest.TestCase):
         if include_optional:
             return ConfigurationDto(
                 id = '',
-                language_id = '',
-                language_code = ''
+                type = '',
+                language_id = ''
             )
         else:
             return ConfigurationDto(

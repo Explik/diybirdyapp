@@ -36,8 +36,10 @@ class TestExerciseSessionOptionsSelectFlashcardsDto(unittest.TestCase):
         if include_optional:
             return ExerciseSessionOptionsSelectFlashcardsDto(
                 initial_flashcard_language_id = '',
-                available_flashcard_language_ids = [
-                    ''
+                available_flashcard_languages = [
+                    openapi_client.models.exercise_session_options_language_option_dto.ExerciseSessionOptionsLanguageOptionDto(
+                        id = '', 
+                        iso_code = '', )
                     ]
             )
         else:

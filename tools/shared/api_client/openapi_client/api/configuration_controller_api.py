@@ -17,12 +17,12 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import StrictStr
-from openapi_client.models.configuration_options_dto import ConfigurationOptionsDto
-from openapi_client.models.get_config_by_id200_response import GetConfigById200Response
+from ..models.configuration_options_dto import ConfigurationOptionsDto
+from ..models.get_config_by_id200_response import GetConfigById200Response
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class ConfigurationControllerApi:

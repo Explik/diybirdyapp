@@ -32,8 +32,14 @@ class TestExerciseSessionControllerApi(unittest.TestCase):
         """
         pass
 
-    def test_get4(self) -> None:
-        """Test case for get4
+    def test_get5(self) -> None:
+        """Test case for get5
+
+        """
+        pass
+
+    def test_get_config(self) -> None:
+        """Test case for get_config
 
         """
         pass
@@ -46,6 +52,12 @@ class TestExerciseSessionControllerApi(unittest.TestCase):
 
     def test_skip_exercise(self) -> None:
         """Test case for skip_exercise
+
+        """
+        pass
+
+    def test_update_config(self) -> None:
+        """Test case for update_config
 
         """
         pass

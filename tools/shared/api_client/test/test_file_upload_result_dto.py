@@ -39,6 +39,7 @@ class TestFileUploadResultDto(unittest.TestCase):
             )
         else:
             return FileUploadResultDto(
+                url = '',
         )
         """
 

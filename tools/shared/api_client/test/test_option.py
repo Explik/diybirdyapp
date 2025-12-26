@@ -36,7 +36,7 @@ class TestOption(unittest.TestCase):
         if include_optional:
             return Option(
                 id = '',
-                text = ''
+                option = openapi_client.models.option.option()
             )
         else:
             return Option(

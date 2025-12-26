@@ -18,12 +18,12 @@ from typing_extensions import Annotated
 
 from pydantic import StrictBytes, StrictStr
 from typing import List, Optional, Union
-from openapi_client.models.text_content_transcription_dto import TextContentTranscriptionDto
-from openapi_client.models.upload_file_request import UploadFileRequest
+from ..models.text_content_transcription_dto import TextContentTranscriptionDto
+from ..models.upload_file_request import UploadFileRequest
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class TextContentControllerApi:

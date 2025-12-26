@@ -18,12 +18,12 @@ from typing_extensions import Annotated
 
 from pydantic import StrictStr
 from typing import List, Optional
-from openapi_client.models.flashcard_dto import FlashcardDto
-from openapi_client.models.update1_request import Update1Request
+from ..models.flashcard_dto import FlashcardDto
+from ..models.update1_request import Update1Request
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class FlashcardControllerApi:

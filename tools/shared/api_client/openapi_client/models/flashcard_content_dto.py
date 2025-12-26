@@ -25,13 +25,13 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from openapi_client.models.flashcard_content_audio_dto import FlashcardContentAudioDto
-    from openapi_client.models.flashcard_content_image_dto import FlashcardContentImageDto
-    from openapi_client.models.flashcard_content_text_dto import FlashcardContentTextDto
-    from openapi_client.models.flashcard_content_upload_audio_dto import FlashcardContentUploadAudioDto
-    from openapi_client.models.flashcard_content_upload_image_dto import FlashcardContentUploadImageDto
-    from openapi_client.models.flashcard_content_upload_video_dto import FlashcardContentUploadVideoDto
-    from openapi_client.models.flashcard_content_video_dto import FlashcardContentVideoDto
+    from .flashcard_content_audio_dto import FlashcardContentAudioDto
+    from .flashcard_content_image_dto import FlashcardContentImageDto
+    from .flashcard_content_text_dto import FlashcardContentTextDto
+    from .flashcard_content_upload_audio_dto import FlashcardContentUploadAudioDto
+    from .flashcard_content_upload_image_dto import FlashcardContentUploadImageDto
+    from .flashcard_content_upload_video_dto import FlashcardContentUploadVideoDto
+    from .flashcard_content_video_dto import FlashcardContentVideoDto
 
 class FlashcardContentDto(BaseModel):
     """
@@ -105,19 +105,19 @@ class FlashcardContentDto(BaseModel):
         # look up the object type based on discriminator mapping
         object_type = cls.get_discriminator_value(obj)
         if object_type ==  'FlashcardContentAudioDto':
-            return import_module("openapi_client.models.flashcard_content_audio_dto").FlashcardContentAudioDto.from_dict(obj)
+            return import_module(".models.flashcard_content_audio_dto", package=__package__).FlashcardContentAudioDto.from_dict(obj)
         if object_type ==  'FlashcardContentImageDto':
-            return import_module("openapi_client.models.flashcard_content_image_dto").FlashcardContentImageDto.from_dict(obj)
+            return import_module(".models.flashcard_content_image_dto", package=__package__).FlashcardContentImageDto.from_dict(obj)
         if object_type ==  'FlashcardContentTextDto':
-            return import_module("openapi_client.models.flashcard_content_text_dto").FlashcardContentTextDto.from_dict(obj)
+            return import_module(".models.flashcard_content_text_dto", package=__package__).FlashcardContentTextDto.from_dict(obj)
         if object_type ==  'FlashcardContentUploadAudioDto':
-            return import_module("openapi_client.models.flashcard_content_upload_audio_dto").FlashcardContentUploadAudioDto.from_dict(obj)
+            return import_module(".models.flashcard_content_upload_audio_dto", package=__package__).FlashcardContentUploadAudioDto.from_dict(obj)
         if object_type ==  'FlashcardContentUploadImageDto':
-            return import_module("openapi_client.models.flashcard_content_upload_image_dto").FlashcardContentUploadImageDto.from_dict(obj)
+            return import_module(".models.flashcard_content_upload_image_dto", package=__package__).FlashcardContentUploadImageDto.from_dict(obj)
         if object_type ==  'FlashcardContentUploadVideoDto':
-            return import_module("openapi_client.models.flashcard_content_upload_video_dto").FlashcardContentUploadVideoDto.from_dict(obj)
+            return import_module(".models.flashcard_content_upload_video_dto", package=__package__).FlashcardContentUploadVideoDto.from_dict(obj)
         if object_type ==  'FlashcardContentVideoDto':
-            return import_module("openapi_client.models.flashcard_content_video_dto").FlashcardContentVideoDto.from_dict(obj)
+            return import_module(".models.flashcard_content_video_dto", package=__package__).FlashcardContentVideoDto.from_dict(obj)
 
         raise ValueError("FlashcardContentDto failed to lookup discriminator value from " +
                             json.dumps(obj) + ". Discriminator property name: " + cls.__discriminator_property_name +

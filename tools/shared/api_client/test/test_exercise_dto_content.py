@@ -50,6 +50,7 @@ class TestExerciseDtoContent(unittest.TestCase):
                 image_url = '',
                 text = '',
                 pronunciation_url = '',
+                transcription = '',
                 video_url = ''
             )
         else:

@@ -18,12 +18,12 @@ from typing_extensions import Annotated
 
 from pydantic import StrictStr
 from typing import Any, Dict
-from openapi_client.models.login_dto import LoginDto
-from openapi_client.models.signup_dto import SignupDto
+from ..models.login_dto import LoginDto
+from ..models.signup_dto import SignupDto
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class AuthenticationControllerApi:

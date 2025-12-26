@@ -37,9 +37,7 @@ class TestExerciseDto(unittest.TestCase):
             return ExerciseDto(
                 id = '',
                 type = '',
-                content = openapi_client.models.exercise_content_dto.ExerciseContentDto(
-                    id = '', 
-                    type = '', ),
+                content = None,
                 input = None,
                 feedback = openapi_client.models.exercise_feedback_dto.ExerciseFeedbackDto(
                     type = '', 
@@ -50,6 +48,8 @@ class TestExerciseDto(unittest.TestCase):
             )
         else:
             return ExerciseDto(
+                id = '',
+                type = '',
         )
         """
 

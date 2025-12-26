@@ -26,8 +26,44 @@ class TestLanguageControllerApi(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
+    def test_attach_config(self) -> None:
+        """Test case for attach_config
+
+        """
+        pass
+
+    def test_create_config(self) -> None:
+        """Test case for create_config
+
+        """
+        pass
+
+    def test_create_language(self) -> None:
+        """Test case for create_language
+
+        """
+        pass
+
+    def test_detach_config(self) -> None:
+        """Test case for detach_config
+
+        """
+        pass
+
     def test_get_all(self) -> None:
         """Test case for get_all
+
+        """
+        pass
+
+    def test_get_configs(self) -> None:
+        """Test case for get_configs
+
+        """
+        pass
+
+    def test_update_language(self) -> None:
+        """Test case for update_language
 
         """
         pass

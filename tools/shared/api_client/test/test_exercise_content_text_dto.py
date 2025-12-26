@@ -36,7 +36,8 @@ class TestExerciseContentTextDto(unittest.TestCase):
         if include_optional:
             return ExerciseContentTextDto(
                 text = '',
-                pronunciation_url = ''
+                pronunciation_url = '',
+                transcription = ''
             )
         else:
             return ExerciseContentTextDto(

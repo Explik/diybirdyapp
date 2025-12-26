@@ -37,25 +37,71 @@ class TestSubmitAnswerRequest(unittest.TestCase):
             return SubmitAnswerRequest(
                 id = '',
                 type = '',
-                url = '',
+                session_id = '',
+                value = '',
+                options = [
+                    openapi_client.models.select_placeholders_input_option.SelectPlaceholdersInputOption(
+                        id = '', 
+                        text = '', )
+                    ],
+                left_option_type = '',
+                right_option_type = '',
+                left_options = [
+                    openapi_client.models.pair_options_input_option_dto.PairOptionsInputOptionDto(
+                        id = '', )
+                    ],
+                right_options = [
+                    openapi_client.models.pair_options_input_option_dto.PairOptionsInputOptionDto(
+                        id = '', )
+                    ],
                 feedback = openapi_client.models.exercise_input_feedback_text_dto.ExerciseInputFeedbackTextDto(
                     correct_values = [
                         ''
                         ], 
                     incorrect_values = [
                         ''
-                        ], ),
-                options = [
-                    openapi_client.models.option.Option(
+                        ], 
+                    is_retype_answer_enabled = True, ),
+                url = '',
+                option_type = '',
+                parts = [
+                    openapi_client.models.write_placeholders_part_dto.WritePlaceholdersPartDto(
                         id = '', 
-                        text = '', )
+                        type = '', 
+                        value = '', 
+                        size = 1.337, )
                     ],
-                value = '',
                 rating = '',
                 text = ''
             )
         else:
             return SubmitAnswerRequest(
+                session_id = '',
+                options = [
+                    openapi_client.models.select_placeholders_input_option.SelectPlaceholdersInputOption(
+                        id = '', 
+                        text = '', )
+                    ],
+                left_option_type = '',
+                right_option_type = '',
+                left_options = [
+                    openapi_client.models.pair_options_input_option_dto.PairOptionsInputOptionDto(
+                        id = '', )
+                    ],
+                right_options = [
+                    openapi_client.models.pair_options_input_option_dto.PairOptionsInputOptionDto(
+                        id = '', )
+                    ],
+                url = '',
+                parts = [
+                    openapi_client.models.write_placeholders_part_dto.WritePlaceholdersPartDto(
+                        id = '', 
+                        type = '', 
+                        value = '', 
+                        size = 1.337, )
+                    ],
+                rating = '',
+                text = '',
         )
         """
 

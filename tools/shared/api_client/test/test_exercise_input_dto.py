@@ -36,10 +36,12 @@ class TestExerciseInputDto(unittest.TestCase):
         if include_optional:
             return ExerciseInputDto(
                 id = '',
-                type = ''
+                type = '',
+                session_id = ''
             )
         else:
             return ExerciseInputDto(
+                session_id = '',
         )
         """
 

@@ -25,10 +25,10 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from openapi_client.models.exercise_session_options_learn_flashcards_dto import ExerciseSessionOptionsLearnFlashcardsDto
-    from openapi_client.models.exercise_session_options_review_flashcards_dto import ExerciseSessionOptionsReviewFlashcardsDto
-    from openapi_client.models.exercise_session_options_select_flashcards_dto import ExerciseSessionOptionsSelectFlashcardsDto
-    from openapi_client.models.exercise_session_options_write_flashcards_dto import ExerciseSessionOptionsWriteFlashcardsDto
+    from .exercise_session_options_learn_flashcards_dto import ExerciseSessionOptionsLearnFlashcardsDto
+    from .exercise_session_options_review_flashcards_dto import ExerciseSessionOptionsReviewFlashcardsDto
+    from .exercise_session_options_select_flashcards_dto import ExerciseSessionOptionsSelectFlashcardsDto
+    from .exercise_session_options_write_flashcards_dto import ExerciseSessionOptionsWriteFlashcardsDto
 
 class ExerciseSessionOptionsDto(BaseModel):
     """
@@ -102,13 +102,13 @@ class ExerciseSessionOptionsDto(BaseModel):
         # look up the object type based on discriminator mapping
         object_type = cls.get_discriminator_value(obj)
         if object_type ==  'ExerciseSessionOptionsLearnFlashcardsDto':
-            return import_module("openapi_client.models.exercise_session_options_learn_flashcards_dto").ExerciseSessionOptionsLearnFlashcardsDto.from_dict(obj)
+            return import_module(".models.exercise_session_options_learn_flashcards_dto", package=__package__).ExerciseSessionOptionsLearnFlashcardsDto.from_dict(obj)
         if object_type ==  'ExerciseSessionOptionsReviewFlashcardsDto':
-            return import_module("openapi_client.models.exercise_session_options_review_flashcards_dto").ExerciseSessionOptionsReviewFlashcardsDto.from_dict(obj)
+            return import_module(".models.exercise_session_options_review_flashcards_dto", package=__package__).ExerciseSessionOptionsReviewFlashcardsDto.from_dict(obj)
         if object_type ==  'ExerciseSessionOptionsSelectFlashcardsDto':
-            return import_module("openapi_client.models.exercise_session_options_select_flashcards_dto").ExerciseSessionOptionsSelectFlashcardsDto.from_dict(obj)
+            return import_module(".models.exercise_session_options_select_flashcards_dto", package=__package__).ExerciseSessionOptionsSelectFlashcardsDto.from_dict(obj)
         if object_type ==  'ExerciseSessionOptionsWriteFlashcardsDto':
-            return import_module("openapi_client.models.exercise_session_options_write_flashcards_dto").ExerciseSessionOptionsWriteFlashcardsDto.from_dict(obj)
+            return import_module(".models.exercise_session_options_write_flashcards_dto", package=__package__).ExerciseSessionOptionsWriteFlashcardsDto.from_dict(obj)
 
         raise ValueError("ExerciseSessionOptionsDto failed to lookup discriminator value from " +
                             json.dumps(obj) + ". Discriminator property name: " + cls.__discriminator_property_name +

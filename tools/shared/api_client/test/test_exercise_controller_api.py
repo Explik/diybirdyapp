@@ -26,20 +26,32 @@ class TestExerciseControllerApi(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
-    def test_get2(self) -> None:
-        """Test case for get2
-
-        """
-        pass
-
     def test_get3(self) -> None:
         """Test case for get3
 
         """
         pass
 
+    def test_get4(self) -> None:
+        """Test case for get4
+
+        """
+        pass
+
+    def test_get_types(self) -> None:
+        """Test case for get_types
+
+        """
+        pass
+
     def test_submit_answer(self) -> None:
         """Test case for submit_answer
+
+        """
+        pass
+
+    def test_submit_answer_rich(self) -> None:
+        """Test case for submit_answer_rich
 
         """
         pass

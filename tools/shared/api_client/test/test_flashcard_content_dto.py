@@ -40,6 +40,8 @@ class TestFlashcardContentDto(unittest.TestCase):
             )
         else:
             return FlashcardContentDto(
+                id = '',
+                type = '',
         )
         """
 

@@ -19,7 +19,7 @@ import json
 
 from pydantic import ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
-from openapi_client.models.exercise_content_dto import ExerciseContentDto
+from .exercise_content_dto import ExerciseContentDto
 from typing import Optional, Set
 from typing_extensions import Self
 

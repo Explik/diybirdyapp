@@ -17,11 +17,11 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from openapi_client.models.configuration_dto import ConfigurationDto
-from openapi_client.models.configuration_google_speech_to_text_dto import ConfigurationGoogleSpeechToTextDto
-from openapi_client.models.configuration_google_text_to_speech_dto import ConfigurationGoogleTextToSpeechDto
-from openapi_client.models.configuration_google_translate_dto import ConfigurationGoogleTranslateDto
-from openapi_client.models.configuration_microsoft_text_to_speech_dto import ConfigurationMicrosoftTextToSpeechDto
+from .configuration_dto import ConfigurationDto
+from .configuration_google_speech_to_text_dto import ConfigurationGoogleSpeechToTextDto
+from .configuration_google_text_to_speech_dto import ConfigurationGoogleTextToSpeechDto
+from .configuration_google_translate_dto import ConfigurationGoogleTranslateDto
+from .configuration_microsoft_text_to_speech_dto import ConfigurationMicrosoftTextToSpeechDto
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self

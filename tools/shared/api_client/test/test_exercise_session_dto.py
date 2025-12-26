@@ -42,9 +42,7 @@ class TestExerciseSessionDto(unittest.TestCase):
                 exercise = openapi_client.models.exercise_dto.ExerciseDto(
                     id = '', 
                     type = '', 
-                    content = openapi_client.models.exercise_content_dto.ExerciseContentDto(
-                        id = '', 
-                        type = '', ), 
+                    content = null, 
                     input = null, 
                     feedback = openapi_client.models.exercise_feedback_dto.ExerciseFeedbackDto(
                         type = '', 
@@ -52,12 +50,13 @@ class TestExerciseSessionDto(unittest.TestCase):
                         message = '', ), 
                     properties = openapi_client.models.exercise_dto_properties.ExerciseDto_properties(
                         empty = True, ), ),
-                progress = openapi_client.models.exercise_session_progress_model.ExerciseSessionProgressModel(
+                progress = openapi_client.models.exercise_session_progress_dto.ExerciseSessionProgressDto(
                     type = '', 
                     percentage = 56, )
             )
         else:
             return ExerciseSessionDto(
+                type = '',
         )
         """
 

@@ -17,14 +17,14 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from openapi_client.models.flashcard_content_audio_dto import FlashcardContentAudioDto
-from openapi_client.models.flashcard_content_dto import FlashcardContentDto
-from openapi_client.models.flashcard_content_image_dto import FlashcardContentImageDto
-from openapi_client.models.flashcard_content_text_dto import FlashcardContentTextDto
-from openapi_client.models.flashcard_content_upload_audio_dto import FlashcardContentUploadAudioDto
-from openapi_client.models.flashcard_content_upload_image_dto import FlashcardContentUploadImageDto
-from openapi_client.models.flashcard_content_upload_video_dto import FlashcardContentUploadVideoDto
-from openapi_client.models.flashcard_content_video_dto import FlashcardContentVideoDto
+from .flashcard_content_audio_dto import FlashcardContentAudioDto
+from .flashcard_content_dto import FlashcardContentDto
+from .flashcard_content_image_dto import FlashcardContentImageDto
+from .flashcard_content_text_dto import FlashcardContentTextDto
+from .flashcard_content_upload_audio_dto import FlashcardContentUploadAudioDto
+from .flashcard_content_upload_image_dto import FlashcardContentUploadImageDto
+from .flashcard_content_upload_video_dto import FlashcardContentUploadVideoDto
+from .flashcard_content_video_dto import FlashcardContentVideoDto
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self

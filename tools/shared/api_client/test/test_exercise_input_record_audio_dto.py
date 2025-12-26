@@ -35,7 +35,14 @@ class TestExerciseInputRecordAudioDto(unittest.TestCase):
         model = ExerciseInputRecordAudioDto()
         if include_optional:
             return ExerciseInputRecordAudioDto(
-                url = ''
+                url = '',
+                feedback = openapi_client.models.exercise_input_record_audio_feedback_dto.ExerciseInputRecordAudioFeedbackDto(
+                    correct_values = [
+                        ''
+                        ], 
+                    incorrect_values = [
+                        ''
+                        ], )
             )
         else:
             return ExerciseInputRecordAudioDto(

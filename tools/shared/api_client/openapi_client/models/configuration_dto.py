@@ -25,10 +25,10 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from openapi_client.models.configuration_google_speech_to_text_dto import ConfigurationGoogleSpeechToTextDto
-    from openapi_client.models.configuration_google_text_to_speech_dto import ConfigurationGoogleTextToSpeechDto
-    from openapi_client.models.configuration_google_translate_dto import ConfigurationGoogleTranslateDto
-    from openapi_client.models.configuration_microsoft_text_to_speech_dto import ConfigurationMicrosoftTextToSpeechDto
+    from .configuration_google_speech_to_text_dto import ConfigurationGoogleSpeechToTextDto
+    from .configuration_google_text_to_speech_dto import ConfigurationGoogleTextToSpeechDto
+    from .configuration_google_translate_dto import ConfigurationGoogleTranslateDto
+    from .configuration_microsoft_text_to_speech_dto import ConfigurationMicrosoftTextToSpeechDto
 
 class ConfigurationDto(BaseModel):
     """
@@ -103,13 +103,13 @@ class ConfigurationDto(BaseModel):
         # look up the object type based on discriminator mapping
         object_type = cls.get_discriminator_value(obj)
         if object_type ==  'ConfigurationGoogleSpeechToTextDto':
-            return import_module("openapi_client.models.configuration_google_speech_to_text_dto").ConfigurationGoogleSpeechToTextDto.from_dict(obj)
+            return import_module(".models.configuration_google_speech_to_text_dto", package=__package__).ConfigurationGoogleSpeechToTextDto.from_dict(obj)
         if object_type ==  'ConfigurationGoogleTextToSpeechDto':
-            return import_module("openapi_client.models.configuration_google_text_to_speech_dto").ConfigurationGoogleTextToSpeechDto.from_dict(obj)
+            return import_module(".models.configuration_google_text_to_speech_dto", package=__package__).ConfigurationGoogleTextToSpeechDto.from_dict(obj)
         if object_type ==  'ConfigurationGoogleTranslateDto':
-            return import_module("openapi_client.models.configuration_google_translate_dto").ConfigurationGoogleTranslateDto.from_dict(obj)
+            return import_module(".models.configuration_google_translate_dto", package=__package__).ConfigurationGoogleTranslateDto.from_dict(obj)
         if object_type ==  'ConfigurationMicrosoftTextToSpeechDto':
-            return import_module("openapi_client.models.configuration_microsoft_text_to_speech_dto").ConfigurationMicrosoftTextToSpeechDto.from_dict(obj)
+            return import_module(".models.configuration_microsoft_text_to_speech_dto", package=__package__).ConfigurationMicrosoftTextToSpeechDto.from_dict(obj)
 
         raise ValueError("ConfigurationDto failed to lookup discriminator value from " +
                             json.dumps(obj) + ". Discriminator property name: " + cls.__discriminator_property_name +

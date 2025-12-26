@@ -19,10 +19,10 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from openapi_client.models.exercise_dto_content import ExerciseDtoContent
-from openapi_client.models.exercise_dto_properties import ExerciseDtoProperties
-from openapi_client.models.exercise_feedback_dto import ExerciseFeedbackDto
-from openapi_client.models.submit_answer_request import SubmitAnswerRequest
+from .exercise_dto_content import ExerciseDtoContent
+from .exercise_dto_properties import ExerciseDtoProperties
+from .exercise_feedback_dto import ExerciseFeedbackDto
+from .submit_answer_request import SubmitAnswerRequest
 from typing import Optional, Set
 from typing_extensions import Self
 

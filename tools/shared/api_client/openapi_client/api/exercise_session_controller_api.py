@@ -17,12 +17,12 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import StrictStr
-from openapi_client.models.exercise_session_dto import ExerciseSessionDto
-from openapi_client.models.update_config_request import UpdateConfigRequest
+from ..models.exercise_session_dto import ExerciseSessionDto
+from ..models.update_config_request import UpdateConfigRequest
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class ExerciseSessionControllerApi:

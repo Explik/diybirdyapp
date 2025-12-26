@@ -39,6 +39,7 @@ class TestFlashcardContentImageDto(unittest.TestCase):
             )
         else:
             return FlashcardContentImageDto(
+                image_url = '',
         )
         """
 

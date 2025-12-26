@@ -44,6 +44,12 @@ class TestFlashcardControllerApi(unittest.TestCase):
         """
         pass
 
+    def test_get1(self) -> None:
+        """Test case for get1
+
+        """
+        pass
+
     def test_get_all1(self) -> None:
         """Test case for get_all1
 

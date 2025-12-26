@@ -26,8 +26,26 @@ class TestConfigurationControllerApi(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
-    def test_get_all3(self) -> None:
-        """Test case for get_all3
+    def test_delete_config_by_id(self) -> None:
+        """Test case for delete_config_by_id
+
+        """
+        pass
+
+    def test_get_available_options(self) -> None:
+        """Test case for get_available_options
+
+        """
+        pass
+
+    def test_get_config_by_id(self) -> None:
+        """Test case for get_config_by_id
+
+        """
+        pass
+
+    def test_update_config_by_id(self) -> None:
+        """Test case for update_config_by_id
 
         """
         pass

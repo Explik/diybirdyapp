@@ -19,7 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from openapi_client.models.flashcard_dto_front_content import FlashcardDtoFrontContent
+from .flashcard_dto_front_content import FlashcardDtoFrontContent
 from typing import Optional, Set
 from typing_extensions import Self
 

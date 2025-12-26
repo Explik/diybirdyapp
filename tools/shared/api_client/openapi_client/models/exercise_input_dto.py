@@ -25,15 +25,15 @@ from typing_extensions import Self
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from openapi_client.models.exercise_input_arrange_text_options_dto import ExerciseInputArrangeTextOptionsDto
-    from openapi_client.models.exercise_input_pair_options_dto import ExerciseInputPairOptionsDto
-    from openapi_client.models.exercise_input_record_audio_dto import ExerciseInputRecordAudioDto
-    from openapi_client.models.exercise_input_record_video_dto import ExerciseInputRecordVideoDto
-    from openapi_client.models.exercise_input_select_options_dto import ExerciseInputSelectOptionsDto
-    from openapi_client.models.exercise_input_select_placeholders_dto import ExerciseInputSelectPlaceholdersDto
-    from openapi_client.models.exercise_input_select_review_options_dto import ExerciseInputSelectReviewOptionsDto
-    from openapi_client.models.exercise_input_write_placeholders_dto import ExerciseInputWritePlaceholdersDto
-    from openapi_client.models.exercise_input_write_text_dto import ExerciseInputWriteTextDto
+    from .exercise_input_arrange_text_options_dto import ExerciseInputArrangeTextOptionsDto
+    from .exercise_input_pair_options_dto import ExerciseInputPairOptionsDto
+    from .exercise_input_record_audio_dto import ExerciseInputRecordAudioDto
+    from .exercise_input_record_video_dto import ExerciseInputRecordVideoDto
+    from .exercise_input_select_options_dto import ExerciseInputSelectOptionsDto
+    from .exercise_input_select_placeholders_dto import ExerciseInputSelectPlaceholdersDto
+    from .exercise_input_select_review_options_dto import ExerciseInputSelectReviewOptionsDto
+    from .exercise_input_write_placeholders_dto import ExerciseInputWritePlaceholdersDto
+    from .exercise_input_write_text_dto import ExerciseInputWriteTextDto
 
 class ExerciseInputDto(BaseModel):
     """
@@ -108,23 +108,23 @@ class ExerciseInputDto(BaseModel):
         # look up the object type based on discriminator mapping
         object_type = cls.get_discriminator_value(obj)
         if object_type ==  'ExerciseInputArrangeTextOptionsDto':
-            return import_module("openapi_client.models.exercise_input_arrange_text_options_dto").ExerciseInputArrangeTextOptionsDto.from_dict(obj)
+            return import_module(".models.exercise_input_arrange_text_options_dto", package=__package__).ExerciseInputArrangeTextOptionsDto.from_dict(obj)
         if object_type ==  'ExerciseInputPairOptionsDto':
-            return import_module("openapi_client.models.exercise_input_pair_options_dto").ExerciseInputPairOptionsDto.from_dict(obj)
+            return import_module(".models.exercise_input_pair_options_dto", package=__package__).ExerciseInputPairOptionsDto.from_dict(obj)
         if object_type ==  'ExerciseInputRecordAudioDto':
-            return import_module("openapi_client.models.exercise_input_record_audio_dto").ExerciseInputRecordAudioDto.from_dict(obj)
+            return import_module(".models.exercise_input_record_audio_dto", package=__package__).ExerciseInputRecordAudioDto.from_dict(obj)
         if object_type ==  'ExerciseInputRecordVideoDto':
-            return import_module("openapi_client.models.exercise_input_record_video_dto").ExerciseInputRecordVideoDto.from_dict(obj)
+            return import_module(".models.exercise_input_record_video_dto", package=__package__).ExerciseInputRecordVideoDto.from_dict(obj)
         if object_type ==  'ExerciseInputSelectOptionsDto':
-            return import_module("openapi_client.models.exercise_input_select_options_dto").ExerciseInputSelectOptionsDto.from_dict(obj)
+            return import_module(".models.exercise_input_select_options_dto", package=__package__).ExerciseInputSelectOptionsDto.from_dict(obj)
         if object_type ==  'ExerciseInputSelectPlaceholdersDto':
-            return import_module("openapi_client.models.exercise_input_select_placeholders_dto").ExerciseInputSelectPlaceholdersDto.from_dict(obj)
+            return import_module(".models.exercise_input_select_placeholders_dto", package=__package__).ExerciseInputSelectPlaceholdersDto.from_dict(obj)
         if object_type ==  'ExerciseInputSelectReviewOptionsDto':
-            return import_module("openapi_client.models.exercise_input_select_review_options_dto").ExerciseInputSelectReviewOptionsDto.from_dict(obj)
+            return import_module(".models.exercise_input_select_review_options_dto", package=__package__).ExerciseInputSelectReviewOptionsDto.from_dict(obj)
         if object_type ==  'ExerciseInputWritePlaceholdersDto':
-            return import_module("openapi_client.models.exercise_input_write_placeholders_dto").ExerciseInputWritePlaceholdersDto.from_dict(obj)
+            return import_module(".models.exercise_input_write_placeholders_dto", package=__package__).ExerciseInputWritePlaceholdersDto.from_dict(obj)
         if object_type ==  'ExerciseInputWriteTextDto':
-            return import_module("openapi_client.models.exercise_input_write_text_dto").ExerciseInputWriteTextDto.from_dict(obj)
+            return import_module(".models.exercise_input_write_text_dto", package=__package__).ExerciseInputWriteTextDto.from_dict(obj)
 
         raise ValueError("ExerciseInputDto failed to lookup discriminator value from " +
                             json.dumps(obj) + ". Discriminator property name: " + cls.__discriminator_property_name +

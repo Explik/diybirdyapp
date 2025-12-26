@@ -36,7 +36,8 @@ class TestFlashcardDeckDto(unittest.TestCase):
         if include_optional:
             return FlashcardDeckDto(
                 id = '',
-                name = ''
+                name = '',
+                description = ''
             )
         else:
             return FlashcardDeckDto(

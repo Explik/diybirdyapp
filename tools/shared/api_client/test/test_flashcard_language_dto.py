@@ -36,11 +36,13 @@ class TestFlashcardLanguageDto(unittest.TestCase):
         if include_optional:
             return FlashcardLanguageDto(
                 id = '',
-                abbreviation = '',
-                name = ''
+                name = '',
+                iso_code = ''
             )
         else:
             return FlashcardLanguageDto(
+                id = '',
+                name = '',
         )
         """
 

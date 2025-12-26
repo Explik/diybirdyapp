@@ -18,13 +18,13 @@ from typing_extensions import Annotated
 
 from pydantic import StrictStr
 from typing import List, Optional
-from openapi_client.models.exercise_dto import ExerciseDto
-from openapi_client.models.submit_answer_request import SubmitAnswerRequest
-from openapi_client.models.submit_answer_rich_request import SubmitAnswerRichRequest
+from ..models.exercise_dto import ExerciseDto
+from ..models.submit_answer_request import SubmitAnswerRequest
+from ..models.submit_answer_rich_request import SubmitAnswerRichRequest
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class ExerciseControllerApi:

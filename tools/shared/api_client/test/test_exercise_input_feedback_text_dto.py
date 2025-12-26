@@ -40,10 +40,17 @@ class TestExerciseInputFeedbackTextDto(unittest.TestCase):
                     ],
                 incorrect_values = [
                     ''
-                    ]
+                    ],
+                is_retype_answer_enabled = True
             )
         else:
             return ExerciseInputFeedbackTextDto(
+                correct_values = [
+                    ''
+                    ],
+                incorrect_values = [
+                    ''
+                    ],
         )
         """
 

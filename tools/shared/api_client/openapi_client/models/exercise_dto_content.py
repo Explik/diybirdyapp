@@ -17,12 +17,12 @@ import json
 import pprint
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Any, List, Optional
-from openapi_client.models.exercise_content_audio_dto import ExerciseContentAudioDto
-from openapi_client.models.exercise_content_flashcard_dto import ExerciseContentFlashcardDto
-from openapi_client.models.exercise_content_flashcard_side_dto import ExerciseContentFlashcardSideDto
-from openapi_client.models.exercise_content_image_dto import ExerciseContentImageDto
-from openapi_client.models.exercise_content_text_dto import ExerciseContentTextDto
-from openapi_client.models.exercise_content_video_dto import ExerciseContentVideoDto
+from .exercise_content_audio_dto import ExerciseContentAudioDto
+from .exercise_content_flashcard_dto import ExerciseContentFlashcardDto
+from .exercise_content_flashcard_side_dto import ExerciseContentFlashcardSideDto
+from .exercise_content_image_dto import ExerciseContentImageDto
+from .exercise_content_text_dto import ExerciseContentTextDto
+from .exercise_content_video_dto import ExerciseContentVideoDto
 from pydantic import StrictStr, Field
 from typing import Union, List, Set, Optional, Dict
 from typing_extensions import Literal, Self

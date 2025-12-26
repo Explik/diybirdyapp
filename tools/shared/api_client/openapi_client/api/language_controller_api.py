@@ -18,13 +18,13 @@ from typing_extensions import Annotated
 
 from pydantic import StrictStr
 from typing import Any, Dict, List, Optional
-from openapi_client.models.configuration_identifier_dto import ConfigurationIdentifierDto
-from openapi_client.models.flashcard_language_dto import FlashcardLanguageDto
-from openapi_client.models.get_config_by_id200_response import GetConfigById200Response
+from ..models.configuration_identifier_dto import ConfigurationIdentifierDto
+from ..models.flashcard_language_dto import FlashcardLanguageDto
+from ..models.get_config_by_id200_response import GetConfigById200Response
 
-from openapi_client.api_client import ApiClient, RequestSerialized
-from openapi_client.api_response import ApiResponse
-from openapi_client.rest import RESTResponseType
+from ..api_client import ApiClient, RequestSerialized
+from ..api_response import ApiResponse
+from ..rest import RESTResponseType
 
 
 class LanguageControllerApi:

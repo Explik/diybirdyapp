@@ -36,7 +36,7 @@ class TestVocabularyDto(unittest.TestCase):
         if include_optional:
             return VocabularyDto(
                 words = [
-                    openapi_client.models.vocabulary_text_content_model.VocabularyTextContentModel(
+                    openapi_client.models.vocabulary_content_text_dto.VocabularyContentTextDto(
                         text = '', 
                         pronunciation_url = '', )
                     ]

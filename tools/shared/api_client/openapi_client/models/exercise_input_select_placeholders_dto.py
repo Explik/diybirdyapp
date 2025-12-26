@@ -19,9 +19,9 @@ import json
 
 from pydantic import ConfigDict
 from typing import Any, ClassVar, Dict, List
-from openapi_client.models.exercise_input_dto import ExerciseInputDto
-from openapi_client.models.select_placeholders_input_option import SelectPlaceholdersInputOption
-from openapi_client.models.select_placeholders_input_part import SelectPlaceholdersInputPart
+from .exercise_input_dto import ExerciseInputDto
+from .select_placeholders_input_option import SelectPlaceholdersInputOption
+from .select_placeholders_input_part import SelectPlaceholdersInputPart
 from typing import Optional, Set
 from typing_extensions import Self
 

@@ -26,6 +26,18 @@ class TestTextContentControllerApi(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
+    def test_add_transcription(self) -> None:
+        """Test case for add_transcription
+
+        """
+        pass
+
+    def test_get_pronunciation(self) -> None:
+        """Test case for get_pronunciation
+
+        """
+        pass
+
     def test_upload_pronunciation(self) -> None:
         """Test case for upload_pronunciation
 

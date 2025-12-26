@@ -19,8 +19,8 @@ import json
 
 from pydantic import ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from openapi_client.models.exercise_session_options_dto import ExerciseSessionOptionsDto
-from openapi_client.models.exercise_session_options_language_option_dto import ExerciseSessionOptionsLanguageOptionDto
+from .exercise_session_options_dto import ExerciseSessionOptionsDto
+from .exercise_session_options_language_option_dto import ExerciseSessionOptionsLanguageOptionDto
 from typing import Optional, Set
 from typing_extensions import Self
 
