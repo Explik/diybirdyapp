@@ -18,12 +18,12 @@ def extract_files(archive_file_path):
 
 def fetch_database(folder_path): 
     # If collection.anki21 file exists, use it
-    anki21_path = folder_path + "\\collection.anki21"
+    anki21_path = os.path.join(folder_path, "collection.anki21")
     if os.path.exists(anki21_path):
         return sqlite3.connect(anki21_path)
 
     # If collection.anki2 file exists, use it
-    anki20_path = folder_path + "\\collection.anki2"
+    anki20_path = os.path.join(folder_path, "collection.anki2")
     if os.path.exists(anki20_path):
         return sqlite3.connect(anki20_path)
 
@@ -31,12 +31,12 @@ def fetch_database(folder_path):
     raise FileNotFoundError("No valid ANKI database file found in the provided folder.")
 
 def fetch_media_map(folder_path):
-    media_file_path = folder_path + "\\media"
+    media_file_path = os.path.join(folder_path, "media")
     reverse_map = json.load(open(media_file_path))
 
     media_map = dict()
     for key, value in reverse_map.items():
-        media_map[value] = folder_path + "\\" + key
+        media_map[value] = os.path.join(folder_path, key)
 
     return media_map   
 
@@ -137,8 +137,8 @@ class AnkiDeck:
     
     def copy_media(self, media_name, target_folder, include_ext=True):
         source_path = self.get_media_path(media_name)
-        source_file_name = source_path.split("\\")[-1]
-        target_path = target_folder + "\\" + source_file_name
+        source_file_name = os.path.basename(source_path)
+        target_path = os.path.join(target_folder, source_file_name)
         
         if include_ext: 
             file_ext = media_name.split(".")[1] if "." in media_name else ""
@@ -146,7 +146,7 @@ class AnkiDeck:
 
         shutil.copy(source_path, target_path)
 
-        return target_path.split("\\")[-1]
+        return os.path.basename(target_path)
 
     @staticmethod
     def create_from_file(file_path): 
