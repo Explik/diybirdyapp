@@ -17,18 +17,38 @@ def extract_files(archive_file_path):
     return temp_dir
 
 def fetch_database(folder_path): 
-    # If collection.anki21 file exists, use it
-    anki21_path = os.path.join(folder_path, "collection.anki21")
-    if os.path.exists(anki21_path):
-        return sqlite3.connect(anki21_path)
-
-    # If collection.anki2 file exists, use it
-    anki20_path = os.path.join(folder_path, "collection.anki2")
-    if os.path.exists(anki20_path):
-        return sqlite3.connect(anki20_path)
-
-    # If neither file exists, raise an error
-    raise FileNotFoundError("No valid ANKI database file found in the provided folder.")
+    # List all files in the folder for debugging
+    try:
+        files_in_folder = os.listdir(folder_path)
+    except Exception as e:
+        raise FileNotFoundError(f"Cannot read folder {folder_path}: {e}")
+    
+    # Look for collection database files (case-insensitive, multiple formats)
+    # Anki uses: collection.anki21, collection.anki21b, collection.anki2
+    collection_patterns = [
+        "collection.anki21b",  # Newer Anki versions
+        "collection.anki21",   # Anki 2.1
+        "collection.anki2",    # Anki 2.0
+    ]
+    
+    for pattern in collection_patterns:
+        # Try case-sensitive match first
+        exact_path = os.path.join(folder_path, pattern)
+        if os.path.exists(exact_path):
+            return sqlite3.connect(exact_path)
+        
+        # Try case-insensitive match
+        for filename in files_in_folder:
+            if filename.lower() == pattern.lower():
+                found_path = os.path.join(folder_path, filename)
+                return sqlite3.connect(found_path)
+    
+    # If no database found, provide helpful error message
+    raise FileNotFoundError(
+        f"No valid ANKI database file found in the provided folder.\n"
+        f"Expected files: {', '.join(collection_patterns)}\n"
+        f"Found files: {', '.join(files_in_folder)}"
+    )
 
 def fetch_media_map(folder_path):
     media_file_path = os.path.join(folder_path, "media")
