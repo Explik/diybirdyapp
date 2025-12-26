@@ -45,8 +45,8 @@ def fetch_database(folder_path):
     
     # If no database found, provide helpful error message
     raise FileNotFoundError(
-        f"No valid ANKI database file found in the provided folder.\n"
-        f"Expected files: {', '.join(collection_patterns)}\n"
+        f"No valid ANKI database file found in the provided folder. "
+        f"Expected files: {', '.join(collection_patterns)} "
         f"Found files: {', '.join(files_in_folder)}"
     )
 
