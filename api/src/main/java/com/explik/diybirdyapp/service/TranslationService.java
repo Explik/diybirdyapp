@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.model.admin.TranslationRequestDto;
 import com.explik.diybirdyapp.model.admin.TranslationResponseDto;
 import com.explik.diybirdyapp.persistence.query.GetGoogleTranslateLanguageCodeQuery;
 import com.explik.diybirdyapp.persistence.query.handler.GetGoogleTranslateLanguageCodeQueryHandler;
+import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.Translation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class TranslationService {
     private Translate translateClient;
     
     @Autowired
-    private GetGoogleTranslateLanguageCodeQueryHandler languageCodeQueryHandler;
+    private QueryHandler<GetGoogleTranslateLanguageCodeQuery, GoogleTranslationConfigModel> languageCodeQueryHandler;
     
     public TranslationResponseDto translateText(TranslationRequestDto model) {
         // Fetch both Google Translate language codes in a single query

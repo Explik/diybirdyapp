@@ -247,6 +247,32 @@ class LanguageClient:
         response = requests.post(url, json=payload, cookies=self._get_cookies(), timeout=self.timeout)
         response.raise_for_status()
         return response.json()
+    
+    def translate_text(self, source_language_id: str, target_language_id: str, text: str) -> str:
+        """
+        Translate text using the backend translation API.
+        
+        Args:
+            source_language_id: The ID of the source language (or None for auto-detect)
+            target_language_id: The ID of the target language
+            text: The text to translate
+            
+        Returns:
+            The translated text
+            
+        Raises:
+            Exception: If the request fails
+        """
+        url = f"{self.base_url}/translation/translate"
+        payload = {
+            "sourceLanguageId": source_language_id,
+            "targetLanguageId": target_language_id,
+            "text": text
+        }
+        response = requests.post(url, json=payload, cookies=self._get_cookies(), timeout=self.timeout)
+        response.raise_for_status()
+        result = response.json()
+        return result.get("translatedText", "")
 
 
 # Configuration type constants

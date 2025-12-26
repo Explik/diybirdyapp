@@ -20,9 +20,9 @@ from import_client import (
     get_language_by_abbrevation,
     get_language_by_name,
     get_languages,
-    get_language_code
+    get_language_code,
+    translate_text
 )
-from shared.google_api import translate_text
 from login_utils import render_login_sidebar
 
 st.set_page_config(page_title="Create Deck from TXT", page_icon="📝", layout="wide")
@@ -141,10 +141,7 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
                 
                 # Get language objects and codes
                 source_language = language_options[source_language_option]
-                source_lang_code = get_language_code(source_language.id)
-                
                 target_language = language_options[target_language_option]
-                target_lang_code = get_language_code(target_language.id)
                 
                 # Create flashcards
                 progress_bar = st.progress(0)
@@ -164,14 +161,12 @@ if st.button("🚀 Generate Flashcard Deck", type="primary", use_container_width
                     # Translate text
                     source_text = line.strip()
                     
-                    # Translate
-                    translation_result = translate_text(
-                        text=source_text,
-                        target_language=target_lang_code,
-                        source_language=source_lang_code
+                    # Translate using backend API
+                    target_text = translate_text(
+                        source_language_id=source_language.id,
+                        target_language_id=target_language.id,
+                        text=source_text
                     )
-                    
-                    target_text = translation_result[0]['translatedText']
                     
                     # Create flashcard locally
                     add_local_text_flashcard(
