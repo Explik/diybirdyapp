@@ -2,8 +2,13 @@
 Flashcard Import Tool - Streamlit Multi-page Application
 Main entry point for the application.
 """
-
 import streamlit as st
+import sys
+from pathlib import Path
+
+# Add shared directory to path
+sys.path.append(str(Path(__file__).parent.parent))
+
 from login_utils import render_login_sidebar
 
 # Configure page settings
