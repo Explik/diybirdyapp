@@ -94,7 +94,22 @@ POST /api/configuration
 
 
 ### Translation 
+Translation is provided via the `/api/translation` endpoint. It uses the configured translation service to translate text. Currently, only Google Translate is supported.
 
+Example request:
+```
+# Using system language IDs text can be translated
+POST /api/translation/translate 
+{
+    "sourceLanguageId": "langId1",
+    "targetLanguageId": "langId2",
+    "text": "Hello, world!"
+}
 
+returns 
+{
+    "translatedText": "Hola, mundo!"
+}
+```
 
 
