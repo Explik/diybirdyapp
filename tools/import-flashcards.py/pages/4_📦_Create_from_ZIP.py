@@ -3,14 +3,18 @@ Page: Create deck from .zip file
 Allows users to import flashcard decks from ZIP files in the internal deck storage format.
 """
 
-import streamlit as st
-import sys
-import os
-from pathlib import Path
 import zipfile
 import json
 import shutil
 import tempfile
+import os
+import streamlit as st
+import sys
+from pathlib import Path
+
+# Add parent directory to path to import shared modules
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))

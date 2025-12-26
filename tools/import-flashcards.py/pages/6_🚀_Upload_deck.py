@@ -9,6 +9,10 @@ from pathlib import Path
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
+
+
+# Add parent directory to path to import shared modules
+sys.path.append(str(Path(__file__).parent.parent.parent))
 sys.path.append(str(Path(__file__).parent.parent))
 
 from import_client import upload_local_deck, get_local_deck_data, list_local_decks
