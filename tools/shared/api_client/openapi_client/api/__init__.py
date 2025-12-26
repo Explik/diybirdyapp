@@ -1,0 +1,16 @@
+# flake8: noqa
+
+# import apis into api package
+from .authentication_controller_api import AuthenticationControllerApi
+from .configuration_controller_api import ConfigurationControllerApi
+from .exercise_controller_api import ExerciseControllerApi
+from .exercise_session_controller_api import ExerciseSessionControllerApi
+from .file_controller_api import FileControllerApi
+from .flashcard_controller_api import FlashcardControllerApi
+from .flashcard_deck_controller_api import FlashcardDeckControllerApi
+from .language_controller_api import LanguageControllerApi
+from .root_controller_api import RootControllerApi
+from .text_content_controller_api import TextContentControllerApi
+from .translation_controller_api import TranslationControllerApi
+from .vocabulary_controller_api import VocabularyControllerApi
+

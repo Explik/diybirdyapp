@@ -5,12 +5,10 @@ Allows users to create flashcard decks from plain text files with automatic tran
 
 import streamlit as st
 import sys
-import os
 from pathlib import Path
 
 # Add parent directory to path to import shared modules
 sys.path.append(str(Path(__file__).parent.parent.parent))
-sys.path.append(str(Path(__file__).parent.parent))
 
 from import_client import (
     create_local_flashcard_deck,
