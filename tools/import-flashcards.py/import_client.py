@@ -118,6 +118,38 @@ def get_language_code(language_id):
     # Use the first configuration
     return configurations[0].language_code
 
+def translate_text(source_language_id, target_language_id, text):
+    """
+    Translate text using the backend translation API.
+    
+    Args:
+        source_language_id: The ID of the source language (or None for auto-detect)
+        target_language_id: The ID of the target language
+        text: The text to translate
+        
+    Returns:
+        The translated text
+    """
+    backend_url = get_backend_url()
+    
+    payload = {
+        "sourceLanguageId": source_language_id,
+        "targetLanguageId": target_language_id,
+        "text": text
+    }
+    
+    response = requests.post(
+        f"{backend_url}/translation/translate",
+        json=payload,
+        cookies=_get_request_cookies()
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"Failed to translate text: {response.text}")
+    
+    result = response.json()
+    return result.get("translatedText", "")
+
 def create_flashcard_deck(name, description):
     # Create a flashcard deck
     update_api_client_auth()  # Ensure API client has current session cookie

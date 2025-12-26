@@ -157,12 +157,11 @@ This section describes the implementation details of the flashcard import tool.
 
 The tool uses the following modules:
 
-- `import_client.py` - API client for flashcard operations and local deck management (tool-specific)
+- `import_client.py` - API client for flashcard operations, local deck management, and backend translation (tool-specific)
 - `deck_storage.py` - Local deck storage functionality (tool-specific)
-- `shared/google_api.py` - Google Translate and Text-to-Speech integration (shared across tools)
 - `shared/api_client/` - Auto-generated OpenAPI client for backend communication (shared across tools)
 
-**Note:** `import_client.py` and `deck_storage.py` are specific to this tool and located in the `import-flashcards.py/` directory. Other tools like `import-deck.py` use the basic API client from `shared/import_client.py`.
+**Note:** `import_client.py` and `deck_storage.py` are specific to this tool and located in the `import-flashcards.py/` directory. Translation is handled through the backend API.
 
 ## Language selection 
 The tool allows users to select source and target languages for flashcard generation from the available backend languages. Each language has one or more associated configuration that includes details such as language code. The tool will for now use the first configuration found for a given language.

@@ -144,6 +144,13 @@
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-speech</artifactId>
 		</dependency>
+
+		<!-- Google Translate API -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-translate</artifactId>
+		</dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>

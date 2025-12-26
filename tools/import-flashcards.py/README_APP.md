@@ -107,8 +107,7 @@ import-flashcards.py/
 
 The application uses shared modules from the parent `tools` directory:
 
-- `shared.import_client`: API client for flashcard operations
-- `shared.google_api`: Google Translate API wrapper
+- `shared.import_client`: API client for flashcard and translation operations
 - `shared.api_client.openapi_client`: Auto-generated OpenAPI client
 
 ## Troubleshooting
@@ -123,8 +122,9 @@ If you see errors about connecting to the API:
 ### Translation Issues
 
 If translations are not working:
-- Verify Google Cloud credentials are properly set
-- Check that the Translation API is enabled in your Google Cloud project
+- Verify backend API is running and accessible
+- Check that translation service is configured in the backend
+- Ensure languages have translation configurations attached
 - Ensure you have sufficient quota/credits
 
 ### Language Not Found

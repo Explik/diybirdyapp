@@ -68,22 +68,6 @@ for idx, (eng, spa) in enumerate(words):
 create_deck_zip(deck)
 ```
 
-### Add Pronunciation from TTS
-
-```python
-from shared.google_api import text_to_speech
-
-# Generate audio file
-audio_file = text_to_speech("Hello", "en")
-
-# Add to flashcard
-add_local_pronunciation(
-    deck_metadata=deck,
-    flashcard_id="flashcard-1",
-    side="front",
-    audio_file=audio_file
-)
-```
 
 ### Process Multiple Decks
 

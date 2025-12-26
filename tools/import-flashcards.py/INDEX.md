@@ -91,8 +91,7 @@ Located in `pages/` directory:
 
 The app depends on shared modules from the parent `tools` directory:
 
-- `../shared/import_client.py` - API client for flashcard operations
-- `../shared/google_api.py` - Google Translate API wrapper
+- `import_client.py` (local) - API client for flashcard operations and backend translation
 - `../shared/api_client/` - Auto-generated OpenAPI client
 
 ### Python Packages
@@ -100,7 +99,6 @@ The app depends on shared modules from the parent `tools` directory:
 See [requirements.txt](requirements.txt) for the full list:
 - `streamlit>=1.28.0` - Web application framework
 - `requests>=2.31.0` - HTTP library
-- `google-cloud-translate==2.0.1` - Translation API
 
 ## 🎯 Quick Navigation
 

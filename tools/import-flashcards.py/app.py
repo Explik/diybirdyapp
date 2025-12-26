@@ -63,7 +63,6 @@ This application helps you create flashcard decks from various sources with auto
 ### System Requirements
 
 - Running API server on `http://localhost:8080`
-- Google Cloud credentials (for translation features)
 - Supported languages configured in the system
 """)
 
