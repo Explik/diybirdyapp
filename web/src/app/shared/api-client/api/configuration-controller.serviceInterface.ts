@@ -16,6 +16,7 @@ import { ConfigurationGoogleSpeechToTextDto } from '../model/models';
 import { ConfigurationGoogleTextToSpeechDto } from '../model/models';
 import { ConfigurationGoogleTranslateDto } from '../model/models';
 import { ConfigurationMicrosoftTextToSpeechDto } from '../model/models';
+import { ConfigurationOptionsDto } from '../model/models';
 import { GetConfigById200Response } from '../model/models';
 
 
@@ -33,6 +34,13 @@ export interface ConfigurationControllerServiceInterface {
      * @param id 
      */
     deleteConfigById(id: string, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
+     * @param configurationOptionsDto 
+     */
+    getAvailableOptions(configurationOptionsDto: ConfigurationOptionsDto, extraHttpRequestParams?: any): Observable<ConfigurationOptionsDto>;
 
     /**
      * 

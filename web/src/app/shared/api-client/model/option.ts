@@ -10,7 +10,7 @@
 
 
 export interface Option { 
-    id: string;
-    text: string;
+    id?: string;
+    option?: object;
 }
 
