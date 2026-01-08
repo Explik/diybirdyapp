@@ -12,6 +12,7 @@ import { ExerciseSessionOptionsLanguageOptionDto } from './exercise-session-opti
 
 
 export interface ExerciseSessionOptionsSelectFlashcardsDto extends ExerciseSessionOptionsDto { 
+    initiallyHideOptions?: boolean;
     initialFlashcardLanguageId?: string;
     availableFlashcardLanguages?: Array<ExerciseSessionOptionsLanguageOptionDto>;
 }

@@ -57,6 +57,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         var model = new ExerciseSessionOptionsSelectFlashcardsDto();
 
         applyCommonProperties(optionsVertex, model);
+        model.setInitiallyHideOptions(optionsVertex.getInitiallyHideOptions());
         model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
         model.setAvailableFlashcardLanguages(getFlashcardLanguages(optionsVertex));
 

@@ -11,6 +11,7 @@ public class ExerciseRetrievalContextProvider {
         var context = new ExerciseRetrievalContext();
         context.setTextToSpeechEnabled(sessionOptionsVertex.getTextToSpeechEnabled());
         context.setInitialFlashcardLanguageId(sessionOptionsVertex.getInitialFlashcardLanguageId());
+        context.setInitiallyHideOptions(sessionOptionsVertex.getInitiallyHideOptions());
         return context;
     }
 }

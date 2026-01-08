@@ -42,6 +42,9 @@ public class CreateSelectFlashcardSessionCommandHandler implements CommandHandle
                 flashcardDeckVertex
         );
 
+        // Set initially hide options
+        optionVertex.setInitiallyHideOptions(command.getInitiallyHideOptions());
+
         // Link options to session
         sessionVertex.setOptions(optionVertex);
     }

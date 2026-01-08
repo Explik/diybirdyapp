@@ -33,6 +33,7 @@ export class SessionOptionsSelectFlashcardComponent implements OnInit, OnChanges
   constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
       initialFlashcardLanguageId: [''],
+      initiallyHideOptions: [false],
       textToSpeechEnabled: [false]
     });
     this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
@@ -61,6 +62,7 @@ export class SessionOptionsSelectFlashcardComponent implements OnInit, OnChanges
 
     this.form.patchValue({
       initialFlashcardLanguageId: options.initialFlashcardLanguageId || '',
+      initiallyHideOptions: options.initiallyHideOptions || false,
       textToSpeechEnabled: options.textToSpeechEnabled || false
     }, { emitEvent: false });
   }
@@ -69,6 +71,7 @@ export class SessionOptionsSelectFlashcardComponent implements OnInit, OnChanges
     return {
       type: this.options?.type,
       initialFlashcardLanguageId: this.form.get('initialFlashcardLanguageId')?.value || '',
+      initiallyHideOptions: !!this.form.get('initiallyHideOptions')?.value,
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsSelectFlashcardsDto;
   }
