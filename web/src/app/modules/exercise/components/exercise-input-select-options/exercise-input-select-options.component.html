@@ -13,7 +13,7 @@
     </div>
     
     <!-- Options Grid (shown when options are visible or initiallyHideOptions is false) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" *ngIf="optionsVisible || !input.initiallyHideOptions">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4" *ngIf="optionsVisible || !input.initiallyHideOptions">
         <app-row-button
             layout="single"
             *ngFor="let option of input!.options; let i = index"

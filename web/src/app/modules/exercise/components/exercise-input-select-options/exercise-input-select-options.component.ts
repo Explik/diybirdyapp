@@ -29,6 +29,10 @@ export class ExerciseInputSelectOptionsComponent implements OnChanges, OnDestroy
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['input'] && this.input?.options) {
+      // If not feedback, reset options visibility
+      if (!this.input?.feedback)
+        this.optionsVisible = !this.input?.initiallyHideOptions;
+
       // Clear existing hotkey subscriptions
       this.subs.unsubscribe();
       this.subs = new Subscription();
