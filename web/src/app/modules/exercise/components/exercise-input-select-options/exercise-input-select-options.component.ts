@@ -22,11 +22,17 @@ export class ExerciseInputSelectOptionsComponent implements OnChanges, OnDestroy
   
   @Input() input: ExerciseInputSelectOptionsDto | undefined = undefined;
   @Output()  optionSelected: EventEmitter<string> = new EventEmitter<string>();
+  
+  optionsVisible: boolean = false;
 
   constructor(private audioService: AudioPlayingService, private hotkeyService: HotkeyService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['input'] && this.input?.options) {
+      // If not feedback, reset options visibility
+      if (!this.input?.feedback)
+        this.optionsVisible = !this.input?.initiallyHideOptions;
+
       // Clear existing hotkey subscriptions
       this.subs.unsubscribe();
       this.subs = new Subscription();
@@ -80,5 +86,9 @@ export class ExerciseInputSelectOptionsComponent implements OnChanges, OnDestroy
     if (!option) return;
 
     this.audioService.startPlaying(option as SelectOptionInputAudioOption); 
+  }
+  
+  handleShowOptions(): void {
+    this.optionsVisible = true;
   }
 }

@@ -7,10 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ConfigurationDto } from './configuration-dto';
+import { Option } from './option';
 
 
-export interface ConfigurationMicrosoftTextToSpeechDto extends ConfigurationDto { 
-    voiceName?: string;
+export interface ConfigurationOptionsDto { 
+    selection?: string;
+    selectedOptions?: Array<string>;
+    availableOptions?: Array<Option>;
+    lastSelection?: boolean;
 }
 

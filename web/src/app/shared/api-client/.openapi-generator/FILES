@@ -22,6 +22,8 @@ api/root-controller.service.ts
 api/root-controller.serviceInterface.ts
 api/text-content-controller.service.ts
 api/text-content-controller.serviceInterface.ts
+api/translation-controller.service.ts
+api/translation-controller.serviceInterface.ts
 api/vocabulary-controller.service.ts
 api/vocabulary-controller.serviceInterface.ts
 configuration.ts
@@ -35,6 +37,7 @@ model/configuration-google-text-to-speech-dto.ts
 model/configuration-google-translate-dto.ts
 model/configuration-identifier-dto.ts
 model/configuration-microsoft-text-to-speech-dto.ts
+model/configuration-options-dto.ts
 model/exercise-content-audio-dto.ts
 model/exercise-content-dto.ts
 model/exercise-content-flashcard-dto.ts
@@ -82,6 +85,7 @@ model/flashcard-language-dto.ts
 model/get-config-by-id200-response.ts
 model/login-dto.ts
 model/models.ts
+model/option.ts
 model/pair-option-feedback-pair.ts
 model/pair-options-input-feedback.ts
 model/pair-options-input-option-dto.ts
@@ -93,6 +97,8 @@ model/signup-dto.ts
 model/submit-answer-request.ts
 model/submit-answer-rich-request.ts
 model/text-content-transcription-dto.ts
+model/translation-request-dto.ts
+model/translation-response-dto.ts
 model/update-config-request.ts
 model/update1-request.ts
 model/upload-file-request.ts

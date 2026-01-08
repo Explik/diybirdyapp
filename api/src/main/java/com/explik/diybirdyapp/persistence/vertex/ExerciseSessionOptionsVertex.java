@@ -23,6 +23,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_INCLUDE_PRONUNCIATION_EXERCISES = "includePronunciationExercises";
     public final static String PROPERTY_RETYPE_CORRECT_ANSWER = "retypeCorrectAnswer";
     public final static String PROPERTY_ALGORITHM = "algorithm";
+    public final static String PROPERTY_INITIALLY_HIDE_OPTIONS = "initiallyHideOptions";
 
     public final static String EDGE_ANSWER_LANGUAGE = "hasAnswerLanguage";
     public final static String EDGE_EXERCISE_TYPES = "hasExerciseType";
@@ -118,6 +119,14 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setIncludePronunciationExercises(boolean includePronunciationExercises) {
         setProperty(PROPERTY_INCLUDE_PRONUNCIATION_EXERCISES, includePronunciationExercises);
+    }
+
+    public boolean getInitiallyHideOptions() {
+        return getProperty(PROPERTY_INITIALLY_HIDE_OPTIONS, false);
+    }
+
+    public void setInitiallyHideOptions(boolean initiallyHideOptions) {
+        setProperty(PROPERTY_INITIALLY_HIDE_OPTIONS, initiallyHideOptions);
     }
 
     public List<LanguageVertex> getAnswerLanguages() {

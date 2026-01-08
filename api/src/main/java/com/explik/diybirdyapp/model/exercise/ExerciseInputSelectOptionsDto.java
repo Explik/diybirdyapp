@@ -12,6 +12,8 @@ public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
 
     private String value;
 
+    private boolean initiallyHideOptions;
+
     private SelectOptionsInputFeedbackDto feedback;
 
     public ExerciseInputSelectOptionsDto() {
@@ -36,6 +38,14 @@ public class ExerciseInputSelectOptionsDto extends ExerciseInputDto {
 
     public List<SelectOptionInputBaseOption> getOptions() {
         return options;
+    }
+
+    public boolean getInitiallyHideOptions() {
+        return initiallyHideOptions;
+    }
+
+    public void setInitiallyHideOptions(boolean initiallyHideOptions) {
+        this.initiallyHideOptions = initiallyHideOptions;
     }
 
     public void setOptions(List<SelectOptionInputBaseOption> options) {

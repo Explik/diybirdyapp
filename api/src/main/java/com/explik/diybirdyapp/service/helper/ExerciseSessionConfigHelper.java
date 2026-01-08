@@ -130,6 +130,8 @@ public class ExerciseSessionConfigHelper {
             vertex.setInitialFlashcardLanguageId(model.getInitialFlashcardLanguageId());
         if (model.getTextToSpeechEnabled() != vertex.getTextToSpeechEnabled())
             vertex.setTextToSpeechEnabled(model.getTextToSpeechEnabled());
+        if (model.getInitiallyHideOptions() != vertex.getInitiallyHideOptions())
+            vertex.setInitiallyHideOptions(model.getInitiallyHideOptions());
     }
 
     private void updateSelectWriteOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsWriteFlashcardsDto model) {

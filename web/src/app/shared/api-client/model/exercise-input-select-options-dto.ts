@@ -16,6 +16,7 @@ export interface ExerciseInputSelectOptionsDto extends ExerciseInputDto {
     options?: Array<SelectOptionInputBaseOption>;
     optionType?: string;
     value?: string;
+    initiallyHideOptions?: boolean;
     feedback?: SelectOptionsInputFeedbackDto;
 }
 

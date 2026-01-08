@@ -18,6 +18,7 @@ public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelF
 
         var input = new ExerciseInputSelectOptionsDto();
         input.setType(ExerciseInputTypes.SELECT_OPTIONS);
+        input.setInitiallyHideOptions(context.getInitiallyHideOptions());
 
         var inputOptions = allOptionVertices
                 .stream()

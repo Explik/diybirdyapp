@@ -46,6 +46,7 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         command.setId(sessionId);
         command.setFlashcardDeckId(options.getFlashcardDeckId());
         command.setTextToSpeechEnabled(false);
+        command.setInitiallyHideOptions(false);
         
         createSelectFlashcardSessionCommandHandler.handle(command);
 

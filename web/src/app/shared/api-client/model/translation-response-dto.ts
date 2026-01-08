@@ -7,10 +7,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ConfigurationDto } from './configuration-dto';
 
 
-export interface ConfigurationMicrosoftTextToSpeechDto extends ConfigurationDto { 
-    voiceName?: string;
+export interface TranslationResponseDto { 
+    translatedText?: string;
 }
 

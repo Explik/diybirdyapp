@@ -1,5 +1,19 @@
-<div class="max-w-xl w-full mt-2 mb-2" *ngIf="input">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="max-w-xl w-full mt-4 mb-2" *ngIf="input">
+
+    <!-- Show Options Button (when initiallyHideOptions is true and options are not visible) -->
+    <div *ngIf="input.initiallyHideOptions" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+        <app-row-button
+            layout="single"
+            class="md:col-span-2"
+            [disabled]="optionsVisible"
+            (click)="handleShowOptions()"
+            i18n>
+            Show options
+        </app-row-button>
+    </div>
+    
+    <!-- Options Grid (shown when options are visible or initiallyHideOptions is false) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4" *ngIf="optionsVisible || !input.initiallyHideOptions">
         <app-row-button
             layout="single"
             *ngFor="let option of input!.options; let i = index"
