@@ -3,18 +3,15 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationContext;
+import com.explik.diybirdyapp.manager.exerciseCreationManager.ReviewFlashcardExerciseCreationManager;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
-import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
-import com.explik.diybirdyapp.persistence.command.CreateExerciseCommand;
 import com.explik.diybirdyapp.persistence.command.CreateReviewFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
-import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseContentParameters;
-import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseParameters;
-import com.explik.diybirdyapp.service.ExerciseCreationService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,10 +21,7 @@ import java.util.UUID;
 @Component(ExerciseSessionTypes.REVIEW_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionManagerReviewFlashcardDeck implements ExerciseSessionManager {
     @Autowired
-    private ExerciseCreationService exerciseCreationService;
-
-    @Autowired
-    private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
+    private ReviewFlashcardExerciseCreationManager reviewFlashcardExerciseCreationManager;
 
     @Autowired
     private CommandHandler<CreateReviewFlashcardSessionCommand> createReviewFlashcardSessionCommandHandler;
@@ -93,14 +87,12 @@ public class ExerciseSessionManagerReviewFlashcardDeck implements ExerciseSessio
     }
 
     private ExerciseVertex createReviewExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex, FlashcardVertex flashcardVertex) {
-        var exerciseParameters = new ExerciseParameters()
-                .withSession(sessionVertex)
-                .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
+        var context = ExerciseCreationContext.createForFlashcard(
+                sessionVertex, 
+                flashcardVertex, 
+                null,
+                ExerciseTypes.REVIEW_FLASHCARD);
         
-        var command = exerciseCreationService.createExerciseCommand(ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE, exerciseParameters);
-        createExerciseCommandHandler.handle(command);
-        
-        var exerciseId = exerciseParameters.getId() != null ? exerciseParameters.getId() : command.getId();
-        return ExerciseVertex.getById(traversalSource, exerciseId);
+        return reviewFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
 }
