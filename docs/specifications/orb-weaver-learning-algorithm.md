@@ -1,7 +1,5 @@
 # The Orb Weaver Learning Algorithm Specification
-
-## Overview
-TODO : Write overview
+The orb weaver learning algorithm is a spaced-repetition learning algorithm designed to optimize retention and learning efficiency by leveraging a content-first approach and encouraging active recall through testing and failure. This document outlines the principles, implementation details, and specific strategies used in the orb weaver learning algorithm.
 
 ## Introduction
 The orb weaver algorithm is a spaced-repetition learning algorithm based on the idea of a spider web. Each piece of content is a juicy fly on the web. The learner crawls the web while balancing 3 competing priorities:
@@ -31,3 +29,62 @@ This flow allows the system to quickly identify areas of difficulty, address the
 The orb weaver learning algorithm is based on two interconnected principles: 
 1. Testing and failing fast
 2. Prioritizing content based on direct or indirect failures
+
+## Implementation 
+The orb weaver algorithm is implemented as a session manager that orchestrates the learning sessions. The learning sessions is composed of exercise batches, which in turn are composed of individual exercises. The individual exercises on a content-first approach, meaning first the content is selected and then an appropiate exercise is created for that content. The content is selected based on the orb weaver principles outlined above. 
+
+The life cycle of the orb weaver session manager is as follows:
+```
+Overall lifecycle: 
+- Session
+  - Exercise batches
+    - Exercise
+
+Life cycle:
+- [Foreach Session]
+    - Initialize session state via SessionStateManager[]
+    - [Foreach exercise batch]
+        - Fetch content via ContentCrawler
+        - Dispatch content creation tasks from ContentCreationManager
+        - [Foreach exercise]
+            - Select most relevant content
+            - Delegates exercise creation to ExerciseCreationManager 
+            - Pass exercise to user
+            - [Foreach exercise answer]
+                - Evaluate answer via ExerciseEvaluationStrategy
+                - Pass feedback to user
+        - Update session state via state managers
+```
+
+To facilitate this life cycle, the following components are needed:
+```mermaid 
+graph TD 
+SessionManager[SessionManager] --> StateManagers[SessionStateManager[]]
+SessionManager --> ContentCrawler[ContentCrawler]
+SessionManager --> ContentCreationManager[ContentCreationManager]
+SessionManager --> ExerciseManager[ExerciseManager]
+ExerciseManager --> ExeciseCreationStrategies[ExerciseCreationStrategies[]]
+```
+
+List of components:
+- Content Crawler - Retrieves a subset of currently relevant notes to use in next exercise batch
+- Content Creation Manager - Dispatches content creation tasks to appropriate content creation strategies 
+- Exercise Creation Manager - Delegates exercise creation to appropriate exercise creation strategies
+- Session State Manager - Manages session state updates after each fullfiled exercise, potentially including multiple answers and feedback loops
+
+Design considerations:
+- The orb weaver algorithm is content-agnostic and exercise-agnostic. The algorithm can be applied to any type of content as long as the content can be represented as interconnected nodes on a graph. The exercise creation must be content-dependent and the created exercises must be able to support the standard answers and feedback loops. 
+- The orb weaver algorithm manages heavy or time-consuming tasks by implementing the exercise batch flow. All heavy tasks are handled on the start of the session or at the start of an exercise batch. This ensures that the user does not experience any significant delays while going between exercises. Any async tasks are dispatched at the start of the exercise batch and may not be directly dependent upon as they might fail or be delayed. 
+- The process of generating content is inherently asynchronous. Content creation is mainly done through API calls to external services. Therefore, the orb weaver algorithm must be able to handle content creation tasks asynchronously. The delay in content creation is hidden in the exercise batch flow, so that the user does not experience any significant delays when interacting with the session.
+- The process of selecting/creating exercises must be synchronous. The user should not experience any delays when interacting with the exercises. Therefore, the orb weaver algorithm must be able to select/create exercises synchronously based on the available content. Asyncronously content will be included in the current batch onces it becomes available. The user can potentially be missing a specific exercise type if the content generation is delayed, but this is neccessarily a trade-off to ensure a smooth user experience.
+
+### Implementation for "flashcard deck" session
+The orb weaver algorithm is used in the flashcard deck learning sessions. 
+
+**FlashcardDeckContentCrawler**: The crawler takes a flashcard deck and returns a subset of flashcards and their associated content to be used in the next exercise batch. The flashcards are either selected chronologically as they appear in the deck or randomly, depending on the shuffle flashcard setting. The crawler works on limited breath first principle, first it will select x number of flashcards, then for each flashcard it will select y number of associated notes (e.g. pronunciation, transcription, so on) to include in the exercise batch.
+
+**FlashcardDeckAssociatedContentCreationManager**: The manager dispatches async content creation tasks to create associated content for the flashcards selected by the crawler. Depending on the session settings, the associated content may include auto-generated transcriptions, pronunciation, etc. The manager uses a set of content creation strategies to create the associated content using the ContentCreationContext.
+
+**FlashcardDeckExerciseManager**: The manager creates or repeats exercises for the selected content (incl. flashcard, associated content) based on the exercise answer/feedback history. It implements the difficulty curve logic to determine whether to create a new exercise or repeat an existing exercise. If required, the manager will use a set of exercise creation strategies using the ExerciseCreationContext to create new exercises for the selected content.
+
+**FlashcardDeckExerciseCreationManager**: The manager delegates exercise creation to a set of exercise creation strategies based on the session settings. The exercise creation strategies use the ExerciseCreationContext to create exercises for the selected flashcards and their associated content. The exercise types include flashcard selection exercises, flashcard writing exercises, pronunciation exercises, transcription exercises, and so on.
