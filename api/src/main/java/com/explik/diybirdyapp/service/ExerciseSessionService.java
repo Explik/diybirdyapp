@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.service;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
-import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseCreationContext;
+import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationContext;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
