@@ -27,6 +27,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
     @Autowired
     private CommandHandler<CreateLearnFlashcardSessionCommand> createLearnFlashcardSessionCommandHandler;
+    
+    @Autowired
+    private FlashcardDeckAssociatedContentCreationManager contentCreationManager;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -54,6 +57,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
         // Load the created session
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+        
+        // Dispatch async content creation for flashcard deck
+        dispatchContentCreation(traversalSource, vertex);
 
         // Generate first exercise
         exerciseManager.nextExerciseVertex(traversalSource, vertex);
@@ -80,6 +86,29 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         sessionVertex.reload();
 
         return sessionModelFactory.create(sessionVertex);
+    }
+    
+    /**
+     * Dispatches async content creation for all flashcards and their text content in the session's deck.
+     * This includes TTS generation for text content that has a language with TTS configuration.
+     */
+    private void dispatchContentCreation(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck == null) {
+            return;
+        }
+        
+        var flashcards = flashcardDeck.getFlashcards();
+        var contentVertices = flashcards.stream()
+                .flatMap(flashcard -> {
+                    var contents = new java.util.ArrayList<ContentVertex>();
+                    if (flashcard.getLeftContent() != null) contents.add(flashcard.getLeftContent());
+                    if (flashcard.getRightContent() != null) contents.add(flashcard.getRightContent());
+                    return contents.stream();
+                })
+                .toList();
+        
+        contentCreationManager.dispatchContentCreation(contentVertices);
     }
 
     private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {
