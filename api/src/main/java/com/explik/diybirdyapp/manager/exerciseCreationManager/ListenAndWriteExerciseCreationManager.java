@@ -32,26 +32,23 @@ public class ListenAndWriteExerciseCreationManager implements ExerciseCreationMa
     @Override
     public ExerciseVertex createExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var sessionVertex = context.getSessionVertex();
-        var flashcardVertex = context.getFlashcardVertex();
-        var flashcardSide = context.getFlashcardSide() != null ? context.getFlashcardSide() : "front";
+        var pronunciationVertex = context.getPronunciationVertex();
 
-        if (sessionVertex == null || flashcardVertex == null) {
+        if (sessionVertex == null || pronunciationVertex == null) {
             return null;
         }
 
-        var questionContentVertex = flashcardVertex.getSide(flashcardSide);
-        if (!(questionContentVertex instanceof TextContentVertex textContentVertex)) {
-            return null;
-        }
-
-        var pronunciationAudioVertex = pronunciationHelper.tryFetchOrGeneratePronunciation(
-                traversalSource, 
-                textContentVertex);
+        // Get the audio content from the pronunciation
+        var pronunciationAudioVertex = pronunciationVertex.getAudioContent();
         if (pronunciationAudioVertex == null) {
             return null;
         }
 
-        var answerContentVertex = flashcardVertex.getOtherSide(flashcardSide);
+        // Get the text content that this pronunciation is for - this is the answer
+        var answerContentVertex = pronunciationVertex.getTextContent();
+        if (answerContentVertex == null) {
+            return null;
+        }
         
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)

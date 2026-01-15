@@ -7,6 +7,7 @@ import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseContentParame
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseInputParametersSelectOptions;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseParameters;
 import com.explik.diybirdyapp.persistence.vertex.AudioContentVertex;
+import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
@@ -35,36 +36,48 @@ public class ListenAndSelectExerciseCreationManager implements ExerciseCreationM
     @Override
     public ExerciseVertex createExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var sessionVertex = context.getSessionVertex();
-        var flashcardVertex = context.getFlashcardVertex();
-        var flashcardSide = context.getFlashcardSide() != null ? context.getFlashcardSide() : "front";
+        var pronunciationVertex = context.getPronunciationVertex();
 
-        if (sessionVertex == null || flashcardVertex == null) {
+        if (sessionVertex == null || pronunciationVertex == null) {
             return null;
         }
 
-        // Fetch content
-        var correctContentVertex = flashcardVertex.getSide(flashcardSide);
-        if (!(correctContentVertex instanceof TextContentVertex textContentVertex)) {
-            return null;
-        }
-
-        var pronunciationAudioVertex = pronunciationHelper.tryFetchOrGeneratePronunciation(
-                traversalSource, 
-                textContentVertex);
+        // Get the audio content from the pronunciation
+        var pronunciationAudioVertex = pronunciationVertex.getAudioContent();
         if (pronunciationAudioVertex == null) {
             return null;
         }
 
-        // Fetch alternative answers
+        // Get the text content that this pronunciation is for
+        var correctContentVertex = pronunciationVertex.getTextContent();
+        if (correctContentVertex == null) {
+            return null;
+        }
+
+        // Fetch alternative answers from the same deck
         var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
         var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
-                .filter(flashcard -> !flashcard.getId().equals(flashcardVertex.getId()))
-                .filter(flashcard -> flashcard.getSide(flashcardSide).getClass() == correctContentVertex.getClass())
+                .filter(flashcard -> {
+                    var leftContent = flashcard.getLeftContent();
+                    var rightContent = flashcard.getRightContent();
+                    return (leftContent instanceof TextContentVertex && !leftContent.getId().equals(correctContentVertex.getId())) ||
+                           (rightContent instanceof TextContentVertex && !rightContent.getId().equals(correctContentVertex.getId()));
+                })
                 .limit(3)
                 .collect(Collectors.toList());
         
         var incorrectContentVertices = alternativeFlashcardVertices.stream()
-                .map(f -> f.getSide(flashcardSide))
+                .flatMap(f -> {
+                    var contents = new java.util.ArrayList<ContentVertex>();
+                    if (f.getLeftContent() instanceof TextContentVertex && !f.getLeftContent().getId().equals(correctContentVertex.getId())) {
+                        contents.add(f.getLeftContent());
+                    }
+                    if (f.getRightContent() instanceof TextContentVertex && !f.getRightContent().getId().equals(correctContentVertex.getId())) {
+                        contents.add(f.getRightContent());
+                    }
+                    return contents.stream();
+                })
+                .limit(3)
                 .toList();
 
         // Create exercise
