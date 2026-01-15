@@ -17,7 +17,7 @@ Properties:
 ### TranscriptionSystem
 A transcription system represents a specific system for converting content to text.
 Ex. Pinyin for Chinese, VoiceToText
-````mermaid
+```mermaid
 graph LR
 V1(TranscriptionSystem)
 ```
