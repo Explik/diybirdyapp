@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.manager.exerciseCreationManager;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.persistence.vertex.AbstractVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
@@ -13,6 +14,7 @@ public class ExerciseCreationContext {
     private String flashcardSide;
     private PronunciationVertex pronunciationVertex;
     private TextContentVertex textContentVertex;
+    private AbstractVertex basedOnContent;
     private String exerciseType;
 
     public ExerciseSessionDto getSessionModel() {
@@ -69,6 +71,14 @@ public class ExerciseCreationContext {
 
     public void setExerciseType(String exerciseType) {
         this.exerciseType = exerciseType;
+    }
+
+    public AbstractVertex getBasedOnContent() {
+        return basedOnContent;
+    }
+
+    public void setBasedOnContent(AbstractVertex basedOnContent) {
+        this.basedOnContent = basedOnContent;
     }
 
     public static ExerciseCreationContext createDefault(ExerciseSessionDto sessionModel) {

@@ -14,6 +14,7 @@ public class CreateExerciseCommand implements AtomicCommand {
     private String contentId;
     private String flashcardId;
     private String flashcardSide;
+    private String basedOnContentId;
     
     // Input commands - only one should be set based on exercise type
     private CreateArrangeTextOptionsInputCommand arrangeTextOptionsInput;
@@ -77,6 +78,14 @@ public class CreateExerciseCommand implements AtomicCommand {
 
     public void setFlashcardSide(String flashcardSide) {
         this.flashcardSide = flashcardSide;
+    }
+
+    public String getBasedOnContentId() {
+        return basedOnContentId;
+    }
+
+    public void setBasedOnContentId(String basedOnContentId) {
+        this.basedOnContentId = basedOnContentId;
     }
 
     public CreateArrangeTextOptionsInputCommand getArrangeTextOptionsInput() {

@@ -51,6 +51,14 @@ public class CreateExerciseCommandHandler implements CommandHandler<CreateExerci
         // Attach content
         attachContent(exerciseVertex, command);
 
+        // Attach based-on content if provided
+        if (command.getBasedOnContentId() != null) {
+            var basedOnContentVertex = ContentVertex.getById(traversalSource, command.getBasedOnContentId());
+            if (basedOnContentVertex != null) {
+                exerciseVertex.setBasedOnContent(basedOnContentVertex);
+            }
+        }
+
         // Attach input based on which input command is set
         if (command.getArrangeTextOptionsInput() != null) {
             attachArrangeTextOptionsInput(exerciseVertex, command.getArrangeTextOptionsInput());

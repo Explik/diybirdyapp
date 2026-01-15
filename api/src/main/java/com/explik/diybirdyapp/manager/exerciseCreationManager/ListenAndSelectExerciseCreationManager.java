@@ -84,6 +84,7 @@ public class ListenAndSelectExerciseCreationManager implements ExerciseCreationM
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
                 .withContent(new ExerciseContentParameters().withContent(pronunciationAudioVertex))
+                .withBasedOnContent(pronunciationVertex)
                 .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
                         .withCorrectOptions(List.of(correctContentVertex))
                         .withIncorrectOptions(incorrectContentVertices)

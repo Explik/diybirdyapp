@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.persistence.schema.parameter;
 
+import com.explik.diybirdyapp.persistence.vertex.AbstractVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 
 import java.util.UUID;
@@ -10,6 +11,7 @@ public class ExerciseParameters {
     private String targetLanguage;
 
     private ExerciseContentParameters content;
+    private AbstractVertex basedOnContent;
     private ExerciseInputParametersArrangeTextOptions arrangeTextOptionsInput;
     private ExerciseInputParametersSelectOptions selectOptionsInput;
     private ExerciseInputParametersPairOptions pairOptionsInput;
@@ -65,6 +67,19 @@ public class ExerciseParameters {
 
     public ExerciseParameters withContent(ExerciseContentParameters content) {
         this.content = content;
+        return this;
+    }
+
+    public AbstractVertex getBasedOnContent() {
+        return basedOnContent;
+    }
+
+    public void setBasedOnContent(AbstractVertex basedOnContent) {
+        this.basedOnContent = basedOnContent;
+    }
+
+    public ExerciseParameters withBasedOnContent(AbstractVertex basedOnContent) {
+        this.basedOnContent = basedOnContent;
         return this;
     }
 

@@ -34,7 +34,8 @@ public class ReviewFlashcardExerciseCreationManager implements ExerciseCreationM
 
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
-                .withContent(new ExerciseContentParameters().withContent(flashcardVertex));
+                .withContent(new ExerciseContentParameters().withContent(flashcardVertex))
+                .withBasedOnContent(flashcardVertex);
         
         var command = exerciseCreationService.createExerciseCommand(
                 ExerciseSchemas.REVIEW_FLASHCARD_EXERCISE, 
