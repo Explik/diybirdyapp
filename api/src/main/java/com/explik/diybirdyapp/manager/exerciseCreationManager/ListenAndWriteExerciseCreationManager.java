@@ -53,6 +53,7 @@ public class ListenAndWriteExerciseCreationManager implements ExerciseCreationMa
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
                 .withContent(new ExerciseContentParameters().withContent(pronunciationAudioVertex))
+                .withBasedOnContent(pronunciationVertex)
                 .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
         
         var command = exerciseCreationService.createExerciseCommand(

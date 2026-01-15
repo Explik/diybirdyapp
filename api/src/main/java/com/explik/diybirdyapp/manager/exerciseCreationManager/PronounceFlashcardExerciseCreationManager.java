@@ -37,6 +37,7 @@ public class PronounceFlashcardExerciseCreationManager implements ExerciseCreati
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
                 .withContent(new ExerciseContentParameters().withContent(textContentVertex))
+                .withBasedOnContent(textContentVertex)
                 .withRecordAudioInput(new ExerciseInputParametersRecordAudio().withCorrectOption(textContentVertex));
         
         var command = exerciseCreationService.createExerciseCommand(

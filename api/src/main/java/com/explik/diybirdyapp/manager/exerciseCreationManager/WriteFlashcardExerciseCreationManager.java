@@ -39,6 +39,7 @@ public class WriteFlashcardExerciseCreationManager implements ExerciseCreationMa
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
                 .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
+                .withBasedOnContent(flashcardVertex)
                 .withWriteTextInput(new ExerciseInputParametersWriteText().withCorrectOption(answerContentVertex));
         
         var command = exerciseCreationService.createExerciseCommand(

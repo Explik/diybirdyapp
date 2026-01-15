@@ -55,6 +55,7 @@ public class SelectFlashcardExerciseCreationManager implements ExerciseCreationM
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
                 .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
+                .withBasedOnContent(flashcardVertex)
                 .withSelectOptionsInput(new ExerciseInputParametersSelectOptions()
                         .withCorrectOptions(List.of(correctContentVertex))
                         .withIncorrectOptions(incorrectContentVertices)

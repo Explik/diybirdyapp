@@ -15,6 +15,7 @@ public class ExerciseVertex extends AbstractVertex {
     public final static String EDGE_TYPE = "hasType";
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_CONTENT_PROPERTY_FLASHCARD_SIDE = "flashcardSide";
+    public final static String EDGE_IS_BASED_ON = "isBasedOn";
     public final static String EDGE_OPTION = "hasOption";
     public final static String EDGE_OPTION_PAIR = "hasOptionPair";
     public final static String EDGE_OPTION_PROPERTY_ORDER = "order";
@@ -67,6 +68,18 @@ public class ExerciseVertex extends AbstractVertex {
 
     public String getFlashcardSide() {
         return VertexHelper.getOptionalOutgoingProperty(this, EDGE_CONTENT, EDGE_CONTENT_PROPERTY_FLASHCARD_SIDE);
+    }
+
+    public AbstractVertex getBasedOnContent() {
+        var vertices = traversalSource.V(vertex).out(EDGE_IS_BASED_ON).toList();
+        if (vertices.isEmpty()) {
+            return null;
+        }
+        return new AbstractVertex(traversalSource, vertices.get(0));
+    }
+
+    public void setBasedOnContent(AbstractVertex outVertex) {
+        addEdgeOneToOne(EDGE_IS_BASED_ON, outVertex);
     }
 
     public String getTargetLanguage() {
