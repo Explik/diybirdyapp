@@ -53,9 +53,14 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public List<AbstractVertex> getActiveContent() {
         return VertexHelper.getOutgoingModels(this, EDGE_ACTIVE_CONTENT, (source, vertex) -> {
             String label = vertex.label();
+            
+            // Handle PronunciationVertex (not a ContentVertex subclass)
             if (label.equals(PronunciationVertex.LABEL)) {
                 return new PronunciationVertex(source, vertex);
             }
+            
+            // Handle all ContentVertex types (including FlashcardVertex, TextContentVertex, AudioContentVertex, etc.)
+            // VertexHelper.createContent will instantiate the correct concrete type based on the label
             return VertexHelper.createContent(source, vertex);
         });
     }

@@ -239,11 +239,15 @@ public class FlashcardDeckExerciseManager {
             ExerciseSessionVertex sessionVertex,
             FlashcardVertex flashcardVertex) {
         
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        var activeContent = stateVertex.getActiveContent();
+        
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
                 null,
                 ExerciseTypes.REVIEW_FLASHCARD);
+        context.setActiveContent(activeContent);
         
         return reviewFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -253,11 +257,15 @@ public class FlashcardDeckExerciseManager {
             ExerciseSessionVertex sessionVertex,
             FlashcardVertex flashcardVertex) {
         
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        var activeContent = stateVertex.getActiveContent();
+        
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
                 "front",
                 ExerciseTypes.SELECT_FLASHCARD);
+        context.setActiveContent(activeContent);
         
         return selectFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -267,10 +275,14 @@ public class FlashcardDeckExerciseManager {
             ExerciseSessionVertex sessionVertex,
             PronunciationVertex pronunciationVertex) {
         
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        var activeContent = stateVertex.getActiveContent();
+        
         var context = ExerciseCreationContext.createForPronunciation(
                 sessionVertex,
                 pronunciationVertex,
                 ExerciseTypes.LISTEN_AND_SELECT);
+        context.setActiveContent(activeContent);
         
         return listenAndSelectExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -280,11 +292,15 @@ public class FlashcardDeckExerciseManager {
             ExerciseSessionVertex sessionVertex,
             FlashcardVertex flashcardVertex) {
         
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        var activeContent = stateVertex.getActiveContent();
+        
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
                 "front",
                 ExerciseTypes.WRITE_FLASHCARD);
+        context.setActiveContent(activeContent);
         
         return writeFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -294,10 +310,14 @@ public class FlashcardDeckExerciseManager {
             ExerciseSessionVertex sessionVertex,
             PronunciationVertex pronunciationVertex) {
         
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        var activeContent = stateVertex.getActiveContent();
+        
         var context = ExerciseCreationContext.createForPronunciation(
                 sessionVertex,
                 pronunciationVertex,
                 ExerciseTypes.LISTEN_AND_WRITE);
+        context.setActiveContent(activeContent);
         
         return listenAndWriteExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -307,10 +327,14 @@ public class FlashcardDeckExerciseManager {
             ExerciseSessionVertex sessionVertex,
             TextContentVertex textContentVertex) {
         
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        var activeContent = stateVertex.getActiveContent();
+        
         var context = ExerciseCreationContext.createForText(
                 sessionVertex,
                 textContentVertex,
                 ExerciseTypes.PRONOUNCE_FLASHCARD);
+        context.setActiveContent(activeContent);
         
         return pronounceFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }

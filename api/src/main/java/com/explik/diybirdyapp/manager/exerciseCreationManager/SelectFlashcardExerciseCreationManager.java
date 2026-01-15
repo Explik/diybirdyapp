@@ -8,6 +8,7 @@ import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseInputParamete
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseParameters;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +39,28 @@ public class SelectFlashcardExerciseCreationManager implements ExerciseCreationM
             return null;
         }
 
-        var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
         var answerContentType = flashcardVertex.getOtherSide(flashcardSide).getClass();
+        var correctContentVertex = flashcardVertex.getOtherSide(flashcardSide);
         
-        var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
+        // Get alternative answers from active content instead of flashcard deck
+        var activeContent = context.getActiveContent();
+        if (activeContent == null || activeContent.isEmpty()) {
+            return null;
+        }
+        
+        var incorrectContentVertices = activeContent.stream()
+                .filter(vertex -> vertex instanceof FlashcardVertex)
+                .map(vertex -> (FlashcardVertex) vertex)
                 .filter(flashcard -> !flashcard.getId().equals(flashcardVertex.getId()))
                 .filter(flashcard -> flashcard.getOtherSide(flashcardSide).getClass() == answerContentType)
                 .limit(3)
-                .collect(Collectors.toList());
-
-        var correctContentVertex = flashcardVertex.getOtherSide(flashcardSide);
-        var incorrectContentVertices = alternativeFlashcardVertices.stream()
                 .map(f -> f.getOtherSide(flashcardSide))
                 .toList();
+        
+        // Need at least 3 incorrect options for a meaningful multiple-choice exercise
+        if (incorrectContentVertices.size() >= 3) {
+            return null;
+        }
 
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)

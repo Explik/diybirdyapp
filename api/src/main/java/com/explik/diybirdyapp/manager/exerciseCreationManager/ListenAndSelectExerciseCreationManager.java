@@ -54,31 +54,30 @@ public class ListenAndSelectExerciseCreationManager implements ExerciseCreationM
             return null;
         }
 
-        // Fetch alternative answers from the same deck
-        var flashcardDeckVertex = sessionVertex.getFlashcardDeck();
-        var alternativeFlashcardVertices = flashcardDeckVertex.getFlashcards().stream()
-                .filter(flashcard -> {
-                    var leftContent = flashcard.getLeftContent();
-                    var rightContent = flashcard.getRightContent();
-                    return (leftContent instanceof TextContentVertex && !leftContent.getId().equals(correctContentVertex.getId())) ||
-                           (rightContent instanceof TextContentVertex && !rightContent.getId().equals(correctContentVertex.getId()));
-                })
-                .limit(3)
-                .collect(Collectors.toList());
+        // Get language of the correct answer for filtering
+        var correctLanguage = correctContentVertex.getLanguage();
         
-        var incorrectContentVertices = alternativeFlashcardVertices.stream()
-                .flatMap(f -> {
-                    var contents = new java.util.ArrayList<ContentVertex>();
-                    if (f.getLeftContent() instanceof TextContentVertex && !f.getLeftContent().getId().equals(correctContentVertex.getId())) {
-                        contents.add(f.getLeftContent());
-                    }
-                    if (f.getRightContent() instanceof TextContentVertex && !f.getRightContent().getId().equals(correctContentVertex.getId())) {
-                        contents.add(f.getRightContent());
-                    }
-                    return contents.stream();
-                })
+        // Get alternative answers from active content instead of flashcard deck
+        var activeContent = context.getActiveContent();
+        if (activeContent == null || activeContent.isEmpty()) {
+            return null;
+        }
+        
+        var incorrectContentVertices = activeContent.stream()
+                .filter(vertex -> vertex instanceof TextContentVertex)
+                .map(vertex -> (TextContentVertex) vertex)
+                .filter(text -> !text.getId().equals(correctContentVertex.getId()))
+                // Filter by same language if available
+                .filter(text -> correctLanguage == null || text.getLanguage() == null || 
+                               text.getLanguage().getId().equals(correctLanguage.getId()))
                 .limit(3)
+                .map(vertex -> (ContentVertex) vertex)
                 .toList();
+        
+        // Need at least 3 incorrect options for a meaningful multiple-choice exercise
+        if (incorrectContentVertices.size() >= 3) {
+            return null;
+        }
 
         // Create exercise
         var exerciseParameters = new ExerciseParameters()
