@@ -14,6 +14,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String LABEL = "exerciseSessionState";
 
     public final static String PROPERTY_TYPE = "type";
+    public final static String PROPERTY_CURRENT_CONTENT_INDEX = "currentContentIndex";
 
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_ACTIVE_CONTENT = "hasActiveContent";
@@ -65,6 +66,69 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     
     public void clearActiveContent() {
         removeEdges(EDGE_ACTIVE_CONTENT);
+    }
+    
+    /**
+     * Gets the current index in the active content list being processed.
+     * @return The current content index, or 0 if not set
+     */
+    public int getCurrentContentIndex() {
+        return getProperty(PROPERTY_CURRENT_CONTENT_INDEX, 0);
+    }
+    
+    /**
+     * Sets the current index in the active content list being processed.
+     * @param index The content index to set
+     */
+    public void setCurrentContentIndex(int index) {
+        setProperty(PROPERTY_CURRENT_CONTENT_INDEX, index);
+    }
+    
+    /**
+     * Gets the exercise count for a specific content vertex.
+     * Stored as a property like "exerciseCount_<vertexId>".
+     * @param vertexId The ID of the content vertex
+     * @return The exercise count, or 0 if not set
+     */
+    public int getExerciseCountForContent(String vertexId) {
+        return getProperty("exerciseCount_" + vertexId, 0);
+    }
+    
+    /**
+     * Increments the exercise count for a specific content vertex.
+     * @param vertexId The ID of the content vertex
+     */
+    public void incrementExerciseCountForContent(String vertexId) {
+        int currentCount = getExerciseCountForContent(vertexId);
+        setProperty("exerciseCount_" + vertexId, currentCount + 1);
+    }
+    
+    /**
+     * Checks if a content vertex has been exercised the maximum number of times (3).
+     * @param vertexId The ID of the content vertex
+     * @return true if the content has been exercised 3 or more times
+     */
+    public boolean hasReachedMaxExercises(String vertexId) {
+        return getExerciseCountForContent(vertexId) >= 3;
+    }
+    
+    /**
+     * Gets the last exercise type used for a specific content vertex.
+     * Stored as a property like "lastExerciseType_<vertexId>".
+     * @param vertexId The ID of the content vertex
+     * @return The last exercise type ID, or null if not set
+     */
+    public String getLastExerciseTypeForContent(String vertexId) {
+        return getProperty("lastExerciseType_" + vertexId, null);
+    }
+    
+    /**
+     * Sets the last exercise type used for a specific content vertex.
+     * @param vertexId The ID of the content vertex
+     * @param exerciseType The exercise type ID that was just used
+     */
+    public void setLastExerciseTypeForContent(String vertexId, String exerciseType) {
+        setProperty("lastExerciseType_" + vertexId, exerciseType);
     }
 
     public static ExerciseSessionStateVertex create(GraphTraversalSource traversalSource) {

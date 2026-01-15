@@ -30,6 +30,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     
     @Autowired
     private FlashcardDeckAssociatedContentCreationManager contentCreationManager;
+    
+    @Autowired
+    private FlashcardDeckContentCrawler contentCrawler;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -58,6 +61,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         // Load the created session
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
         
+        // Populate initial active content batch
+        populateInitialActiveContent(traversalSource, vertex);
+        
         // Dispatch async content creation for flashcard deck
         dispatchContentCreation(traversalSource, vertex);
 
@@ -75,10 +81,23 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         if (sessionVertex == null)
             throw new RuntimeException("Session with " + modelId +" not found");
 
-        // Generate next exercise
+        // Try to generate next exercise
         var exerciseVertex = exerciseManager.nextExerciseVertex(traversalSource, sessionVertex);
         
-        // Mark session as completed if no more exercises
+        // If no exercise created, try to populate more content and try again
+        if (exerciseVertex == null) {
+            var stateVertex = getActiveContentState(sessionVertex);
+            if (stateVertex != null) {
+                // Reset index and populate more content
+                stateVertex.setCurrentContentIndex(0);
+                populateMoreActiveContent(traversalSource, sessionVertex, stateVertex);
+                
+                // Try to create exercise again with new content
+                exerciseVertex = exerciseManager.nextExerciseVertex(traversalSource, sessionVertex);
+            }
+        }
+        
+        // Mark session as completed if still no exercises after populating
         if (exerciseVertex == null) {
             sessionVertex.setCompleted(true);
         }
@@ -86,6 +105,60 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         sessionVertex.reload();
 
         return sessionModelFactory.create(sessionVertex);
+    }
+    
+    /**
+     * Populates initial active content for the session.
+     * Creates the activeContentBatch state and adds the first batch of content.
+     */
+    private void populateInitialActiveContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck == null) {
+            return;
+        }
+        
+        // Create the activeContentBatch state
+        var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+        stateVertex.setType("activeContentBatch");
+        stateVertex.setCurrentContentIndex(0);
+        sessionVertex.addState(stateVertex);
+        
+        // Populate first batch of content using the crawler
+        var contentList = contentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
+        for (AbstractVertex content : contentList) {
+            stateVertex.addActiveContent(content);
+        }
+    }
+    
+    /**
+     * Populates more active content for an existing session.
+     * Uses the crawler to get the next batch of flashcard content.
+     */
+    private void populateMoreActiveContent(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex) {
+        
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck == null) {
+            return;
+        }
+        
+        // Collect content for the next flashcard using the crawler
+        var contentList = contentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
+        
+        // Add all collected content to the active content collection
+        for (AbstractVertex content : contentList) {
+            stateVertex.addActiveContent(content);
+        }
+    }
+    
+    /**
+     * Gets the active content batch state vertex for the session.
+     */
+    private ExerciseSessionStateVertex getActiveContentState(ExerciseSessionVertex sessionVertex) {
+        var stateVertices = sessionVertex.getStatesWithType("activeContentBatch");
+        return stateVertices.isEmpty() ? null : stateVertices.get(0);
     }
     
     /**
