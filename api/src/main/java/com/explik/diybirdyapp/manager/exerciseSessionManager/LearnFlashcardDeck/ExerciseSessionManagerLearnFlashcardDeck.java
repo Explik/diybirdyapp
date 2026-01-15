@@ -164,6 +164,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     /**
      * Dispatches async content creation for all flashcards and their text content in the session's deck.
      * This includes TTS generation for text content that has a language with TTS configuration.
+     * Created pronunciation vertices are automatically added to the active content batch.
      */
     private void dispatchContentCreation(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         var flashcardDeck = sessionVertex.getFlashcardDeck();
@@ -181,7 +182,15 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
                 })
                 .toList();
         
-        contentCreationManager.dispatchContentCreation(contentVertices);
+        // Get the active content state to add created pronunciations
+        var stateVertex = getActiveContentState(sessionVertex);
+        
+        // Dispatch content creation with callback to add created vertices to active content
+        contentCreationManager.dispatchContentCreation(contentVertices, pronunciationVertex -> {
+            if (stateVertex != null && pronunciationVertex != null) {
+                stateVertex.addActiveContent(pronunciationVertex);
+            }
+        });
     }
 
     private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {

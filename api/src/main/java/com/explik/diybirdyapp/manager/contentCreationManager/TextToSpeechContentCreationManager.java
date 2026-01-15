@@ -12,11 +12,13 @@ import com.explik.diybirdyapp.persistence.query.GetVoiceByLanguageIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.model.internal.VoiceModel;
 import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
+import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Text-to-Speech Content Creation Manager - Dispatches async TTS generation tasks.
@@ -49,9 +51,10 @@ public class TextToSpeechContentCreationManager {
      * and if so, generates pronunciation audio asynchronously.
      * 
      * @param textContentVertex The text content vertex to generate pronunciation for
+     * @param onSuccessCallback Optional callback to invoke with the created PronunciationVertex after successful generation
      */
     @Async
-    public void dispatchTextToSpeechGeneration(TextContentVertex textContentVertex) {
+    public void dispatchTextToSpeechGeneration(TextContentVertex textContentVertex, Consumer<PronunciationVertex> onSuccessCallback) {
         if (textContentVertex == null) {
             return;
         }
@@ -96,11 +99,22 @@ public class TextToSpeechContentCreationManager {
             
             // Create pronunciation vertex with audio content
             var command = new CreatePronunciationVertexCommand();
-            command.setId(UUID.randomUUID().toString());
+            var pronunciationId = UUID.randomUUID().toString();
+            command.setId(pronunciationId);
             command.setSourceVertex(textContentVertex.getId());
             command.setAudioUrl(audioFileName);
             
             createPronunciationVertexCommandHandler.handle(command);
+            
+            // Invoke callback if provided
+            if (onSuccessCallback != null) {
+                var pronunciationVertex = PronunciationVertex.findById(
+                        textContentVertex.getUnderlyingSource(), 
+                        pronunciationId);
+                if (pronunciationVertex != null) {
+                    onSuccessCallback.accept(pronunciationVertex);
+                }
+            }
             
         } catch (Exception e) {
             // Log error but don't throw - this is async and shouldn't block
