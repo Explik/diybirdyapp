@@ -2,11 +2,13 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.manager.contentCreationManager.TextToSpeechContentCreationManager;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
+import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Associated Content Creation Manager - Dispatches async content creation tasks to create associated 
@@ -31,8 +33,9 @@ public class FlashcardDeckAssociatedContentCreationManager {
      * Currently focuses on text-to-speech generation for text content.
      * 
      * @param contentVertices List of content vertices to process
+     * @param onSuccessCallback Optional callback to invoke with created vertices after successful generation
      */
-    public void dispatchContentCreation(List<ContentVertex> contentVertices) {
+    public void dispatchContentCreation(List<ContentVertex> contentVertices, Consumer<PronunciationVertex> onSuccessCallback) {
         if (contentVertices == null || contentVertices.isEmpty()) {
             return;
         }
@@ -42,8 +45,8 @@ public class FlashcardDeckAssociatedContentCreationManager {
             if (contentVertex instanceof TextContentVertex textContentVertex) {
                 // Check if TTS configuration exists for this language
                 if (textToSpeechContentCreationManager.hasTtsConfiguration(textContentVertex)) {
-                    // Dispatch async TTS generation
-                    textToSpeechContentCreationManager.dispatchTextToSpeechGeneration(textContentVertex);
+                    // Dispatch async TTS generation with callback
+                    textToSpeechContentCreationManager.dispatchTextToSpeechGeneration(textContentVertex, onSuccessCallback);
                 }
             }
         }
