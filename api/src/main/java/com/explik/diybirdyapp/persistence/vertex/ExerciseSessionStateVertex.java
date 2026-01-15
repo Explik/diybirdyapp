@@ -18,6 +18,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
 
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_ACTIVE_CONTENT = "hasActiveContent";
+    public final static String EDGE_ACTIVE_CONTENT_ORDER = "order";
 
     public String getType() {
         return getPropertyAsString(PROPERTY_TYPE);
@@ -51,7 +52,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     }
     
     public List<AbstractVertex> getActiveContent() {
-        return VertexHelper.getOutgoingModels(this, EDGE_ACTIVE_CONTENT, (source, vertex) -> {
+        return VertexHelper.getOrderedOutgoingModels(this, EDGE_ACTIVE_CONTENT, EDGE_ACTIVE_CONTENT_ORDER, (source, vertex) -> {
             String label = vertex.label();
             
             // Handle PronunciationVertex (not a ContentVertex subclass)
@@ -66,7 +67,9 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     }
     
     public void addActiveContent(AbstractVertex vertex) {
-        addEdgeOneToMany(EDGE_ACTIVE_CONTENT, vertex);
+        // Use timestamp for ordering to handle multiple crawler runs
+        long timestamp = System.currentTimeMillis();
+        addOrderedEdgeOneToMany(EDGE_ACTIVE_CONTENT, vertex, EDGE_ACTIVE_CONTENT_ORDER, timestamp);
     }
     
     public void clearActiveContent() {
