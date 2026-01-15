@@ -127,8 +127,18 @@ public class FlashcardDeckExerciseManager {
             AbstractVertex content,
             java.util.List<String> exerciseTypes) {
         
-        // Only flashcards can be used for exercises currently
-        if (!(content instanceof FlashcardVertex flashcardVertex)) {
+        // Determine the type of content and filter applicable exercise types
+        FlashcardVertex flashcardVertex = null;
+        PronunciationVertex pronunciationVertex = null;
+        TextContentVertex textContentVertex = null;
+        
+        if (content instanceof FlashcardVertex) {
+            flashcardVertex = (FlashcardVertex) content;
+        } else if (content instanceof PronunciationVertex) {
+            pronunciationVertex = (PronunciationVertex) content;
+        } else if (content instanceof TextContentVertex) {
+            textContentVertex = (TextContentVertex) content;
+        } else {
             return null;
         }
         
@@ -148,22 +158,34 @@ public class FlashcardDeckExerciseManager {
             
             switch (exerciseType) {
                 case ExerciseTypes.REVIEW_FLASHCARD:
-                    exercise = tryCreateReviewExercise(traversalSource, sessionVertex, flashcardVertex);
+                    if (flashcardVertex != null) {
+                        exercise = tryCreateReviewExercise(traversalSource, sessionVertex, flashcardVertex);
+                    }
                     break;
                 case ExerciseTypes.SELECT_FLASHCARD:
-                    exercise = tryCreateSelectExercise(traversalSource, sessionVertex, flashcardVertex);
+                    if (flashcardVertex != null) {
+                        exercise = tryCreateSelectExercise(traversalSource, sessionVertex, flashcardVertex);
+                    }
                     break;
                 case ExerciseTypes.LISTEN_AND_SELECT:
-                    exercise = tryCreateListenAndSelectExercise(traversalSource, sessionVertex, flashcardVertex);
+                    if (pronunciationVertex != null) {
+                        exercise = tryCreateListenAndSelectExercise(traversalSource, sessionVertex, pronunciationVertex);
+                    }
                     break;
                 case ExerciseTypes.WRITE_FLASHCARD:
-                    exercise = tryCreateWriteExercise(traversalSource, sessionVertex, flashcardVertex);
+                    if (flashcardVertex != null) {
+                        exercise = tryCreateWriteExercise(traversalSource, sessionVertex, flashcardVertex);
+                    }
                     break;
                 case ExerciseTypes.LISTEN_AND_WRITE:
-                    exercise = tryCreateListenAndWriteExercise(traversalSource, sessionVertex, flashcardVertex);
+                    if (pronunciationVertex != null) {
+                        exercise = tryCreateListenAndWriteExercise(traversalSource, sessionVertex, pronunciationVertex);
+                    }
                     break;
                 case ExerciseTypes.PRONOUNCE_FLASHCARD:
-                    exercise = tryCreatePronounceExercise(traversalSource, sessionVertex, flashcardVertex);
+                    if (textContentVertex != null) {
+                        exercise = tryCreatePronounceExercise(traversalSource, sessionVertex, textContentVertex);
+                    }
                     break;
             }
             
@@ -243,12 +265,11 @@ public class FlashcardDeckExerciseManager {
     private ExerciseVertex tryCreateListenAndSelectExercise(
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
-            FlashcardVertex flashcardVertex) {
+            PronunciationVertex pronunciationVertex) {
         
-        var context = ExerciseCreationContext.createForFlashcard(
+        var context = ExerciseCreationContext.createForPronunciation(
                 sessionVertex,
-                flashcardVertex,
-                "front",
+                pronunciationVertex,
                 ExerciseTypes.LISTEN_AND_SELECT);
         
         return listenAndSelectExerciseCreationManager.createExercise(traversalSource, context);
@@ -271,12 +292,11 @@ public class FlashcardDeckExerciseManager {
     private ExerciseVertex tryCreateListenAndWriteExercise(
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
-            FlashcardVertex flashcardVertex) {
+            PronunciationVertex pronunciationVertex) {
         
-        var context = ExerciseCreationContext.createForFlashcard(
+        var context = ExerciseCreationContext.createForPronunciation(
                 sessionVertex,
-                flashcardVertex,
-                "front",
+                pronunciationVertex,
                 ExerciseTypes.LISTEN_AND_WRITE);
         
         return listenAndWriteExerciseCreationManager.createExercise(traversalSource, context);
@@ -285,12 +305,11 @@ public class FlashcardDeckExerciseManager {
     private ExerciseVertex tryCreatePronounceExercise(
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
-            FlashcardVertex flashcardVertex) {
+            TextContentVertex textContentVertex) {
         
-        var context = ExerciseCreationContext.createForFlashcard(
+        var context = ExerciseCreationContext.createForText(
                 sessionVertex,
-                flashcardVertex,
-                "front",
+                textContentVertex,
                 ExerciseTypes.PRONOUNCE_FLASHCARD);
         
         return pronounceFlashcardExerciseCreationManager.createExercise(traversalSource, context);

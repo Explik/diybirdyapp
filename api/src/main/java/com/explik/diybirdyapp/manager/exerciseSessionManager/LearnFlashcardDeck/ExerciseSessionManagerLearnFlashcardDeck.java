@@ -190,7 +190,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.REVIEW_FLASHCARD),
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.SELECT_FLASHCARD),
                 ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.WRITE_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.PRONOUNCE_FLASHCARD)
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.PRONOUNCE_FLASHCARD),
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_SELECT),
+                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_WRITE)
         );
     }
 }

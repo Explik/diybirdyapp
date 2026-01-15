@@ -28,21 +28,15 @@ public class PronounceFlashcardExerciseCreationManager implements ExerciseCreati
     @Override
     public ExerciseVertex createExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
         var sessionVertex = context.getSessionVertex();
-        var flashcardVertex = context.getFlashcardVertex();
-        var flashcardSide = context.getFlashcardSide() != null ? context.getFlashcardSide() : "front";
+        var textContentVertex = context.getTextContentVertex();
 
-        if (sessionVertex == null || flashcardVertex == null) {
-            return null;
-        }
-
-        var flashcardContentVertex = flashcardVertex.getSide(flashcardSide);
-        if (!(flashcardContentVertex instanceof TextContentVertex textContentVertex)) {
+        if (sessionVertex == null || textContentVertex == null) {
             return null;
         }
 
         var exerciseParameters = new ExerciseParameters()
                 .withSession(sessionVertex)
-                .withContent(new ExerciseContentParameters().withFlashcardContent(flashcardVertex, flashcardSide))
+                .withContent(new ExerciseContentParameters().withContent(textContentVertex))
                 .withRecordAudioInput(new ExerciseInputParametersRecordAudio().withCorrectOption(textContentVertex));
         
         var command = exerciseCreationService.createExerciseCommand(
