@@ -1,23 +1,28 @@
-package com.explik.diybirdyapp.manager.exerciseSessionManager;
+package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck;
 
-import com.explik.diybirdyapp.ComponentTypes;
-import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
-import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
-import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
-import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
-import com.explik.diybirdyapp.persistence.vertex.*;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
+import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.UUID;
-
-@Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
-public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSessionManager {
+/**
+ * Exercise Manager - Creates or repeats exercises for the selected content (incl. flashcard, 
+ * associated content) based on the exercise answer/feedback history.
+ * 
+ * It implements the difficulty curve logic to determine whether to create a new exercise or repeat 
+ * an existing exercise. If required, the manager will use a set of exercise creation strategies using 
+ * the ExerciseCreationContext to create new exercises for the selected content.
+ */
+@Component
+public class FlashcardDeckExerciseManager {
+    
+    @Autowired
+    private FlashcardDeckContentCrawler contentCrawler;
+    
     @Autowired
     private ReviewFlashcardExerciseCreationManager reviewFlashcardExerciseCreationManager;
 
@@ -36,74 +41,28 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     @Autowired
     private PronounceFlashcardExerciseCreationManager pronounceFlashcardExerciseCreationManager;
 
-    @Autowired
-    private ExerciseSessionModelFactory sessionModelFactory;
-
-    @Autowired
-    private CommandHandler<CreateLearnFlashcardSessionCommand> createLearnFlashcardSessionCommandHandler;
-
-    @Override
-    public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
-        var options = context.getSessionModel();
-
-        // Create session using command
-        var sessionId = (options.getId() != null) ? options.getId() : UUID.randomUUID().toString();
-        var command = new CreateLearnFlashcardSessionCommand();
-        command.setId(sessionId);
-        command.setFlashcardDeckId(options.getFlashcardDeckId());
-        command.setRetypeCorrectAnswer(false);
-        command.setTextToSpeechEnabled(false);
-        command.setIncludeReviewExercises(true);
-        command.setIncludeMultipleChoiceExercises(true);
-        command.setIncludeWritingExercises(true);
-        command.setIncludeListeningExercises(false);
-        command.setIncludePronunciationExercises(true);
+    /**
+     * Generates the next exercise for the session based on exercise types enabled and flashcard availability.
+     * 
+     * @param traversalSource The graph traversal source
+     * @param sessionVertex The exercise session vertex
+     * @return The created exercise vertex, or null if the session is complete
+     */
+    public com.explik.diybirdyapp.persistence.vertex.ExerciseVertex nextExerciseVertex(
+            org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource traversalSource, 
+            com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex sessionVertex) {
         
-        var exerciseTypeIds = getInitialExerciseTypes(traversalSource).stream()
-                .map(ExerciseTypeVertex::getId)
-                .toList();
-        command.setExerciseTypeIds(exerciseTypeIds);
-        
-        createLearnFlashcardSessionCommandHandler.handle(command);
-
-        // Load the created session
-        var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
-
-        // Generate first exercise
-        nextExerciseVertex(traversalSource, vertex);
-        vertex.reload();
-
-        return sessionModelFactory.create(vertex);
-    }
-
-    @Override
-    public ExerciseSessionDto nextExercise(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
-        var modelId = context.getSessionModel().getId();
-        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
-        if (sessionVertex == null)
-            throw new RuntimeException("Session with " + modelId +" not found");
-
-        // Generate next exercise
-        nextExerciseVertex(traversalSource, sessionVertex);
-        sessionVertex.reload();
-
-        return sessionModelFactory.create(sessionVertex);
-    }
-
-    // TODO Use flashcard side specified from session options
-    private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        FlashcardVertex flashcardVertex;
         var exerciseTypes = sessionVertex.getOptions().getExerciseTypes().stream()
-                .map(ExerciseTypeVertex::getId)
+                .map(com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex::getId)
                 .toList();
 
-        if (exerciseTypes.contains(ExerciseTypes.REVIEW_FLASHCARD)) {
+        if (exerciseTypes.contains(com.explik.diybirdyapp.ExerciseTypes.REVIEW_FLASHCARD)) {
             var reviewExerciseVertex = tryGenerateReviewExercise(traversalSource, sessionVertex);
             if (reviewExerciseVertex != null)
                 return reviewExerciseVertex;
         }
 
-        if (exerciseTypes.contains(ExerciseTypes.SELECT_FLASHCARD)) {
+        if (exerciseTypes.contains(com.explik.diybirdyapp.ExerciseTypes.SELECT_FLASHCARD)) {
             var selectExerciseVertex = tryGenerateSelectExercise(traversalSource, sessionVertex);
             if (selectExerciseVertex != null)
                 return selectExerciseVertex;
@@ -134,12 +93,17 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         }
 
         // If no flashcards are found, the session is complete
-        sessionVertex.setCompleted(true);
         return null;
     }
 
-    private ExerciseVertex tryGenerateReviewExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.REVIEW_FLASHCARD);
+    private ExerciseVertex tryGenerateReviewExercise(
+            GraphTraversalSource traversalSource, 
+            ExerciseSessionVertex sessionVertex) {
+        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(
+                traversalSource, 
+                sessionVertex.getId(), 
+                ExerciseTypes.REVIEW_FLASHCARD);
+        
         if (flashcardVertex == null)
             return null;
 
@@ -153,7 +117,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
 
     private ExerciseVertex tryGenerateSelectExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
+        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
         if (flashcardVertex == null)
             return null;
 
@@ -167,7 +131,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
 
     private ExerciseVertex tryGenerateListenAndSelectExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_SELECT);
+        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_SELECT);
         if (flashcardVertex == null)
             return null;
 
@@ -181,7 +145,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
 
     private ExerciseVertex tryGenerateWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
+        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
         if (flashcardVertex == null)
             return null;
 
@@ -195,7 +159,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
 
     private ExerciseVertex tryGenerateListenAndWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_WRITE);
+        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_WRITE);
         if (flashcardVertex == null)
             return null;
 
@@ -209,7 +173,10 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
 
     private ExerciseVertex tryGeneratePronounceExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.PRONOUNCE_FLASHCARD);
+        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(
+                traversalSource, 
+                sessionVertex.getId(), 
+                ExerciseTypes.PRONOUNCE_FLASHCARD);
         if (flashcardVertex == null)
             return null;
 
@@ -220,15 +187,5 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
                 ExerciseTypes.PRONOUNCE_FLASHCARD);
         
         return pronounceFlashcardExerciseCreationManager.createExercise(traversalSource, context);
-    }
-
-    private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {
-        // This list should not contain any non-flashcard-based exercises as it breaks the next-exercise algorithm
-        return List.of(
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.REVIEW_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.SELECT_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.WRITE_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.PRONOUNCE_FLASHCARD)
-        );
     }
 }
