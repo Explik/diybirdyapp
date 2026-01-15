@@ -8,18 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Exercise Manager - Creates or repeats exercises for the selected content (incl. flashcard, 
- * associated content) based on the exercise answer/feedback history.
+ * Exercise Manager - Creates exercises for content selected from the active content batch.
  * 
- * It implements the difficulty curve logic to determine whether to create a new exercise or repeat 
- * an existing exercise. If required, the manager will use a set of exercise creation strategies using 
- * the ExerciseCreationContext to create new exercises for the selected content.
+ * Implements a content-first approach where content is selected in order from the active content batch.
+ * Each piece of content is exercised up to 3 times across different exercise types before moving to the next.
+ * The manager attempts to create exercises using available exercise creation strategies based on session settings.
  */
 @Component
 public class FlashcardDeckExerciseManager {
-    
-    @Autowired
-    private FlashcardDeckContentCrawler contentCrawler;
     
     @Autowired
     private ReviewFlashcardExerciseCreationManager reviewFlashcardExerciseCreationManager;
@@ -40,74 +36,187 @@ public class FlashcardDeckExerciseManager {
     private PronounceFlashcardExerciseCreationManager pronounceFlashcardExerciseCreationManager;
 
     /**
-     * Generates the next exercise for the session based on exercise types enabled and flashcard availability.
+     * Generates the next exercise for the session using a content-first approach.
+     * Selects content from the active content batch in order and attempts to create exercises for it.
+     * Each piece of content can be exercised up to 3 times before moving to the next.
      * 
      * @param traversalSource The graph traversal source
      * @param sessionVertex The exercise session vertex
-     * @return The created exercise vertex, or null if the session is complete
+     * @return The created exercise vertex, null if more content is needed, or null if session is complete
      */
     public com.explik.diybirdyapp.persistence.vertex.ExerciseVertex nextExerciseVertex(
             org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource traversalSource, 
             com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex sessionVertex) {
         
+        // Get or create the activeContentBatch state
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        
+        // Get active content list
+        var activeContent = stateVertex.getActiveContent();
+        
+        // If active content is empty, return null (session manager should populate)
+        if (activeContent.isEmpty()) {
+            return null;
+        }
+        
+        // Get enabled exercise types
         var exerciseTypes = sessionVertex.getOptions().getExerciseTypes().stream()
                 .map(com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex::getId)
                 .toList();
-
-        if (exerciseTypes.contains(com.explik.diybirdyapp.ExerciseTypes.REVIEW_FLASHCARD)) {
-            var reviewExerciseVertex = tryGenerateReviewExercise(traversalSource, sessionVertex);
-            if (reviewExerciseVertex != null)
-                return reviewExerciseVertex;
+        
+        // Get current content index
+        int currentIndex = stateVertex.getCurrentContentIndex();
+        
+        // Try to create exercise for content starting from current index
+        while (currentIndex < activeContent.size()) {
+            var content = activeContent.get(currentIndex);
+            String contentId = getContentId(content);
+            
+            if (contentId == null) {
+                // Skip content without ID
+                currentIndex++;
+                stateVertex.setCurrentContentIndex(currentIndex);
+                continue;
+            }
+            
+            // Check if content has reached max exercises (3)
+            if (stateVertex.hasReachedMaxExercises(contentId)) {
+                // Move to next content
+                currentIndex++;
+                stateVertex.setCurrentContentIndex(currentIndex);
+                continue;
+            }
+            
+            // Try to create an exercise for this content
+            var exerciseVertex = tryCreateExerciseForContent(
+                    traversalSource, 
+                    sessionVertex, 
+                    content, 
+                    exerciseTypes);
+            
+            if (exerciseVertex != null) {
+                // Exercise created successfully, increment count
+                stateVertex.incrementExerciseCountForContent(contentId);
+                return exerciseVertex;
+            } else {
+                // No exercise could be created, mark as exercised 3 times to skip it
+                stateVertex.setPropertyValue("exerciseCount_" + contentId, 3);
+                currentIndex++;
+                stateVertex.setCurrentContentIndex(currentIndex);
+            }
         }
-
-        if (exerciseTypes.contains(com.explik.diybirdyapp.ExerciseTypes.SELECT_FLASHCARD)) {
-            var selectExerciseVertex = tryGenerateSelectExercise(traversalSource, sessionVertex);
-            if (selectExerciseVertex != null)
-                return selectExerciseVertex;
+        
+        // All content in current batch has been processed
+        // Return null to signal session manager to populate more content
+        return null;
+    }
+    
+    /**
+     * Attempts to create an exercise for the given content using available exercise types.
+     * Implements difficulty curve by trying to use a different exercise type than last time.
+     * 
+     * @param traversalSource The graph traversal source
+     * @param sessionVertex The exercise session vertex
+     * @param content The content to create an exercise for
+     * @param exerciseTypes List of enabled exercise type IDs
+     * @return The created exercise vertex, or null if no new exercise type can be created
+     */
+    private ExerciseVertex tryCreateExerciseForContent(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            AbstractVertex content,
+            java.util.List<String> exerciseTypes) {
+        
+        // Only flashcards can be used for exercises currently
+        if (!(content instanceof FlashcardVertex flashcardVertex)) {
+            return null;
         }
-
-        if (exerciseTypes.contains(ExerciseTypes.LISTEN_AND_SELECT)) {
-            var listenAndSelectExerciseVertex = tryGenerateListenAndSelectExercise(traversalSource, sessionVertex);
-            if (listenAndSelectExerciseVertex != null)
-                return listenAndSelectExerciseVertex;
+        
+        // Get state vertex and last exercise type used for this content
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        String contentId = getContentId(content);
+        String lastExerciseType = stateVertex.getLastExerciseTypeForContent(contentId);
+        
+        // Try each exercise type in order, skipping the last one used
+        for (String exerciseType : exerciseTypes) {
+            // Skip if this is the same exercise type as last time
+            if (exerciseType.equals(lastExerciseType)) {
+                continue;
+            }
+            
+            ExerciseVertex exercise = null;
+            
+            switch (exerciseType) {
+                case ExerciseTypes.REVIEW_FLASHCARD:
+                    exercise = tryCreateReviewExercise(traversalSource, sessionVertex, flashcardVertex);
+                    break;
+                case ExerciseTypes.SELECT_FLASHCARD:
+                    exercise = tryCreateSelectExercise(traversalSource, sessionVertex, flashcardVertex);
+                    break;
+                case ExerciseTypes.LISTEN_AND_SELECT:
+                    exercise = tryCreateListenAndSelectExercise(traversalSource, sessionVertex, flashcardVertex);
+                    break;
+                case ExerciseTypes.WRITE_FLASHCARD:
+                    exercise = tryCreateWriteExercise(traversalSource, sessionVertex, flashcardVertex);
+                    break;
+                case ExerciseTypes.LISTEN_AND_WRITE:
+                    exercise = tryCreateListenAndWriteExercise(traversalSource, sessionVertex, flashcardVertex);
+                    break;
+                case ExerciseTypes.PRONOUNCE_FLASHCARD:
+                    exercise = tryCreatePronounceExercise(traversalSource, sessionVertex, flashcardVertex);
+                    break;
+            }
+            
+            if (exercise != null) {
+                // Track this exercise type for future difficulty curve
+                stateVertex.setLastExerciseTypeForContent(contentId, exerciseType);
+                return exercise;
+            }
         }
-
-        if (exerciseTypes.contains(ExerciseTypes.WRITE_FLASHCARD)) {
-            var writeExerciseVertex = tryGenerateWriteExercise(traversalSource, sessionVertex);
-            if (writeExerciseVertex != null)
-                return writeExerciseVertex;
+        
+        // No new exercise type could be created
+        return null;
+    }
+    
+    /**
+     * Gets or creates the activeContentBatch state vertex.
+     */
+    private ExerciseSessionStateVertex getOrCreateActiveContentState(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex) {
+        
+        var stateVertices = sessionVertex.getStatesWithType("activeContentBatch");
+        
+        if (stateVertices.isEmpty()) {
+            var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+            stateVertex.setType("activeContentBatch");
+            stateVertex.setCurrentContentIndex(0);
+            sessionVertex.addState(stateVertex);
+            return stateVertex;
         }
-
-        if (exerciseTypes.contains(ExerciseTypes.LISTEN_AND_WRITE)) {
-            var listenAndWriteExerciseVertex = tryGenerateListenAndWriteExercise(traversalSource, sessionVertex);
-            if (listenAndWriteExerciseVertex != null)
-                return listenAndWriteExerciseVertex;
+        
+        return stateVertices.get(0);
+    }
+    
+    /**
+     * Gets the ID from a vertex, handling both ContentVertex and PronunciationVertex types.
+     */
+    private String getContentId(AbstractVertex vertex) {
+        if (vertex instanceof ContentVertex contentVertex) {
+            return contentVertex.getId();
+        } else if (vertex instanceof PronunciationVertex pronunciationVertex) {
+            return pronunciationVertex.getId();
+        } else if (vertex instanceof FlashcardVertex flashcardVertex) {
+            return flashcardVertex.getId();
         }
-
-        if (exerciseTypes.contains(ExerciseTypes.PRONOUNCE_FLASHCARD)) {
-            var pronounceExerciseVertex = tryGeneratePronounceExercise(traversalSource, sessionVertex);
-            if (pronounceExerciseVertex != null)
-                return pronounceExerciseVertex;
-        }
-
-        // If no flashcards are found, the session is complete
         return null;
     }
 
-    private ExerciseVertex tryGenerateReviewExercise(
+    private ExerciseVertex tryCreateReviewExercise(
             GraphTraversalSource traversalSource, 
-            ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(
-                traversalSource, 
-                sessionVertex.getId(), 
-                ExerciseTypes.REVIEW_FLASHCARD);
+            ExerciseSessionVertex sessionVertex,
+            FlashcardVertex flashcardVertex) {
         
-        if (flashcardVertex == null)
-            return null;
-        
-        // Populate active content with flashcard and related content
-        populateActiveContent(traversalSource, sessionVertex, flashcardVertex);
-
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
@@ -117,14 +226,11 @@ public class FlashcardDeckExerciseManager {
         return reviewFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
 
-    private ExerciseVertex tryGenerateSelectExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
-        if (flashcardVertex == null)
-            return null;
+    private ExerciseVertex tryCreateSelectExercise(
+            GraphTraversalSource traversalSource, 
+            ExerciseSessionVertex sessionVertex,
+            FlashcardVertex flashcardVertex) {
         
-        // Populate active content with flashcard and related content
-        populateActiveContent(traversalSource, sessionVertex, flashcardVertex);
-
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
@@ -134,14 +240,11 @@ public class FlashcardDeckExerciseManager {
         return selectFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
 
-    private ExerciseVertex tryGenerateListenAndSelectExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_SELECT);
-        if (flashcardVertex == null)
-            return null;
+    private ExerciseVertex tryCreateListenAndSelectExercise(
+            GraphTraversalSource traversalSource, 
+            ExerciseSessionVertex sessionVertex,
+            FlashcardVertex flashcardVertex) {
         
-        // Populate active content with flashcard and related content
-        populateActiveContent(traversalSource, sessionVertex, flashcardVertex);
-
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
@@ -151,14 +254,11 @@ public class FlashcardDeckExerciseManager {
         return listenAndSelectExerciseCreationManager.createExercise(traversalSource, context);
     }
 
-    private ExerciseVertex tryGenerateWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
-        if (flashcardVertex == null)
-            return null;
+    private ExerciseVertex tryCreateWriteExercise(
+            GraphTraversalSource traversalSource, 
+            ExerciseSessionVertex sessionVertex,
+            FlashcardVertex flashcardVertex) {
         
-        // Populate active content with flashcard and related content
-        populateActiveContent(traversalSource, sessionVertex, flashcardVertex);
-
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
@@ -168,14 +268,11 @@ public class FlashcardDeckExerciseManager {
         return writeFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
 
-    private ExerciseVertex tryGenerateListenAndWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(traversalSource, sessionVertex.getId(), ExerciseTypes.LISTEN_AND_WRITE);
-        if (flashcardVertex == null)
-            return null;
+    private ExerciseVertex tryCreateListenAndWriteExercise(
+            GraphTraversalSource traversalSource, 
+            ExerciseSessionVertex sessionVertex,
+            FlashcardVertex flashcardVertex) {
         
-        // Populate active content with flashcard and related content
-        populateActiveContent(traversalSource, sessionVertex, flashcardVertex);
-
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
@@ -185,17 +282,11 @@ public class FlashcardDeckExerciseManager {
         return listenAndWriteExerciseCreationManager.createExercise(traversalSource, context);
     }
 
-    private ExerciseVertex tryGeneratePronounceExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardVertex = contentCrawler.findFirstNonExercisedFlashcard(
-                traversalSource, 
-                sessionVertex.getId(), 
-                ExerciseTypes.PRONOUNCE_FLASHCARD);
-        if (flashcardVertex == null)
-            return null;
+    private ExerciseVertex tryCreatePronounceExercise(
+            GraphTraversalSource traversalSource, 
+            ExerciseSessionVertex sessionVertex,
+            FlashcardVertex flashcardVertex) {
         
-        // Populate active content with flashcard and related content
-        populateActiveContent(traversalSource, sessionVertex, flashcardVertex);
-
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
@@ -203,48 +294,5 @@ public class FlashcardDeckExerciseManager {
                 ExerciseTypes.PRONOUNCE_FLASHCARD);
         
         return pronounceFlashcardExerciseCreationManager.createExercise(traversalSource, context);
-    }
-    
-    /**
-     * Populates the active content collection for the session with flashcard and related content.
-     * Creates or updates an ExerciseSessionStateVertex of type "activeContentBatch" to store the content.
-     * Uses the crawler to collect the next flashcard's content that hasn't been processed yet.
-     * 
-     * @param traversalSource The graph traversal source
-     * @param sessionVertex The exercise session vertex
-     * @param flashcardVertex The flashcard to collect content for (used for validation)
-     */
-    private void populateActiveContent(
-            GraphTraversalSource traversalSource,
-            ExerciseSessionVertex sessionVertex,
-            FlashcardVertex flashcardVertex) {
-        
-        // Find or create the activeContentBatch state
-        var stateVertices = sessionVertex.getStatesWithType("activeContentBatch");
-        ExerciseSessionStateVertex stateVertex;
-        
-        if (stateVertices.isEmpty()) {
-            // Create new state vertex
-            stateVertex = ExerciseSessionStateVertex.create(traversalSource);
-            stateVertex.setType("activeContentBatch");
-            sessionVertex.addState(stateVertex);
-        } else {
-            // Use existing state vertex
-            stateVertex = stateVertices.get(0);
-        }
-        
-        // Get the flashcard deck
-        var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck == null) {
-            return;
-        }
-        
-        // Collect content for the next flashcard using the crawler
-        var contentList = contentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
-        
-        // Add all collected content to the active content collection
-        for (AbstractVertex content : contentList) {
-            stateVertex.addActiveContent(content);
-        }
     }
 }
