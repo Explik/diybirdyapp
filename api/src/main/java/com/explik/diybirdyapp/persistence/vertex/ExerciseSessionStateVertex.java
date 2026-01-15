@@ -4,6 +4,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
+import java.util.List;
+
 public class ExerciseSessionStateVertex extends AbstractVertex {
     public ExerciseSessionStateVertex(GraphTraversalSource traversalSource, Vertex vertex) {
         super(traversalSource, vertex);
@@ -14,6 +16,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String PROPERTY_TYPE = "type";
 
     public final static String EDGE_CONTENT = "hasContent";
+    public final static String EDGE_ACTIVE_CONTENT = "hasActiveContent";
 
     public String getType() {
         return getPropertyAsString(PROPERTY_TYPE);
@@ -44,6 +47,24 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
 
     public void setContent(ContentVertex contentVertex) {
         addEdgeOneToOne(EDGE_CONTENT, contentVertex);
+    }
+    
+    public List<AbstractVertex> getActiveContent() {
+        return VertexHelper.getOutgoingModels(this, EDGE_ACTIVE_CONTENT, (source, vertex) -> {
+            String label = vertex.label();
+            if (label.equals(PronunciationVertex.LABEL)) {
+                return new PronunciationVertex(source, vertex);
+            }
+            return VertexHelper.createContent(source, vertex);
+        });
+    }
+    
+    public void addActiveContent(AbstractVertex vertex) {
+        addEdgeOneToMany(EDGE_ACTIVE_CONTENT, vertex);
+    }
+    
+    public void clearActiveContent() {
+        removeEdges(EDGE_ACTIVE_CONTENT);
     }
 
     public static ExerciseSessionStateVertex create(GraphTraversalSource traversalSource) {
