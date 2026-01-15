@@ -48,7 +48,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         command.setIncludeReviewExercises(true);
         command.setIncludeMultipleChoiceExercises(true);
         command.setIncludeWritingExercises(true);
-        command.setIncludeListeningExercises(false);
+        command.setIncludeListeningExercises(true);
         command.setIncludePronunciationExercises(true);
         
         var exerciseTypeIds = getInitialExerciseTypes(traversalSource).stream()
