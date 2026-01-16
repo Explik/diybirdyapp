@@ -6,6 +6,7 @@ import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerAudioCommand;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseFeedbackCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.query.GetCorrectExerciseAnswerSpeakModelForExerciseQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
@@ -13,14 +14,19 @@ import com.explik.diybirdyapp.persistence.query.modelFactory.CorrectExerciseAnsw
 import com.explik.diybirdyapp.service.storageService.SpeechToTextService;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component(ExerciseEvaluationTypes.CORRECT_SPEECH_TO_TEXT + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEvaluationManager {
     @Autowired
     CommandHandler<CreateExerciseAnswerAudioCommand> createExerciseAnswerAudioCommandHandler;
+
+    @Autowired
+    CommandHandler<CreateExerciseFeedbackCommand> createExerciseFeedbackCommandHandler;
 
     @Autowired
     SpeechToTextService speechToTextService;
@@ -48,7 +54,9 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
         var transcribedText = speechToTextService.generateTranscription(audioContentUrl, textToSpeechId);
 
         // Save answer
+        var answerId = UUID.randomUUID().toString();
         var command = new CreateExerciseAnswerAudioCommand();
+        command.setId(answerId);
         command.setExerciseId(context.getExerciseId());
         command.setSessionId(context.getSessionId());
         command.setAudioUrl(audioContentUrl);
@@ -63,6 +71,13 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
                 .anyMatch(correctValue -> correctValue.equalsIgnoreCase(transcribedText));
 
         if (!transcribedText.isBlank()) {
+            // Save feedback to graph
+            var feedbackCommand = new CreateExerciseFeedbackCommand();
+            feedbackCommand.setExerciseAnswerId(answerId);
+            feedbackCommand.setType("general");
+            feedbackCommand.setStatus(isCorrect ? "correct" : "incorrect");
+            createExerciseFeedbackCommandHandler.handle(feedbackCommand);
+
             // Generate exercise feedback
             var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isCorrect);
             exerciseFeedback.setMessage("Answer submitted successfully");
@@ -80,6 +95,13 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
             exercise.setInput(exerciseInput);
         }
         else {
+            // Save indecisive feedback to graph
+            var feedbackCommand = new CreateExerciseFeedbackCommand();
+            feedbackCommand.setExerciseAnswerId(answerId);
+            feedbackCommand.setType("general");
+            feedbackCommand.setStatus("indecisive");
+            createExerciseFeedbackCommandHandler.handle(feedbackCommand);
+
             var exerciseFeedback = ExerciseFeedbackHelper.createIndecisiveFeedback();
             exerciseFeedback.setMessage("Could not transcribe audio. Please try again.");
 
