@@ -14,6 +14,7 @@ public class ExerciseFeedbackVertex extends AbstractVertex {
 
     public final String PROPERTY_ID = "id";
     public final String PROPERTY_TYPE = "type";
+    public final String PROPERTY_STATUS = "status";
 
     public String getId() {
         return getPropertyAsString(PROPERTY_ID);
@@ -29,6 +30,14 @@ public class ExerciseFeedbackVertex extends AbstractVertex {
 
     public void setType(String type) {
         setProperty(PROPERTY_TYPE, type);
+    }
+
+    public String getStatus() {
+        return getPropertyAsString(PROPERTY_STATUS);
+    }
+
+    public void setStatus(String status) {
+        setProperty(PROPERTY_STATUS, status);
     }
 
     public ExerciseAnswerVertex getAnswer() {

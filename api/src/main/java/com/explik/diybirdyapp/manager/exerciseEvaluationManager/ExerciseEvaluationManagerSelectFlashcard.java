@@ -4,6 +4,8 @@ import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsDto;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseFeedbackCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.query.GetOptionsForExerciseQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.query.modelFactory.OptionsForExerciseModel;
@@ -12,10 +14,12 @@ import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component(ExerciseEvaluationTypes.CORRECT_OPTIONS + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluationManager {
@@ -24,6 +28,9 @@ public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluat
 
     @Autowired
     private QueryHandler<GetOptionsForExerciseQuery, OptionsForExerciseModel> getOptionsForExerciseQueryHandler;
+
+    @Autowired
+    private CommandHandler<CreateExerciseFeedbackCommand> createExerciseFeedbackCommandHandler;
 
     @Override
     public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
@@ -46,10 +53,20 @@ public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluat
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answerModel.getSessionId());
         var selectedOptionVertex = ContentVertex.getById(traversalSource, selectedOptionId);
 
+        var answerId = UUID.randomUUID().toString();
         var exerciseAnswerVertex = ExerciseAnswerVertex.create(traversalSource);
+        exerciseAnswerVertex.setId(answerId);
         exerciseAnswerVertex.setExercise(exerciseVertex);
         exerciseAnswerVertex.setSession(sessionVertex);
         exerciseAnswerVertex.setContent(selectedOptionVertex);
+
+        // Save feedback to graph
+        var isCorrect = selectedOptionId.equals(options.getCorrectOptionId());
+        var feedbackCommand = new CreateExerciseFeedbackCommand();
+        feedbackCommand.setExerciseAnswerId(answerId);
+        feedbackCommand.setType("general");
+        feedbackCommand.setStatus(isCorrect ? "correct" : "incorrect");
+        createExerciseFeedbackCommandHandler.handle(feedbackCommand);
 
         // Generate feedback
         return createExerciseWithFeedback(options, answerModel, context);
