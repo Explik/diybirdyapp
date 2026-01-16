@@ -14,6 +14,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Random;
 import java.util.UUID;
 
 @Component(ExerciseSessionTypes.SELECT_FLASHCARD_DECK + ComponentTypes.OPERATIONS)
@@ -38,6 +39,7 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         command.setFlashcardDeckId(options.getFlashcardDeckId());
         command.setTextToSpeechEnabled(false);
         command.setInitiallyHideOptions(false);
+        command.setShuffleFlashcards(false);
         
         createSelectFlashcardSessionCommandHandler.handle(command);
 
@@ -66,9 +68,28 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
     }
 
     private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        // Finds first flashcard (in deck) not connected to review exercise (in session)
-        // TODO Add support for non-text flashcards
-        var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
+        // Check if shuffle is enabled
+        var options = sessionVertex.getOptions();
+        boolean shuffleFlashcards = options != null && options.getShuffleFlashcards();
+        
+        FlashcardVertex flashcardVertex;
+        
+        if (shuffleFlashcards) {
+            // Get all non-exercised flashcards and pick randomly
+            var nonExercisedFlashcards = FlashcardVertex.findNonExercised(
+                    traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
+            
+            if (!nonExercisedFlashcards.isEmpty()) {
+                Random random = new Random();
+                flashcardVertex = nonExercisedFlashcards.get(random.nextInt(nonExercisedFlashcards.size()));
+            } else {
+                flashcardVertex = null;
+            }
+        } else {
+            // Get first flashcard in order
+            flashcardVertex = FlashcardVertex.findFirstNonExercised(
+                    traversalSource, sessionVertex.getId(), ExerciseTypes.SELECT_FLASHCARD);
+        }
 
         if (flashcardVertex != null) {
             var context = ExerciseCreationContext.createForFlashcard(
