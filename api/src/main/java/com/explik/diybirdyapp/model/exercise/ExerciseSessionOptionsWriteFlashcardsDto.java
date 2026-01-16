@@ -6,6 +6,7 @@ public class ExerciseSessionOptionsWriteFlashcardsDto extends ExerciseSessionOpt
     private String answerLanguageId;
     private ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguages = new ExerciseSessionOptionsLanguageOptionDto[0];
     private boolean retypeCorrectAnswerEnabled;
+    private boolean shuffleFlashcardsEnabled;
 
     public ExerciseSessionOptionsWriteFlashcardsDto() {
         super(ExerciseSessionTypes.WRITE_FLASHCARD);
@@ -33,5 +34,13 @@ public class ExerciseSessionOptionsWriteFlashcardsDto extends ExerciseSessionOpt
 
     public void setAvailableAnswerLanguages(ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguageIds) {
         this.availableAnswerLanguages = availableAnswerLanguageIds;
+    }
+
+    public boolean getShuffleFlashcardsEnabled() {
+        return shuffleFlashcardsEnabled;
+    }
+
+    public void setShuffleFlashcardsEnabled(boolean shuffleFlashcardsEnabled) {
+        this.shuffleFlashcardsEnabled = shuffleFlashcardsEnabled;
     }
 }

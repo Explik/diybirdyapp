@@ -6,6 +6,7 @@ public class ExerciseSessionOptionsSelectFlashcardsDto extends ExerciseSessionOp
     private boolean initiallyHideOptions;
     private String initialFlashcardLanguageId;
     private ExerciseSessionOptionsLanguageOptionDto[] availableFlashcardLanguages = new ExerciseSessionOptionsLanguageOptionDto[0];
+    private boolean shuffleFlashcardsEnabled;
 
     public ExerciseSessionOptionsSelectFlashcardsDto() {
         super(ExerciseSessionTypes.SELECT_FLASHCARD_DECK);
@@ -33,5 +34,13 @@ public class ExerciseSessionOptionsSelectFlashcardsDto extends ExerciseSessionOp
 
     public void setAvailableFlashcardLanguages(ExerciseSessionOptionsLanguageOptionDto[] availableFlashcardLanguageIds) {
         this.availableFlashcardLanguages = availableFlashcardLanguageIds;
+    }
+
+    public boolean getShuffleFlashcardsEnabled() {
+        return shuffleFlashcardsEnabled;
+    }
+
+    public void setShuffleFlashcardsEnabled(boolean shuffleFlashcardsEnabled) {
+        this.shuffleFlashcardsEnabled = shuffleFlashcardsEnabled;
     }
 }

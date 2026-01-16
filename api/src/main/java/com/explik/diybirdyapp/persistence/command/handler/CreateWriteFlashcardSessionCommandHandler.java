@@ -46,6 +46,10 @@ public class CreateWriteFlashcardSessionCommandHandler implements CommandHandler
         optionVertex.setRetypeCorrectAnswer(command.getRetypeCorrectAnswer() != null ? 
                 command.getRetypeCorrectAnswer() : false);
 
+        // Set shuffle flashcards
+        optionVertex.setShuffleFlashcards(command.getShuffleFlashcards() != null ? 
+                command.getShuffleFlashcards() : false);
+
         // Link options to session
         sessionVertex.setOptions(optionVertex);
     }

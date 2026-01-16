@@ -6,6 +6,7 @@ public class CreateSelectFlashcardSessionCommand implements AtomicCommand {
     private Boolean textToSpeechEnabled;
     private String initialFlashcardLanguageId;
     private Boolean initiallyHideOptions;
+    private Boolean shuffleFlashcards;
 
     public String getId() {
         return id;
@@ -45,5 +46,13 @@ public class CreateSelectFlashcardSessionCommand implements AtomicCommand {
 
     public void setInitiallyHideOptions(Boolean initiallyHideOptions) {
         this.initiallyHideOptions = initiallyHideOptions;
+    }
+
+    public Boolean getShuffleFlashcards() {
+        return shuffleFlashcards;
+    }
+
+    public void setShuffleFlashcards(Boolean shuffleFlashcards) {
+        this.shuffleFlashcards = shuffleFlashcards;
     }
 }

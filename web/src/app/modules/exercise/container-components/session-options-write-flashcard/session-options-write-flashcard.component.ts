@@ -30,6 +30,7 @@ export class SessionOptionsWriteFlashcardComponent implements OnInit, OnChanges,
     this.form = this.fb.group({
       answerLanguageId: [''],
       retypeCorrectAnswerEnabled: [false],
+      shuffleFlashcardsEnabled: [false],
       textToSpeechEnabled: [false]
     });
     this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
@@ -59,6 +60,7 @@ export class SessionOptionsWriteFlashcardComponent implements OnInit, OnChanges,
     this.form.patchValue({
       answerLanguageId: options.answerLanguageId || '',
       retypeCorrectAnswerEnabled: options.retypeCorrectAnswerEnabled || false,
+      shuffleFlashcardsEnabled: options.shuffleFlashcardsEnabled || false,
       textToSpeechEnabled: options.textToSpeechEnabled || false
     }, { emitEvent: false });
   }
@@ -68,6 +70,7 @@ export class SessionOptionsWriteFlashcardComponent implements OnInit, OnChanges,
       type: this.options?.type,
       answerLanguageId: this.form.get('answerLanguageId')?.value || '',
       retypeCorrectAnswerEnabled: !!this.form.get('retypeCorrectAnswerEnabled')?.value,
+      shuffleFlashcardsEnabled: !!this.form.get('shuffleFlashcardsEnabled')?.value,
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsWriteFlashcardsDto;
   }

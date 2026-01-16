@@ -15,5 +15,6 @@ export interface ExerciseSessionOptionsWriteFlashcardsDto extends ExerciseSessio
     answerLanguageId?: string;
     availableAnswerLanguages?: Array<ExerciseSessionOptionsLanguageOptionDto>;
     retypeCorrectAnswerEnabled?: boolean;
+    shuffleFlashcardsEnabled?: boolean;
 }
 

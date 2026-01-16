@@ -34,6 +34,7 @@ export class SessionOptionsSelectFlashcardComponent implements OnInit, OnChanges
     this.form = this.fb.group({
       initialFlashcardLanguageId: [''],
       initiallyHideOptions: [false],
+      shuffleFlashcardsEnabled: [false],
       textToSpeechEnabled: [false]
     });
     this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
@@ -63,6 +64,7 @@ export class SessionOptionsSelectFlashcardComponent implements OnInit, OnChanges
     this.form.patchValue({
       initialFlashcardLanguageId: options.initialFlashcardLanguageId || '',
       initiallyHideOptions: options.initiallyHideOptions || false,
+      shuffleFlashcardsEnabled: options.shuffleFlashcardsEnabled || false,
       textToSpeechEnabled: options.textToSpeechEnabled || false
     }, { emitEvent: false });
   }
@@ -72,6 +74,7 @@ export class SessionOptionsSelectFlashcardComponent implements OnInit, OnChanges
       type: this.options?.type,
       initialFlashcardLanguageId: this.form.get('initialFlashcardLanguageId')?.value || '',
       initiallyHideOptions: !!this.form.get('initiallyHideOptions')?.value,
+      shuffleFlashcardsEnabled: !!this.form.get('shuffleFlashcardsEnabled')?.value,
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsSelectFlashcardsDto;
   }

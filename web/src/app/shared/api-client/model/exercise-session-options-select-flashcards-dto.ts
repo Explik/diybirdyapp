@@ -15,5 +15,6 @@ export interface ExerciseSessionOptionsSelectFlashcardsDto extends ExerciseSessi
     initiallyHideOptions?: boolean;
     initialFlashcardLanguageId?: string;
     availableFlashcardLanguages?: Array<ExerciseSessionOptionsLanguageOptionDto>;
+    shuffleFlashcardsEnabled?: boolean;
 }
 
