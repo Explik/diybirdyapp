@@ -13,6 +13,7 @@ public class CreateLearnFlashcardSessionCommand implements AtomicCommand {
     private Boolean includeWritingExercises;
     private Boolean includeListeningExercises;
     private Boolean includePronunciationExercises;
+    private Boolean shuffleFlashcards;
     private List<String> exerciseTypeIds;
 
     public String getId() {
@@ -93,6 +94,14 @@ public class CreateLearnFlashcardSessionCommand implements AtomicCommand {
 
     public void setIncludePronunciationExercises(Boolean includePronunciationExercises) {
         this.includePronunciationExercises = includePronunciationExercises;
+    }
+
+    public Boolean getShuffleFlashcards() {
+        return shuffleFlashcards;
+    }
+
+    public void setShuffleFlashcards(Boolean shuffleFlashcards) {
+        this.shuffleFlashcards = shuffleFlashcards;
     }
 
     public List<String> getExerciseTypeIds() {

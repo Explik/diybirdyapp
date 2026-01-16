@@ -22,6 +22,7 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_INCLUDE_LISTENING_EXERCISES = "includeListeningExercises";
     public final static String PROPERTY_INCLUDE_PRONUNCIATION_EXERCISES = "includePronunciationExercises";
     public final static String PROPERTY_RETYPE_CORRECT_ANSWER = "retypeCorrectAnswer";
+    public final static String PROPERTY_SHUFFLE_FLASHCARDS = "shuffleFlashcards";
     public final static String PROPERTY_ALGORITHM = "algorithm";
     public final static String PROPERTY_INITIALLY_HIDE_OPTIONS = "initiallyHideOptions";
 
@@ -127,6 +128,14 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setInitiallyHideOptions(boolean initiallyHideOptions) {
         setProperty(PROPERTY_INITIALLY_HIDE_OPTIONS, initiallyHideOptions);
+    }
+
+    public boolean getShuffleFlashcards() {
+        return getProperty(PROPERTY_SHUFFLE_FLASHCARDS, false);
+    }
+
+    public void setShuffleFlashcards(boolean shuffleFlashcards) {
+        setProperty(PROPERTY_SHUFFLE_FLASHCARDS, shuffleFlashcards);
     }
 
     public List<LanguageVertex> getAnswerLanguages() {

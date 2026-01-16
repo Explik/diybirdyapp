@@ -59,6 +59,10 @@ public class CreateLearnFlashcardSessionCommandHandler implements CommandHandler
         optionVertex.setIncludePronunciationExercises(command.getIncludePronunciationExercises() != null ? 
                 command.getIncludePronunciationExercises() : true);
 
+        // Set shuffle flashcards
+        optionVertex.setShuffleFlashcards(command.getShuffleFlashcards() != null ? 
+                command.getShuffleFlashcards() : false);
+
         // Add exercise types
         if (command.getExerciseTypeIds() != null && !command.getExerciseTypeIds().isEmpty()) {
             for (String exerciseTypeId : command.getExerciseTypeIds()) {

@@ -13,6 +13,7 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
     private boolean includePronunciationExercises;
 
     private boolean retypeCorrectAnswerEnabled;
+    private boolean shuffleFlashcardsEnabled;
 
     public ExerciseSessionOptionsLearnFlashcardsDto() {
         super(ExerciseSessionTypes.LEARN_FLASHCARD);
@@ -80,6 +81,14 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
 
     public void setRetypeCorrectAnswerEnabled(boolean retypeCorrectAnswerEnabled) {
         this.retypeCorrectAnswerEnabled = retypeCorrectAnswerEnabled;
+    }
+
+    public boolean getShuffleFlashcardsEnabled() {
+        return shuffleFlashcardsEnabled;
+    }
+
+    public void setShuffleFlashcardsEnabled(boolean shuffleFlashcardsEnabled) {
+        this.shuffleFlashcardsEnabled = shuffleFlashcardsEnabled;
     }
 
     public record ExerciseTypeOption(String id, String name) { }
