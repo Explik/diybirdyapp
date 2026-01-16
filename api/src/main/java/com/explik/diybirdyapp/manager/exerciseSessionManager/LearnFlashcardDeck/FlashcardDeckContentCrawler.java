@@ -4,10 +4,7 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Content Crawler - Retrieves a subset of currently relevant flashcards to use in next exercise batch.
@@ -42,6 +39,10 @@ public class FlashcardDeckContentCrawler {
      * Returns one flashcard and all its content and associated content per call.
      * Each vertex is returned only once - if it already exists in activeContent, it won't be returned again.
      * 
+     * The order of flashcards is determined by the shuffleFlashcards setting:
+     * - If shuffleFlashcards is false (default): flashcards are returned in the order they appear in the deck
+     * - If shuffleFlashcards is true: flashcards are returned in random order
+     * 
      * @param flashcardDeck The flashcard deck to crawl
      * @param sessionState The session state containing activeContent to check for duplicates
      * @return List of AbstractVertex including one flashcard, its content, and associated content (Pronunciation)
@@ -62,13 +63,35 @@ public class FlashcardDeckContentCrawler {
             }
         }
         
+        // Get the session to check shuffle setting
+        ExerciseSessionVertex session = sessionState.getSession();
+        ExerciseSessionOptionsVertex options = session.getOptions();
+        boolean shuffleFlashcards = options != null && options.getShuffleFlashcards();
+        
+        // Get flashcards in appropriate order
+        List<FlashcardVertex> flashcards = new ArrayList<>(flashcardDeck.getFlashcards());
+        
         // Find first flashcard not yet in activeContent
         FlashcardVertex targetFlashcard = null;
         
-        for (FlashcardVertex flashcard : flashcardDeck.getFlashcards()) {
-            if (!activeVertexIds.contains(flashcard.getId())) {
-                targetFlashcard = flashcard;
-                break;
+        if (shuffleFlashcards) {
+            // Shuffle mode: filter out already processed flashcards, then pick randomly
+            List<FlashcardVertex> unprocessedFlashcards = flashcards.stream()
+                    .filter(f -> !activeVertexIds.contains(f.getId()))
+                    .toList();
+            
+            if (!unprocessedFlashcards.isEmpty()) {
+                // Pick a random flashcard from unprocessed ones
+                Random random = new Random();
+                targetFlashcard = unprocessedFlashcards.get(random.nextInt(unprocessedFlashcards.size()));
+            }
+        } else {
+            // Sequential mode: take flashcards in order
+            for (FlashcardVertex flashcard : flashcards) {
+                if (!activeVertexIds.contains(flashcard.getId())) {
+                    targetFlashcard = flashcard;
+                    break;
+                }
             }
         }
         

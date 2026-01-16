@@ -51,6 +51,10 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
         addEdgeOneToOne(EDGE_CONTENT, contentVertex);
     }
     
+    public ExerciseSessionVertex getSession() {
+        return VertexHelper.getIngoingModel(this, ExerciseSessionVertex.EDGE_STATE, ExerciseSessionVertex::new);
+    }
+    
     public List<AbstractVertex> getActiveContent() {
         return VertexHelper.getOrderedOutgoingModels(this, EDGE_ACTIVE_CONTENT, EDGE_ACTIVE_CONTENT_ORDER, (source, vertex) -> {
             String label = vertex.label();

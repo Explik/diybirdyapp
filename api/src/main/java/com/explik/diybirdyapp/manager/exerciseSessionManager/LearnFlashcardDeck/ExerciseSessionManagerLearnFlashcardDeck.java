@@ -50,6 +50,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         command.setIncludeWritingExercises(true);
         command.setIncludeListeningExercises(true);
         command.setIncludePronunciationExercises(true);
+        command.setShuffleFlashcards(false);
         
         var exerciseTypeIds = getInitialExerciseTypes(traversalSource).stream()
                 .map(ExerciseTypeVertex::getId)

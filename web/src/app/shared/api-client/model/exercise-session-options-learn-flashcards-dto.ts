@@ -19,6 +19,7 @@ export interface ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessio
     includeListeningExercises?: boolean;
     includePronunciationExercises?: boolean;
     retypeCorrectAnswerEnabled?: boolean;
+    shuffleFlashcardsEnabled?: boolean;
     availableAnswerLanguages?: Array<ExerciseSessionOptionsLanguageOptionDto>;
 }
 

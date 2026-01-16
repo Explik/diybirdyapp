@@ -33,6 +33,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         model.setAvailableAnswerLanguages(getFlashcardLanguages(optionsVertex));
         model.setAnswerLanguageIds(getAnswerLanguageIds(optionsVertex));
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
+        model.setShuffleFlashcardsEnabled(optionsVertex.getShuffleFlashcards());
 
         model.setIncludeReviewExercises(optionsVertex.getIncludeReviewExercises());
         model.setIncludeMultipleChoiceExercises(optionsVertex.getIncludeMultipleChoiceExercises());

@@ -34,6 +34,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       includeListeningExercises: [false],
       includePronunciationExercises: [false],
       retypeCorrectAnswerEnabled: [false],
+      shuffleFlashcardsEnabled: [false],
       textToSpeechEnabled: [false]
     }, { validators: this.atLeastOneExerciseTypeValidator });
     this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
@@ -83,6 +84,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       includeListeningExercises: options.includeListeningExercises || false,
       includePronunciationExercises: options.includePronunciationExercises || false,
       retypeCorrectAnswerEnabled: options.retypeCorrectAnswerEnabled || false,
+      shuffleFlashcardsEnabled: options.shuffleFlashcardsEnabled || false,
       textToSpeechEnabled: options.textToSpeechEnabled || false
     }, { emitEvent: false });
   }
@@ -103,6 +105,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       includeListeningExercises: !!this.form.get('includeListeningExercises')?.value,
       includePronunciationExercises: !!this.form.get('includePronunciationExercises')?.value,
       retypeCorrectAnswerEnabled: !!this.form.get('retypeCorrectAnswerEnabled')?.value,
+      shuffleFlashcardsEnabled: !!this.form.get('shuffleFlashcardsEnabled')?.value,
       textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
     } as ExerciseSessionOptionsLearnFlashcardsDto;
   }
