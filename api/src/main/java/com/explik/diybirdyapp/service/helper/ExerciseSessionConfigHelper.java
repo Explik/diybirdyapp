@@ -78,6 +78,7 @@ public class ExerciseSessionConfigHelper {
         }
 
         vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
+        vertex.setShuffleFlashcards(model.getShuffleFlashcardsEnabled());
 
         // Update inclusion flags and exercise types
         vertex.setIncludeReviewExercises(model.getIncludeReviewExercises());
