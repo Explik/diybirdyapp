@@ -2,7 +2,6 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.Test;

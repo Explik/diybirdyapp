@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectReviewOptionsDto;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerRecognizabilityRatingCommand;
 import com.explik.diybirdyapp.persistence.command.CreateOrUpdateSuperMemo2StateCommand;
@@ -20,7 +21,7 @@ public class ExerciseEvaluationManagerReviewFlashcard implements ExerciseEvaluat
     CommandHandler<CreateOrUpdateSuperMemo2StateCommand> createOrUpdateSuperMemo2StateCommandHandler;
 
     @Override
-    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
         if (!(context.getInput() instanceof ExerciseInputSelectReviewOptionsDto input))

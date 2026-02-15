@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsDto;
 import com.explik.diybirdyapp.persistence.query.GetOptionsForExerciseQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
@@ -26,7 +27,7 @@ public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluat
     private QueryHandler<GetOptionsForExerciseQuery, OptionsForExerciseModel> getOptionsForExerciseQueryHandler;
 
     @Override
-    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
         if (!(context.getInput() instanceof ExerciseInputSelectOptionsDto answerModel))
@@ -55,7 +56,7 @@ public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluat
         return createExerciseWithFeedback(options, answerModel, context);
     }
 
-    private static ExerciseDto createExerciseWithFeedback(OptionsForExerciseModel options, ExerciseInputSelectOptionsDto answerModel, ExerciseEvaluationContext context) {
+    private static ExerciseDto createExerciseWithFeedback(OptionsForExerciseModel options, ExerciseInputSelectOptionsDto answerModel, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
         var correctOptionId = options.getCorrectOptionId();
         var incorrectOptionIds = options.getIncorrectOptionIds();
         var isCorrect = answerModel.getValue().equals(correctOptionId);

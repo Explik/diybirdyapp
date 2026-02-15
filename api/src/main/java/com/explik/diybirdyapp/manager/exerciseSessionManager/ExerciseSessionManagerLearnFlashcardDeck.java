@@ -6,7 +6,6 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
 import com.explik.diybirdyapp.model.internal.VoiceModel;
-import com.explik.diybirdyapp.persistence.command.CreateAudioContentVertexCommand;
 import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.CreatePronunciationVertexCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
@@ -29,9 +28,6 @@ import java.util.stream.Collectors;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSessionManager {
-    @Autowired
-    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
-
     @Autowired
     private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandHandler;
 
@@ -103,7 +99,6 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
     // TODO Use flashcard side specified from session options
     private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        FlashcardVertex flashcardVertex;
         var exerciseTypes = sessionVertex.getOptions().getExerciseTypes().stream()
                 .map(ExerciseTypeVertex::getId)
                 .toList();
@@ -244,6 +239,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         return ExerciseVertex.getById(traversalSource, exerciseId);
     }
 
+    @SuppressWarnings("unused")
     private ExerciseVertex tryGenerateWriteExercise(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);
         if (flashcardVertex == null)

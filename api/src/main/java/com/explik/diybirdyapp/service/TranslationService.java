@@ -4,7 +4,6 @@ import com.explik.diybirdyapp.model.admin.GoogleTranslationConfigModel;
 import com.explik.diybirdyapp.model.admin.TranslationRequestDto;
 import com.explik.diybirdyapp.model.admin.TranslationResponseDto;
 import com.explik.diybirdyapp.persistence.query.GetGoogleTranslateLanguageCodeQuery;
-import com.explik.diybirdyapp.persistence.query.handler.GetGoogleTranslateLanguageCodeQueryHandler;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.Translation;

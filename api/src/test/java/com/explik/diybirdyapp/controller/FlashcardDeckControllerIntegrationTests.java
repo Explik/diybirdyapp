@@ -2,14 +2,11 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.IntegrationTestConfigurations;
 import com.explik.diybirdyapp.TestDataService;
-import com.explik.diybirdyapp.model.content.FlashcardDeckDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class FlashcardDeckControllerIntegrationTests {

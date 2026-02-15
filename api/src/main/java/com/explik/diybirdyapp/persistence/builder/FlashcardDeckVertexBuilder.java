@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.persistence.builder;
 
 import com.explik.diybirdyapp.persistence.command.CreateFlashcardDeckVertexCommand;
-import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardDeckVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
@@ -13,7 +12,10 @@ import java.util.UUID;
 public class FlashcardDeckVertexBuilder extends VertexBuilderBase<FlashcardDeckVertex> {
     private String id;
     private String name;
+
+    @SuppressWarnings("unused")
     private String description;
+    
     private LanguageVertex defaultFrontLanguage;
     private LanguageVertex defaultBackLanguage;
     private List<FlashcardVertex> flashcardVertices = new ArrayList<>();
@@ -84,6 +86,7 @@ public class FlashcardDeckVertexBuilder extends VertexBuilderBase<FlashcardDeckV
         var createCommand = new CreateFlashcardDeckVertexCommand();
         createCommand.setId(id);
         createCommand.setName(name);
+        // TODO map desciption
         var flashcardIds = vertices.stream().map(v -> v.getId()).toList();
         createCommand.setFlashcards(flashcardIds);
         this.factories.createFlashcardDeckVertexCommandHandler.handle(createCommand);

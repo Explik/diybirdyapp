@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputWriteTextDto;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerTextCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
@@ -10,7 +11,6 @@ import com.explik.diybirdyapp.persistence.query.GetCorrectTextValuesForExerciseQ
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.query.modelFactory.CorrectTextValuesForExerciseModel;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,16 +19,13 @@ import java.util.List;
 @Component(ExerciseEvaluationTypes.CORRECT_TEXT + ComponentTypes.STRATEGY)
 public class ExerciseEvaluationManagerWriteFlashcard implements ExerciseEvaluationManager {
     @Autowired
-    private GraphTraversalSource traversalSource;
-
-    @Autowired
     private CommandHandler<CreateExerciseAnswerTextCommand> createExerciseAnswerTextCommandHandler;
 
     @Autowired
     private QueryHandler<GetCorrectTextValuesForExerciseQuery, CorrectTextValuesForExerciseModel> getCorrectTextValuesForExerciseQueryHandler;
 
     @Override
-    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
         if (!(context.getInput() instanceof ExerciseInputWriteTextDto input))
@@ -52,7 +49,7 @@ public class ExerciseEvaluationManagerWriteFlashcard implements ExerciseEvaluati
         return createExerciseWithFeedback(correctTextValuesModel, input, context);
     }
 
-    private static ExerciseDto createExerciseWithFeedback(CorrectTextValuesForExerciseModel correctTextValuesModel, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext context) {
+    private static ExerciseDto createExerciseWithFeedback(CorrectTextValuesForExerciseModel correctTextValuesModel, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
         // Compare correct options and answer (CASE INSENSITIVE)
         var correctOptionValues = correctTextValuesModel.getCorrectTextValues();
         var isAnswerCorrect = correctOptionValues.stream().anyMatch(v -> v.equalsIgnoreCase(answerModel.getText()));

@@ -3,8 +3,6 @@ package com.explik.diybirdyapp.manager.configurationManager;
 import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.model.admin.ConfigurationGoogleSpeechToTextDto;
 import com.explik.diybirdyapp.model.admin.ConfigurationOptionsDto;
-import com.google.cloud.speech.v1.SpeechClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -18,9 +16,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class GoogleSpeechToTextConfigurationManager implements ConfigurationManager {
-    
-    @Autowired
-    private SpeechClient speechClient;
     
     @Override
     public ConfigurationOptionsDto getAvailableOptions(ConfigurationOptionsDto request) {
@@ -83,7 +78,6 @@ public class GoogleSpeechToTextConfigurationManager implements ConfigurationMana
     }
     
     private ConfigurationOptionsDto getFinalConfiguration(List<String> selectedOptions) {
-        String configType = selectedOptions.get(0);
         String languageCode = selectedOptions.get(1);
         
         // Create the final configuration object

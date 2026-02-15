@@ -48,7 +48,7 @@ public class ExerciseController {
 
     @PostMapping("/exercise/{id}/answer")
     public ExerciseDto submitAnswer(@PathVariable String id, @Valid @RequestBody ExerciseInputDto dto) {
-        var model = new ExerciseAnswerModel();
+        var model = new ExerciseAnswerModel<>();
         model.setExerciseId(id);
         model.setSessionId(dto.getSessionId());
 

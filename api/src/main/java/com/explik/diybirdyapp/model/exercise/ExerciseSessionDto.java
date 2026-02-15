@@ -16,6 +16,7 @@ public class ExerciseSessionDto {
 
     private ExerciseSessionProgressDto progress;
 
+    @SuppressWarnings("unused")
     private ExerciseSessionOptionsDto options;
 
     public String getId() {

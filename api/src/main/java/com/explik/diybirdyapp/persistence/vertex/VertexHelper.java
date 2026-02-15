@@ -5,7 +5,6 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class VertexHelper {
     public static ContentVertex createContent(GraphTraversalSource traversalSource, Vertex vertex) {

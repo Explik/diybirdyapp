@@ -66,6 +66,7 @@ public class ImportFlashcardDeckCommand implements Runnable {
             flashcardDeck.setId(UUID.randomUUID().toString());
     }
 
+    @SuppressWarnings("unused")
     private void populateFlashcards(FlashcardDeckDto flashcardDeck, FlashcardDto[] flashcards) {
         var languages = languageService.getAll();
 
@@ -84,6 +85,7 @@ public class ImportFlashcardDeckCommand implements Runnable {
         }
     }
 
+    @SuppressWarnings("unused")
     private static FlashcardLanguageDto matchLanguage(List<FlashcardLanguageDto> languages, FlashcardLanguageDto partialLanguage) {
         if (partialLanguage.getId() != null) {
             return languages.stream()

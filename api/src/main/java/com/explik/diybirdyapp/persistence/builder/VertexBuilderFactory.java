@@ -8,13 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class VertexBuilderFactory {
     @Autowired
-    private CommandHandler<CreateAudioContentVertexCommand> createAudioContentVertexCommandHandler;
-
-    @Autowired
     private CommandHandler<CreateTextContentVertexCommand> createTextContentVertexCommandHandler;
-
-    @Autowired
-    private CommandHandler<CreatePronunciationVertexCommand> createPronunciationVertexCommandCommandHandler;
 
     @Autowired
     private CommandHandler<CreateFlashcardVertexCommand> createFlashcardVertexCommandHandler;

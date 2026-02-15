@@ -34,6 +34,7 @@ public class ExerciseAnswerModel<T extends ExerciseInputDto> {
         this.answer = answer;
     }
 
+    @SuppressWarnings("unchecked")
     public <TP> TP getProperty(String key) {
         return (TP)properties.get(key);
     }

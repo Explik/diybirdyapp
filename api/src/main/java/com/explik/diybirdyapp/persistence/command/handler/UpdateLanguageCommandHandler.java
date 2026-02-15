@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.model.content.FlashcardLanguageDto;
 import com.explik.diybirdyapp.persistence.command.UpdateLanguageCommand;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -28,13 +27,5 @@ public class UpdateLanguageCommandHandler implements CommandHandler<UpdateLangua
         
         // Store result ID for query
         command.setResultId(vertex.getId());
-    }
-
-    private FlashcardLanguageDto createModel(LanguageVertex vertex) {
-        var model = new FlashcardLanguageDto();
-        model.setId(vertex.getId());
-        model.setName(vertex.getName());
-        model.setIsoCode(vertex.getIsoCode());
-        return model;
     }
 }

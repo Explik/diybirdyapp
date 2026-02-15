@@ -4,7 +4,6 @@ import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
 import com.explik.diybirdyapp.model.internal.VoiceModel;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContext;
-import com.explik.diybirdyapp.persistence.query.GetTextContentByIdQuery;
 import com.explik.diybirdyapp.persistence.query.GetVoiceByLanguageIdQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.*;

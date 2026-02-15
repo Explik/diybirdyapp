@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.model.content.FlashcardDto;
-import com.explik.diybirdyapp.controller.mapper.GenericMapper;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import com.explik.diybirdyapp.service.FlashcardService;

@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.service.helper;
 
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.manager.exerciseEvaluationManager.ExerciseEvaluationContext;
 import com.explik.diybirdyapp.manager.exerciseEvaluationManager.ExerciseEvaluationManager;
@@ -28,7 +29,7 @@ public class ExerciseEvaluationHelper {
      * @param answer The answer model containing the user's input
      * @return The evaluated exercise DTO with feedback
      */
-    public ExerciseDto evaluateAnswer(ExerciseAnswerModel answer) {
+    public ExerciseDto evaluateAnswer(ExerciseAnswerModel<? extends ExerciseInputDto> answer) {
         assert answer != null;
         assert answer.getExerciseId() != null;
 
@@ -40,7 +41,7 @@ public class ExerciseEvaluationHelper {
         return strategy.evaluate(exerciseVertex, strategyContext);
     }
 
-    private ExerciseEvaluationContext getEvaluationContext(ExerciseAnswerModel answer) {
+    private ExerciseEvaluationContext<? extends ExerciseInputDto> getEvaluationContext(ExerciseAnswerModel<? extends ExerciseInputDto> answer) {
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, answer.getSessionId());
         var sessionOptionsVertex = (sessionVertex != null) ? sessionVertex.getOptions() : null;
 

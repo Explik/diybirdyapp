@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.eventConsumer;
 import com.explik.diybirdyapp.event.FlashcardAddedEvent;
 import com.explik.diybirdyapp.event.FlashcardUpdatedEvent;
 import com.explik.diybirdyapp.persistence.command.ExtractWordsFromFlashcardCommand;
-import com.explik.diybirdyapp.persistence.command.GenerateAudioForFlashcardCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

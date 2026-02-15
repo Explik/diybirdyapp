@@ -4,7 +4,6 @@ import com.explik.diybirdyapp.model.content.AudioFileModel;
 import com.explik.diybirdyapp.persistence.query.GetAudioForTextContentQuery;
 import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
 import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
-import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

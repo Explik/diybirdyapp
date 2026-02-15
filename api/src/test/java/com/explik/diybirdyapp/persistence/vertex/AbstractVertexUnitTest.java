@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -206,8 +204,8 @@ public class AbstractVertexUnitTest {
         Vertex graphVertex2 = traversalSource.addV("label").next();
         Vertex graphVertex3 = traversalSource.addV("label").next();
 
-        Edge graphEdge1 = graphVertex1.addEdge("edge", graphVertex2);
-        Edge graphEdge2 = graphVertex1.addEdge("edge", graphVertex3);
+        graphVertex1.addEdge("edge", graphVertex2);
+        graphVertex1.addEdge("edge", graphVertex3);
 
         TestVertex vertex1 = new TestVertex(traversalSource, graphVertex1);
         TestVertex vertex2 = new TestVertex(traversalSource, graphVertex2);
@@ -226,8 +224,8 @@ public class AbstractVertexUnitTest {
         Vertex graphVertex2 = traversalSource.addV("label").next();
         Vertex graphVertex3 = traversalSource.addV("label").next();
 
-        Edge graphEdge1 = graphVertex1.addEdge("edge", graphVertex2);
-        Edge graphEdge2 = graphVertex1.addEdge("edge", graphVertex3);
+        graphVertex1.addEdge("edge", graphVertex2);
+        graphVertex1.addEdge("edge", graphVertex3);
 
         TestVertex vertex1 = new TestVertex(traversalSource, graphVertex1);
         TestVertex vertex2 = new TestVertex(traversalSource, graphVertex2);

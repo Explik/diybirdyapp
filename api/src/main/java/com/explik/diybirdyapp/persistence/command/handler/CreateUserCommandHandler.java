@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.persistence.command.handler;
 import com.explik.diybirdyapp.exception.RoleNotFoundException;
 import com.explik.diybirdyapp.exception.UserAlreadyExistsException;
 import com.explik.diybirdyapp.persistence.command.CreateUserCommand;
-import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.vertex.UserRoleVertex;
 import com.explik.diybirdyapp.persistence.vertex.UserVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

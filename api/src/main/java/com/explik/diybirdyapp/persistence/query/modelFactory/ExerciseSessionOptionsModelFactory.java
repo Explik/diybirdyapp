@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.persistence.query.modelFactory;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.springframework.stereotype.Component;
 
@@ -100,15 +99,5 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
                 dto.setIsoCode(languageVertex.getIsoCode());
                 return dto;
         }).toArray(ExerciseSessionOptionsLanguageOptionDto[]::new);
-    }
-
-    private String[] getExerciseTypeIds(ExerciseSessionOptionsVertex optionsVertex) {
-        assert optionsVertex.getType().equals(ExerciseSessionTypes.LEARN_FLASHCARD);
-
-        return optionsVertex
-                .getExerciseTypes()
-                .stream()
-                .map(ExerciseTypeVertex::getId)
-                .toArray(String[]::new);
     }
 }

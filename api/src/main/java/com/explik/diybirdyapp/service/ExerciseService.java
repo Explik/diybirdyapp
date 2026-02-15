@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
 import com.explik.diybirdyapp.persistence.query.GetAllExercisesQuery;
@@ -37,7 +38,7 @@ public class ExerciseService {
         return getExerciseByIdsQueryHandler.handle(query);
     }
 
-    public ExerciseDto submitExerciseAnswer(ExerciseAnswerModel answer, MultipartFile[] files) {
+    public ExerciseDto submitExerciseAnswer(ExerciseAnswerModel<? extends ExerciseInputDto> answer, MultipartFile[] files) {
         // Validate model
         if (answer == null)
             throw new IllegalArgumentException("Answer model is required");
@@ -53,7 +54,7 @@ public class ExerciseService {
         return evaluationHelper.evaluateAnswer(answer);
     }
 
-    private void validateFiles(ExerciseAnswerModel answer, MultipartFile[] files) {
+    private void validateFiles(ExerciseAnswerModel<? extends ExerciseInputDto> answer, MultipartFile[] files) {
         // Extract all file names from the model
         List<String> expectedFileNames = List.of();
 

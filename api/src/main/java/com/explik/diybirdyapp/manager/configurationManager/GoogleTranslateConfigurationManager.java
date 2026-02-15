@@ -70,6 +70,7 @@ public class GoogleTranslateConfigurationManager implements ConfigurationManager
         return response;
     }
     
+    @SuppressWarnings("unused")
     private ConfigurationOptionsDto getFinalConfiguration(List<String> selectedOptions) {
         String configType = selectedOptions.get(0);
         String languageCode = selectedOptions.get(1);

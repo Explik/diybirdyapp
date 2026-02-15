@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.ConfigurationTypes;
 import com.explik.diybirdyapp.persistence.command.CreateTextToSpeechConfigVertexCommand;
 import com.explik.diybirdyapp.persistence.vertex.ConfigurationVertex;
 import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;

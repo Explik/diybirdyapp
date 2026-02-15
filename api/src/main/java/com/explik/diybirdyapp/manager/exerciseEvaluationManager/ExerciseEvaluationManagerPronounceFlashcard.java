@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerAudioCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
@@ -28,7 +29,7 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
     QueryHandler<GetCorrectExerciseAnswerSpeakModelForExerciseQuery, CorrectExerciseAnswerSpeakModel> commandHandler;
 
     @Override
-    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
         if (!(context.getInput()instanceof ExerciseInputRecordAudioDto input))

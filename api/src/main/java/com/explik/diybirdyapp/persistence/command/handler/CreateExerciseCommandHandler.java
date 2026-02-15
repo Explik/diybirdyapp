@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

@@ -1,6 +1,5 @@
 package com.explik.diybirdyapp.persistence.schema;
 
-import com.explik.diybirdyapp.ExerciseInputTypes;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 
 import java.util.Map;

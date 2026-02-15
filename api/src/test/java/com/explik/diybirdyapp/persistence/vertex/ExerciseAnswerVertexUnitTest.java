@@ -1,7 +1,6 @@
 package com.explik.diybirdyapp.persistence.vertex;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;

@@ -62,7 +62,7 @@ public class LanguageController {
             @PathVariable("id") String languageId,
             @RequestBody ConfigurationDto configDto) {
 
-        var createdConfig = service.createLanguageConfig(languageId, configDto);
+        service.createLanguageConfig(languageId, configDto);
 
         return ResponseEntity.ok().build();
     }

@@ -2,7 +2,6 @@ package com.explik.diybirdyapp.service;
 
 import com.explik.diybirdyapp.model.internal.GoogleTextToSpeechVoiceModel;
 import com.explik.diybirdyapp.model.internal.TextToSpeechModel;
-import com.explik.diybirdyapp.service.storageService.BinaryStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.google.cloud.texttospeech.v1.*;

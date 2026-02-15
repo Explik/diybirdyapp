@@ -8,7 +8,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CompositeCommandHandlerImpl implements CompositeCommandHandler {
+public class CompositeCommandHandlerImpl implements CompositeCommandHandler<AtomicCommand> {
     @Autowired
     private ApplicationContext applicationContext;
 

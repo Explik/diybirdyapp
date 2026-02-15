@@ -4,15 +4,12 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.service.ExerciseSessionService;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ExerciseSessionController {
-    private final ModelMapper modelMapper = new ModelMapper();
-
     @Autowired
     ExerciseSessionService service;
 

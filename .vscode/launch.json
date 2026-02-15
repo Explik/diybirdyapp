@@ -13,6 +13,30 @@
             "program": ".venv\\Scripts\\streamlit.exe",
             "args": ["run", "${file}"],
             "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot API (Dev)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.explik.diybirdyapp.DiybirdyappApplication",
+            "projectName": "diybirdyapp",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": "-Dspring.profiles.active=dev",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot API (Prod)",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.explik.diybirdyapp.DiybirdyappApplication",
+            "projectName": "diybirdyapp",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": "-Dspring.profiles.active=prod",
+            "console": "integratedTerminal"
         }
     ]
 }

@@ -1,7 +1,8 @@
 package com.explik.diybirdyapp.persistence.command.handler;
 
-import com.explik.diybirdyapp.persistence.command.CreateExerciseVertexCommand;
+import com.explik.diybirdyapp.persistence.command.*;
 import com.explik.diybirdyapp.persistence.vertex.*;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,11 +12,11 @@ import java.util.UUID;
 @Component
 public class CreateExerciseVertexCommandHandler implements CommandHandler<CreateExerciseVertexCommand> {
     private final GraphTraversalSource traversalSource;
-    private final CompositeCommandHandler compositeCommandHandler;
+    private final CompositeCommandHandler<AtomicCommand> compositeCommandHandler;
 
     public CreateExerciseVertexCommandHandler(
             @Autowired GraphTraversalSource traversalSource,
-            @Autowired CompositeCommandHandler compositeCommandHandler) {
+            @Autowired CompositeCommandHandler<AtomicCommand> compositeCommandHandler) {
         this.traversalSource = traversalSource;
         this.compositeCommandHandler = compositeCommandHandler;
     }

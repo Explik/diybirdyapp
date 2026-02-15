@@ -72,6 +72,7 @@ public class ExerciseSessionsManagerWriteFlashcardDeck implements ExerciseSessio
         return sessionModelFactory.create(sessionVertex);
     }
 
+    @SuppressWarnings("unused")
     private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         // Finds first flashcard (in deck) not connected to review exercise (in session)
         var flashcardVertex = FlashcardVertex.findFirstNonExercised(traversalSource, sessionVertex.getId(), ExerciseTypes.WRITE_FLASHCARD);

@@ -59,10 +59,12 @@ public class AbstractVertex {
         reload();
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T getProperty(String propertyKey) {
         return (T)this.vertex.property(propertyKey).value();
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T getProperty(String propertyKey, T defaultValue) {
         return this.vertex.property(propertyKey).isPresent() ? (T)this.vertex.property(propertyKey).value() : defaultValue;
     }
