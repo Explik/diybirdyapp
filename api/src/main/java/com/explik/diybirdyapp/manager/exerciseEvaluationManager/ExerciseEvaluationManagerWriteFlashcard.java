@@ -67,14 +67,15 @@ public class ExerciseEvaluationManagerWriteFlashcard implements ExerciseEvaluati
         createExerciseFeedbackCommandHandler.handle(feedbackCommand);
 
         // Generate feedback
-        return createExerciseWithFeedback(correctTextValuesModel, input, context);
+        return createExerciseWithFeedback(correctTextValuesModel, input, context, answerId);
     }
 
-    private static ExerciseDto createExerciseWithFeedback(CorrectTextValuesForExerciseModel correctTextValuesModel, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext context) {
+    private ExerciseDto createExerciseWithFeedback(CorrectTextValuesForExerciseModel correctTextValuesModel, ExerciseInputWriteTextDto answerModel, ExerciseEvaluationContext context, String answerId) {
         // Compare correct options and answer (CASE INSENSITIVE)
         var correctOptionValues = correctTextValuesModel.getCorrectTextValues();
         var isAnswerCorrect = correctOptionValues.stream().anyMatch(v -> v.equalsIgnoreCase(answerModel.getText()));
         var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isAnswerCorrect);
+        exerciseFeedback.setAnswerId(answerId);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
         var inputFeedback = new ExerciseInputWriteTextDto.ExerciseInputFeedbackTextDto();

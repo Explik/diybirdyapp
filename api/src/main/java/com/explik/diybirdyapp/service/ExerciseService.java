@@ -93,4 +93,25 @@ public class ExerciseService {
         var query = new GetAllExercisesQuery();
         return getAllExercisesQueryHandler.handle(query);
     }
+
+    public void addUserFeedback(String exerciseAnswerId, String feedbackType) {
+        // Validate input
+        if (exerciseAnswerId == null || exerciseAnswerId.isBlank())
+            throw new IllegalArgumentException("Exercise answer ID is required");
+        if (feedbackType == null || feedbackType.isBlank())
+            throw new IllegalArgumentException("Feedback type is required");
+
+        // Verify the answer exists
+        var answerVertex = ExerciseAnswerVertex.getById(traversalSource, exerciseAnswerId);
+        if (answerVertex == null)
+            throw new IllegalArgumentException("Exercise answer not found");
+
+        // Create feedback using command
+        var command = new CreateExerciseFeedbackCommand();
+        command.setExerciseAnswerId(exerciseAnswerId);
+        command.setType(feedbackType);
+        command.setStatus("submitted");
+
+        commandExecutor.execute(command);
+    }
 }

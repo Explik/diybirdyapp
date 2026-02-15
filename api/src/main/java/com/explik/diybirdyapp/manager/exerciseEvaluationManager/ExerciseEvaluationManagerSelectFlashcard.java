@@ -69,15 +69,16 @@ public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluat
         createExerciseFeedbackCommandHandler.handle(feedbackCommand);
 
         // Generate feedback
-        return createExerciseWithFeedback(options, answerModel, context);
+        return createExerciseWithFeedback(options, answerModel, context, answerId);
     }
 
-    private static ExerciseDto createExerciseWithFeedback(OptionsForExerciseModel options, ExerciseInputSelectOptionsDto answerModel, ExerciseEvaluationContext context) {
+    private static ExerciseDto createExerciseWithFeedback(OptionsForExerciseModel options, ExerciseInputSelectOptionsDto answerModel, ExerciseEvaluationContext context, String answerId) {
         var correctOptionId = options.getCorrectOptionId();
         var incorrectOptionIds = options.getIncorrectOptionIds();
         var isCorrect = answerModel.getValue().equals(correctOptionId);
 
         var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isCorrect);
+        exerciseFeedback.setAnswerId(answerId);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
         var inputFeedback = new ExerciseInputSelectOptionsDto.SelectOptionsInputFeedbackDto();
