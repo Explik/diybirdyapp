@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.controller;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
+import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsLearnFlashcardsDto;
 import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -13,7 +14,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class ExerciseSessionControllerIntegrationTests {
@@ -71,6 +74,59 @@ public class ExerciseSessionControllerIntegrationTests {
         assertEquals(session.getId(), savedSession.getId());
         assertEquals(ExerciseSessionTypes.LEARN_FLASHCARD, savedSession.getType());
     }
+
+    @Test
+    void givenNewlyCreatedSession_whenGetConfig_thenReturnDefaultShuffleFlashcardConfig() {
+        createSession("shuffle-test-id");
+
+        var session = controller.get("shuffle-test-id");
+        var sessionConfig = (ExerciseSessionOptionsLearnFlashcardsDto)controller.getConfig("shuffle-test-id");
+
+        assertNotNull(sessionConfig);
+        assertFalse(sessionConfig.getShuffleFlashcardsEnabled());
+    }
+
+    @Test
+    void givenShuffleFlashcardsEnabled_whenUpdateConfig_thenUpdateSessionConfig() {
+        var sessionConfig = new ExerciseSessionOptionsLearnFlashcardsDto();
+        sessionConfig.setShuffleFlashcardsEnabled(true);
+
+        createSession("shuffle-on-test-id");
+        var updatedSessionConfig = updateConfig("shuffle-on-test-id", sessionConfig);
+
+        assertNotNull(updatedSessionConfig);
+        assertTrue(updatedSessionConfig.getShuffleFlashcardsEnabled());
+    }
+
+    @Test
+    void givenShuffleFlashcardsDisabled_whenUpdateConfig_thenUpdateSessionConfig() {
+        var sessionConfig = new ExerciseSessionOptionsLearnFlashcardsDto();
+        sessionConfig.setShuffleFlashcardsEnabled(false);
+
+        createSession("shuffle-off-test-id");
+        var updatedSessionConfig = updateConfig("shuffle-off-test-id", sessionConfig);
+
+        assertNotNull(updatedSessionConfig);
+        assertFalse(updatedSessionConfig.getShuffleFlashcardsEnabled());
+    }
+
+    ExerciseSessionDto createSession(String id) {
+        var session = new ExerciseSessionDto();
+        session.setId(id);
+        session.setType(ExerciseSessionTypes.LEARN_FLASHCARD);
+        session.setFlashcardDeckId("flashcardDeckVertex2");
+
+        return controller.create(session);
+    }
+
+    ExerciseSessionOptionsLearnFlashcardsDto updateConfig(String id, ExerciseSessionOptionsLearnFlashcardsDto config) {
+        controller.updateConfig(id, config);
+
+        var sessionOptions = controller.getConfig(id);
+        return (ExerciseSessionOptionsLearnFlashcardsDto)sessionOptions;
+    }
+
+
 //
 //    @Test
 //    void givenNewlyCreatedSession_whenGet_thenReturnExerciseSession() {
