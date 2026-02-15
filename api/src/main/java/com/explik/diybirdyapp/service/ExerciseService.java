@@ -3,6 +3,8 @@ package com.explik.diybirdyapp.service;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseFeedbackCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.query.GetAllExercisesQuery;
 import com.explik.diybirdyapp.persistence.query.GetExerciseByIdsQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
@@ -25,6 +27,9 @@ public class ExerciseService {
 
     @Autowired
     private QueryHandler<GetAllExercisesQuery, List<ExerciseDto>> getAllExercisesQueryHandler;
+
+    @Autowired
+    private CommandHandler<CreateExerciseFeedbackCommand> commandCommandHandler;
 
     @Autowired
     private ExerciseEvaluationHelper evaluationHelper;
@@ -101,17 +106,12 @@ public class ExerciseService {
         if (feedbackType == null || feedbackType.isBlank())
             throw new IllegalArgumentException("Feedback type is required");
 
-        // Verify the answer exists
-        var answerVertex = ExerciseAnswerVertex.getById(traversalSource, exerciseAnswerId);
-        if (answerVertex == null)
-            throw new IllegalArgumentException("Exercise answer not found");
-
         // Create feedback using command
         var command = new CreateExerciseFeedbackCommand();
         command.setExerciseAnswerId(exerciseAnswerId);
         command.setType(feedbackType);
         command.setStatus("submitted");
 
-        commandExecutor.execute(command);
+        commandCommandHandler.handle(command);
     }
 }

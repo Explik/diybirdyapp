@@ -7,6 +7,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 /**
  * Exercise Manager - Creates exercises for content selected from the active content batch.
  * 
@@ -60,9 +62,7 @@ public class FlashcardDeckExerciseManager {
         }
         
         // Get enabled exercise types
-        var exerciseTypes = sessionVertex.getOptions().getExerciseTypes().stream()
-                .map(com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex::getId)
-                .toList();
+        var exerciseTypes = Arrays.stream(ExerciseTypes.getAll()).toList();
         
         // Get current content index
         int currentIndex = stateVertex.getCurrentContentIndex();

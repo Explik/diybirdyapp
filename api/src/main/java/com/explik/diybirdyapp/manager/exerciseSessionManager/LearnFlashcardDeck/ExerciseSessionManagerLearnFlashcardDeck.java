@@ -52,11 +52,6 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         command.setIncludePronunciationExercises(true);
         command.setShuffleFlashcards(false);
         
-        var exerciseTypeIds = getInitialExerciseTypes(traversalSource).stream()
-                .map(ExerciseTypeVertex::getId)
-                .toList();
-        command.setExerciseTypeIds(exerciseTypeIds);
-        
         createLearnFlashcardSessionCommandHandler.handle(command);
 
         // Load the created session
@@ -192,17 +187,5 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
                 stateVertex.addActiveContent(pronunciationVertex);
             }
         });
-    }
-
-    private List<ExerciseTypeVertex> getInitialExerciseTypes(GraphTraversalSource traversalSource) {
-        // This list should not contain any non-flashcard-based exercises as it breaks the next-exercise algorithm
-        return List.of(
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.REVIEW_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.SELECT_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.WRITE_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.PRONOUNCE_FLASHCARD),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_SELECT),
-                ExerciseTypeVertex.findById(traversalSource, ExerciseTypes.LISTEN_AND_WRITE)
-        );
     }
 }

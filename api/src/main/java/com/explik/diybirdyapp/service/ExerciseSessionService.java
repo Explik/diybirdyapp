@@ -37,7 +37,10 @@ public class ExerciseSessionService {
 
     public ExerciseSessionDto add(ExerciseSessionDto model) {
         var sessionType = model.getType();
+        
         var sessionManager = sessionOperationProvider.get(sessionType);
+        if (sessionManager == null)
+            throw new IllegalArgumentException("No session manager found for type " + sessionType);
 
         return sessionManager.init(traversalSource, ExerciseCreationContext.createDefault(model));
     }
