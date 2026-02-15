@@ -80,6 +80,7 @@ public class ExerciseEvaluationManagerPronounceFlashcard implements ExerciseEval
 
             // Generate exercise feedback
             var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isCorrect);
+            exerciseFeedback.setAnswerId(answerId);
             exerciseFeedback.setMessage("Answer submitted successfully");
 
             exercise.setFeedback(exerciseFeedback);

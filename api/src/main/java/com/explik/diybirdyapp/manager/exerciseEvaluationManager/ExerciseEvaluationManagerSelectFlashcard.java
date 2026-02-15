@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.manager.exerciseEvaluationManager;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseEvaluationTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
-import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputSelectOptionsDto;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseFeedbackCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
@@ -34,7 +33,7 @@ public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluat
     private CommandHandler<CreateExerciseFeedbackCommand> createExerciseFeedbackCommandHandler;
 
     @Override
-    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
+    public ExerciseDto evaluate(ExerciseVertex exerciseVertex, ExerciseEvaluationContext context) {
         if (context == null)
             throw new RuntimeException("Answer model is null");
         if (!(context.getInput() instanceof ExerciseInputSelectOptionsDto answerModel))
@@ -70,15 +69,16 @@ public class ExerciseEvaluationManagerSelectFlashcard implements ExerciseEvaluat
         createExerciseFeedbackCommandHandler.handle(feedbackCommand);
 
         // Generate feedback
-        return createExerciseWithFeedback(options, answerModel, context);
+        return createExerciseWithFeedback(options, answerModel, context, answerId);
     }
 
-    private static ExerciseDto createExerciseWithFeedback(OptionsForExerciseModel options, ExerciseInputSelectOptionsDto answerModel, ExerciseEvaluationContext<? extends ExerciseInputDto> context) {
+    private static ExerciseDto createExerciseWithFeedback(OptionsForExerciseModel options, ExerciseInputSelectOptionsDto answerModel, ExerciseEvaluationContext context, String answerId) {
         var correctOptionId = options.getCorrectOptionId();
         var incorrectOptionIds = options.getIncorrectOptionIds();
         var isCorrect = answerModel.getValue().equals(correctOptionId);
 
         var exerciseFeedback = ExerciseFeedbackHelper.createCorrectFeedback(isCorrect);
+        exerciseFeedback.setAnswerId(answerId);
         exerciseFeedback.setMessage("Answer submitted successfully");
 
         var inputFeedback = new ExerciseInputSelectOptionsDto.SelectOptionsInputFeedbackDto();

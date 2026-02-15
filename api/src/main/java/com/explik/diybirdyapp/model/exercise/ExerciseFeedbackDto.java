@@ -1,9 +1,18 @@
 package com.explik.diybirdyapp.model.exercise;
 
 public class ExerciseFeedbackDto {
+    private String answerId;
     private String type;
     private String state;
     private String message;
+
+    public String getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(String answerId) {
+        this.answerId = answerId;
+    }
 
     public String getType() {
         return type;
