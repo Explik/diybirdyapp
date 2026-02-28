@@ -7,7 +7,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Exercise Manager - Creates exercises for content selected from the active content batch.
@@ -61,8 +61,14 @@ public class FlashcardDeckExerciseManager {
             return null;
         }
         
-        // Get enabled exercise types
-        var exerciseTypes = Arrays.stream(ExerciseTypes.getAll()).toList();
+        // Get enabled exercise types (hard-coded for now)
+        var exerciseTypes = List.of(
+                ExerciseTypes.REVIEW_FLASHCARD,
+                ExerciseTypes.SELECT_FLASHCARD,
+                ExerciseTypes.WRITE_FLASHCARD,
+                ExerciseTypes.LISTEN_AND_SELECT,
+                ExerciseTypes.LISTEN_AND_WRITE,
+                ExerciseTypes.PRONOUNCE_FLASHCARD);
         
         // Get current content index
         int currentIndex = stateVertex.getCurrentContentIndex();
