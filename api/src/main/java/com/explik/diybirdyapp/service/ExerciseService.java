@@ -100,7 +100,7 @@ public class ExerciseService {
         return getAllExercisesQueryHandler.handle(query);
     }
 
-    public void addUserFeedback(String exerciseAnswerId, String feedbackType) {
+    public void submitExerciseAnswerFeedback(String exerciseAnswerId, String feedbackType) {
         // Validate input
         if (exerciseAnswerId == null || exerciseAnswerId.isBlank())
             throw new IllegalArgumentException("Exercise answer ID is required");
