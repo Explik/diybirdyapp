@@ -7,6 +7,16 @@
       <span class="text-gray-800">{{ feedbackValue.value }}</span>
     </div>
     }
+    
+    <div *ngIf="hasIncorrectFeedback()" class="mt-4">
+      
+      <button 
+        (click)="handleUserCorrection()" 
+        class="py-2 italic bg-transparent border-0">
+        <app-icon icon="mdi-redo-variant"></app-icon>
+        I was right...
+      </button>
+    </div>
   </ng-container>
 
   <ng-container *ngIf="input.feedback == undefined || input.feedback.isRetypeAnswerEnabled">

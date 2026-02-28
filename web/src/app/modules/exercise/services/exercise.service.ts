@@ -163,6 +163,21 @@ export class ExerciseService {
         
         // Update general feedback
         this.exerciseFeedback$.next(exerciseWithFeedback?.feedback);
+        
+        // Update answer with answer ID
+        const answerId = (exerciseWithFeedback?.feedback as any)?.answerId;
+        if (answerId) {
+            this.exerciseAnswer$.next({ ...answer, answerId });
+        }
+    }
+
+    async submitAnswerFeedbackAndContinue(feedbackType: string) {
+        const currentAnswer = this.exerciseAnswer$.getValue();
+        if (!currentAnswer?.answerId)
+            throw new Error("No answer ID found");
+
+        await this.service.submitExerciseAnswerFeedback(currentAnswer.answerId, feedbackType).toPromise();
+        await this.nextExerciseAsync();
     }
 
     private clone(obj: any): any {
