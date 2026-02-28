@@ -61,14 +61,8 @@ public class FlashcardDeckExerciseManager {
             return null;
         }
         
-        // Get enabled exercise types (hard-coded for now)
-        var exerciseTypes = List.of(
-                ExerciseTypes.REVIEW_FLASHCARD,
-                ExerciseTypes.SELECT_FLASHCARD,
-                ExerciseTypes.WRITE_FLASHCARD,
-                ExerciseTypes.LISTEN_AND_SELECT,
-                ExerciseTypes.LISTEN_AND_WRITE,
-                ExerciseTypes.PRONOUNCE_FLASHCARD);
+        // Calculate enabled exercise types based on session options
+        var exerciseTypes = calculateEnabledExerciseTypes(sessionVertex);
         
         // Get current content index
         int currentIndex = stateVertex.getCurrentContentIndex();
@@ -343,5 +337,46 @@ public class FlashcardDeckExerciseManager {
         context.setActiveContent(activeContent);
         
         return pronounceFlashcardExerciseCreationManager.createExercise(traversalSource, context);
+    }
+
+    /**
+     * Calculates the list of enabled exercise types based on session options.
+     * 
+     * @param sessionVertex The exercise session vertex
+     * @return List of enabled exercise type IDs
+     */
+    private List<String> calculateEnabledExerciseTypes(ExerciseSessionVertex sessionVertex) {
+        var options = sessionVertex.getOptions();
+        if (options == null) {
+            return List.of();
+        }
+        
+        var exerciseTypes = new ArrayList<String>();
+        
+        if (options.getIncludeReviewExercises()) {
+            exerciseTypes.add(ExerciseTypes.REVIEW_FLASHCARD);
+        }
+        
+        if (options.getIncludeMultipleChoiceExercises()) {
+            exerciseTypes.add(ExerciseTypes.SELECT_FLASHCARD);
+            
+            if (options.getIncludeListeningExercises()) {
+                exerciseTypes.add(ExerciseTypes.LISTEN_AND_SELECT);
+            }
+        }
+        
+        if (options.getIncludeWritingExercises()) {
+            exerciseTypes.add(ExerciseTypes.WRITE_FLASHCARD);
+            
+            if (options.getIncludeListeningExercises()) {
+                exerciseTypes.add(ExerciseTypes.LISTEN_AND_WRITE);
+            }
+        }
+        
+        if (options.getIncludePronunciationExercises()) {
+            exerciseTypes.add(ExerciseTypes.PRONOUNCE_FLASHCARD);
+        }
+        
+        return exerciseTypes;
     }
 }
