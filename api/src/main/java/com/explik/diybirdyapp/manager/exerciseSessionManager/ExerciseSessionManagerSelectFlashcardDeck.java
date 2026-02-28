@@ -27,6 +27,9 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
 
     @Autowired
     ExerciseSessionModelFactory sessionModelFactory;
+    
+    @Autowired
+    private FlashcardDeckContentCrawler deckContentCrawler;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -45,6 +48,12 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
 
         // Load the created session
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+        
+        // Populate availableContent cache for multiple choice options
+        populateAvailableContent(traversalSource, vertex);
+        
+        // Populate activeContent with all flashcards
+        populateActiveContent(traversalSource, vertex);
 
         // Generate first exercise
         nextExerciseVertex(traversalSource, vertex);
@@ -98,6 +107,12 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
                     "front",
                     ExerciseTypes.SELECT_FLASHCARD);
             
+            // Set activeContent from session state
+            var activeContentState = getActiveContentState(sessionVertex);
+            if (activeContentState != null) {
+                context.setActiveContent(activeContentState.getActiveContent());
+            }
+            
             return selectFlashcardExerciseCreationManager.createExercise(traversalSource, context);
         } else {
             // If no flashcards are found, the session is complete
@@ -105,5 +120,102 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         }
 
         return null;
+    }
+    
+    /**
+     * Populates availableContent for the session.
+     * This content is used to generate multiple choice options in exercises.
+     * Creates a separate state vertex to cache all deck content.
+     */
+    private void populateAvailableContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck == null) {
+            return;
+        }
+        
+        // Create or get the availableContent state
+        var stateVertex = getOrCreateAvailableContentState(traversalSource, sessionVertex);
+        
+        // Check if already populated
+        if (!stateVertex.getAvailableContent().isEmpty()) {
+            return;
+        }
+        
+        // Collect all deck content using FlashcardDeckContentCrawler
+        var allContent = deckContentCrawler.collectAllDeckContent(flashcardDeck);
+        stateVertex.setAvailableContent(allContent);
+    }
+    
+    /**
+     * Gets or creates the availableContent state vertex.
+     */
+    private ExerciseSessionStateVertex getOrCreateAvailableContentState(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex) {
+        
+        var stateVertices = sessionVertex.getStatesWithType("availableContent");
+        
+        if (stateVertices.isEmpty()) {
+            var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+            stateVertex.setType("availableContent");
+            sessionVertex.addState(stateVertex);
+            return stateVertex;
+        }
+        
+        return stateVertices.get(0);
+    }
+    
+    /**
+     * Populates activeContent with all flashcards from the deck.
+     * For SELECT_FLASHCARD exercises, all flashcards are available as active content.
+     */
+    private void populateActiveContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck == null) {
+            return;
+        }
+        
+        // Create or get the activeContent state
+        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
+        
+        // Check if already populated
+        if (!stateVertex.getActiveContent().isEmpty()) {
+            return;
+        }
+        
+        // Get all flashcards from the deck
+        var flashcards = flashcardDeck.getFlashcards();
+        
+        // Add all flashcards to active content
+        for (FlashcardVertex flashcard : flashcards) {
+            stateVertex.addActiveContent(flashcard);
+        }
+    }
+    
+    /**
+     * Gets or creates the activeContent state vertex.
+     */
+    private ExerciseSessionStateVertex getOrCreateActiveContentState(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex) {
+        
+        var stateVertices = sessionVertex.getStatesWithType("activeContent");
+        
+        if (stateVertices.isEmpty()) {
+            var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+            stateVertex.setType("activeContent");
+            sessionVertex.addState(stateVertex);
+            return stateVertex;
+        }
+        
+        return stateVertices.get(0);
+    }
+    
+    /**
+     * Gets the active content state vertex for the session.
+     */
+    private ExerciseSessionStateVertex getActiveContentState(ExerciseSessionVertex sessionVertex) {
+        var stateVertices = sessionVertex.getStatesWithType("activeContent");
+        return stateVertices.isEmpty() ? null : stateVertices.get(0);
     }
 }
