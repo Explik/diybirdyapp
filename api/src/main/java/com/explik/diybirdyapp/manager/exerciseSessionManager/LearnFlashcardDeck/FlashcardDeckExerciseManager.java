@@ -381,15 +381,17 @@ public class FlashcardDeckExerciseManager {
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
             TextContentVertex textContentVertex) {
-        
-        var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
-        var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
-        
+        // Skip if text language doesn't match session target language
+        var currentLanguageId = textContentVertex.getLanguage().getId();
+        var targetLanguage = sessionVertex.getOptions().getTargetLanguage();
+        if (targetLanguage != null && !currentLanguageId.equals(targetLanguage.getId())) {
+            return null;
+        }
+
         var context = ExerciseCreationContext.createForText(
                 sessionVertex,
                 textContentVertex,
                 ExerciseTypes.PRONOUNCE_FLASHCARD);
-        context.setActiveContent(availableContent);
         
         return pronounceFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
