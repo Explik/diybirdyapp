@@ -15,10 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSessionManager {
+    
+    // Batch configuration constants
+    private static final int BATCH_SIZE = 20;           // Number of exercises per batch
+    private static final int MAX_CONTENT_PER_BATCH = 3; // Maximum pieces of content per batch
+    
     @Autowired
     private FlashcardDeckExerciseManager exerciseManager;
 
@@ -33,6 +39,14 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     
     @Autowired
     private FlashcardDeckContentCrawler contentCrawler;
+    
+    @Autowired
+    private FailedExerciseContentCrawler failedContentCrawler;
+    
+    @Autowired
+    private InsufficientlyExercisedContentCrawler insufficientlyExercisedContentCrawler;
+    
+    private Random random = new Random();
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -77,12 +91,19 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         if (sessionVertex == null)
             throw new RuntimeException("Session with " + modelId +" not found");
 
+        var stateVertex = getActiveContentState(sessionVertex);
+        
+        // Check if current batch has reached the batch size limit
+        if (stateVertex != null && getBatchExerciseCount(stateVertex) >= BATCH_SIZE) {
+            // Start a new batch: clear content and reset counters
+            startNewBatch(traversalSource, sessionVertex, stateVertex);
+        }
+        
         // Try to generate next exercise
         var exerciseVertex = exerciseManager.nextExerciseVertex(traversalSource, sessionVertex);
         
         // If no exercise created, try to populate more content and try again
         if (exerciseVertex == null) {
-            var stateVertex = getActiveContentState(sessionVertex);
             if (stateVertex != null) {
                 // Reset index and populate more content
                 stateVertex.setCurrentContentIndex(0);
@@ -91,6 +112,11 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
                 // Try to create exercise again with new content
                 exerciseVertex = exerciseManager.nextExerciseVertex(traversalSource, sessionVertex);
             }
+        }
+        
+        // If exercise was created, increment batch counter
+        if (exerciseVertex != null && stateVertex != null) {
+            incrementBatchExerciseCount(stateVertex);
         }
         
         // Mark session as completed if still no exercises after populating
@@ -106,6 +132,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     /**
      * Populates initial active content for the session.
      * Creates the activeContentBatch state and adds the first batch of content.
+     * Uses prioritized crawler selection: failed content > insufficiently practiced > new content.
      */
     private void populateInitialActiveContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         var flashcardDeck = sessionVertex.getFlashcardDeck();
@@ -117,10 +144,11 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
         stateVertex.setType("activeContentBatch");
         stateVertex.setCurrentContentIndex(0);
+        stateVertex.setCurrentRound(0);
         sessionVertex.addState(stateVertex);
         
-        // Populate first batch of content using the crawler
-        var contentList = contentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
+        // Populate first batch of content using a randomly selected crawler (50/50)
+        var contentList = selectCrawlerAndCollect(flashcardDeck, stateVertex);
         for (AbstractVertex content : contentList) {
             stateVertex.addActiveContent(content);
         }
@@ -128,7 +156,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     
     /**
      * Populates more active content for an existing session.
-     * Uses the crawler to get the next batch of flashcard content.
+     * Uses prioritized crawler selection: failed content > insufficiently practiced > new content.
      */
     private void populateMoreActiveContent(
             GraphTraversalSource traversalSource,
@@ -140,8 +168,8 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             return;
         }
         
-        // Collect content for the next flashcard using the crawler
-        var contentList = contentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
+        // Collect content using a randomly selected crawler (50/50)
+        var contentList = selectCrawlerAndCollect(flashcardDeck, stateVertex);
         
         // Add all collected content to the active content collection
         for (AbstractVertex content : contentList) {
@@ -150,11 +178,102 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
     
     /**
+     * Selects content using prioritized crawlers and collects it.
+     * Priority order: 
+     *   1. Failed exercises (content with errors)
+     *   2. Insufficiently practiced content (< 5 exercises)
+     *   3. New unpracticed content
+     * Limits the batch to a maximum number of content pieces.
+     * 
+     * @param flashcardDeck The flashcard deck to collect content from
+     * @param stateVertex The session state vertex
+     * @return List of collected content vertices (limited by MAX_CONTENT_PER_BATCH)
+     */
+    private List<AbstractVertex> selectCrawlerAndCollect(
+            FlashcardDeckVertex flashcardDeck,
+            ExerciseSessionStateVertex stateVertex) {
+        
+        List<AbstractVertex> contentList;
+        
+        // Priority 1: Try to get content from failed exercises
+        contentList = failedContentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
+        if (!contentList.isEmpty()) {
+            return limitContentList(contentList);
+        }
+        
+        // Priority 2: Try to get insufficiently practiced content (< 5 exercises)
+        contentList = insufficientlyExercisedContentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
+        if (!contentList.isEmpty()) {
+            return limitContentList(contentList);
+        }
+        
+        // Priority 3: Get new unpracticed content from regular crawler
+        contentList = contentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
+        
+        return limitContentList(contentList);
+    }
+    
+    /**
+     * Limits the content list to the maximum allowed size per batch.
+     * 
+     * @param contentList The content list to limit
+     * @return Limited content list
+     */
+    private List<AbstractVertex> limitContentList(List<AbstractVertex> contentList) {
+        return contentList.size() > MAX_CONTENT_PER_BATCH 
+            ? contentList.subList(0, MAX_CONTENT_PER_BATCH) 
+            : contentList;
+    }
+    
+    /**
      * Gets the active content batch state vertex for the session.
      */
     private ExerciseSessionStateVertex getActiveContentState(ExerciseSessionVertex sessionVertex) {
         var stateVertices = sessionVertex.getStatesWithType("activeContentBatch");
         return stateVertices.isEmpty() ? null : stateVertices.get(0);
+    }
+    
+    /**
+     * Gets the number of exercises created in the current batch.
+     */
+    private int getBatchExerciseCount(ExerciseSessionStateVertex stateVertex) {
+        Integer count = stateVertex.getPropertyValue("batchExerciseCount", 0);
+        return count != null ? count : 0;
+    }
+    
+    /**
+     * Increments the batch exercise counter.
+     */
+    private void incrementBatchExerciseCount(ExerciseSessionStateVertex stateVertex) {
+        int currentCount = getBatchExerciseCount(stateVertex);
+        stateVertex.setPropertyValue("batchExerciseCount", currentCount + 1);
+    }
+    
+    /**
+     * Starts a new batch by clearing active content and resetting counters.
+     * Then populates new content from the crawlers.
+     */
+    private void startNewBatch(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex) {
+        
+        // Clear all active content
+        stateVertex.clearActiveContent();
+        
+        // Reset counters
+        stateVertex.setCurrentContentIndex(0);
+        stateVertex.setCurrentRound(0);
+        stateVertex.setPropertyValue("batchExerciseCount", 0);
+        
+        // Populate new content for the new batch
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck != null) {
+            var contentList = selectCrawlerAndCollect(flashcardDeck, stateVertex);
+            for (AbstractVertex content : contentList) {
+                stateVertex.addActiveContent(content);
+            }
+        }
     }
     
     /**
