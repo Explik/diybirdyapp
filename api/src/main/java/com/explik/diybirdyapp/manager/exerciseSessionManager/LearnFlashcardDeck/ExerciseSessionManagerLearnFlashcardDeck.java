@@ -2,9 +2,9 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
-import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.FlashcardDeckContentCrawler;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;

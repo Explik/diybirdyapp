@@ -1,4 +1,4 @@
-package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck;
+package com.explik.diybirdyapp.manager.exerciseSessionManager;
 
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
