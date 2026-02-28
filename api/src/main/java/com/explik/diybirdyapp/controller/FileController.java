@@ -40,8 +40,26 @@ public class FileController {
         var fileContent = storageService.get(filename);
         var resource = new ByteArrayResource(fileContent);
 
+        var contentType = getContentType(filename);
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, contentType)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                 .body(resource);
+    }
+
+    private String getContentType(String filename) {
+        var fileExtension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        return switch (fileExtension) {
+            case "mp3" -> "audio/mpeg";
+            case "wav" -> "audio/wav";
+            case "webm" -> "audio/webm";
+            case "ogg" -> "audio/ogg";
+            case "mp4" -> "video/mp4";
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "gif" -> "image/gif";
+            default -> "application/octet-stream";
+        };
     }
 }
