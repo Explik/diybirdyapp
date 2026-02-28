@@ -38,7 +38,10 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     private FlashcardDeckAssociatedContentCreationManager contentCreationManager;
     
     @Autowired
-    private FlashcardDeckContentCrawler contentCrawler;
+    private FlashcardDeckContentCrawler deckContentCrawler;
+    
+    @Autowired
+    private UnpracticedFlashcardContentCrawler contentCrawler;
     
     @Autowired
     private FailedExerciseContentCrawler failedContentCrawler;
@@ -70,6 +73,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
         // Load the created session
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+        
+        // Populate availableContent cache for multiple choice options
+        populateAvailableContent(traversalSource, vertex);
         
         // Populate initial active content batch
         populateInitialActiveContent(traversalSource, vertex);
@@ -127,6 +133,49 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         sessionVertex.reload();
 
         return sessionModelFactory.create(sessionVertex);
+    }
+    
+    /**
+     * Populates availableContent for the session.
+     * This content is used to generate multiple choice options in exercises.
+     * Creates a separate state vertex to cache all deck content.
+     */
+    private void populateAvailableContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck == null) {
+            return;
+        }
+        
+        // Create or get the availableContent state
+        var stateVertex = getOrCreateAvailableContentState(traversalSource, sessionVertex);
+        
+        // Check if already populated
+        if (!stateVertex.getAvailableContent().isEmpty()) {
+            return;
+        }
+        
+        // Collect all deck content using FlashcardDeckContentCrawler
+        var allContent = deckContentCrawler.collectAllDeckContent(flashcardDeck);
+        stateVertex.setAvailableContent(allContent);
+    }
+    
+    /**
+     * Gets or creates the availableContent state vertex.
+     */
+    private ExerciseSessionStateVertex getOrCreateAvailableContentState(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex) {
+        
+        var stateVertices = sessionVertex.getStatesWithType("availableContent");
+        
+        if (stateVertices.isEmpty()) {
+            var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+            stateVertex.setType("availableContent");
+            sessionVertex.addState(stateVertex);
+            return stateVertex;
+        }
+        
+        return stateVertices.get(0);
     }
     
     /**

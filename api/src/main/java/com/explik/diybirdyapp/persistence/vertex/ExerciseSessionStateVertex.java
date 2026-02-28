@@ -23,6 +23,8 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_ACTIVE_CONTENT = "hasActiveContent";
     public final static String EDGE_ACTIVE_CONTENT_ORDER = "order";
+    public final static String EDGE_AVAILABLE_CONTENT = "hasAvailableContent";
+    public final static String EDGE_AVAILABLE_CONTENT_ORDER = "order";
 
     public String getType() {
         return getPropertyAsString(PROPERTY_TYPE);
@@ -82,6 +84,37 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     
     public void clearActiveContent() {
         removeEdges(EDGE_ACTIVE_CONTENT);
+    }
+    
+    public List<AbstractVertex> getAvailableContent() {
+        return VertexHelper.getOrderedOutgoingModels(this, EDGE_AVAILABLE_CONTENT, EDGE_AVAILABLE_CONTENT_ORDER, (source, vertex) -> {
+            String label = vertex.label();
+            
+            // Handle PronunciationVertex (not a ContentVertex subclass)
+            if (label.equals(PronunciationVertex.LABEL)) {
+                return new PronunciationVertex(source, vertex);
+            }
+            
+            // Handle all ContentVertex types (including FlashcardVertex, TextContentVertex, AudioContentVertex, etc.)
+            return VertexHelper.createContent(source, vertex);
+        });
+    }
+    
+    public void addAvailableContent(AbstractVertex vertex) {
+        // Use timestamp for ordering
+        long timestamp = System.currentTimeMillis();
+        addOrderedEdgeOneToMany(EDGE_AVAILABLE_CONTENT, vertex, EDGE_AVAILABLE_CONTENT_ORDER, timestamp);
+    }
+    
+    public void setAvailableContent(List<AbstractVertex> vertices) {
+        clearAvailableContent();
+        for (AbstractVertex vertex : vertices) {
+            addAvailableContent(vertex);
+        }
+    }
+    
+    public void clearAvailableContent() {
+        removeEdges(EDGE_AVAILABLE_CONTENT);
     }
     
     /**
