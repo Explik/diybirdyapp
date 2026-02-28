@@ -116,7 +116,9 @@ public class ExerciseSessionCommandHelper {
                 }
             }
         } else if (!flashcardLanguages.isEmpty()) {
-            optionVertex.addAnswerLanguage(flashcardLanguages.getFirst());
+            for (LanguageVertex language : flashcardLanguages) {
+                optionVertex.addAnswerLanguage(language);
+            }
         }
     }
 }
