@@ -30,6 +30,17 @@ The orb weaver learning algorithm is based on two interconnected principles:
 1. Testing and failing fast
 2. Prioritizing content based on direct or indirect failures
 
+## User experience 
+The user experience can be separated into four different levels, a session, a batch, a round and an exercise. Each level has it's own dedicated purpose, but not all of them are directly visible in the UI. 
+
+The purpose of a session is to help a learner progress in a particular area. For example, helping the learner memorize an entire flashcard deck. 
+
+The purpose of a batch (or a session batch) is to help a learner make progress with specific pieces of content. The batching of content ensures that the learner is not constantly introduced to new content. Instead the learner gets a short periode of time to concentrate on a subset of the session content. A batch consists of a fixed number of exercise (by default 20) and a small amount of content. The amount of content is initially limited, but more progressively addeed if the user is doing well. The source of content in a batch is unpracticed content, insufficiently-practiced content and practiced content that has resulted in errors.
+
+The purpose of a round is to split the batch content, so that the learner is practicing the same content in different ways 5 times over. For example, if a user is learning 3 words: apples, oranges and lemons. It is in-effective to show 5 exercises with apples, then 5 with oranges, and 5 with lemons. Instead a user should be shown one review exercise pr. word, then one select exercise pr. word, then one writing exercise pr. word, and so on. This variation in content ensures that the learner cannot fully rely on their working memory to complete the exercises. 
+
+The purpose of an exercise is to practice one piece of content in one particular way. Ex. writing the content of a particular flashcard.
+
 ## Implementation 
 The orb weaver algorithm is implemented as a session manager that orchestrates the learning sessions. The learning sessions is composed of exercise batches, which in turn are composed of individual exercises. The individual exercises on a content-first approach, meaning first the content is selected and then an appropiate exercise is created for that content. The content is selected based on the orb weaver principles outlined above. 
 
@@ -37,7 +48,7 @@ The life cycle of the orb weaver session manager is as follows:
 ```
 Overall lifecycle: 
 - Session
-  - Exercise batches
+  - Exercise batches (incl. rounds)
     - Exercise
 
 Life cycle:
@@ -82,6 +93,10 @@ Design considerations:
 The orb weaver algorithm is used in the flashcard deck learning sessions. 
 
 **FlashcardDeckContentCrawler**: The crawler takes a flashcard deck and returns a subset of flashcards and their associated content to be used in the next exercise batch. The flashcards are either selected chronologically as they appear in the deck or randomly, depending on the shuffle flashcard setting. The crawler works on limited breath first principle, first it will select x number of flashcards, then for each flashcard it will select y number of associated notes (e.g. pronunciation, transcription, so on) to include in the exercise batch.
+
+**InsufficientlyExercisedContentCrawler**: The crawler takes a flashcard deck, identifies all practiced content, identifies any content that has not been sufficiently exercises returns a subset of this content to be used in the next exercise batch. An item of content has not been sufficiently exercised if it has been exercised less than 5 times overall.
+
+**FailedExerciseContentCrawler**: The crawler takes a flashcard deck, identifies all recently "failed" exercise, identifies any content associated with these exercises and returns a subset of this content to be used in the next exercise batch. A relevant exercise is any exercise with an answer with incorrect feedback and no "I was correct" feedback. Content is associated with an exercise if it is the main content, an answer option or etc. All returned content must be part of the flashcard deck, either flashcards or associated content. 
 
 **FlashcardDeckAssociatedContentCreationManager**: The manager dispatches async content creation tasks to create associated content for the flashcards selected by the crawler. Depending on the session settings, the associated content may include auto-generated transcriptions, pronunciation, etc. The manager uses a set of content creation strategies to create the associated content using the ContentCreationContext.
 

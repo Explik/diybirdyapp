@@ -90,7 +90,7 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         model.setText(vertex.getValue());
 
         var pronunciationVertex = PronunciationVertex.findByTextContentId(vertex.getUnderlyingSource(), vertex.getId());
-        if (pronunciationVertex != null) {
+        if (pronunciationVertex != null && pronunciationVertex.getAudioContent() != null) {
             model.setPronunciationUrl(pronunciationVertex.getAudioContent().getUrl());
         }
         else if (context.getTextToSpeechEnabled()) {

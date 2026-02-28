@@ -12,9 +12,10 @@ import java.util.*;
 /**
  * Exercise Manager - Creates exercises for content selected from the active content batch.
  * 
- * Implements a content-first approach where content is selected in order from the active content batch.
- * Each piece of content is exercised up to 3 times across different exercise types before moving to the next.
- * The manager attempts to create exercises using available exercise creation strategies based on session settings.
+ * Implements a round-based approach where each round covers all content with one exercise type.
+ * For example: Round 1 reviews all content (X, Y, Z), Round 2 has write exercises for all content,
+ * and so on. This maximizes content exposure per round and prevents working memory reliance.
+ * Each piece of content is exercised MAX_EXERCISES_PER_CONTENT times (once per round).
  */
 @Component
 public class FlashcardDeckExerciseManager {
@@ -38,9 +39,10 @@ public class FlashcardDeckExerciseManager {
     private PronounceFlashcardExerciseCreationManager pronounceFlashcardExerciseCreationManager;
 
     /**
-     * Generates the next exercise for the session using a content-first approach.
-     * Selects content from the active content batch in order and attempts to create exercises for it.
-     * Each piece of content can be exercised up to 3 times before moving to the next.
+     * Generates the next exercise for the session using a round-based approach.
+     * Each round processes all content with one exercise type before moving to the next round.
+     * For example: Round 1 creates review exercises for all content (X, Y, Z),
+     * Round 2 creates write exercises for all content, etc.
      * 
      * @param traversalSource The graph traversal source
      * @param sessionVertex The exercise session vertex
@@ -64,10 +66,20 @@ public class FlashcardDeckExerciseManager {
         // Calculate enabled exercise types based on session options
         var exerciseTypes = calculateEnabledExerciseTypes(sessionVertex);
         
-        // Get current content index
+        if (exerciseTypes.isEmpty()) {
+            return null;
+        }
+        
+        // Get current round and content index
+        int currentRound = stateVertex.getCurrentRound();
         int currentIndex = stateVertex.getCurrentContentIndex();
         
-        // Try to create exercise for content starting from current index
+        // Check if we've completed all rounds
+        if (currentRound >= ExerciseSessionStateVertex.MAX_EXERCISES_PER_CONTENT) {
+            return null; // All rounds complete
+        }
+        
+        // Try to create exercise for content in the current round
         while (currentIndex < activeContent.size()) {
             var content = activeContent.get(currentIndex);
             String contentId = getContentId(content);
@@ -79,55 +91,72 @@ public class FlashcardDeckExerciseManager {
                 continue;
             }
             
-            // Check if content has reached max exercises (3)
-            if (stateVertex.hasReachedMaxExercises(contentId)) {
-                // Move to next content
-                currentIndex++;
-                stateVertex.setCurrentContentIndex(currentIndex);
-                continue;
-            }
-            
-            // Try to create an exercise for this content
-            var exerciseVertex = tryCreateExerciseForContent(
+            // Try to create an exercise for this content using the current round's exercise type
+            var exerciseVertex = tryCreateExerciseForContentInRound(
                     traversalSource, 
                     sessionVertex, 
                     content, 
-                    exerciseTypes);
+                    exerciseTypes,
+                    currentRound);
             
             if (exerciseVertex != null) {
-                // Exercise created successfully, increment count
+                // Exercise created successfully
+                // Move to next content in this round
+                currentIndex++;
+                stateVertex.setCurrentContentIndex(currentIndex);
+                
+                // Increment per-content counter for tracking
                 stateVertex.incrementExerciseCountForContent(contentId);
+                
+                // Check if we've completed this round (reached end of content list)
+                if (currentIndex >= activeContent.size()) {
+                    // Start next round
+                    stateVertex.setCurrentRound(currentRound + 1);
+                    stateVertex.setCurrentContentIndex(0);
+                }
+                
                 return exerciseVertex;
             } else {
-                // No exercise could be created, mark as exercised 3 times to skip it
-                stateVertex.setPropertyValue("exerciseCount_" + contentId, 3);
+                // No exercise could be created for this content in this round
+                // Move to next content
                 currentIndex++;
                 stateVertex.setCurrentContentIndex(currentIndex);
             }
         }
         
-        // All content in current batch has been processed
-        // Return null to signal session manager to populate more content
-        return null;
+        // Reached end of content list for this round without creating an exercise
+        // Move to next round and reset index
+        stateVertex.setCurrentRound(currentRound + 1);
+        stateVertex.setCurrentContentIndex(0);
+        
+        // Check if we've completed all rounds
+        if (currentRound + 1 >= ExerciseSessionStateVertex.MAX_EXERCISES_PER_CONTENT) {
+            return null; // All rounds complete
+        }
+        
+        // Try again with the next round
+        return nextExerciseVertex(traversalSource, sessionVertex);
     }
     
     /**
-     * Attempts to create an exercise for the given content using available exercise types.
-     * Implements difficulty curve by trying to use a different exercise type than last time.
+     * Attempts to create an exercise for the given content in a specific round.
+     * Each round uses a specific exercise type from the enabled types list.
      * 
      * @param traversalSource The graph traversal source
      * @param sessionVertex The exercise session vertex
      * @param content The content to create an exercise for
      * @param exerciseTypes List of enabled exercise type IDs
-     * @return The created exercise vertex, or null if no new exercise type can be created
+     * @param round The current round number (used to select exercise type)
+     * @return The created exercise vertex, or null if no exercise can be created
      */
-    private ExerciseVertex tryCreateExerciseForContent(
+    private ExerciseVertex tryCreateExerciseForContentInRound(
             GraphTraversalSource traversalSource,
             ExerciseSessionVertex sessionVertex,
             AbstractVertex content,
-            java.util.List<String> exerciseTypes) {
+            java.util.List<String> exerciseTypes,
+            int round) {
         
-        // Determine the type of content and filter applicable exercise types
+        // Determine the type of content
         FlashcardVertex flashcardVertex = null;
         PronunciationVertex pronunciationVertex = null;
         TextContentVertex textContentVertex = null;
@@ -142,62 +171,57 @@ public class FlashcardDeckExerciseManager {
             return null;
         }
         
-        // Get state vertex and last exercise type used for this content
+        // Select exercise type based on current round
+        // Use modulo to cycle through available exercise types if we have more rounds than types
+        int exerciseTypeIndex = round % exerciseTypes.size();
+        String exerciseType = exerciseTypes.get(exerciseTypeIndex);
+        
+        // Get state vertex for tracking
         var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
         String contentId = getContentId(content);
-        String lastExerciseType = stateVertex.getLastExerciseTypeForContent(contentId);
         
-        // Try each exercise type in order, skipping the last one used
-        for (String exerciseType : exerciseTypes) {
-            // Skip if this is the same exercise type as last time
-            if (exerciseType.equals(lastExerciseType)) {
-                continue;
-            }
-            
-            ExerciseVertex exercise = null;
-            
-            switch (exerciseType) {
-                case ExerciseTypes.REVIEW_FLASHCARD:
-                    if (flashcardVertex != null) {
-                        exercise = tryCreateReviewExercise(traversalSource, sessionVertex, flashcardVertex);
-                    }
-                    break;
-                case ExerciseTypes.SELECT_FLASHCARD:
-                    if (flashcardVertex != null) {
-                        exercise = tryCreateSelectExercise(traversalSource, sessionVertex, flashcardVertex);
-                    }
-                    break;
-                case ExerciseTypes.LISTEN_AND_SELECT:
-                    if (pronunciationVertex != null) {
-                        exercise = tryCreateListenAndSelectExercise(traversalSource, sessionVertex, pronunciationVertex);
-                    }
-                    break;
-                case ExerciseTypes.WRITE_FLASHCARD:
-                    if (flashcardVertex != null) {
-                        exercise = tryCreateWriteExercise(traversalSource, sessionVertex, flashcardVertex);
-                    }
-                    break;
-                case ExerciseTypes.LISTEN_AND_WRITE:
-                    if (pronunciationVertex != null) {
-                        exercise = tryCreateListenAndWriteExercise(traversalSource, sessionVertex, pronunciationVertex);
-                    }
-                    break;
-                case ExerciseTypes.PRONOUNCE_FLASHCARD:
-                    if (textContentVertex != null) {
-                        exercise = tryCreatePronounceExercise(traversalSource, sessionVertex, textContentVertex);
-                    }
-                    break;
-            }
-            
-            if (exercise != null) {
-                // Track this exercise type for future difficulty curve
-                stateVertex.setLastExerciseTypeForContent(contentId, exerciseType);
-                return exercise;
-            }
+        // Try to create exercise with the selected type
+        ExerciseVertex exercise = null;
+        
+        switch (exerciseType) {
+            case ExerciseTypes.REVIEW_FLASHCARD:
+                if (flashcardVertex != null) {
+                    exercise = tryCreateReviewExercise(traversalSource, sessionVertex, flashcardVertex);
+                }
+                break;
+            case ExerciseTypes.SELECT_FLASHCARD:
+                if (flashcardVertex != null) {
+                    exercise = tryCreateSelectExercise(traversalSource, sessionVertex, flashcardVertex);
+                }
+                break;
+            case ExerciseTypes.LISTEN_AND_SELECT:
+                if (pronunciationVertex != null) {
+                    exercise = tryCreateListenAndSelectExercise(traversalSource, sessionVertex, pronunciationVertex);
+                }
+                break;
+            case ExerciseTypes.WRITE_FLASHCARD:
+                if (flashcardVertex != null) {
+                    exercise = tryCreateWriteExercise(traversalSource, sessionVertex, flashcardVertex);
+                }
+                break;
+            case ExerciseTypes.LISTEN_AND_WRITE:
+                if (pronunciationVertex != null) {
+                    exercise = tryCreateListenAndWriteExercise(traversalSource, sessionVertex, pronunciationVertex);
+                }
+                break;
+            case ExerciseTypes.PRONOUNCE_FLASHCARD:
+                if (textContentVertex != null) {
+                    exercise = tryCreatePronounceExercise(traversalSource, sessionVertex, textContentVertex);
+                }
+                break;
         }
         
-        // No new exercise type could be created
-        return null;
+        if (exercise != null) {
+            // Track this exercise type for the content
+            stateVertex.setLastExerciseTypeForContent(contentId, exerciseType);
+        }
+        
+        return exercise;
     }
     
     /**

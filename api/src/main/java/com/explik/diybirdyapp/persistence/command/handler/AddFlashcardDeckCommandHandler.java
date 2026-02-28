@@ -19,10 +19,13 @@ public class AddFlashcardDeckCommandHandler implements CommandHandler<AddFlashca
 
     @Override
     public void handle(AddFlashcardDeckCommand command) {
-        // Fetch owner vertex
-        var userVertex = UserVertex.findWithEmail(traversalSource, command.getUserId());
-        if (userVertex == null)
-            throw new IllegalArgumentException("User with id " + command.getUserId() + " not found");
+        // Fetch owner vertex (if applicable)
+        UserVertex userVertex = null;
+        if (command.getUserId() != null) {
+            userVertex = UserVertex.findWithEmail(traversalSource, command.getUserId());
+            if (userVertex == null)
+                throw new IllegalArgumentException("User with id " + command.getUserId() + " not found");
+        }
 
         // Create flashcard deck vertex
         var flashcardDeckVertex = FlashcardDeckVertex.create(traversalSource);
@@ -34,8 +37,9 @@ public class AddFlashcardDeckCommandHandler implements CommandHandler<AddFlashca
         if (command.getDescription() != null) {
             flashcardDeckVertex.setDescription(command.getDescription());
         }
-        
-        flashcardDeckVertex.setOwner(userVertex);
+
+        if (userVertex != null)
+            flashcardDeckVertex.setOwner(userVertex);
 
         // Store result ID for query
         command.setResultId(flashcardDeckVertex.getId());

@@ -15,6 +15,10 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
 
     public final static String PROPERTY_TYPE = "type";
     public final static String PROPERTY_CURRENT_CONTENT_INDEX = "currentContentIndex";
+    public final static String PROPERTY_CURRENT_ROUND = "currentRound";
+    
+    // Exercise round configuration
+    public static final int MAX_EXERCISES_PER_CONTENT = 5; // Number of rounds per content piece
 
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_ACTIVE_CONTENT = "hasActiveContent";
@@ -97,6 +101,22 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     }
     
     /**
+     * Gets the current round number (0-based).
+     * @return The current round number, or 0 if not set
+     */
+    public int getCurrentRound() {
+        return getProperty(PROPERTY_CURRENT_ROUND, 0);
+    }
+    
+    /**
+     * Sets the current round number.
+     * @param round The round number to set
+     */
+    public void setCurrentRound(int round) {
+        setProperty(PROPERTY_CURRENT_ROUND, round);
+    }
+    
+    /**
      * Gets the exercise count for a specific content vertex.
      * Stored as a property like "exerciseCount_<vertexId>".
      * @param vertexId The ID of the content vertex
@@ -116,12 +136,12 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     }
     
     /**
-     * Checks if a content vertex has been exercised the maximum number of times (3).
+     * Checks if a content vertex has been exercised the maximum number of times.
      * @param vertexId The ID of the content vertex
-     * @return true if the content has been exercised 3 or more times
+     * @return true if the content has been exercised MAX_EXERCISES_PER_CONTENT or more times
      */
     public boolean hasReachedMaxExercises(String vertexId) {
-        return getExerciseCountForContent(vertexId) >= 3;
+        return getExerciseCountForContent(vertexId) >= MAX_EXERCISES_PER_CONTENT;
     }
     
     /**
