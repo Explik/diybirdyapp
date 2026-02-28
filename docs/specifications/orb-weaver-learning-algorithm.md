@@ -92,7 +92,9 @@ Design considerations:
 ### Implementation for "flashcard deck" session
 The orb weaver algorithm is used in the flashcard deck learning sessions. 
 
-**FlashcardDeckContentCrawler**: The crawler takes a flashcard deck and returns a subset of flashcards and their associated content to be used in the next exercise batch. The flashcards are either selected chronologically as they appear in the deck or randomly, depending on the shuffle flashcard setting. The crawler works on limited breath first principle, first it will select x number of flashcards, then for each flashcard it will select y number of associated notes (e.g. pronunciation, transcription, so on) to include in the exercise batch.
+**FlashcardDeckContentCrawler**: Retrieves all content from all flashcards in the deck. Used to generate options for multiple choice exercises.
+
+**UnpracticedFlashcardContentCrawler**: Retrieves the next unpracticed flashcard and its content. Supports sequential (chronological) or shuffled flashcard selection based on session settings.
 
 **InsufficientlyExercisedContentCrawler**: The crawler takes a flashcard deck, identifies all practiced content, identifies any content that has not been sufficiently exercises returns a subset of this content to be used in the next exercise batch. An item of content has not been sufficiently exercised if it has been exercised less than 5 times overall.
 

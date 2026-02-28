@@ -58,7 +58,7 @@ public class SelectFlashcardExerciseCreationManager implements ExerciseCreationM
                 .toList();
         
         // Need at least 3 incorrect options for a meaningful multiple-choice exercise
-        if (incorrectContentVertices.size() >= 3) {
+        if (incorrectContentVertices.size() < 3) {
             return null;
         }
 
