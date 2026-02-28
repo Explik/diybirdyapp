@@ -8,6 +8,7 @@ public class CreateLearnFlashcardSessionCommand implements AtomicCommand {
     private Boolean retypeCorrectAnswer;
     private Boolean textToSpeechEnabled;
     private List<String> answerLanguageIds;
+    private String targetLanguageId;
     private Boolean includeReviewExercises;
     private Boolean includeMultipleChoiceExercises;
     private Boolean includeWritingExercises;
@@ -54,6 +55,14 @@ public class CreateLearnFlashcardSessionCommand implements AtomicCommand {
 
     public void setAnswerLanguageIds(List<String> answerLanguageIds) {
         this.answerLanguageIds = answerLanguageIds;
+    }
+
+    public String getTargetLanguageId() {
+        return targetLanguageId;
+    }
+
+    public void setTargetLanguageId(String targetLanguageId) {
+        this.targetLanguageId = targetLanguageId;
     }
 
     public Boolean getIncludeReviewExercises() {

@@ -13,6 +13,7 @@ import { ExerciseSessionOptionsLanguageOptionDto } from './exercise-session-opti
 
 export interface ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOptionsDto { 
     answerLanguageIds?: Array<string>;
+    targetLanguageId?: string;
     includeReviewExercises?: boolean;
     includeMultipleChoiceExercises?: boolean;
     includeWritingExercises?: boolean;

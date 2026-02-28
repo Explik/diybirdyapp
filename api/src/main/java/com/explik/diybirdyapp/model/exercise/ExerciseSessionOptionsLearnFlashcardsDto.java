@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.ExerciseSessionTypes;
 public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOptionsDto {
     private String[] answerLanguageIds = new String[0];
     private ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguage = new ExerciseSessionOptionsLanguageOptionDto[0];
+    private String targetLanguageId;
 
     private boolean includeReviewExercises;
     private boolean includeMultipleChoiceExercises;
@@ -33,6 +34,14 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
 
     public void setAvailableAnswerLanguages(ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguageIds) {
         this.availableAnswerLanguage = availableAnswerLanguageIds;
+    }
+
+    public String getTargetLanguageId() {
+        return targetLanguageId;
+    }
+
+    public void setTargetLanguageId(String targetLanguageId) {
+        this.targetLanguageId = targetLanguageId;
     }
 
     public boolean getIncludeReviewExercises() {

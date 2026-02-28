@@ -273,16 +273,25 @@ public class FlashcardDeckExerciseManager {
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
             FlashcardVertex flashcardVertex) {
-        
-        var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
-        var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
-        
+        String flashcardSide = null;
+        var targetLanguage = sessionVertex.getOptions().getTargetLanguage();
+        if (targetLanguage != null) {
+            // Determine which side of the flashcard matches the target language
+            if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent &&
+                leftTextContent.getLanguage().getId().equals(targetLanguage.getId())) {
+                flashcardSide = "front";
+            }
+            else if (flashcardVertex.getRightContent() instanceof TextContentVertex rightTextContent &&
+                     rightTextContent.getLanguage().getId().equals(targetLanguage.getId())) {
+                flashcardSide = "back";
+            }
+        }
+
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
-                null,
+                flashcardSide,
                 ExerciseTypes.REVIEW_FLASHCARD);
-        context.setActiveContent(availableContent);
         
         return reviewFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -309,7 +318,13 @@ public class FlashcardDeckExerciseManager {
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
             PronunciationVertex pronunciationVertex) {
-        
+        // Skip if pronunciation language doesn't match session target language
+        var currentLanguageId = pronunciationVertex.getAudioContent().getLanguage().getId();
+        var targetLanguage = sessionVertex.getOptions().getTargetLanguage();
+        if (targetLanguage != null && !currentLanguageId.equals(targetLanguage.getId())) {
+            return null;
+        }
+
         var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
         var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
         
@@ -326,10 +341,9 @@ public class FlashcardDeckExerciseManager {
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
             FlashcardVertex flashcardVertex) {
-        
         var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
         var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
-        
+
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
@@ -344,6 +358,12 @@ public class FlashcardDeckExerciseManager {
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
             PronunciationVertex pronunciationVertex) {
+        // Skip if pronunciation language doesn't match session target language
+        var currentLanguageId = pronunciationVertex.getAudioContent().getLanguage().getId();
+        var targetLanguage = sessionVertex.getOptions().getTargetLanguage();
+        if (targetLanguage != null && !currentLanguageId.equals(targetLanguage.getId())) {
+            return null;
+        }
         
         var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
         var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();

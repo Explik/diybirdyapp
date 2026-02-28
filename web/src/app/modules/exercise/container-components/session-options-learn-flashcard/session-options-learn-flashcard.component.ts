@@ -28,6 +28,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
   constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
       answerLanguageIds: this.fb.array([], this.atLeastOneSelectedValidator),
+      targetLanguageId: [''],
       includeReviewExercises: [false],
       includeMultipleChoiceExercises: [false],
       includeWritingExercises: [false],
@@ -78,6 +79,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
     });
 
     this.form.patchValue({
+      targetLanguageId: options.targetLanguageId || '',
       includeReviewExercises: options.includeReviewExercises || false,
       includeMultipleChoiceExercises: options.includeMultipleChoiceExercises || false,
       includeWritingExercises: options.includeWritingExercises || false,
@@ -98,6 +100,7 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
 
     return {
       type: this.options?.type,
+      targetLanguageId: this.form.get('targetLanguageId')?.value || undefined,
       answerLanguageIds: selectedLangs.map(lang => lang.id),
       includeReviewExercises: !!this.form.get('includeReviewExercises')?.value,
       includeMultipleChoiceExercises: !!this.form.get('includeMultipleChoiceExercises')?.value,

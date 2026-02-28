@@ -43,10 +43,13 @@ public class UnpracticedFlashcardContentCrawler {
             }
         }
         
-        // Get the session to check shuffle setting
+        // Get the session to check shuffle setting and target language
         ExerciseSessionVertex session = sessionState.getSession();
         ExerciseSessionOptionsVertex options = session.getOptions();
         boolean shuffleFlashcards = options != null && options.getShuffleFlashcards();
+        
+        var targetLanguage = options != null ? options.getTargetLanguage() : null;
+        String targetLanguageId = targetLanguage != null ? targetLanguage.getId() : null;
         
         // Get flashcards in appropriate order
         List<FlashcardVertex> flashcards = new ArrayList<>(flashcardDeck.getFlashcards());
@@ -81,20 +84,23 @@ public class UnpracticedFlashcardContentCrawler {
         }
         
         // Collect content for this flashcard, excluding duplicates
-        return collectFlashcardContent(targetFlashcard, activeVertexIds);
+        return collectFlashcardContent(targetFlashcard, activeVertexIds, targetLanguageId);
     }
     
     /**
      * Collects all content related to a flashcard including the flashcard itself, its left/right content,
      * and associated content like pronunciations. Excludes vertices already in the active set.
+     * Filters pronunciations by target language if specified.
      * 
      * @param flashcardVertex The flashcard to collect content for
      * @param activeVertexIds Set of vertex IDs already in activeContent
+     * @param targetLanguageId Target language ID to filter pronunciations (null = all languages)
      * @return List of AbstractVertex including flashcard, content, and associated content (Pronunciation)
      */
     private List<AbstractVertex> collectFlashcardContent(
             FlashcardVertex flashcardVertex,
-            Set<String> activeVertexIds) {
+            Set<String> activeVertexIds,
+            String targetLanguageId) {
         
         List<AbstractVertex> contentList = new ArrayList<>();
         
@@ -112,7 +118,10 @@ public class UnpracticedFlashcardContentCrawler {
             if (leftContent instanceof TextContentVertex textContent) {
                 for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
                     if (!activeVertexIds.contains(pronunciation.getId())) {
-                        contentList.add(pronunciation);
+                        // Only fetch associated content if it matches the session's target language
+                        if (targetLanguageId != null && matchesTargetLanguage(pronunciation, targetLanguageId)) {
+                            contentList.add(pronunciation);
+                        }
                     }
                 }
             }
@@ -127,7 +136,10 @@ public class UnpracticedFlashcardContentCrawler {
             if (rightContent instanceof TextContentVertex textContent) {
                 for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
                     if (!activeVertexIds.contains(pronunciation.getId())) {
-                        contentList.add(pronunciation);
+                        // Only fetch associated content if it matches the session's target language
+                        if (targetLanguageId != null && matchesTargetLanguage(pronunciation, targetLanguageId)) {
+                            contentList.add(pronunciation);
+                        }
                     }
                 }
             }
@@ -136,6 +148,22 @@ public class UnpracticedFlashcardContentCrawler {
         return contentList;
     }
     
+    /**
+     * Checks if a pronunciation matches the target language.
+     * 
+     * @param pronunciation The pronunciation vertex to check
+     * @param targetLanguageId The target language ID
+     * @return True if the pronunciation's text content matches the target language
+     */
+    private boolean matchesTargetLanguage(PronunciationVertex pronunciation, String targetLanguageId) {
+        var textContent = pronunciation.getTextContent();
+        if (textContent == null) {
+            return false;
+        }
+        var language = textContent.getLanguage();
+        return language != null && targetLanguageId.equals(language.getId());
+        }
+
     /**
      * Gets the ID from a vertex, handling both ContentVertex and PronunciationVertex types.
      * 
