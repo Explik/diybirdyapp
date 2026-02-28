@@ -135,6 +135,30 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         return sessionModelFactory.create(sessionVertex);
     }
     
+    @Override
+    public void updateOptions(GraphTraversalSource traversalSource, String sessionId) {
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+        if (sessionVertex == null) {
+            return; // Session not found, nothing to do
+        }
+        
+        var stateVertex = getActiveContentState(sessionVertex);
+        if (stateVertex != null) {
+            // Regenerate the batch with new options
+            startNewBatch(traversalSource, sessionVertex, stateVertex);
+        }
+        
+        // Refresh available content for multiple choice options
+        var availableContentState = getAvailableContentState(sessionVertex);
+        if (availableContentState != null) {
+            availableContentState.clearAvailableContent();
+            populateAvailableContent(traversalSource, sessionVertex);
+        }
+        
+        // Dispatch new content creation with updated target language  
+        dispatchContentCreation(traversalSource, sessionVertex);
+    }
+    
     /**
      * Populates availableContent for the session.
      * This content is used to generate multiple choice options in exercises.
@@ -279,6 +303,14 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
      */
     private ExerciseSessionStateVertex getActiveContentState(ExerciseSessionVertex sessionVertex) {
         var stateVertices = sessionVertex.getStatesWithType("activeContentBatch");
+        return stateVertices.isEmpty() ? null : stateVertices.get(0);
+    }
+    
+    /**
+     * Gets the available content state vertex for the session.
+     */
+    private ExerciseSessionStateVertex getAvailableContentState(ExerciseSessionVertex sessionVertex) {
+        var stateVertices = sessionVertex.getStatesWithType("availableContent");
         return stateVertices.isEmpty() ? null : stateVertices.get(0);
     }
     
