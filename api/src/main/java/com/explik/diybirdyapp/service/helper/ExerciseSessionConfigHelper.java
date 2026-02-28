@@ -1,8 +1,11 @@
 package com.explik.diybirdyapp.service.helper;
 
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
 import com.explik.diybirdyapp.model.exercise.*;
+import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
+import com.explik.diybirdyapp.persistence.query.modelFactory.ModelFactory;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionOptionsVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
@@ -26,6 +29,12 @@ public class ExerciseSessionConfigHelper {
     @Autowired
     private ExerciseSessionModelFactory sessionModelFactory;
 
+    @Autowired
+    private ModelFactory<ExerciseSessionOptionsVertex, ExerciseSessionOptionsDto> sessionOptionsModelFactory;
+    
+    @Autowired
+    private GenericProvider<ExerciseSessionManager> sessionOperationProvider;
+
     /**
      * Updates the configuration for an exercise session.
      * @param modelId The ID of the session to update
@@ -37,6 +46,13 @@ public class ExerciseSessionConfigHelper {
         var sessionOptions = sessionVertex.getOptions();
 
         updateSessionOptions(sessionOptions, config);
+        
+        // Notify the session manager to regenerate batch and content
+        var sessionType = sessionVertex.getType();
+        var sessionManager = sessionOperationProvider.get(sessionType);
+        if (sessionManager != null) {
+            sessionManager.updateOptions(traversalSource, modelId);
+        }
 
         return sessionModelFactory.create(sessionVertex);
     }
