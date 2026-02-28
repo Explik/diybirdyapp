@@ -33,9 +33,10 @@ public class FlashcardDeckAssociatedContentCreationManager {
      * Currently focuses on text-to-speech generation for text content.
      * 
      * @param contentVertices List of content vertices to process
+     * @param targetLanguageId Optional target language ID to filter by (null = all languages)
      * @param onSuccessCallback Optional callback to invoke with created vertices after successful generation
      */
-    public void dispatchContentCreation(List<ContentVertex> contentVertices, Consumer<PronunciationVertex> onSuccessCallback) {
+    public void dispatchContentCreation(List<ContentVertex> contentVertices, String targetLanguageId, Consumer<PronunciationVertex> onSuccessCallback) {
         if (contentVertices == null || contentVertices.isEmpty()) {
             return;
         }
@@ -43,6 +44,14 @@ public class FlashcardDeckAssociatedContentCreationManager {
         for (ContentVertex contentVertex : contentVertices) {
             // Check if this is a TextContentVertex
             if (contentVertex instanceof TextContentVertex textContentVertex) {
+                // Filter by target language if specified
+                if (targetLanguageId != null) {
+                    var language = textContentVertex.getLanguage();
+                    if (language == null || !targetLanguageId.equals(language.getId())) {
+                        continue; // Skip this content if it doesn't match target language
+                    }
+                }
+                
                 // Check if TTS configuration exists for this language
                 if (textToSpeechContentCreationManager.hasTtsConfiguration(textContentVertex)) {
                     // Dispatch async TTS generation with callback

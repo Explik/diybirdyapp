@@ -44,6 +44,10 @@ public class InsufficientlyExercisedContentCrawler {
         
         // Get the session to count exercises per content
         ExerciseSessionVertex session = sessionState.getSession();
+        ExerciseSessionOptionsVertex options = session.getOptions();
+        
+        var targetLanguage = options != null ? options.getTargetLanguage() : null;
+        String targetLanguageId = targetLanguage != null ? targetLanguage.getId() : null;
         
         // Collect all flashcard content from the deck
         Set<AbstractVertex> deckContent = new HashSet<>();
@@ -52,10 +56,10 @@ public class InsufficientlyExercisedContentCrawler {
             
             // Add left and right content
             if (flashcard.getLeftContent() != null) {
-                addContentAndAssociations(flashcard.getLeftContent(), deckContent);
+                addContentAndAssociations(flashcard.getLeftContent(), deckContent, targetLanguageId);
             }
             if (flashcard.getRightContent() != null) {
-                addContentAndAssociations(flashcard.getRightContent(), deckContent);
+                addContentAndAssociations(flashcard.getRightContent(), deckContent, targetLanguageId);
             }
         }
         
@@ -119,20 +123,41 @@ public class InsufficientlyExercisedContentCrawler {
     
     /**
      * Adds content and its associated content (like pronunciations) to the set.
+     * Filters pronunciations by target language if specified.
      * 
      * @param content The content to add
      * @param contentSet The set to add content to
+     * @param targetLanguageId Target language ID to filter pronunciations (null = all languages)
      */
-    private void addContentAndAssociations(ContentVertex content, Set<AbstractVertex> contentSet) {
+    private void addContentAndAssociations(ContentVertex content, Set<AbstractVertex> contentSet, String targetLanguageId) {
         contentSet.add(content);
         
         // Add pronunciations if text content
         if (content instanceof TextContentVertex) {
             TextContentVertex textContent = (TextContentVertex) content;
             for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
-                contentSet.add(pronunciation);
+                // Filter by target language if specified
+                if (targetLanguageId == null || matchesTargetLanguage(pronunciation, targetLanguageId)) {
+                    contentSet.add(pronunciation);
+                }
             }
         }
+    }
+    
+    /**
+     * Checks if a pronunciation matches the target language.
+     * 
+     * @param pronunciation The pronunciation vertex to check
+     * @param targetLanguageId The target language ID
+     * @return True if the pronunciation's text content matches the target language
+     */
+    private boolean matchesTargetLanguage(PronunciationVertex pronunciation, String targetLanguageId) {
+        var textContent = pronunciation.getTextContent();
+        if (textContent == null) {
+            return false;
+        }
+        var language = textContent.getLanguage();
+        return language != null && targetLanguageId.equals(language.getId());
     }
     
     /**

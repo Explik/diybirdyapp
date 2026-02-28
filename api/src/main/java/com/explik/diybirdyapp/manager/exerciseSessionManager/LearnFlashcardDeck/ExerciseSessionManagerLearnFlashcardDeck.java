@@ -349,8 +349,13 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         // Get the active content state to add created pronunciations
         var stateVertex = getActiveContentState(sessionVertex);
         
+        // Get target language from session options
+        var options = sessionVertex.getOptions();
+        var targetLanguage = options != null ? options.getTargetLanguage() : null;
+        var targetLanguageId = targetLanguage != null ? targetLanguage.getId() : null;
+        
         // Dispatch content creation with callback to add created vertices to active content
-        contentCreationManager.dispatchContentCreation(contentVertices, pronunciationVertex -> {
+        contentCreationManager.dispatchContentCreation(contentVertices, targetLanguageId, pronunciationVertex -> {
             if (stateVertex != null && pronunciationVertex != null) {
                 stateVertex.addActiveContent(pronunciationVertex);
             }

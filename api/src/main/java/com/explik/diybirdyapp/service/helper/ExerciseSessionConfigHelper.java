@@ -80,6 +80,17 @@ public class ExerciseSessionConfigHelper {
         vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
         vertex.setShuffleFlashcards(model.getShuffleFlashcardsEnabled());
 
+        // Set target language
+        if (model.getTargetLanguageId() != null) {
+            var targetLanguage = LanguageVertex.findById(traversalSource, model.getTargetLanguageId());
+            
+            if (targetLanguage != null) {
+                vertex.setTargetLanguage(targetLanguage);
+            }
+        } else {
+            vertex.removeTargetLanguage();
+        }
+
         // Update inclusion flags and exercise types
         vertex.setIncludeReviewExercises(model.getIncludeReviewExercises());
         vertex.setIncludeMultipleChoiceExercises(model.getIncludeMultipleChoiceExercises());
