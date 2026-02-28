@@ -4,6 +4,8 @@ import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseInputRecordAudioDto;
 import com.explik.diybirdyapp.model.admin.ExerciseAnswerModel;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseFeedbackCommand;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.query.GetAllExercisesQuery;
 import com.explik.diybirdyapp.persistence.query.GetExerciseByIdsQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
@@ -26,6 +28,9 @@ public class ExerciseService {
 
     @Autowired
     private QueryHandler<GetAllExercisesQuery, List<ExerciseDto>> getAllExercisesQueryHandler;
+
+    @Autowired
+    private CommandHandler<CreateExerciseFeedbackCommand> commandCommandHandler;
 
     @Autowired
     private ExerciseEvaluationHelper evaluationHelper;
@@ -93,5 +98,21 @@ public class ExerciseService {
     public List<ExerciseDto> getExercises() {
         var query = new GetAllExercisesQuery();
         return getAllExercisesQueryHandler.handle(query);
+    }
+
+    public void submitExerciseAnswerFeedback(String exerciseAnswerId, String feedbackType) {
+        // Validate input
+        if (exerciseAnswerId == null || exerciseAnswerId.isBlank())
+            throw new IllegalArgumentException("Exercise answer ID is required");
+        if (feedbackType == null || feedbackType.isBlank())
+            throw new IllegalArgumentException("Feedback type is required");
+
+        // Create feedback using command
+        var command = new CreateExerciseFeedbackCommand();
+        command.setExerciseAnswerId(exerciseAnswerId);
+        command.setType(feedbackType);
+        command.setStatus("submitted");
+
+        commandCommandHandler.handle(command);
     }
 }

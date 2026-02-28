@@ -59,6 +59,7 @@ export interface Exercise {
 export interface ExerciseAnswer {
     //id: string;
     //exerciseId: string;
+    answerId?: string;
     [key: string]: any;
     files?: File[];
 }

@@ -45,6 +45,10 @@ public class CreateSelectFlashcardSessionCommandHandler implements CommandHandle
         // Set initially hide options
         optionVertex.setInitiallyHideOptions(command.getInitiallyHideOptions());
 
+        // Set shuffle flashcards
+        optionVertex.setShuffleFlashcards(command.getShuffleFlashcards() != null ? 
+                command.getShuffleFlashcards() : false);
+
         // Link options to session
         sessionVertex.setOptions(optionVertex);
     }

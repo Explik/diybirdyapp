@@ -75,4 +75,10 @@ export class ExerciseSessionDataService {
         // TODO Add error handling
         return this.http.post<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${sessionId}/apply-options`, config);
     }
+
+    // === ExerciseAnswer Feedback ===
+    submitExerciseAnswerFeedback(exerciseAnswerId: string, feedbackType: string): Observable<void> {
+        // TODO Add error handling
+        return this.http.post<void>(`${environment.apiUrl}/exercise-answer/${exerciseAnswerId}/feedback`, { type: feedbackType });
+    }
 }

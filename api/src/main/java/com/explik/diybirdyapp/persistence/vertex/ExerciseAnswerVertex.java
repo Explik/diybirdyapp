@@ -70,4 +70,12 @@ public class ExerciseAnswerVertex extends AbstractVertex {
         var vertex = traversalSource.addV(LABEL).next();
         return new ExerciseAnswerVertex(traversalSource, vertex);
     }
+
+    public static ExerciseAnswerVertex getById(GraphTraversalSource traversalSource, String id) {
+        var vertex = traversalSource.V()
+                .hasLabel(LABEL)
+                .has("id", id)
+                .tryNext();
+        return vertex.isPresent() ? new ExerciseAnswerVertex(traversalSource, vertex.get()) : null;
+    }
 }

@@ -17,7 +17,7 @@ Properties:
 ### TranscriptionSystem
 A transcription system represents a specific system for converting content to text.
 Ex. Pinyin for Chinese, VoiceToText
-````mermaid
+```mermaid
 graph LR
 V1(TranscriptionSystem)
 ```
@@ -342,3 +342,20 @@ The incorrect option(s) represents a clearly incorrect answer to the exercise. \
 The actual answer will be stored in the ExerciseAnswer vertex.
 
 NB, it is possible for an exercise to have no correct or incorrect options.
+
+### Learn flashcard sessions state
+This section describes the graph representation for tracking the state of a learn flashcard session.
+```mermaid
+graph TB
+ExerciseSession(ExerciseSession)
+ExerciseSessionState(ExerciseSessionState)
+FlashcardDeck(FlashcardDeck)
+ActiveContent(<any> Vertex)
+
+ExerciseSession--hasState-->ExerciseSessionState
+ExerciseSession--hasFlashcardDeck-->FlashcardDeck
+ExerciseSessionState--hasActiveContent-->ActiveContent
+```
+
+All content represents all content in the flashcard deck, which will be the source of alternative answers in exercises requiring these. 
+Active content represent a subset of all content that has been presented to the leaner, which will be the source of content to create exercises from. 

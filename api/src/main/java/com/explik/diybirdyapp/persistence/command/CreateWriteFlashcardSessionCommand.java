@@ -8,6 +8,7 @@ public class CreateWriteFlashcardSessionCommand implements AtomicCommand {
     private Boolean textToSpeechEnabled;
     private List<String> answerLanguageIds;
     private Boolean retypeCorrectAnswer;
+    private Boolean shuffleFlashcards;
 
     public String getId() {
         return id;
@@ -47,5 +48,13 @@ public class CreateWriteFlashcardSessionCommand implements AtomicCommand {
 
     public void setRetypeCorrectAnswer(Boolean retypeCorrectAnswer) {
         this.retypeCorrectAnswer = retypeCorrectAnswer;
+    }
+
+    public Boolean getShuffleFlashcards() {
+        return shuffleFlashcards;
+    }
+
+    public void setShuffleFlashcards(Boolean shuffleFlashcards) {
+        this.shuffleFlashcards = shuffleFlashcards;
     }
 }

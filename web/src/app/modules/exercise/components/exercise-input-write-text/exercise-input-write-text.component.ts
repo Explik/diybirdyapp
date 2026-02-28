@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { TextFieldComponent } from '../../../../shared/components/text-field/text-field.component';
+import { ExerciseService } from '../../services/exercise.service';
 
 @Component({
   selector: 'app-exercise-input-write-text',
@@ -13,7 +14,9 @@ import { TextFieldComponent } from '../../../../shared/components/text-field/tex
 })
 export class ExerciseInputWriteTextComponent implements OnInit {
   @Input({required: true}) input!: ExerciseInputWriteTextDto;
-  feedbackValues: { state: string, value: string}[] = []; 
+  feedbackValues: { state: string, value: string}[] = [];
+
+  constructor(private exerciseService: ExerciseService) {} 
 
   ngOnInit() {
     this.updateValues(this.input);
@@ -33,5 +36,13 @@ export class ExerciseInputWriteTextComponent implements OnInit {
       feedbackValues.push(...newValue.feedback.incorrectValues.map(value => ({ state: 'failure', value })));
 
     this.feedbackValues = feedbackValues;
+  }
+
+  hasIncorrectFeedback(): boolean {
+    return this.feedbackValues.some(f => f.state === 'failure');
+  }
+
+  async handleUserCorrection() {
+    await this.exerciseService.submitAnswerFeedbackAndContinue('i-was-correct');
   }
 }

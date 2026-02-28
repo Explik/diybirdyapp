@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.helper.ExerciseSessionCommandHelper;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseTypeVertex;
+import com.explik.diybirdyapp.persistence.vertex.LanguageVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,20 @@ public class CreateLearnFlashcardSessionCommandHandler implements CommandHandler
                 command.getTextToSpeechEnabled()
         );
 
+        // Set target language (default to flashcard deck language if no target language specified)
+        if (command.getTargetLanguageId() != null) {
+            var targetLanguage = LanguageVertex.findById(traversalSource, command.getTargetLanguageId());
+            if (targetLanguage != null) {
+                optionVertex.setTargetLanguage(targetLanguage);
+            }
+        }
+        else {
+            var deckLanguages = flashcardDeckVertex.getFlashcardLanguages();
+            if (!deckLanguages.isEmpty()) {
+                optionVertex.setTargetLanguage(deckLanguages.getFirst());
+            }
+        }
+
         // Set retype correct answer
         optionVertex.setRetypeCorrectAnswer(command.getRetypeCorrectAnswer() != null ? 
                 command.getRetypeCorrectAnswer() : false);
@@ -58,6 +73,18 @@ public class CreateLearnFlashcardSessionCommandHandler implements CommandHandler
                 command.getIncludeListeningExercises() : false);
         optionVertex.setIncludePronunciationExercises(command.getIncludePronunciationExercises() != null ? 
                 command.getIncludePronunciationExercises() : true);
+
+        // Set shuffle flashcards
+        optionVertex.setShuffleFlashcards(command.getShuffleFlashcards() != null ? 
+                command.getShuffleFlashcards() : false);
+
+        // Set target language
+        if (command.getTargetLanguageId() != null) {
+            var targetLanguage = LanguageVertex.findById(traversalSource, command.getTargetLanguageId());
+            if (targetLanguage != null) {
+                optionVertex.setTargetLanguage(targetLanguage);
+            }
+        }
 
         // Add exercise types
         if (command.getExerciseTypeIds() != null && !command.getExerciseTypeIds().isEmpty()) {

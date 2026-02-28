@@ -31,7 +31,12 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
 
         model.setAvailableAnswerLanguages(getFlashcardLanguages(optionsVertex));
         model.setAnswerLanguageIds(getAnswerLanguageIds(optionsVertex));
+        
+        var targetLanguage = optionsVertex.getTargetLanguage();
+        model.setTargetLanguageId(targetLanguage != null ? targetLanguage.getId() : null);
+        
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
+        model.setShuffleFlashcardsEnabled(optionsVertex.getShuffleFlashcards());
 
         model.setIncludeReviewExercises(optionsVertex.getIncludeReviewExercises());
         model.setIncludeMultipleChoiceExercises(optionsVertex.getIncludeMultipleChoiceExercises());
@@ -59,6 +64,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         model.setInitiallyHideOptions(optionsVertex.getInitiallyHideOptions());
         model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
         model.setAvailableFlashcardLanguages(getFlashcardLanguages(optionsVertex));
+        model.setShuffleFlashcardsEnabled(optionsVertex.getShuffleFlashcards());
 
         return model;
     }
@@ -70,6 +76,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         model.setAvailableAnswerLanguages(getFlashcardLanguages(optionsVertex));
         model.setAnswerLanguageId(getAnswerLanguageIds(optionsVertex)[0]);
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
+        model.setShuffleFlashcardsEnabled(optionsVertex.getShuffleFlashcards());
 
         return model;
     }

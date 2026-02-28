@@ -3,7 +3,7 @@ package com.explik.diybirdyapp.service;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
-import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseCreationContext;
+import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationContext;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
@@ -37,7 +37,10 @@ public class ExerciseSessionService {
 
     public ExerciseSessionDto add(ExerciseSessionDto model) {
         var sessionType = model.getType();
+        
         var sessionManager = sessionOperationProvider.get(sessionType);
+        if (sessionManager == null)
+            throw new IllegalArgumentException("No session manager found for type " + sessionType);
 
         return sessionManager.init(traversalSource, ExerciseCreationContext.createDefault(model));
     }

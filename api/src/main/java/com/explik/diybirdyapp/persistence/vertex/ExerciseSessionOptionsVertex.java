@@ -22,10 +22,12 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_INCLUDE_LISTENING_EXERCISES = "includeListeningExercises";
     public final static String PROPERTY_INCLUDE_PRONUNCIATION_EXERCISES = "includePronunciationExercises";
     public final static String PROPERTY_RETYPE_CORRECT_ANSWER = "retypeCorrectAnswer";
+    public final static String PROPERTY_SHUFFLE_FLASHCARDS = "shuffleFlashcards";
     public final static String PROPERTY_ALGORITHM = "algorithm";
     public final static String PROPERTY_INITIALLY_HIDE_OPTIONS = "initiallyHideOptions";
 
     public final static String EDGE_ANSWER_LANGUAGE = "hasAnswerLanguage";
+    public final static String EDGE_TARGET_LANGUAGE = "hasTargetLanguage";
     public final static String EDGE_EXERCISE_TYPES = "hasExerciseType";
 
     public String getId() {
@@ -71,6 +73,18 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setInitialFlashcardLanguageId(String initialFlashcardLanguageId) {
         setProperty(PROPERTY_INITIAL_FLASHCARD_LANGUAGE_ID, initialFlashcardLanguageId);
+    }
+
+    public LanguageVertex getTargetLanguage() {
+        return VertexHelper.getOptionalOutgoingModel(this, EDGE_TARGET_LANGUAGE, LanguageVertex::new);
+    }
+
+    public void setTargetLanguage(LanguageVertex language) {
+        addEdgeOneToOne(EDGE_TARGET_LANGUAGE, language);
+    }
+
+    public void removeTargetLanguage() {
+        removeEdges(EDGE_TARGET_LANGUAGE);
     }
 
     public String getAlgorithm() {
@@ -127,6 +141,14 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void setInitiallyHideOptions(boolean initiallyHideOptions) {
         setProperty(PROPERTY_INITIALLY_HIDE_OPTIONS, initiallyHideOptions);
+    }
+
+    public boolean getShuffleFlashcards() {
+        return getProperty(PROPERTY_SHUFFLE_FLASHCARDS, false);
+    }
+
+    public void setShuffleFlashcards(boolean shuffleFlashcards) {
+        setProperty(PROPERTY_SHUFFLE_FLASHCARDS, shuffleFlashcards);
     }
 
     public List<LanguageVertex> getAnswerLanguages() {

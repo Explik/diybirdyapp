@@ -1,6 +1,14 @@
 <form [formGroup]="form" class="session-options-learn-flashcard" class="min-h-48">
 	<div class="mb-4">
 		<app-form-field>
+			<app-label i18n>Target language</app-label>
+			<select formControlName="targetLanguageId" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+				<option *ngFor="let lang of availableAnswerLanguages" [value]="lang.id">
+					{{ formatLanguageName(lang) }}
+				</option>
+			</select>
+		</app-form-field>
+		<app-form-field>
 			<app-label i18n>Answer languages</app-label>
 			<div formArrayName="answerLanguageIds">
 				<div *ngFor="let lang of availableAnswerLanguages; let i = index" class="flex items-center mb-2">
@@ -67,6 +75,15 @@
 			<div class="flex items-center justify-between">
 				<app-label i18n>Retype correct answer</app-label>
 				<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
+			</div>
+		</app-form-field>
+	</div>
+
+	<div>
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Shuffle flashcards</app-label>
+				<app-slide-toogle formControlName="shuffleFlashcardsEnabled"></app-slide-toogle>
 			</div>
 		</app-form-field>
 	</div>
