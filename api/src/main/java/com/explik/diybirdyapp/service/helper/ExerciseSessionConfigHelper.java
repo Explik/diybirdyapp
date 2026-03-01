@@ -82,11 +82,20 @@ public class ExerciseSessionConfigHelper {
     }
 
     private void updateLearnSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsLearnFlashcardsDto model) {
-        if (model.getAnswerLanguageIds() != null && model.getAnswerLanguageIds().length > 0) {
-            var languages = getLanguagesByIds(model.getAnswerLanguageIds());
+        if (model.getMultipleChoiceAnswerLanguageIds() != null && model.getMultipleChoiceAnswerLanguageIds().length > 0) {
+            var languages = getLanguagesByIds(model.getMultipleChoiceAnswerLanguageIds());
+            vertex.getMultipleChoiceAnswerLanguages().forEach(vertex::removeMultipleChoiceAnswerLanguage);
+            languages.forEach(vertex::addMultipleChoiceAnswerLanguage);
+        } else {
+            vertex.getMultipleChoiceAnswerLanguages().forEach(vertex::removeMultipleChoiceAnswerLanguage);
+        }
 
-            vertex.getAnswerLanguages().forEach(vertex::removeAnswerLanguage);
-            languages.forEach(vertex::addAnswerLanguage);
+        if (model.getWritingAnswerLanguageIds() != null && model.getWritingAnswerLanguageIds().length > 0) {
+            var languages = getLanguagesByIds(model.getWritingAnswerLanguageIds());
+            vertex.getWritingAnswerLanguages().forEach(vertex::removeWritingAnswerLanguage);
+            languages.forEach(vertex::addWritingAnswerLanguage);
+        } else {
+            vertex.getWritingAnswerLanguages().forEach(vertex::removeWritingAnswerLanguage);
         }
 
         vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());

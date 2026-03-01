@@ -121,4 +121,64 @@ public class ExerciseSessionCommandHelper {
             }
         }
     }
+
+    /**
+     * Adds multiple-choice answer languages to the options vertex.
+     *
+     * @param traversalSource the graph traversal source
+     * @param optionVertex the options vertex
+     * @param answerLanguageIds the answer language IDs (uses all deck languages if null/empty)
+     * @param flashcardDeckVertex the flashcard deck vertex
+     */
+    public static void addMultipleChoiceAnswerLanguages(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionOptionsVertex optionVertex,
+            List<String> answerLanguageIds,
+            FlashcardDeckVertex flashcardDeckVertex) {
+
+        var flashcardLanguages = flashcardDeckVertex.getFlashcardLanguages();
+
+        if (answerLanguageIds != null && !answerLanguageIds.isEmpty()) {
+            for (String languageId : answerLanguageIds) {
+                var languageVertex = LanguageVertex.findById(traversalSource, languageId);
+                if (languageVertex != null) {
+                    optionVertex.addMultipleChoiceAnswerLanguage(languageVertex);
+                }
+            }
+        } else if (!flashcardLanguages.isEmpty()) {
+            for (LanguageVertex language : flashcardLanguages) {
+                optionVertex.addMultipleChoiceAnswerLanguage(language);
+            }
+        }
+    }
+
+    /**
+     * Adds writing answer languages to the options vertex.
+     *
+     * @param traversalSource the graph traversal source
+     * @param optionVertex the options vertex
+     * @param answerLanguageIds the answer language IDs (uses all deck languages if null/empty)
+     * @param flashcardDeckVertex the flashcard deck vertex
+     */
+    public static void addWritingAnswerLanguages(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionOptionsVertex optionVertex,
+            List<String> answerLanguageIds,
+            FlashcardDeckVertex flashcardDeckVertex) {
+
+        var flashcardLanguages = flashcardDeckVertex.getFlashcardLanguages();
+
+        if (answerLanguageIds != null && !answerLanguageIds.isEmpty()) {
+            for (String languageId : answerLanguageIds) {
+                var languageVertex = LanguageVertex.findById(traversalSource, languageId);
+                if (languageVertex != null) {
+                    optionVertex.addWritingAnswerLanguage(languageVertex);
+                }
+            }
+        } else if (!flashcardLanguages.isEmpty()) {
+            for (LanguageVertex language : flashcardLanguages) {
+                optionVertex.addWritingAnswerLanguage(language);
+            }
+        }
+    }
 }

@@ -30,8 +30,9 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         applyCommonProperties(optionsVertex, model);
 
         model.setAvailableAnswerLanguages(getFlashcardLanguages(optionsVertex));
-        model.setAnswerLanguageIds(getAnswerLanguageIds(optionsVertex));
-        
+        model.setMultipleChoiceAnswerLanguageIds(getMultipleChoiceAnswerLanguageIds(optionsVertex));
+        model.setWritingAnswerLanguageIds(getWritingAnswerLanguageIds(optionsVertex));
+
         var targetLanguage = optionsVertex.getTargetLanguage();
         model.setTargetLanguageId(targetLanguage != null ? targetLanguage.getId() : null);
         
@@ -87,6 +88,18 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
 
     private String[] getAnswerLanguageIds(ExerciseSessionOptionsVertex optionsVertex) {
         return optionsVertex.getAnswerLanguages().stream()
+                .map(LanguageVertex::getId)
+                .toArray(String[]::new);
+    }
+
+    private String[] getMultipleChoiceAnswerLanguageIds(ExerciseSessionOptionsVertex optionsVertex) {
+        return optionsVertex.getMultipleChoiceAnswerLanguages().stream()
+                .map(LanguageVertex::getId)
+                .toArray(String[]::new);
+    }
+
+    private String[] getWritingAnswerLanguageIds(ExerciseSessionOptionsVertex optionsVertex) {
+        return optionsVertex.getWritingAnswerLanguages().stream()
                 .map(LanguageVertex::getId)
                 .toArray(String[]::new);
     }

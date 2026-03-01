@@ -1,4 +1,6 @@
-<form [formGroup]="form" class="session-options-learn-flashcard" class="min-h-48">
+<form [formGroup]="form" class="session-options-learn-flashcard min-h-48">
+
+	<!-- General options -->
 	<div class="mb-4">
 		<app-form-field>
 			<app-label i18n>Target language</app-label>
@@ -8,73 +10,89 @@
 				</option>
 			</select>
 		</app-form-field>
-		<app-form-field>
-			<app-label i18n>Answer languages</app-label>
-			<div formArrayName="answerLanguageIds">
-				<div *ngFor="let lang of availableAnswerLanguages; let i = index" class="flex items-center mb-2">
-					<input type="checkbox" [formControlName]="i" id="ans-{{i}}" />
-					<label for="ans-{{i}}" class="ml-2">{{ formatLanguageName(lang) }}</label>
-				</div>
-			</div>
-			<app-form-error *ngIf="answerLanguageIds.errors?.['atLeastOneRequired']" i18n>
-				Please select at least one answer language
-			</app-form-error>
-		</app-form-field>
-
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Review exercises</app-label>
-				<app-slide-toogle formControlName="includeReviewExercises"></app-slide-toogle>
-			</div>
-		</app-form-field>
-
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Multiple choice exercises</app-label>
-				<app-slide-toogle formControlName="includeMultipleChoiceExercises"></app-slide-toogle>
-			</div>
-		</app-form-field>
-
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Writing exercises</app-label>
-				<app-slide-toogle formControlName="includeWritingExercises"></app-slide-toogle>
-			</div>
-		</app-form-field>
-
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Listening exercises</app-label>
-				<app-slide-toogle formControlName="includeListeningExercises"></app-slide-toogle>
-			</div>
-		</app-form-field>
-
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Pronunciation exercises</app-label>
-				<app-slide-toogle formControlName="includePronunciationExercises"></app-slide-toogle>
-			</div>
-		</app-form-field>
-
-		<app-form-error *ngIf="form.errors?.['atLeastOneExerciseTypeRequired']" i18n>
-			Please select at least one exercise type
-		</app-form-error>
 	</div>
 
-	<div>
+	<!-- Exercise sections -->
+	<div class="mb-2 border border-gray-200 rounded-md overflow-hidden">
+		<!-- Review exercises -->
+		<div class="exercise-section">
+			<div class="flex items-center justify-between px-4 py-3 bg-gray-50">
+				<app-label i18n class="font-medium">Review exercises</app-label>
+				<app-slide-toogle formControlName="includeReviewExercises"></app-slide-toogle>
+			</div>
+		</div>
+
+		<!-- Multiple choice exercises -->
+		<div class="exercise-section border-t border-gray-200">
+			<div class="flex items-center justify-between px-4 py-3 bg-gray-50">
+				<app-label i18n class="font-medium">Multiple choice exercises</app-label>
+				<app-slide-toogle formControlName="includeMultipleChoiceExercises"></app-slide-toogle>
+			</div>
+			<div *ngIf="form.get('includeMultipleChoiceExercises')?.value" class="px-4 py-3 space-y-3">
+				<app-form-field>
+					<app-label i18n>Answer languages</app-label>
+					<div formArrayName="multipleChoiceAnswerLanguageIds">
+						<div *ngFor="let lang of availableAnswerLanguages; let i = index" class="flex items-center mb-2">
+							<input type="checkbox" [formControlName]="i" id="mc-ans-{{i}}" />
+							<label for="mc-ans-{{i}}" class="ml-2">{{ formatLanguageName(lang) }}</label>
+						</div>
+					</div>
+				</app-form-field>
+			</div>
+		</div>
+
+		<!-- Writing exercises -->
+		<div class="exercise-section border-t border-gray-200">
+			<div class="flex items-center justify-between px-4 py-3 bg-gray-50">
+				<app-label i18n class="font-medium">Writing exercises</app-label>
+				<app-slide-toogle formControlName="includeWritingExercises"></app-slide-toogle>
+			</div>
+			<div *ngIf="form.get('includeWritingExercises')?.value" class="px-4 py-3 space-y-3">
+				<app-form-field>
+					<app-label i18n>Answer languages</app-label>
+					<div formArrayName="writingAnswerLanguageIds">
+						<div *ngFor="let lang of availableAnswerLanguages; let i = index" class="flex items-center mb-2">
+							<input type="checkbox" [formControlName]="i" id="writing-ans-{{i}}" />
+							<label for="writing-ans-{{i}}" class="ml-2">{{ formatLanguageName(lang) }}</label>
+						</div>
+					</div>
+				</app-form-field>
+				<app-form-field>
+					<div class="flex items-center justify-between">
+						<app-label i18n>Retype correct answer</app-label>
+						<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
+					</div>
+				</app-form-field>
+			</div>
+		</div>
+
+		<!-- Listening exercises -->
+		<div class="exercise-section border-t border-gray-200">
+			<div class="flex items-center justify-between px-4 py-3 bg-gray-50">
+				<app-label i18n class="font-medium">Listening exercises</app-label>
+				<app-slide-toogle formControlName="includeListeningExercises"></app-slide-toogle>
+			</div>
+		</div>
+
+		<!-- Pronunciation exercises -->
+		<div class="exercise-section border-t border-gray-200">
+			<div class="flex items-center justify-between px-4 py-3 bg-gray-50">
+				<app-label i18n class="font-medium">Pronunciation exercises</app-label>
+				<app-slide-toogle formControlName="includePronunciationExercises"></app-slide-toogle>
+			</div>
+		</div>
+	</div>
+
+	<app-form-error *ngIf="form.errors?.['atLeastOneExerciseTypeRequired']" i18n>
+		Please select at least one exercise type
+	</app-form-error>
+
+	<!-- General options (continued) -->
+	<div class="mt-4">
 		<app-form-field>
 			<div class="flex items-center justify-between">
 				<app-label i18n>Text to speech</app-label>
 				<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
-
-	<div>
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Retype correct answer</app-label>
-				<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
 			</div>
 		</app-form-field>
 	</div>
@@ -87,4 +105,5 @@
 			</div>
 		</app-form-field>
 	</div>
+
 </form>

@@ -27,7 +27,8 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
 
   constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
-      answerLanguageIds: this.fb.array([], this.atLeastOneSelectedValidator),
+      multipleChoiceAnswerLanguageIds: this.fb.array([]),
+      writingAnswerLanguageIds: this.fb.array([]),
       targetLanguageId: [''],
       includeReviewExercises: [false],
       includeMultipleChoiceExercises: [false],
@@ -59,9 +60,13 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
     this.sub?.unsubscribe();
   }
 
-  // helper to expose form array in template
-  get answerLanguageIds(): FormArray {
-    return this.form.get('answerLanguageIds') as FormArray;
+  // helpers to expose form arrays in template
+  get multipleChoiceAnswerLanguageIds(): FormArray {
+    return this.form.get('multipleChoiceAnswerLanguageIds') as FormArray;
+  }
+
+  get writingAnswerLanguageIds(): FormArray {
+    return this.form.get('writingAnswerLanguageIds') as FormArray;
   }
 
   private patchFormFromOptions() {
@@ -69,13 +74,22 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
 
     this.availableAnswerLanguages = options.availableAnswerLanguages || [];
 
-    // Rebuild answerLanguageIds form array
-    const answerLangArray = this.form.get('answerLanguageIds') as FormArray;
-    answerLangArray.clear({ emitEvent: false });
+    // Rebuild multipleChoiceAnswerLanguageIds form array
+    const mcLangArray = this.form.get('multipleChoiceAnswerLanguageIds') as FormArray;
+    mcLangArray.clear({ emitEvent: false });
     this.availableAnswerLanguages.forEach(lang => {
       const langId = lang.id || '';
-      const isSelected = options.answerLanguageIds?.includes(langId) || false;
-      answerLangArray.push(this.fb.control(isSelected), { emitEvent: false });
+      const isSelected = options.multipleChoiceAnswerLanguageIds?.includes(langId) || false;
+      mcLangArray.push(this.fb.control(isSelected), { emitEvent: false });
+    });
+
+    // Rebuild writingAnswerLanguageIds form array
+    const writingLangArray = this.form.get('writingAnswerLanguageIds') as FormArray;
+    writingLangArray.clear({ emitEvent: false });
+    this.availableAnswerLanguages.forEach(lang => {
+      const langId = lang.id || '';
+      const isSelected = options.writingAnswerLanguageIds?.includes(langId) || false;
+      writingLangArray.push(this.fb.control(isSelected), { emitEvent: false });
     });
 
     this.form.patchValue({
@@ -92,16 +106,23 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
   }
 
   private buildDtoFromForm(): ExerciseSessionOptionsLearnFlashcardsDto {
-    const answerLangArray = this.form.get('answerLanguageIds') as FormArray;
-    const selectedLangs = this.availableAnswerLanguages.filter((_, i) => {
-      const control = answerLangArray.at(i);
+    const mcLangArray = this.form.get('multipleChoiceAnswerLanguageIds') as FormArray;
+    const selectedMcLangs = this.availableAnswerLanguages.filter((_, i) => {
+      const control = mcLangArray.at(i);
+      return control && control.value;
+    });
+
+    const writingLangArray = this.form.get('writingAnswerLanguageIds') as FormArray;
+    const selectedWritingLangs = this.availableAnswerLanguages.filter((_, i) => {
+      const control = writingLangArray.at(i);
       return control && control.value;
     });
 
     return {
       type: this.options?.type,
       targetLanguageId: this.form.get('targetLanguageId')?.value || undefined,
-      answerLanguageIds: selectedLangs.map(lang => lang.id),
+      multipleChoiceAnswerLanguageIds: selectedMcLangs.map(lang => lang.id),
+      writingAnswerLanguageIds: selectedWritingLangs.map(lang => lang.id),
       includeReviewExercises: !!this.form.get('includeReviewExercises')?.value,
       includeMultipleChoiceExercises: !!this.form.get('includeMultipleChoiceExercises')?.value,
       includeWritingExercises: !!this.form.get('includeWritingExercises')?.value,
@@ -118,12 +139,6 @@ export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges,
       return this.displayNames.of(language.isoCode) || 'N/A';
     }
     return 'N/A';
-  }
-
-  private atLeastOneSelectedValidator(control: AbstractControl): ValidationErrors | null {
-    const formArray = control as FormArray;
-    const hasAtLeastOne = formArray.controls.some(ctrl => ctrl.value === true);
-    return hasAtLeastOne ? null : { atLeastOneRequired: true };
   }
 
   private atLeastOneExerciseTypeValidator(control: AbstractControl): ValidationErrors | null {

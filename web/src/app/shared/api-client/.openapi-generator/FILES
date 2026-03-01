@@ -6,6 +6,8 @@ api/authentication-controller.service.ts
 api/authentication-controller.serviceInterface.ts
 api/configuration-controller.service.ts
 api/configuration-controller.serviceInterface.ts
+api/exercise-answer-controller.service.ts
+api/exercise-answer-controller.serviceInterface.ts
 api/exercise-controller.service.ts
 api/exercise-controller.serviceInterface.ts
 api/exercise-session-controller.service.ts
