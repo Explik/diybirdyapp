@@ -5,6 +5,9 @@ public class ExerciseSessionProgressDto {
     private int percentage;
     private Integer currentBatch;
     private Boolean hasMoreBatches;
+    private Integer reviewNewPercentage;
+    private Integer reviewLearningPercentage;
+    private Integer reviewLongTermPercentage;
 
     public String getType() {
         return type;
@@ -36,5 +39,29 @@ public class ExerciseSessionProgressDto {
 
     public void setHasMoreBatches(Boolean hasMoreBatches) {
         this.hasMoreBatches = hasMoreBatches;
+    }
+
+    public Integer getReviewNewPercentage() {
+        return reviewNewPercentage;
+    }
+
+    public void setReviewNewPercentage(Integer reviewNewPercentage) {
+        this.reviewNewPercentage = reviewNewPercentage;
+    }
+
+    public Integer getReviewLearningPercentage() {
+        return reviewLearningPercentage;
+    }
+
+    public void setReviewLearningPercentage(Integer reviewLearningPercentage) {
+        this.reviewLearningPercentage = reviewLearningPercentage;
+    }
+
+    public Integer getReviewLongTermPercentage() {
+        return reviewLongTermPercentage;
+    }
+
+    public void setReviewLongTermPercentage(Integer reviewLongTermPercentage) {
+        this.reviewLongTermPercentage = reviewLongTermPercentage;
     }
 }

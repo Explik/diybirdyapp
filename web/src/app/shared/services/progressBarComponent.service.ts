@@ -2,6 +2,7 @@ import { Injectable, Type } from "@angular/core";
 import { Observable, map } from "rxjs";
 import { ExerciseProgressBarComponent } from "../../modules/exercise/components/exercise-progress-bar/exercise-progress-bar.component";
 import { ExerciseBatchProgressBarComponent } from "../../modules/exercise/components/exercise-batch-progress-bar/exercise-batch-progress-bar.component";
+import { ExerciseReviewProgressBarComponent } from "../../modules/exercise/components/exercise-review-progress-bar/exercise-review-progress-bar.component";
 import { ExerciseSessionProgressDto } from "../api-client";
 
 @Injectable({
@@ -25,6 +26,8 @@ export class ProgressBarComponentService {
                 return ExerciseProgressBarComponent;
             case "batch-percentage":
                 return ExerciseBatchProgressBarComponent;
+            case "review-progress":
+                return ExerciseReviewProgressBarComponent;
             default:
                 return ExerciseProgressBarComponent;
         }

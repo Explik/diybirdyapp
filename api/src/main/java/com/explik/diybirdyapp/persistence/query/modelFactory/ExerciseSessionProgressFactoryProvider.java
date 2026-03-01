@@ -17,6 +17,9 @@ public class ExerciseSessionProgressFactoryProvider {
     
     @Autowired
     private LearnFlashcardProgressFactory learnFlashcardProgressFactory;
+
+    @Autowired
+    private ReviewFlashcardProgressFactory reviewFlashcardProgressFactory;
     
     /**
      * Default implementation for sessions without progress tracking.
@@ -39,6 +42,7 @@ public class ExerciseSessionProgressFactoryProvider {
             case ExerciseSessionTypes.SELECT_FLASHCARD_DECK,
                  ExerciseSessionTypes.WRITE_FLASHCARD -> flashcardDeckProgressFactory;
             case ExerciseSessionTypes.LEARN_FLASHCARD -> learnFlashcardProgressFactory;
+            case ExerciseSessionTypes.REVIEW_FLASHCARD -> reviewFlashcardProgressFactory;
             default -> defaultProgressFactory;
         };
     }
