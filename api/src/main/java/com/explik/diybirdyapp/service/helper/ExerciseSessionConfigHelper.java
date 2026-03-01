@@ -157,6 +157,8 @@ public class ExerciseSessionConfigHelper {
     private void updateReviewSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsReviewFlashcardsDto model) {
         if (model.getInitialFlashcardLanguageId() != null)
             vertex.setInitialFlashcardLanguageId(model.getInitialFlashcardLanguageId());
+        if (model.getAlgorithm() != null)
+            vertex.setAlgorithm(model.getAlgorithm());
     }
 
     private void updateSelectSessionOptions(ExerciseSessionOptionsVertex vertex, ExerciseSessionOptionsSelectFlashcardsDto model) {

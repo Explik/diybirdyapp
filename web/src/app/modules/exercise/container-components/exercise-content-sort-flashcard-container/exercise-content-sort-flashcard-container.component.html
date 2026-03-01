@@ -1,0 +1,20 @@
+<app-instruction
+    i18n-title title="Do you know this?"
+    i18n-instruction instruction="Sort this flashcard into a pile."></app-instruction>
+
+<app-dynamic-flashcard-content *ngIf="content" [data]="content" class="block mb-6" />
+
+<div class="flex gap-4 justify-center mt-4">
+  <button
+    (click)="handlePileSelected('dont-know')"
+    class="flex-1 py-3 px-4 rounded-lg border-2 border-red-300 bg-red-50 text-red-700 font-medium hover:bg-red-100 active:bg-red-200 transition-colors"
+    i18n>
+    I don't know this
+  </button>
+  <button
+    (click)="handlePileSelected('know')"
+    class="flex-1 py-3 px-4 rounded-lg border-2 border-green-300 bg-green-50 text-green-700 font-medium hover:bg-green-100 active:bg-green-200 transition-colors"
+    i18n>
+    I know this
+  </button>
+</div>

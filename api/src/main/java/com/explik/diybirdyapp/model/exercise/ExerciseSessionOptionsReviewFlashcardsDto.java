@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.ExerciseSessionTypes;
 public class ExerciseSessionOptionsReviewFlashcardsDto extends ExerciseSessionOptionsDto {
     private String initialFlashcardLanguageId;
     private ExerciseSessionOptionsLanguageOptionDto[] availableFlashcardLanguages = new ExerciseSessionOptionsLanguageOptionDto[0];
+    private String algorithm;
 
     public ExerciseSessionOptionsReviewFlashcardsDto() {
         super(ExerciseSessionTypes.REVIEW_FLASHCARD);
@@ -24,5 +25,13 @@ public class ExerciseSessionOptionsReviewFlashcardsDto extends ExerciseSessionOp
 
     public void setAvailableFlashcardLanguages(ExerciseSessionOptionsLanguageOptionDto[] availableFlashcardLanguageIds) {
         this.availableFlashcardLanguages = availableFlashcardLanguageIds;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
     }
 }

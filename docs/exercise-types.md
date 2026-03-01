@@ -3,6 +3,7 @@ This documents contain a description of each of the exercsie types.
 
 All exercise types: 
 - Review flashcard exercise 
+- Sort flashcard exercise
 - Select flashcard exercise 
 - Write flashcard exercise 
 
@@ -28,6 +29,14 @@ Components:
 - Instruction 
 - Flashcard content 
 - Recognition rating input 
+
+## Sort flashcard exercise
+Components:
+- Instruction
+- Flashcard content (both sides)
+- Binary sort input (know / don't know)
+
+Evaluation criteria: None
 
 ## Select flashcard exercise 
 Components: 

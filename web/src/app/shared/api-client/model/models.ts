@@ -28,6 +28,7 @@ export * from './exercise-input-record-video-dto';
 export * from './exercise-input-select-options-dto';
 export * from './exercise-input-select-placeholders-dto';
 export * from './exercise-input-select-review-options-dto';
+export * from './exercise-input-sort-options-dto';
 export * from './exercise-input-write-placeholders-dto';
 export * from './exercise-input-write-text-dto';
 export * from './exercise-session-dto';

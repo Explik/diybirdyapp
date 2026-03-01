@@ -19,6 +19,7 @@ import jakarta.validation.constraints.NotNull;
         @JsonSubTypes.Type(value = ExerciseInputSelectOptionsDto.class, name = ExerciseInputTypes.SELECT_OPTIONS),
         @JsonSubTypes.Type(value = ExerciseInputSelectPlaceholdersDto.class, name = ExerciseInputTypes.SELECT_PLACEHOLDERS),
         @JsonSubTypes.Type(value = ExerciseInputSelectReviewOptionsDto.class, name = ExerciseInputTypes.RECOGNIZABILITY_RATING),
+        @JsonSubTypes.Type(value = ExerciseInputSortOptionsDto.class, name = ExerciseInputTypes.SORT_OPTIONS),
         @JsonSubTypes.Type(value = ExerciseInputWritePlaceholdersDto.class, name = ExerciseInputTypes.WRITE_PLACEHOLDERS),
         @JsonSubTypes.Type(value = ExerciseInputWriteTextDto.class, name = ExerciseInputTypes.WRITE_TEXT)
 })

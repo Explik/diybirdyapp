@@ -28,7 +28,8 @@ export class SessionOptionsReviewFlashcardComponent implements OnInit, OnChanges
   constructor(private fb: FormBuilder, @Inject(LOCALE_ID) private locale: string) {
     this.form = this.fb.group({
       initialFlashcardLanguageId: [''],
-      textToSpeechEnabled: [false]
+      textToSpeechEnabled: [false],
+      algorithm: ['SuperMemo2']
     });
     this.displayNames = new Intl.DisplayNames([this.locale], { type: 'language' });
   }
@@ -56,7 +57,8 @@ export class SessionOptionsReviewFlashcardComponent implements OnInit, OnChanges
 
     this.form.patchValue({
       initialFlashcardLanguageId: options.initialFlashcardLanguageId || '',
-      textToSpeechEnabled: options.textToSpeechEnabled || false
+      textToSpeechEnabled: options.textToSpeechEnabled || false,
+      algorithm: options.algorithm || 'SuperMemo2'
     }, { emitEvent: false });
   }
 
@@ -64,7 +66,8 @@ export class SessionOptionsReviewFlashcardComponent implements OnInit, OnChanges
     return {
       type: this.options?.type,
       initialFlashcardLanguageId: this.form.get('initialFlashcardLanguageId')?.value || '',
-      textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value
+      textToSpeechEnabled: !!this.form.get('textToSpeechEnabled')?.value,
+      algorithm: this.form.get('algorithm')?.value || 'SuperMemo2'
     } as ExerciseSessionOptionsReviewFlashcardsDto;
   }
 

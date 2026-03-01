@@ -59,6 +59,11 @@ public class ExerciseSchemas {
             .withInputType(ExerciseInputTypes.WRITE_TEXT)
             .withEvaluationType(ExerciseEvaluationTypes.CORRECT_TEXT);
 
+    public static final ExerciseSchema SORT_FLASHCARD_EXERCISE = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.SORT_FLASHCARD)
+            .withContentType(ContentTypes.FLASHCARD)
+            .withEvaluationType(ExerciseEvaluationTypes.BINARY_SORT);
+
     public static final ExerciseSchema WRITE_SENTENCE_USING_WORD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.WRITE_SENTENCE_USING_WORD)
             .withContentType(ContentTypes.TEXT)
@@ -86,6 +91,7 @@ public class ExerciseSchemas {
             case ExerciseTypes.WRITE_TRANSLATED_SENTENCE -> WRITE_TRANSLATED_SENTENCE_EXERCISE;
             case ExerciseTypes.LISTEN_AND_WRITE -> LISTEN_AND_WRITE_EXERCISE;
             case ExerciseTypes.LISTEN_AND_SELECT -> LISTEN_AND_SELECT_EXERCISE;
+            case ExerciseTypes.SORT_FLASHCARD -> SORT_FLASHCARD_EXERCISE;
             default -> throw new RuntimeException("Unknown exercise type: " + type);
         };
     }

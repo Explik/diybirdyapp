@@ -16,6 +16,7 @@ import { ExerciseContentTapPairsContainerComponent } from "../container-componen
 import { ExerciseContentMultiStageTapPairsContainerComponent } from "../container-components/exercise-content-multi-stage-tap-pairs-container/exercise-content-multi-stage-tap-pairs-container.component";
 import { ExerciseContentListenAndSelectContainerComponent } from "../container-components/exercise-content-listen-and-select-container/exercise-content-listen-and-select-container.component";
 import { ExerciseContentListenAndWriteContainerComponent } from "../container-components/exercise-content-listen-and-write-container/exercise-content-listen-and-write-container.component";
+import { ExerciseContentSortFlashcardContainerComponent } from "../container-components/exercise-content-sort-flashcard-container/exercise-content-sort-flashcard-container.component";
 
 @Injectable({
     providedIn: 'root'
@@ -52,6 +53,8 @@ export class ExerciseComponentService {
                 return ExerciseContentMultiStageTapPairsContainerComponent;
             case "review-flashcard-exercise":
                 return ExerciseContentReviewFlashcardContainerComponent;
+            case "sort-flashcard-exercise":
+                return ExerciseContentSortFlashcardContainerComponent;
             case "pronounce-flashcard-exercise":
                 return ExerciseContentPronounceFlashcardContainerComponent;
             case "listen-and-select-exercise":

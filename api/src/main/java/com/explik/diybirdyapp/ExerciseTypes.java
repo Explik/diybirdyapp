@@ -14,21 +14,23 @@ public class ExerciseTypes {
     public static final String LISTEN_AND_WRITE = "listen-and-write-exercise";
     public static final String TAP_PAIRS = "tap-pairs-exercise";
     public static final String MULTI_STAGE_TAP_PAIRS = "multi-stage-tap-pairs-exercise";
+    public static final String SORT_FLASHCARD = "sort-flashcard-exercise";
 
     public static String[] getAll() {
         return new String[] {
                 ARRANGE_WORDS_IN_TRANSLATION,
-            WRITE_SENTENCE_USING_WORD,
-            WRITE_TRANSLATED_SENTENCE,
-            MULTIPLE_CHOICE_TEXT,
-            WRITE_FLASHCARD,
-            REVIEW_FLASHCARD,
-            SELECT_FLASHCARD,
+                WRITE_SENTENCE_USING_WORD,
+                WRITE_TRANSLATED_SENTENCE,
+                MULTIPLE_CHOICE_TEXT,
+                WRITE_FLASHCARD,
+                REVIEW_FLASHCARD,
+                SELECT_FLASHCARD,
                 LISTEN_AND_SELECT,
                 LISTEN_AND_WRITE,
-            PRONOUNCE_FLASHCARD,
-            TAP_PAIRS,
-            MULTI_STAGE_TAP_PAIRS
+                PRONOUNCE_FLASHCARD,
+                TAP_PAIRS,
+                MULTI_STAGE_TAP_PAIRS,
+                SORT_FLASHCARD
         };
     }
 }

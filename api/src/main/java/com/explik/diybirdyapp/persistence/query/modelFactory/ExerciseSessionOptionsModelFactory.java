@@ -55,6 +55,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         applyCommonProperties(optionsVertex, model);
         model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
         model.setAvailableFlashcardLanguages(getFlashcardLanguages(optionsVertex));
+        model.setAlgorithm(optionsVertex.getAlgorithm());
 
         return model;
     }

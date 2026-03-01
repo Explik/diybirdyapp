@@ -11,4 +11,5 @@ public class ExerciseInputTypes {
     public static final String SELECT_OPTIONS = "multiple-choice";
     public static final String SELECT_PLACEHOLDERS = "select-placeholders";
     public static final String WRITE_PLACEHOLDERS = "write-placeholders";
+    public static final String SORT_OPTIONS = "sort-options";
 }
