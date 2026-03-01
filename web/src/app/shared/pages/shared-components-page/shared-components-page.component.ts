@@ -18,4 +18,7 @@ import { SlideToogleComponent } from "../../components/slide-toogle/slide-toogle
   imports: [FlashcardComponent, IconComponent, ProgressBarComponent, FormFieldComponent, LabelComponent, TextFieldComponent, SelectComponent, OptionComponent, ButtonComponent, RowButtonComponent, ContainerComponent, SlideToogleComponent],
   templateUrl: './shared-components-page.component.html'
 })
-export class SharedComponentsPageComponent { }
+export class SharedComponentsPageComponent { 
+  
+
+}

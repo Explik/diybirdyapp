@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom, take } from 'rxjs';
 import { Exercise, ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
-import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto, ExerciseSessionOptionsDto } from "../../../shared/api-client";
+import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto, ExerciseSessionOptionsDto, ExerciseSessionProgressDto } from "../../../shared/api-client";
 
 @Injectable({
     providedIn: 'root'
@@ -74,8 +74,8 @@ export class ExerciseService {
     }
 
     // Read functions
-    getProgress(): Observable<number> {
-        return this.session$.pipe(map(session => session?.progress?.percentage || 0));
+    getProgress(): Observable<ExerciseSessionProgressDto | undefined> {
+        return this.session$.pipe(map(session => session?.progress));
     }
     
     getState(): Observable<ExerciseStates> {

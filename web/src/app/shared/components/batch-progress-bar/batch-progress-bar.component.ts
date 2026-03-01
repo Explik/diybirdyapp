@@ -2,22 +2,31 @@ import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-progress-bar',
+  selector: 'app-batch-progress-bar',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './progress-bar.component.html',
-  styleUrl: './progress-bar.component.css'
+  templateUrl: './batch-progress-bar.component.html',
+  styleUrl: './batch-progress-bar.component.css'
 })
-export class ProgressBarComponent {
+export class BatchProgressBarComponent {
     @Input() set progress(value: number) {
       this._progress.set(value);
+    }
+    
+    @Input() set hasMoreBatches(value: boolean) {
+      this._hasMoreBatches.set(value);
     }
     
     get progress(): number {
       return this._progress();
     }
 
+    get hasMoreBatches(): boolean {
+      return this._hasMoreBatches();
+    }
+
     private _progress = signal(0);
+    private _hasMoreBatches = signal(false);
     
     getProgressBarColor() {
       const progress = this._progress();

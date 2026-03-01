@@ -12,5 +12,7 @@
 export interface ExerciseSessionProgressDto { 
     type?: string;
     percentage?: number;
+    currentBatch?: number;
+    hasMoreBatches?: boolean;
 }
 

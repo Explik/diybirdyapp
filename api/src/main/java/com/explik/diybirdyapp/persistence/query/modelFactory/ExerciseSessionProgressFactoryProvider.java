@@ -15,6 +15,9 @@ public class ExerciseSessionProgressFactoryProvider {
     @Autowired
     private FlashcardDeckProgressFactory flashcardDeckProgressFactory;
     
+    @Autowired
+    private LearnFlashcardProgressFactory learnFlashcardProgressFactory;
+    
     /**
      * Default implementation for sessions without progress tracking.
      */
@@ -35,6 +38,7 @@ public class ExerciseSessionProgressFactoryProvider {
         return switch (vertex.getType()) {
             case ExerciseSessionTypes.SELECT_FLASHCARD_DECK,
                  ExerciseSessionTypes.WRITE_FLASHCARD -> flashcardDeckProgressFactory;
+            case ExerciseSessionTypes.LEARN_FLASHCARD -> learnFlashcardProgressFactory;
             default -> defaultProgressFactory;
         };
     }
