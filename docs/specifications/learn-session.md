@@ -9,6 +9,7 @@ General exercise options:
 - Enable review exercises
 - Enable multiple-choice exercises
   - Answer languages (multiple-choice specific)
+  - Initially hide options
 - Enable writing exercises
   - Answer languages (writing specific)
   - Retype correct answer 

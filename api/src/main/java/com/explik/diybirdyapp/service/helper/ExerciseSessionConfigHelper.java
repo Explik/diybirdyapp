@@ -100,6 +100,7 @@ public class ExerciseSessionConfigHelper {
 
         vertex.setRetypeCorrectAnswer(model.getRetypeCorrectAnswerEnabled());
         vertex.setShuffleFlashcards(model.getShuffleFlashcardsEnabled());
+        vertex.setInitiallyHideOptions(model.getInitiallyHideChoices());
 
         // Set target language
         if (model.getTargetLanguageId() != null) {

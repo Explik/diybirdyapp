@@ -16,6 +16,7 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
 
     private boolean retypeCorrectAnswerEnabled;
     private boolean shuffleFlashcardsEnabled;
+    private boolean initiallyHideChoices;
 
     public ExerciseSessionOptionsLearnFlashcardsDto() {
         super(ExerciseSessionTypes.LEARN_FLASHCARD);
@@ -107,6 +108,14 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
 
     public void setShuffleFlashcardsEnabled(boolean shuffleFlashcardsEnabled) {
         this.shuffleFlashcardsEnabled = shuffleFlashcardsEnabled;
+    }
+
+    public boolean getInitiallyHideChoices() {
+        return initiallyHideChoices;
+    }
+
+    public void setInitiallyHideChoices(boolean initiallyHideChoices) {
+        this.initiallyHideChoices = initiallyHideChoices;
     }
 
     public record ExerciseTypeOption(String id, String name) { }

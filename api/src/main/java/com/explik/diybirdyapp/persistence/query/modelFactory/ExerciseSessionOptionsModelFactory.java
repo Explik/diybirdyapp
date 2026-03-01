@@ -38,6 +38,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
         model.setShuffleFlashcardsEnabled(optionsVertex.getShuffleFlashcards());
+        model.setInitiallyHideChoices(optionsVertex.getInitiallyHideOptions());
 
         model.setIncludeReviewExercises(optionsVertex.getIncludeReviewExercises());
         model.setIncludeMultipleChoiceExercises(optionsVertex.getIncludeMultipleChoiceExercises());
