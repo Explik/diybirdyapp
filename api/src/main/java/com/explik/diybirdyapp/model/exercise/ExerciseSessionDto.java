@@ -16,7 +16,6 @@ public class ExerciseSessionDto {
 
     private ExerciseSessionProgressDto progress;
 
-    @SuppressWarnings("unused")
     private ExerciseSessionOptionsDto options;
 
     public String getId() {
@@ -65,5 +64,13 @@ public class ExerciseSessionDto {
 
     public void setProgress(ExerciseSessionProgressDto progress) {
         this.progress = progress;
+    }
+
+    public ExerciseSessionOptionsDto getOptions() {
+        return options;
+    }
+
+    public void setOptions(ExerciseSessionOptionsDto options) {
+        this.options = options;
     }
 }

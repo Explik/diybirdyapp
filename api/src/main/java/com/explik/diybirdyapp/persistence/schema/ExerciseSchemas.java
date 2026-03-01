@@ -19,6 +19,11 @@ public class ExerciseSchemas {
             .withInputType(ExerciseInputTypes.PAIR_OPTIONS)
             .withEvaluationType(ExerciseEvaluationTypes.CORRECT_PAIRS);
 
+    public static final ExerciseSchema MULTI_STAGE_TAP_PAIRS_EXERCISE = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.MULTI_STAGE_TAP_PAIRS)
+            .withInputType(ExerciseInputTypes.MULTI_STAGE_PAIR_OPTIONS)
+            .withEvaluationType(ExerciseEvaluationTypes.MULTI_STAGE_CORRECT_PAIRS);
+
     public static final ExerciseSchema SELECT_FLASHCARD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.SELECT_FLASHCARD)
             .withContentType(ContentTypes.FLASHCARD_SIDE)
@@ -54,6 +59,11 @@ public class ExerciseSchemas {
             .withInputType(ExerciseInputTypes.WRITE_TEXT)
             .withEvaluationType(ExerciseEvaluationTypes.CORRECT_TEXT);
 
+    public static final ExerciseSchema SORT_FLASHCARD_EXERCISE = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.SORT_FLASHCARD)
+            .withContentType(ContentTypes.FLASHCARD)
+            .withEvaluationType(ExerciseEvaluationTypes.BINARY_SORT);
+
     public static final ExerciseSchema WRITE_SENTENCE_USING_WORD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.WRITE_SENTENCE_USING_WORD)
             .withContentType(ContentTypes.TEXT)
@@ -73,6 +83,7 @@ public class ExerciseSchemas {
             case ExerciseTypes.ARRANGE_WORDS_IN_TRANSLATION -> ARRANGE_WORDS_IN_TRANSLATION;
             case ExerciseTypes.SELECT_FLASHCARD -> SELECT_FLASHCARD_EXERCISE;
             case ExerciseTypes.TAP_PAIRS ->  TAP_PAIRS_EXERCISE;
+            case ExerciseTypes.MULTI_STAGE_TAP_PAIRS -> MULTI_STAGE_TAP_PAIRS_EXERCISE;
             case ExerciseTypes.PRONOUNCE_FLASHCARD -> PRONOUNCE_FLASHCARD_EXERCISE;
             case ExerciseTypes.REVIEW_FLASHCARD -> REVIEW_FLASHCARD_EXERCISE;
             case ExerciseTypes.WRITE_FLASHCARD -> WRITE_FLASHCARD_EXERCISE;
@@ -80,6 +91,7 @@ public class ExerciseSchemas {
             case ExerciseTypes.WRITE_TRANSLATED_SENTENCE -> WRITE_TRANSLATED_SENTENCE_EXERCISE;
             case ExerciseTypes.LISTEN_AND_WRITE -> LISTEN_AND_WRITE_EXERCISE;
             case ExerciseTypes.LISTEN_AND_SELECT -> LISTEN_AND_SELECT_EXERCISE;
+            case ExerciseTypes.SORT_FLASHCARD -> SORT_FLASHCARD_EXERCISE;
             default -> throw new RuntimeException("Unknown exercise type: " + type);
         };
     }

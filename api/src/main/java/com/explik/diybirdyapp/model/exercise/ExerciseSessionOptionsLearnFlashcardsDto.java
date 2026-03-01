@@ -3,7 +3,8 @@ package com.explik.diybirdyapp.model.exercise;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 
 public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOptionsDto {
-    private String[] answerLanguageIds = new String[0];
+    private String[] multipleChoiceAnswerLanguageIds = new String[0];
+    private String[] writingAnswerLanguageIds = new String[0];
     private ExerciseSessionOptionsLanguageOptionDto[] availableAnswerLanguage = new ExerciseSessionOptionsLanguageOptionDto[0];
     private String targetLanguageId;
 
@@ -15,17 +16,26 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
 
     private boolean retypeCorrectAnswerEnabled;
     private boolean shuffleFlashcardsEnabled;
+    private boolean initiallyHideChoices;
 
     public ExerciseSessionOptionsLearnFlashcardsDto() {
         super(ExerciseSessionTypes.LEARN_FLASHCARD);
     }
 
-    public String[] getAnswerLanguageIds() {
-        return answerLanguageIds;
+    public String[] getMultipleChoiceAnswerLanguageIds() {
+        return multipleChoiceAnswerLanguageIds;
     }
 
-    public void setAnswerLanguageIds(String[] answerLanguageIds) {
-        this.answerLanguageIds = answerLanguageIds;
+    public void setMultipleChoiceAnswerLanguageIds(String[] multipleChoiceAnswerLanguageIds) {
+        this.multipleChoiceAnswerLanguageIds = multipleChoiceAnswerLanguageIds;
+    }
+
+    public String[] getWritingAnswerLanguageIds() {
+        return writingAnswerLanguageIds;
+    }
+
+    public void setWritingAnswerLanguageIds(String[] writingAnswerLanguageIds) {
+        this.writingAnswerLanguageIds = writingAnswerLanguageIds;
     }
 
     public ExerciseSessionOptionsLanguageOptionDto[] getAvailableAnswerLanguages() {
@@ -98,6 +108,14 @@ public class ExerciseSessionOptionsLearnFlashcardsDto extends ExerciseSessionOpt
 
     public void setShuffleFlashcardsEnabled(boolean shuffleFlashcardsEnabled) {
         this.shuffleFlashcardsEnabled = shuffleFlashcardsEnabled;
+    }
+
+    public boolean getInitiallyHideChoices() {
+        return initiallyHideChoices;
+    }
+
+    public void setInitiallyHideChoices(boolean initiallyHideChoices) {
+        this.initiallyHideChoices = initiallyHideChoices;
     }
 
     public record ExerciseTypeOption(String id, String name) { }

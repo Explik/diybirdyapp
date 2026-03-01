@@ -1,0 +1,12 @@
+/* State classes applied via [ngClass] */
+.option { transition: background-color 0.15s ease; }
+
+.selected  { background-color: #b4d9f4; }
+.correct   { background-color: #b3fad1; }
+.incorrect { background-color: #f1c9c9; }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

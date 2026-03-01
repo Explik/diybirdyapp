@@ -30,13 +30,15 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         applyCommonProperties(optionsVertex, model);
 
         model.setAvailableAnswerLanguages(getFlashcardLanguages(optionsVertex));
-        model.setAnswerLanguageIds(getAnswerLanguageIds(optionsVertex));
-        
+        model.setMultipleChoiceAnswerLanguageIds(getMultipleChoiceAnswerLanguageIds(optionsVertex));
+        model.setWritingAnswerLanguageIds(getWritingAnswerLanguageIds(optionsVertex));
+
         var targetLanguage = optionsVertex.getTargetLanguage();
         model.setTargetLanguageId(targetLanguage != null ? targetLanguage.getId() : null);
         
         model.setRetypeCorrectAnswerEnabled(optionsVertex.getRetypeCorrectAnswer());
         model.setShuffleFlashcardsEnabled(optionsVertex.getShuffleFlashcards());
+        model.setInitiallyHideChoices(optionsVertex.getInitiallyHideOptions());
 
         model.setIncludeReviewExercises(optionsVertex.getIncludeReviewExercises());
         model.setIncludeMultipleChoiceExercises(optionsVertex.getIncludeMultipleChoiceExercises());
@@ -53,6 +55,7 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
         applyCommonProperties(optionsVertex, model);
         model.setInitialFlashcardLanguageId(optionsVertex.getInitialFlashcardLanguageId());
         model.setAvailableFlashcardLanguages(getFlashcardLanguages(optionsVertex));
+        model.setAlgorithm(optionsVertex.getAlgorithm());
 
         return model;
     }
@@ -87,6 +90,18 @@ public class ExerciseSessionOptionsModelFactory implements ModelFactory<Exercise
 
     private String[] getAnswerLanguageIds(ExerciseSessionOptionsVertex optionsVertex) {
         return optionsVertex.getAnswerLanguages().stream()
+                .map(LanguageVertex::getId)
+                .toArray(String[]::new);
+    }
+
+    private String[] getMultipleChoiceAnswerLanguageIds(ExerciseSessionOptionsVertex optionsVertex) {
+        return optionsVertex.getMultipleChoiceAnswerLanguages().stream()
+                .map(LanguageVertex::getId)
+                .toArray(String[]::new);
+    }
+
+    private String[] getWritingAnswerLanguageIds(ExerciseSessionOptionsVertex optionsVertex) {
+        return optionsVertex.getWritingAnswerLanguages().stream()
                 .map(LanguageVertex::getId)
                 .toArray(String[]::new);
     }

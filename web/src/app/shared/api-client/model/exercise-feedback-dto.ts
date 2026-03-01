@@ -10,6 +10,7 @@
 
 
 export interface ExerciseFeedbackDto { 
+    answerId?: string;
     type?: string;
     state?: string;
     message?: string;

@@ -1,6 +1,15 @@
 <form [formGroup]="form" class="session-options-review-flashcard" class="min-h-48">
 	<div class="mb-4">
 		<app-form-field>
+			<app-label i18n>Algorithm</app-label>
+			<app-select formControlName="algorithm">
+				<app-option value="SuperMemo2" i18n>SuperMemo 2 (spaced repetition)</app-option>
+				<app-option value="SimpleSort" i18n>Simple sort (know / don't know)</app-option>
+			</app-select>
+		</app-form-field>
+	</div>
+	<div class="mb-4">
+		<app-form-field>
 			<app-label i18n>Initial flashcard language</app-label>
 			<app-select formControlName="initialFlashcardLanguageId">
 				<app-option *ngFor="let lang of availableLanguages" [value]="lang.id">{{ formatLanguageName(lang) }}</app-option>

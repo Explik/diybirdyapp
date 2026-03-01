@@ -62,6 +62,22 @@ public class CreateLearnFlashcardSessionCommandHandler implements CommandHandler
                 flashcardDeckVertex
         );
 
+        // Add multiple-choice answer languages (defaults to all deck languages)
+        ExerciseSessionCommandHelper.addMultipleChoiceAnswerLanguages(
+                traversalSource,
+                optionVertex,
+                null,
+                flashcardDeckVertex
+        );
+
+        // Add writing answer languages (defaults to all deck languages)
+        ExerciseSessionCommandHelper.addWritingAnswerLanguages(
+                traversalSource,
+                optionVertex,
+                null,
+                flashcardDeckVertex
+        );
+
         // Set exercise type flags
         optionVertex.setIncludeReviewExercises(command.getIncludeReviewExercises() != null ? 
                 command.getIncludeReviewExercises() : true);

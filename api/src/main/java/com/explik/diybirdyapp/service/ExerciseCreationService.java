@@ -112,7 +112,8 @@ public class ExerciseCreationService {
             );
             command.setSelectOptionsInput(inputCommand);
         }
-        else if (inputType.equals(ExerciseInputTypes.PAIR_OPTIONS)) {
+        else if (inputType.equals(ExerciseInputTypes.PAIR_OPTIONS) ||
+                 inputType.equals(ExerciseInputTypes.MULTI_STAGE_PAIR_OPTIONS)) {
             var inputOptions = options.getPairOptionsInput();
             if (inputOptions == null)
                 throw new IllegalArgumentException("PairOptionsInput is required for input type: " + inputType);

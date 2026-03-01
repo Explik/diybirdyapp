@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom, take } from 'rxjs';
 import { Exercise, ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
-import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto, ExerciseSessionOptionsDto } from "../../../shared/api-client";
+import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto, ExerciseSessionOptionsDto, ExerciseSessionProgressDto } from "../../../shared/api-client";
 
 @Injectable({
     providedIn: 'root'
@@ -20,6 +20,10 @@ export class ExerciseService {
 
     // State functions 
     loadExerciseSession(id: string) {
+        // Clear stale state immediately so loading component shows instead of old exercise
+        this.exercise$.next(undefined);
+        this.session$.next(undefined);
+        
         this.service.getExerciseSession(id).subscribe(data => {
             this.setExerciseSession(data);
         });
@@ -48,7 +52,10 @@ export class ExerciseService {
         );
     }
 
-    applyExerciseSessionOptions(options: ExerciseSessionOptionsDto): Observable<void> { 
+    applyExerciseSessionOptions(options: ExerciseSessionOptionsDto): Observable<void> {
+        // Clear current exercise immediately so the loading state shows while the new exercise is fetched
+        this.exercise$.next(undefined);
+        
         return this.session$.pipe(take(1)).pipe(
             switchMap(session => {
             if (!session)
@@ -74,8 +81,8 @@ export class ExerciseService {
     }
 
     // Read functions
-    getProgress(): Observable<number> {
-        return this.session$.pipe(map(session => session?.progress?.percentage || 0));
+    getProgress(): Observable<ExerciseSessionProgressDto | undefined> {
+        return this.session$.pipe(map(session => session?.progress));
     }
     
     getState(): Observable<ExerciseStates> {

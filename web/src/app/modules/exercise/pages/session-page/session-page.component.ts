@@ -1,5 +1,4 @@
 import { Component, Injector, Input, OnInit, Type, ViewChild, ViewContainerRef, ComponentRef } from '@angular/core';
-import { ProgressBarComponent } from '../../../../shared/components/progress-bar/progress-bar.component';
 import { ExitIconButtonComponent } from "../../../../shared/components/exit-icon-button/exit-icon-button.component";
 import { InstructionComponent } from '../../components/instruction/instruction.component';
 import { ExerciseInputWriteTextComponent } from "../../components/exercise-input-write-text/exercise-input-write-text.component";
@@ -20,14 +19,15 @@ import { IconComponent } from '../../../../shared/components/icon/icon.component
 import { Observable, map, take, Subscription } from 'rxjs';
 import { SessionOptionsComponentService } from '../../services/sessionOptionsComponent.service';
 import { SessionOptionsLearnFlashcardComponent } from '../../container-components/session-options-learn-flashcard/session-options-learn-flashcard.component';
-import { ExerciseSessionOptionsDto, ExerciseSessionOptionsLearnFlashcardsDto } from '../../../../shared/api-client';
+import { ExerciseSessionOptionsDto, ExerciseSessionOptionsLearnFlashcardsDto, ExerciseSessionProgressDto } from '../../../../shared/api-client';
 import { HotkeyService } from '../../../../shared/services/hotKey.service';
+import { ProgressBarComponentService } from '../../../../shared/services/progressBarComponent.service';
 
 @Component({
     selector: 'app-session-page',
     standalone: true,
     templateUrl: './session-page.component.html',
-    imports: [CommonModule, FormsModule, NgComponentOutlet, ProgressBarComponent, ExitIconButtonComponent, ModalComponent, IconComponent],
+    imports: [CommonModule, FormsModule, NgComponentOutlet, ExitIconButtonComponent, ModalComponent, IconComponent],
     providers: [HotkeyService]
 })
 export class SessionPageComponent {
@@ -35,10 +35,12 @@ export class SessionPageComponent {
 
     exerciseFeedback: string | undefined = undefined;
     isSettingsModalOpen = false;
+    isOptionsLoading = false;
     currentSessionType = '';
     currentConfig: any = {};
 
-    sessionProgress$: Observable<number>;
+    sessionProgress$: Observable<ExerciseSessionProgressDto | undefined>;
+    progressBarComponent$: Observable<Type<any>>;
     exerciseComponent$: Observable<Type<any>>;
     exerciseNavigationComponent$: Observable<Type<any>|null>;
     sessionOptionsComponent$: Observable<Type<any>|null>;
@@ -54,9 +56,11 @@ export class SessionPageComponent {
         private router: Router,
         private exerciseService: ExerciseService,
         private exerciseComponentService: ExerciseComponentService,
-        private sessionOptionsComponent: SessionOptionsComponentService
+        private sessionOptionsComponent: SessionOptionsComponentService,
+        private progressBarComponentService: ProgressBarComponentService
         ) {
-                this.sessionProgress$ = this.exerciseService.getProgress().pipe(map(progress => progress || 0));
+                this.sessionProgress$ = this.exerciseService.getProgress();
+            this.progressBarComponent$ = this.progressBarComponentService.getComponentForProgress(this.sessionProgress$);
             this.exerciseComponent$ = this.exerciseComponentService.getComponent();
             this.exerciseNavigationComponent$ = this.exerciseComponentService.getNavigationComponent();
             this.sessionOptionsComponent$ = this.sessionOptionsComponent.getComponent();
@@ -112,10 +116,11 @@ export class SessionPageComponent {
                 inst.optionsChangeCallback = (o: any) => this.onOptionsChanged(o);
             }
 
-            // open modal immediately with component in place
+            // open modal immediately, show loading state until data arrives
+            this.isOptionsLoading = true;
             this.isSettingsModalOpen = true;
 
-            // then fetch and apply data to the component (component handles loading state)
+            // fetch options and apply to component once ready
             this.exerciseService.getExerciseSessionOptions().pipe(take(1)).subscribe(opt => {
                 this.stagedOptions = opt;
                 if (this.stagedOptions && this.optionsComponentRef) {
@@ -131,28 +136,24 @@ export class SessionPageComponent {
                         this.optionsComponentRef.changeDetectorRef.detectChanges();
                     }
                 }
+                this.isOptionsLoading = false;
             });
         });
     }
 
     closeSettingsModal() {
-        // apply staged options (if any) when closing
-        const finalize = () => {
-            this.isSettingsModalOpen = false;
-            // cleanup dynamic component
-            try { this.optionsHost.clear(); } catch {}
-            this.optionsComponentRef?.destroy();
-            this.optionsComponentRef = undefined;
-            this.optionsOutputSub?.unsubscribe();
-            this.optionsOutputSub = undefined;
-        };
+        // Close and clean up immediately so the modal doesn't block the UI
+        this.isSettingsModalOpen = false;
+        this.isOptionsLoading = false;
+        try { this.optionsHost.clear(); } catch {}
+        this.optionsComponentRef?.destroy();
+        this.optionsComponentRef = undefined;
+        this.optionsOutputSub?.unsubscribe();
+        this.optionsOutputSub = undefined;
 
+        // Apply staged options in the background; the loading exercise will show while the request runs
         if (this.stagedOptions) {
-            this.exerciseService.applyExerciseSessionOptions(this.stagedOptions as any).pipe(take(1)).subscribe(() => {
-                finalize();
-            }, () => finalize());
-        } else {
-            finalize();
+            this.exerciseService.applyExerciseSessionOptions(this.stagedOptions as any).pipe(take(1)).subscribe();
         }
     }
 

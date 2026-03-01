@@ -1,0 +1,46 @@
+<div *ngIf="toasts.length > 0" class="error-toast-container">
+  <!-- Header bar when multiple errors -->
+  <div *ngIf="toasts.length > 1" class="error-toast-header">
+    <span>{{ toasts.length }} unhandled error{{ toasts.length > 1 ? 's' : '' }}</span>
+    <button class="error-toast-dismiss-all" (click)="dismissAll()" title="Dismiss all errors">
+      Dismiss all
+    </button>
+  </div>
+
+  <div
+    *ngFor="let toast of toasts; trackBy: trackById"
+    class="error-toast"
+  >
+    <!-- Top row: icon + message + close -->
+    <div class="error-toast-row">
+      <svg class="error-toast-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+      </svg>
+
+      <div class="error-toast-message">
+        <span class="error-toast-label">Unhandled Error</span>
+        <span class="error-toast-text">{{ toast.message }}</span>
+      </div>
+
+      <div class="error-toast-actions">
+        <button
+          *ngIf="toast.stack"
+          class="error-toast-toggle"
+          (click)="toggleExpanded(toast.id)"
+          [title]="toast.expanded ? 'Hide stack trace' : 'Show stack trace'"
+        >
+          {{ toast.expanded ? '▲' : '▼' }}
+        </button>
+        <button class="error-toast-close" (click)="dismiss(toast.id)" title="Dismiss">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stack trace -->
+    <pre *ngIf="toast.expanded && toast.stack" class="error-toast-stack">{{ toast.stack }}</pre>
+  </div>
+</div>

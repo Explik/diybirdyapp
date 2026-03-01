@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
+import com.explik.diybirdyapp.manager.exerciseCreationManager.MultiStageTapPairsExerciseCreationManager;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class FlashcardDeckExerciseManager {
     @Autowired
     private PronounceFlashcardExerciseCreationManager pronounceFlashcardExerciseCreationManager;
 
+    @Autowired
+    private MultiStageTapPairsExerciseCreationManager multiStageTapPairsExerciseCreationManager;
+
     /**
      * Generates the next exercise for the session using a round-based approach.
      * Each round processes all content with one exercise type before moving to the next round.
@@ -73,7 +77,31 @@ public class FlashcardDeckExerciseManager {
         // Get current round and content index
         int currentRound = stateVertex.getCurrentRound();
         int currentIndex = stateVertex.getCurrentContentIndex();
-        
+
+        // After the SELECT_FLASHCARD round completes, insert the multi-stage tap-pairs exercise once
+        // (if there are at least 8 text-text flashcard pairs in the active content batch)
+        int selectFlashcardRoundIndex = exerciseTypes.indexOf(ExerciseTypes.SELECT_FLASHCARD);
+        boolean multiStageTapPairsInserted = Boolean.TRUE.equals(
+                stateVertex.getPropertyValue("multiStageTapPairsInserted", false));
+        if (selectFlashcardRoundIndex >= 0
+                && currentRound > selectFlashcardRoundIndex
+                && !multiStageTapPairsInserted) {
+            // Mark immediately so we don't retry on subsequent calls regardless of outcome
+            stateVertex.setPropertyValue("multiStageTapPairsInserted", true);
+
+            var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
+            var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
+            var flashcardList = availableContent.stream()
+                    .filter(c -> c instanceof FlashcardVertex)
+                    .map(c -> (FlashcardVertex) c)
+                    .toList();
+            var tapPairsExercise = multiStageTapPairsExerciseCreationManager.createExercise(
+                    traversalSource, sessionVertex, flashcardList);
+            if (tapPairsExercise != null) {
+                return tapPairsExercise;
+            }
+        }
+
         // Check if we've completed all rounds
         if (currentRound >= ExerciseSessionStateVertex.MAX_EXERCISES_PER_CONTENT) {
             return null; // All rounds complete
@@ -412,6 +440,7 @@ public class FlashcardDeckExerciseManager {
         
         if (options.getIncludeReviewExercises()) {
             exerciseTypes.add(ExerciseTypes.REVIEW_FLASHCARD);
+            exerciseTypes.add(ExerciseTypes.MULTI_STAGE_TAP_PAIRS);
         }
         
         if (options.getIncludeMultipleChoiceExercises()) {

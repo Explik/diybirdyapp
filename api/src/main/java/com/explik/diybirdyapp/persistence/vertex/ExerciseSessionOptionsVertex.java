@@ -27,6 +27,8 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
     public final static String PROPERTY_INITIALLY_HIDE_OPTIONS = "initiallyHideOptions";
 
     public final static String EDGE_ANSWER_LANGUAGE = "hasAnswerLanguage";
+    public final static String EDGE_MULTIPLE_CHOICE_ANSWER_LANGUAGE = "hasMultipleChoiceAnswerLanguage";
+    public final static String EDGE_WRITING_ANSWER_LANGUAGE = "hasWritingAnswerLanguage";
     public final static String EDGE_TARGET_LANGUAGE = "hasTargetLanguage";
     public final static String EDGE_EXERCISE_TYPES = "hasExerciseType";
 
@@ -161,6 +163,30 @@ public class ExerciseSessionOptionsVertex extends AbstractVertex {
 
     public void removeAnswerLanguage(LanguageVertex language) {
         removeEdge(EDGE_ANSWER_LANGUAGE, language);
+    }
+
+    public List<LanguageVertex> getMultipleChoiceAnswerLanguages() {
+        return VertexHelper.getOutgoingModels(this, EDGE_MULTIPLE_CHOICE_ANSWER_LANGUAGE, LanguageVertex::new);
+    }
+
+    public void addMultipleChoiceAnswerLanguage(LanguageVertex language) {
+        addEdgeOneToMany(EDGE_MULTIPLE_CHOICE_ANSWER_LANGUAGE, language);
+    }
+
+    public void removeMultipleChoiceAnswerLanguage(LanguageVertex language) {
+        removeEdge(EDGE_MULTIPLE_CHOICE_ANSWER_LANGUAGE, language);
+    }
+
+    public List<LanguageVertex> getWritingAnswerLanguages() {
+        return VertexHelper.getOutgoingModels(this, EDGE_WRITING_ANSWER_LANGUAGE, LanguageVertex::new);
+    }
+
+    public void addWritingAnswerLanguage(LanguageVertex language) {
+        addEdgeOneToMany(EDGE_WRITING_ANSWER_LANGUAGE, language);
+    }
+
+    public void removeWritingAnswerLanguage(LanguageVertex language) {
+        removeEdge(EDGE_WRITING_ANSWER_LANGUAGE, language);
     }
 
     public ExerciseSessionVertex getSession() {
