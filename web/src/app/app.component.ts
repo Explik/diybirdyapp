@@ -5,11 +5,12 @@ import { GenericExercise, MultipleChoiceOption } from './modules/exercise/models
 import { CommonModule } from '@angular/common';
 import { ExerciseService } from './modules/exercise/services/exercise.service';
 import { AuthService } from './shared/services/auth.service';
+import { ErrorToastComponent } from './shared/components/error-toast/error-toast.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, RouterOutlet, CommonModule],
+  imports: [RouterModule, RouterOutlet, CommonModule, ErrorToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
