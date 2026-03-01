@@ -52,7 +52,10 @@ export class ExerciseService {
         );
     }
 
-    applyExerciseSessionOptions(options: ExerciseSessionOptionsDto): Observable<void> { 
+    applyExerciseSessionOptions(options: ExerciseSessionOptionsDto): Observable<void> {
+        // Clear current exercise immediately so the loading state shows while the new exercise is fetched
+        this.exercise$.next(undefined);
+        
         return this.session$.pipe(take(1)).pipe(
             switchMap(session => {
             if (!session)
