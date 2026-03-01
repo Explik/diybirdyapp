@@ -80,6 +80,7 @@ export class ExerciseComponentService {
             case "select-flashcard-exercise":
             case "listen-and-select-exercise":
             case "pronounce-flashcard-exercise":
+            case "multi-stage-tap-pairs-exercise":
                 return ExerciseNavigationSkipOnlyContainerComponent;
             default: 
                 return null; 
