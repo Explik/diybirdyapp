@@ -1,7 +1,7 @@
 <form [formGroup]="form" class="session-options-learn-flashcard min-h-48">
 
 	<!-- General options -->
-	<div class="mb-4">
+	<div class="mb-4 px-4">
 		<app-form-field>
 			<app-label i18n>Target language</app-label>
 			<select formControlName="targetLanguageId" class="w-full px-3 py-2 border border-gray-300 rounded-md">
@@ -9,6 +9,24 @@
 					{{ formatLanguageName(lang) }}
 				</option>
 			</select>
+		</app-form-field>
+	</div>
+
+	<div class="mb-4 px-4">
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Text to speech</app-label>
+				<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
+			</div>
+		</app-form-field>
+	</div>
+
+	<div class="mb-4 px-4">
+		<app-form-field>
+			<div class="flex items-center justify-between">
+				<app-label i18n>Shuffle flashcards</app-label>
+				<app-slide-toogle formControlName="shuffleFlashcardsEnabled"></app-slide-toogle>
+			</div>
 		</app-form-field>
 	</div>
 
@@ -86,24 +104,5 @@
 	<app-form-error *ngIf="form.errors?.['atLeastOneExerciseTypeRequired']" i18n>
 		Please select at least one exercise type
 	</app-form-error>
-
-	<!-- General options (continued) -->
-	<div class="mt-4">
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Text to speech</app-label>
-				<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
-
-	<div>
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Shuffle flashcards</app-label>
-				<app-slide-toogle formControlName="shuffleFlashcardsEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
 
 </form>
