@@ -2,7 +2,6 @@ package com.explik.diybirdyapp.persistence.query.modelFactory;
 
 import com.explik.diybirdyapp.model.exercise.ExerciseDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
-import com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressDto;
 import com.explik.diybirdyapp.persistence.ExerciseRetrievalContextProvider;
 import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
@@ -13,6 +12,9 @@ import org.springframework.stereotype.Component;
 public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFactory {
     @Autowired
     ExerciseAbstractModelFactory abstractModelFactory;
+    
+    @Autowired
+    ExerciseSessionProgressFactoryProvider progressFactoryProvider;
 
     @Override
     public ExerciseSessionDto create(ExerciseSessionVertex vertex) {
@@ -48,10 +50,13 @@ public class ExerciseSessionModelFactoryImpl implements ExerciseSessionModelFact
         return exerciseFactory.create(exerciseVertex, retrievalContext);
     }
 
-    private ExerciseSessionProgressDto createProgress(ExerciseSessionVertex vertex) {
-        ExerciseSessionProgressDto progressModel = new ExerciseSessionProgressDto();
-        progressModel.setType("percentage");
-        progressModel.setPercentage(90);
-        return progressModel;
+    /**
+     * Creates the progress DTO using the appropriate factory based on session type.
+     * @param vertex The exercise session vertex
+     * @return The progress DTO, or null if progress is not tracked for this session type
+     */
+    private com.explik.diybirdyapp.model.exercise.ExerciseSessionProgressDto createProgress(ExerciseSessionVertex vertex) {
+        ExerciseSessionProgressFactory progressFactory = progressFactoryProvider.getFactory(vertex);
+        return progressFactory.createProgress(vertex);
     }
 }
