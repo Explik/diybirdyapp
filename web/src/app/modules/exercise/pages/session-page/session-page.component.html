@@ -44,5 +44,15 @@
   [isOpen]="isSettingsModalOpen" 
   i18n-title title="Edit settings"
   (close)="closeSettingsModal()">
-  <ng-template #optionsHost></ng-template>
+  <!-- Wrapper holds both the form (which sizes the modal) and the centered spinner -->
+  <div class="relative">
+    <!-- Options form is always rendered to set the modal size; invisible while loading -->
+    <div [style.visibility]="isOptionsLoading ? 'hidden' : 'visible'">
+      <ng-template #optionsHost></ng-template>
+    </div>
+    <!-- Spinner is absolutely centered over the form area while loading -->
+    <div *ngIf="isOptionsLoading" class="absolute inset-0 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
+    </div>
+  </div>
 </app-modal>

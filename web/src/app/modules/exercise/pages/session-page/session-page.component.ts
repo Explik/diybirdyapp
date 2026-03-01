@@ -35,6 +35,7 @@ export class SessionPageComponent {
 
     exerciseFeedback: string | undefined = undefined;
     isSettingsModalOpen = false;
+    isOptionsLoading = false;
     currentSessionType = '';
     currentConfig: any = {};
 
@@ -115,10 +116,11 @@ export class SessionPageComponent {
                 inst.optionsChangeCallback = (o: any) => this.onOptionsChanged(o);
             }
 
-            // open modal immediately with component in place
+            // open modal immediately, show loading state until data arrives
+            this.isOptionsLoading = true;
             this.isSettingsModalOpen = true;
 
-            // then fetch and apply data to the component (component handles loading state)
+            // fetch options and apply to component once ready
             this.exerciseService.getExerciseSessionOptions().pipe(take(1)).subscribe(opt => {
                 this.stagedOptions = opt;
                 if (this.stagedOptions && this.optionsComponentRef) {
@@ -134,28 +136,24 @@ export class SessionPageComponent {
                         this.optionsComponentRef.changeDetectorRef.detectChanges();
                     }
                 }
+                this.isOptionsLoading = false;
             });
         });
     }
 
     closeSettingsModal() {
-        // apply staged options (if any) when closing
-        const finalize = () => {
-            this.isSettingsModalOpen = false;
-            // cleanup dynamic component
-            try { this.optionsHost.clear(); } catch {}
-            this.optionsComponentRef?.destroy();
-            this.optionsComponentRef = undefined;
-            this.optionsOutputSub?.unsubscribe();
-            this.optionsOutputSub = undefined;
-        };
+        // Close and clean up immediately so the modal doesn't block the UI
+        this.isSettingsModalOpen = false;
+        this.isOptionsLoading = false;
+        try { this.optionsHost.clear(); } catch {}
+        this.optionsComponentRef?.destroy();
+        this.optionsComponentRef = undefined;
+        this.optionsOutputSub?.unsubscribe();
+        this.optionsOutputSub = undefined;
 
+        // Apply staged options in the background; the loading exercise will show while the request runs
         if (this.stagedOptions) {
-            this.exerciseService.applyExerciseSessionOptions(this.stagedOptions as any).pipe(take(1)).subscribe(() => {
-                finalize();
-            }, () => finalize());
-        } else {
-            finalize();
+            this.exerciseService.applyExerciseSessionOptions(this.stagedOptions as any).pipe(take(1)).subscribe();
         }
     }
 

@@ -20,6 +20,10 @@ export class ExerciseService {
 
     // State functions 
     loadExerciseSession(id: string) {
+        // Clear stale state immediately so loading component shows instead of old exercise
+        this.exercise$.next(undefined);
+        this.session$.next(undefined);
+        
         this.service.getExerciseSession(id).subscribe(data => {
             this.setExerciseSession(data);
         });
