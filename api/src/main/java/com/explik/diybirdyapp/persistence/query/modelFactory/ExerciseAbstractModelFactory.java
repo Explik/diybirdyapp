@@ -24,6 +24,9 @@ public class ExerciseAbstractModelFactory {
     @Autowired
     private ExerciseInputModelFactoryPairOptions pairOptionsModelFactory;
 
+    @Autowired
+    private ExerciseInputModelFactoryMultiStagePairOptions multiStagePairOptionsModelFactory;
+
     public ContextualModelFactory<ExerciseVertex, ExerciseDto, ExerciseRetrievalContext> create(ExerciseSchema schema) {
         return (vertex, context) -> createExercise(vertex, context, schema);
     }
@@ -68,6 +71,9 @@ public class ExerciseAbstractModelFactory {
         }
         if (inputType.equals(ExerciseInputTypes.PAIR_OPTIONS)) {
             return pairOptionsModelFactory.create(vertex, context);
+        }
+        if (inputType.equals(ExerciseInputTypes.MULTI_STAGE_PAIR_OPTIONS)) {
+            return multiStagePairOptionsModelFactory.create(vertex, context);
         }
         return null;
     }

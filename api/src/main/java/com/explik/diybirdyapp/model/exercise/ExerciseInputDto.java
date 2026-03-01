@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ExerciseInputArrangeTextOptionsDto.class, name = ExerciseInputTypes.ARRANGE_TEXT_OPTIONS),
         @JsonSubTypes.Type(value = ExerciseInputPairOptionsDto.class, name = ExerciseInputTypes.PAIR_OPTIONS),
+        @JsonSubTypes.Type(value = ExerciseInputMultiStagePairOptionsDto.class, name = ExerciseInputTypes.MULTI_STAGE_PAIR_OPTIONS),
         @JsonSubTypes.Type(value = ExerciseInputRecordAudioDto.class, name = ExerciseInputTypes.RECORD_AUDIO),
         @JsonSubTypes.Type(value = ExerciseInputRecordVideoDto.class, name = ExerciseInputTypes.RECORD_VIDEO),
         @JsonSubTypes.Type(value = ExerciseInputSelectOptionsDto.class, name = ExerciseInputTypes.SELECT_OPTIONS),

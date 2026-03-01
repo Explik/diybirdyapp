@@ -14,3 +14,8 @@ General exercise options:
   - Retype correct answer 
 - Enable listening exercises
 - Enable pronunciation exercises
+
+## Exercise types 
+- Review exercise 
+- Pair options exercise
+etc. 

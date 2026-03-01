@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.persistence.vertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseVertex extends AbstractVertex {
@@ -147,6 +148,50 @@ public class ExerciseVertex extends AbstractVertex {
     @Override
     public int hashCode() {
         return this.getId().hashCode();
+    }
+
+    // =========================================================
+    // Multi-stage tap-pairs exercise server-side state
+    // =========================================================
+
+    private static final String PROP_MS_ANSWERED_COUNT  = "msAnsweredCount";
+    private static final String PROP_MS_MATCHED_IDS     = "msMatchedLeftIds";
+    private static final String PROP_MS_LEFT_IDS        = "msCurrentLeftIds";
+    private static final String PROP_MS_RIGHT_IDS       = "msCurrentRightIds";
+
+    public int getMsAnsweredCount() {
+        return getProperty(PROP_MS_ANSWERED_COUNT, 0);
+    }
+
+    public void setMsAnsweredCount(int count) {
+        setProperty(PROP_MS_ANSWERED_COUNT, count);
+    }
+
+    public List<String> getMsMatchedLeftIds() {
+        String raw = getProperty(PROP_MS_MATCHED_IDS, "");
+        return raw.isEmpty() ? new ArrayList<>() : new ArrayList<>(List.of(raw.split(",")));
+    }
+
+    public void setMsMatchedLeftIds(List<String> ids) {
+        setProperty(PROP_MS_MATCHED_IDS, (ids == null || ids.isEmpty()) ? "" : String.join(",", ids));
+    }
+
+    public List<String> getMsCurrentLeftOptionIds() {
+        String raw = getProperty(PROP_MS_LEFT_IDS, "");
+        return raw.isEmpty() ? new ArrayList<>() : new ArrayList<>(List.of(raw.split(",")));
+    }
+
+    public void setMsCurrentLeftOptionIds(List<String> ids) {
+        setProperty(PROP_MS_LEFT_IDS, (ids == null || ids.isEmpty()) ? "" : String.join(",", ids));
+    }
+
+    public List<String> getMsCurrentRightOptionIds() {
+        String raw = getProperty(PROP_MS_RIGHT_IDS, "");
+        return raw.isEmpty() ? new ArrayList<>() : new ArrayList<>(List.of(raw.split(",")));
+    }
+
+    public void setMsCurrentRightOptionIds(List<String> ids) {
+        setProperty(PROP_MS_RIGHT_IDS, (ids == null || ids.isEmpty()) ? "" : String.join(",", ids));
     }
 
     public static ExerciseVertex create(GraphTraversalSource traversalSource) {

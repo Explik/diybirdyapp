@@ -13,6 +13,7 @@ All exercise types:
 - Speak known translation exercise 
 - Transcribe known audio exercise
 - Tap the pairs exercise 
+- Multi-stage tap pairs exercise
 
 - Repeat audio exercise 
 - Write unknown translation exercise
@@ -140,6 +141,23 @@ Content criteria:
 
 Evaluation criteria:
 - The selected pairs must match the existing pairs 
+
+## Multi-stage tap pairs exercise
+Components:
+- Instruction
+- Multi-stage pair options input
+
+Content criteria:
+- The context must be a list of pairs where all pairs have the same left and right content types
+- The deck must contain at least 5 pairs
+
+Evaluation criteria:
+- Each individually submitted pair must match a known pair in the deck
+
+Behaviour:
+- Pairs are submitted one at a time; each correct match is immediately replaced with a new pair from the deck
+- The exercise ends when `maxPairs` correct matches are reached (server-controlled) **or** when the deck has no more unused pairs to offer, whichever comes first
+- Progress state (answered count, visible options, matched IDs) is managed entirely on the server
 
 ## Repeat audio exercise 
 Components: 

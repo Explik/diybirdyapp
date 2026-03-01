@@ -13,6 +13,7 @@ import { ExerciseNavigationSkipOnlyContainerComponent } from "../components/exer
 import { ExerciseContentPronounceFlashcardContainerComponent } from "../container-components/exercise-content-pronounce-flashcard-container/exercise-content-pronounce-flashcard-container.component";
 import { ExerciseContentArrangeWordsInTranslationComponent } from "../container-components/exercise-content-arrange-words-in-translation/exercise-content-arrange-words-in-translation.component";
 import { ExerciseContentTapPairsContainerComponent } from "../container-components/exercise-content-tap-pairs-container/exercise-content-tap-pairs-container.component";
+import { ExerciseContentMultiStageTapPairsContainerComponent } from "../container-components/exercise-content-multi-stage-tap-pairs-container/exercise-content-multi-stage-tap-pairs-container.component";
 import { ExerciseContentListenAndSelectContainerComponent } from "../container-components/exercise-content-listen-and-select-container/exercise-content-listen-and-select-container.component";
 import { ExerciseContentListenAndWriteContainerComponent } from "../container-components/exercise-content-listen-and-write-container/exercise-content-listen-and-write-container.component";
 
@@ -47,6 +48,8 @@ export class ExerciseComponentService {
                 return ExerciseContentSelectFlashcardContainerComponent;
             case "tap-pairs-exercise":
                 return ExerciseContentTapPairsContainerComponent;
+            case "multi-stage-tap-pairs-exercise":
+                return ExerciseContentMultiStageTapPairsContainerComponent;
             case "review-flashcard-exercise":
                 return ExerciseContentReviewFlashcardContainerComponent;
             case "pronounce-flashcard-exercise":

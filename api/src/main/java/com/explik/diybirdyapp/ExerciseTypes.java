@@ -13,6 +13,7 @@ public class ExerciseTypes {
     public static final String LISTEN_AND_SELECT = "listen-and-select-exercise";
     public static final String LISTEN_AND_WRITE = "listen-and-write-exercise";
     public static final String TAP_PAIRS = "tap-pairs-exercise";
+    public static final String MULTI_STAGE_TAP_PAIRS = "multi-stage-tap-pairs-exercise";
 
     public static String[] getAll() {
         return new String[] {
@@ -26,7 +27,8 @@ public class ExerciseTypes {
                 LISTEN_AND_SELECT,
                 LISTEN_AND_WRITE,
             PRONOUNCE_FLASHCARD,
-            TAP_PAIRS
+            TAP_PAIRS,
+            MULTI_STAGE_TAP_PAIRS
         };
     }
 }
