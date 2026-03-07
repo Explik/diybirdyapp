@@ -24,14 +24,14 @@ describe('Flashcard deck features', () => {
     clickSignUpButton();
 
     cy.wait(1500); // Wait for a moment to ensure the first registration is processed
+  });
 
+  beforeEach(() => {
     goToLoginPage();
     setEmail('john@doe.com');
     setPassword('password');
     clickLoginButton();
-
-    cy.wait(1500); // Wait for a moment to ensure login is processed
-  });
+  }); 
 
   describe('Flashcard deck data', () => {
     it ('Name is updated when name update is saved', () => {
