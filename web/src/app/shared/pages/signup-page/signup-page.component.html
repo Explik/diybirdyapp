@@ -2,27 +2,27 @@
 	<h1 class="text-2xl font-bold mb-6" i18n>Sign up</h1>
 
 	<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
-		<app-form-field>
-			<app-label for="name" class="block mb-1" i18n>Name</app-label>
-			<app-text-field id="name" formControlName="name"></app-text-field>
+		<app-form-field fieldId="name">
+			<app-label class="block mb-1" i18n>Name</app-label>
+			<app-text-field formControlName="name"></app-text-field>
 			<app-form-error *ngIf="form.get('name')?.touched && form.get('name')?.invalid" i18n>Name is required</app-form-error>
 		</app-form-field>
 
-		<app-form-field>
-			<app-label for="email" class="block mb-1" i18n>Email</app-label>
-			<app-text-field id="email" formControlName="email" [type]="'email'"></app-text-field>
+		<app-form-field fieldId="email">
+			<app-label class="block mb-1" i18n>Email</app-label>
+			<app-text-field formControlName="email" [type]="'email'"></app-text-field>
 			<app-form-error *ngIf="form.get('email')?.touched && form.get('email')?.invalid" i18n>Please enter a valid email</app-form-error>
 		</app-form-field>
 
-		<app-form-field>
-			<app-label for="password" class="block mb-1" i18n>Password</app-label>
-			<app-text-field id="password" formControlName="password" [type]="'password'"></app-text-field>
+		<app-form-field fieldId="password">
+			<app-label class="block mb-1" i18n>Password</app-label>
+			<app-text-field formControlName="password" [type]="'password'"></app-text-field>
 			<app-form-error *ngIf="form.get('password')?.touched && form.get('password')?.invalid" i18n>Password is required (min 6 chars)</app-form-error>
 		</app-form-field>
 
-		<app-form-field>
-			<app-label for="repeatPassword" class="block mb-1" i18n>Repeat Password</app-label>
-			<app-text-field id="repeatPassword" formControlName="repeatPassword" [type]="'password'"></app-text-field>
+		<app-form-field fieldId="repeatPassword">
+			<app-label class="block mb-1" i18n>Repeat Password</app-label>
+			<app-text-field formControlName="repeatPassword" [type]="'password'"></app-text-field>
 			<app-form-error *ngIf="form.get('repeatPassword')?.touched && form.get('repeatPassword')?.invalid" i18n>Please repeat your password</app-form-error>
 		</app-form-field>
 

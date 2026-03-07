@@ -4,83 +4,89 @@ export function resetData() {
 }
 
 export function goToSignUpPage() {
-    cy.visit('/signup');
+    cy.visit('/#/signup');
+    cy.url().should('include', '/signup');
 }
 
 export function goToLoginPage() {
-    cy.visit('/login');
+    cy.visit('/#/login');
+    cy.url().should('include', '/login');
 }
 
 function getCurrentPageType() {
     return cy.url().then(url => {
-            if (url.includes('/signup')) return "signup";
-            if (url.includes('/login')) return "login";
-            return undefined;
+        if (url.includes('/signup')) return 'signup';
+        if (url.includes('/login')) return 'login';
+        if (url.includes('/flashcard-deck/')) return 'flashcard-decks';
+        if (url.includes('/flashcard-deck')) return 'flashcard-deck';
+        return undefined;
     });
 }
 
-function setFieldValue(field: any, value: string) {
-    field.clear()
-    if (value) field.type(value);
+function setFieldValue(selector: string, value: string) {
+    if (value) {
+        cy.get(selector).clear().type(value);
+    } else {
+        cy.get(selector).clear();
+    }
 }
 
 export function setName(value: string) {
-    getCurrentPageType().then(currentPageType => {;
-        if (currentPageType === 'signup') 
-            return setFieldValue(cy.get('#form-input-1'), value);
-        else 
-            throw new Error('Unsupported page type ' + currentPageType);
+    getCurrentPageType().then(currentPageType => {
+        if (currentPageType === 'signup')
+            setFieldValue('#name', value);
+        else
+            throw new Error('setName: unsupported page type ' + currentPageType);
     });
 }
 
 export function setEmail(value: string) {
-    return getCurrentPageType().then(currentPageType => {
-        if (currentPageType === 'signup') 
-            return setFieldValue(cy.get('#form-input-2'), value);
-        if (currentPageType === 'login')
-            return setFieldValue(cy.get('#form-input-1'), value);
-        else 
-            throw new Error('Unsupported page type ' + currentPageType);
-        });
-
+    getCurrentPageType().then(currentPageType => {
+        if (currentPageType === 'signup')
+            setFieldValue('#email', value);
+        else if (currentPageType === 'login')
+            setFieldValue('#username', value);
+        else
+            throw new Error('setEmail: unsupported page type ' + currentPageType);
+    });
 }
 
 export function setPassword(value: string) {
-    return getCurrentPageType().then(currentPageType => {
-        if (currentPageType === 'signup') 
-            return setFieldValue(cy.get('#form-input-3'), value);
-        if (currentPageType === 'login')
-            return setFieldValue(cy.get('#form-input-2'), value);
-        else 
-            throw new Error('Unsupported page type ' + currentPageType);
-        });
+    getCurrentPageType().then(currentPageType => {
+        if (currentPageType === 'signup')
+            setFieldValue('#password', value);
+        else if (currentPageType === 'login')
+            setFieldValue('#password', value);
+        else
+            throw new Error('setPassword: unsupported page type ' + currentPageType);
+    });
 }
 
 export function setRepeatPassword(value: string) {
-    return getCurrentPageType().then(currentPageType => {
-        if (currentPageType === 'signup') 
-            return setFieldValue(cy.get('#form-input-4'), value);
-        else 
-            throw new Error('Unsupported page type ' + currentPageType);
-        });
+    getCurrentPageType().then(currentPageType => {
+        if (currentPageType === 'signup')
+            setFieldValue('#repeatPassword', value);
+        else
+            throw new Error('setRepeatPassword: unsupported page type ' + currentPageType);
+    });
 }
 
 export function clickSignUpButton() {
-    return getCurrentPageType().then(currentPageType => {
+    getCurrentPageType().then(currentPageType => {
         if (currentPageType === 'signup')
-            return cy.contains('Sign up').click();
+            cy.get('button').contains('Sign up').click();
         else
-            throw new Error('Unsupported page type ' + currentPageType);
-        });
+            throw new Error('clickSignUpButton: unsupported page type ' + currentPageType);
+    });
 }
 
 export function clickLoginButton() {
-    return getCurrentPageType().then(currentPageType => {
+    getCurrentPageType().then(currentPageType => {
         if (currentPageType === 'login')
-            return cy.get('button[type="submit"], button').contains(/login|sign in/i).click();
+            cy.get('button[type="submit"], button').contains(/login|sign in/i).click();
         else
-            throw new Error('Unsupported page type ' + currentPageType);
-        });
+            throw new Error('clickLoginButton: unsupported page type ' + currentPageType);
+    });
 }
 
 export function assertLoginSuccess() {
@@ -92,7 +98,7 @@ export function assertLoginError() {
 }
 
 export function assertSignupButtonDisabled() {
-    cy.contains('Sign up').should('be.disabled');
+    cy.get('button').contains('Sign up').should('be.disabled');
 }
 
 export function assertSignupSuccess() {
