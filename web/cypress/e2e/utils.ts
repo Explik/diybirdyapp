@@ -1,4 +1,5 @@
 export enum PageType {
+    Unknown = 'unknown',
     Signup = 'signup',
     Login = 'login',
     FlashcardDeckEdit = 'flashcard-deck-edit',
@@ -20,14 +21,14 @@ export function goToLoginPage(): void {
     cy.url().should('include', '/login');
 }
 
-function getCurrentPageType(): Cypress.Chainable<PageType | undefined> {
-    return cy.url().then(url => {
+function getCurrentPageType(): Cypress.Chainable<PageType> {
+    return cy.url().then((url) => {
         if (url.includes('/signup')) return PageType.Signup;
         if (url.includes('/login')) return PageType.Login;
         if (/\/flashcard-deck\/[^/]+\/edit/.test(url)) return PageType.FlashcardDeckEdit;
         if (/\/flashcard-deck\/[^/]+/.test(url)) return PageType.FlashcardDeckView;
         if (url.includes('/flashcard-deck')) return PageType.FlashcardDeckOverview;
-        return undefined;
+        return PageType.Unknown;
     });
 }
 

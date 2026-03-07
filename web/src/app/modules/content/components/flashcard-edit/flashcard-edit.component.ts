@@ -28,7 +28,6 @@ import { FormErrorComponent } from '../../../../shared/components/form-error/for
     FormFieldComponent,
     SelectComponent,
     OptionComponent,
-    ButtonComponent,
     FormErrorComponent,
   ],
   templateUrl: './flashcard-edit.component.html',

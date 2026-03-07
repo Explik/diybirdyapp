@@ -53,7 +53,7 @@ export class FlashcardEditContainerComponent {
         this.handleAddFlashcard();
       }
 
-      // Build reactive form from the deck
+      // Build reactive form from the deck (excluding deleted items)
       this.buildFormFromDeck();
     }
   }
@@ -76,11 +76,20 @@ export class FlashcardEditContainerComponent {
   }
 
   handleRearrangeFlashcard(event: CdkDragDrop<Partial<EditFlashcardImpl>[]>): void {
-    // Update the data model
-    moveItemInArray(this.flashcardDeck!.flashcards, event.previousIndex, event.currentIndex);
-    this.flashcardDeck!.flashcards
-      .filter(s => s.state !== 'deleted')
-      .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
+    // Get active (non-deleted) flashcards and their indices in the full array
+    const activeFlashcards = this.flashcardDeck!.flashcards
+      .map((f, index) => ({ flashcard: f, originalIndex: index }))
+      .filter(item => item.flashcard.state !== 'deleted');
+
+    // Rearrange the active flashcards
+    const movedItem = activeFlashcards[event.previousIndex];
+    activeFlashcards.splice(event.previousIndex, 1);
+    activeFlashcards.splice(event.currentIndex, 0, movedItem);
+
+    // Update deckOrder for all active flashcards
+    activeFlashcards.forEach((item, index) => {
+      item.flashcard.deckOrder = index + 1;
+    });
     
     // Update the FormArray to reflect the new order in the UI
     const formArray = this.getFlashcardsFormArray();
@@ -158,25 +167,31 @@ export class FlashcardEditContainerComponent {
   }
 
   handleDeleteFlashcard(flashcard: EditFlashcardImpl): void {
-    // Remove the flashcard from the form array and the UI model immediately
-    // Find index in the deck
+    // Mark flashcard as deleted instead of removing it
+    // This keeps it in the change tracker until save
     if (!this.flashcardDeck) return;
 
     const idx = this.flashcardDeck.flashcards.findIndex(f => f === flashcard || f.id === flashcard.id);
     if (idx !== -1) {
-      // Remove from underlying model
-      this.flashcardDeck.flashcards.splice(idx, 1);
+      // Mark as deleted in the underlying model
+      this.flashcardDeck.flashcards[idx].state = 'deleted';
 
-      // Remove from reactive form array if present
+      // Find the corresponding index in the form array (which only has non-deleted items)
       if (this.form) {
         const fa = this.getFlashcardsFormArray();
-        if (fa && fa.length > idx) {
-          fa.removeAt(idx);
+        const formIndex = this.flashcardDeck.flashcards
+          .slice(0, idx)
+          .filter(f => f.state !== 'deleted')
+          .length;
+        
+        if (fa && fa.length > formIndex) {
+          fa.removeAt(formIndex);
         }
       }
 
-      // Recompute deckOrder for remaining items
+      // Recompute deckOrder for remaining active items
       this.flashcardDeck.flashcards
+        .filter(f => f.state !== 'deleted')
         .forEach((f, index) => f.deckOrder = index + 1);
     }
   }
@@ -191,18 +206,22 @@ export class FlashcardEditContainerComponent {
       description: [this.flashcardDeck.description],
       frontLanguageId: [this.getMostCommonLanguage('left')],
       backLanguageId: [this.getMostCommonLanguage('right')],
-      flashcards: this.fb.array(this.flashcardDeck.flashcards.map(f => {
-        const fg = this.buildFlashcardFormGroup(f);
-        fg.setValidators(this.flashcardValidator());
-        return fg;
-      }))
+      flashcards: this.fb.array(this.flashcardDeck.flashcards
+        .filter(f => f.state !== 'deleted')
+        .map(f => {
+          const fg = this.buildFlashcardFormGroup(f);
+          fg.setValidators(this.flashcardValidator());
+          return fg;
+        }))
     });
 
     // attach deck-level validator (e.g., require language selects when text exists)
     this.form.setValidators(this.deckValidator());
 
-    // Snapshot original ids for add/delete detection on save
-    this.originalFlashcardIds = new Set(this.flashcardDeck.flashcards.map(f => f.id));
+    // Snapshot original ids for add/delete detection on save (only non-deleted items)
+    this.originalFlashcardIds = new Set(this.flashcardDeck.flashcards
+      .filter(f => f.state !== 'deleted')
+      .map(f => f.id));
 
     // Ensure validators run at least once after building
     this.form.updateValueAndValidity({ onlySelf: false, emitEvent: false });
@@ -232,13 +251,18 @@ export class FlashcardEditContainerComponent {
   }
 
   // Template-friendly accessor for the form array controls
+  // Note: Deleted items are already removed from the form array in handleDeleteFlashcard
   get flashcardsControls(): FormGroup[] {
     return ((this.form?.get('flashcards') as FormArray)?.controls as FormGroup[]) || [];
   }
 
   handleDeleteFlashcardAt(index: number): void {
     if (!this.flashcardDeck) return;
-    const flashcard = this.flashcardDeck.flashcards[index];
+    
+    // Map form array index to flashcard (form array only contains non-deleted items)
+    const activeFlashcards = this.flashcardDeck.flashcards.filter(f => f.state !== 'deleted');
+    const flashcard = activeFlashcards[index];
+    
     if (flashcard) {
       this.handleDeleteFlashcard(flashcard);
     }

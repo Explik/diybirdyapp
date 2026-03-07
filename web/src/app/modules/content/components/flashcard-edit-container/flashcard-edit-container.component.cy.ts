@@ -469,7 +469,7 @@ describe('FlashcardEditContainerComponent', () => {
     it('marks removed original cards with state "deleted" on save', () => {
       const card1 = createTextCard('keep',   'bevar', 'en', 'da');
       const card2 = createTextCard('remove', 'fjern', 'en', 'da');
-      const deck  = createDeck('Deck', '', [card1, card2]);
+      const deck  = createDeck('Deck', '', [card2, card1]);
       mountComponent(deck);
 
       // Keep a reference to card2 before deletion
@@ -480,15 +480,20 @@ describe('FlashcardEditContainerComponent', () => {
       clickSave();
 
       cy.get('@component').then((wrapper: any) => {
-        // Deleted cards are removed from the live flashcards array, but the
-        // component marks the original snapshot entries as 'deleted' in the model
-        // when saving. Verify by inspecting state on the stored reference.
-        expect(card2.state).not.to.equal('added');
+        // Deleted cards remain in the flashcards array with state='deleted'
+        // so they can be tracked for server deletion
+        expect(card2.state).to.equal('deleted');
 
-        // The removed card must no longer appear in the active list
-        const remaining: EditFlashcardImpl[] = wrapper.component.flashcardDeck.flashcards;
-        const stillPresent = remaining.find(f => f.id === removedId);
-        expect(stillPresent).to.be.undefined;
+        // The removed card should still be in the array but marked as deleted
+        const allCards: EditFlashcardImpl[] = wrapper.component.flashcardDeck.flashcards;
+        const deletedCard = allCards.find(f => f.id === removedId);
+        expect(deletedCard).to.not.be.undefined;
+        expect(deletedCard?.state).to.equal('deleted');
+        
+        // The card should not appear in the active (non-deleted) list
+        const activeCards = allCards.filter(f => f.state !== 'deleted');
+        expect(activeCards.length).to.equal(1);
+        expect(activeCards[0].id).to.equal(card1.id);
       });
     });
   });
