@@ -16,8 +16,7 @@
     <div class="mt-4 flex gap-4">
       <app-form-field fieldId="front-language" class="w-1/2">
         <app-label i18n>Front language</app-label>
-        <app-select class="global-left-language-input" formControlName="frontLanguageId">
-          <app-option value="" i18n>Select language</app-option>
+        <app-select class="global-left-language-input" formControlName="frontLanguageId" i18n-placeholder placeholder="Select language">
           <app-option *ngFor="let language of flashcardLanguages" [value]="language.id">
             {{ formatLanguageName(language) }}
           </app-option>
@@ -27,8 +26,7 @@
 
       <app-form-field fieldId="back-language" class="w-1/2">
         <app-label i18n>Back language</app-label>
-        <app-select class="global-right-language-input" formControlName="backLanguageId">
-          <app-option value="" i18n>Select language</app-option>
+        <app-select class="global-right-language-input" formControlName="backLanguageId" i18n-placeholder placeholder="Select language">
           <app-option *ngFor="let language of flashcardLanguages" [value]="language.id">
             {{ formatLanguageName(language) }}
           </app-option>
