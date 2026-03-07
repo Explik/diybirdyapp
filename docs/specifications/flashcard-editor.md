@@ -1,9 +1,9 @@
 # Flashcard editor specification
 
-The flashcard editor allows users to create and edit a flashcard deck, including its metadata and individual flashcard content.
+The flashcard editor allows users to create and edit a flashcard deck, including its deck metadata and individual flashcard content.
 
 ## Deck metadata
-The deck metadata consists of name, description and global language settings. The global languages are applied to all text-type flashcard sides in the deck, but can be overridden by per-card language assignments.
+The deck metadata consists of name, description and global language settings. The global languages are applied to all text-type flashcard sides in the deck, but can be overridden by per-card language assignments. However, this functionality is not exposed in the normal UI and all text sides will simply follow the deck languages.
 
 **Name**
 Required text input. Shows the inline error "Title is required" when empty on a save attempt.
@@ -12,12 +12,14 @@ Required text input. Shows the inline error "Title is required" when empty on a 
 Optional multi-line text input (3 rows).
 
 **Front language**
-Dropdown populated from available languages. Pre-selected with the most common language already used on front sides. Required when any front-side text content exists; shows the error "Front language required when text content exists" otherwise.
+Dropdown populated from available languages. If the deck contains any flashcards, the dropdown is pre-selected with the most common language used on front sides. Otherwise, it remains blank to prompt the user to make a selection.
+
+Be aware, the front-language will override any per-card front language settings when saved.
 
 **Back language**
 Same behaviour as front language, applied to back sides.
 
-On save, the selected global languages are written to every text-type flashcard side, overwriting per-card language assignments.
+Be aware, the front-language will override any per-card front language settings when saved.
 
 ## Flashcard list
 - Cards are displayed in deck order, numbered sequentially (`#1`, `#2`, …).
@@ -73,10 +75,10 @@ Shown when the back language is unset but at least one back-side text card has c
 Shown when the content type is text and the input is blank.
 
 **"Front image required"** / **"Back image required"**
-Shown when the content type is image and neither a file nor a URL is provided.
+Shown when the content type is image and neither a file has not been provided.
 
 **"Front audio required"** / **"Back audio required"**
-Shown when the content type is audio and no file is provided.
+Shown when the content type is audio and no file has been provided or audio recorded.
 
 **"Front video required"** / **"Back video required"**
-Shown when the content type is video and neither a file nor a URL is provided.
+Shown when the content type is video and no file has been provided or video recorded.
