@@ -29,7 +29,7 @@ export class DynamicAudioContentComponent {
   }
 
   @HostListener('keydown.enter', ['$event'])
-  onEnter(event: KeyboardEvent) {
+  onEnter(event: Event) {
     event.stopPropagation();
     this.playAudio();
   }

@@ -21,19 +21,19 @@
             layout="single"
             [disabled]="!!(input.feedback && !input.feedback.isRetypeAnswerEnabled)"
             (click)="handleOptionSelected(option.id!)">
-            @if (input?.feedback?.correctOptionIds?.includes(option.id!)) {
+            @if (input.feedback?.correctOptionIds?.includes(option.id!)) {
               <app-icon
                 icon="mark-correct"
                 class="mr-3">
               </app-icon>
             }
-            @if (input?.feedback?.incorrectOptionIds?.includes(option.id!)) {
+            @if (input.feedback?.incorrectOptionIds?.includes(option.id!)) {
               <app-icon
                 icon="mark-incorrect"
                 class="mr-3">
               </app-icon>
             }
-            @if (input?.feedback?.correctOptionIds?.includes(option.id!) !== true && input?.feedback?.incorrectOptionIds?.includes(option.id!) !== true) {
+            @if (input.feedback?.correctOptionIds?.includes(option.id!) !== true && input.feedback?.incorrectOptionIds?.includes(option.id!) !== true) {
               <app-icon
                 [icon]="'key-' + (i + 1)"
                 class="mr-3">

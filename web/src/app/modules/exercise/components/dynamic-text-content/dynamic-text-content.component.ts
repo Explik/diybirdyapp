@@ -27,7 +27,7 @@ export class DynamicTextContentComponent {
   }
 
   @HostListener('keydown.enter', ['$event'])
-  onEnter(event: KeyboardEvent) {
+  onEnter(event: Event) {
     event.stopPropagation();
     this.playAudioIfAny();
   }     
