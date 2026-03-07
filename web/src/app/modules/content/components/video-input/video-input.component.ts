@@ -16,6 +16,7 @@ import { EditFlashcardVideo, EditFlashcardVideoImpl } from '../../models/editFla
   styleUrls: ['./video-input.component.css']
 })
 export class VideoInputComponent implements ControlValueAccessor {
+  @Input() id: string | undefined;
   @Input() videoData: EditFlashcardVideo | undefined;
   @Output() videoDataChange = new EventEmitter<EditFlashcardVideo | undefined>();
   @ViewChild('liveVideoElement') liveVideoElement!: ElementRef<HTMLVideoElement>;

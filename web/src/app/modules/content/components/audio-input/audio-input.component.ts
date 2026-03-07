@@ -21,6 +21,7 @@ import { EditFlashcardAudio, FileAudioContent } from '../../models/editFlashcard
   ]
 })
 export class AudioInputComponent implements ControlValueAccessor {
+  @Input() id: string | undefined;
   // Keep the EventEmitter for template / parent-component compatibility.
   @Output() audioDataChange = new EventEmitter<EditFlashcardAudio | undefined>();
 

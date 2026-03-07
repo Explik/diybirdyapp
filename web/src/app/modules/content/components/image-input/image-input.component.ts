@@ -16,6 +16,7 @@ import { EditFlashcardImage, EditFlashcardImageImpl } from '../../models/editFla
   styleUrls: ['./image-input.component.css']
 })
 export class ImageInputComponent implements ControlValueAccessor {
+  @Input() id: string | undefined;
   @Input() imageData: EditFlashcardImage | undefined;
   @Output() imageDataChange = new EventEmitter<EditFlashcardImage | undefined>();
   @ViewChild('liveVideoElement') liveVideoElement!: ElementRef<HTMLVideoElement>;

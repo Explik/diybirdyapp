@@ -49,7 +49,7 @@
             i18n
             class="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600">
             Upload
-            <input type="file" accept="video/*" class="hidden" (change)="handleFileInput($event)" />
+            <input type="file" accept="video/*" [attr.id]="id" class="hidden" (change)="handleFileInput($event)" />
         </label>
 
         <!-- Recording state -->

@@ -19,6 +19,7 @@ import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/f
   styleUrl: './text-input.component.css'
 })
 export class TextInputComponent implements ControlValueAccessor, OnChanges {
+  @Input() id: string | undefined;
   @Input() textData: EditFlashcardTextImpl|undefined = undefined; 
   @Output() textDataChange = new EventEmitter<EditFlashcardTextImpl|undefined>();
   textValue: string = "";
