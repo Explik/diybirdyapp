@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExerciseInputSelectOptionsDto, SelectOptionInputBaseOption } from '../../../../shared/api-client';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-exercise-input-select-options',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent, RowButtonComponent],
+  imports: [FormsModule, IconComponent, RowButtonComponent],
   templateUrl: './exercise-input-select-options.component.html',
   styleUrl: './exercise-input-select-options.component.css',
   providers: [HotkeyService]

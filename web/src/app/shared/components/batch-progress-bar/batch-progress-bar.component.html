@@ -1,33 +1,35 @@
 <div class="flex items-center justify-between p-4">
-    <!-- Batch progress bars (three bars side by side) -->
-    <div class="w-full flex gap-2">
-      <!-- Actual progress bar (current batch) -->
-      <div class="flex-1 bg-white border border-black">
-        <div class="border-2 border-white overflow-hidden">
-          <div class="h-4" 
-            [class]="getProgressBarColor()"
-            [style.width.%]="progress + 3"
-            style="-webkit-clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);">
-          </div>
+  <!-- Batch progress bars (three bars side by side) -->
+  <div class="w-full flex gap-2">
+    <!-- Actual progress bar (current batch) -->
+    <div class="flex-1 bg-white border border-black">
+      <div class="border-2 border-white overflow-hidden">
+        <div class="h-4"
+          [class]="getProgressBarColor()"
+          [style.width.%]="progress + 3"
+          style="-webkit-clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);">
         </div>
       </div>
+    </div>
 
-      <!-- Empty progress bar (next batch indicator) -->
-      <div class="flex-1 bg-white border border-black">
-        <div class="border-2 border-white overflow-hidden">
-          <div class="h-4 bg-gray-200"></div>
-        </div>
+    <!-- Empty progress bar (next batch indicator) -->
+    <div class="flex-1 bg-white border border-black">
+      <div class="border-2 border-white overflow-hidden">
+        <div class="h-4 bg-gray-200"></div>
       </div>
+    </div>
 
-      <!-- Cut-off progress bar (more batches indicator) -->
-      <div *ngIf="hasMoreBatches" class="flex-1 bg-white border border-black relative overflow-hidden">
+    <!-- Cut-off progress bar (more batches indicator) -->
+    @if (hasMoreBatches) {
+      <div class="flex-1 bg-white border border-black relative overflow-hidden">
         <div class="border-2 border-white overflow-hidden">
           <div class="h-4 bg-gray-200"></div>
         </div>
         <!-- Diagonal stripes to indicate continuation -->
-        <div class="absolute inset-0 pointer-events-none" 
-             style="background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.1) 5px, rgba(0,0,0,0.1) 10px);">
+        <div class="absolute inset-0 pointer-events-none"
+          style="background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.1) 5px, rgba(0,0,0,0.1) 10px);">
         </div>
       </div>
-    </div>
+    }
+  </div>
 </div>

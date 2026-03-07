@@ -1,10 +1,10 @@
 import { Component, Input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-batch-progress-bar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './batch-progress-bar.component.html',
   styleUrl: './batch-progress-bar.component.css'
 })

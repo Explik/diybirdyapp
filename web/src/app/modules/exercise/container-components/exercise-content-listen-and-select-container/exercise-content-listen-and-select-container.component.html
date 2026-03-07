@@ -1,14 +1,16 @@
-<app-instruction  
-    i18n-title title="Can you hear it?"
-    i18n-instruction instruction='Select what it says'></app-instruction>
+<app-instruction
+  i18n-title title="Can you hear it?"
+i18n-instruction instruction='Select what it says'></app-instruction>
 
 <div class="block mt-4 mb-8 ml-2">
-    <app-dynamic-audio-content 
-        *ngIf="content" 
-        [data]="content"></app-dynamic-audio-content>
+  @if (content) {
+    <app-dynamic-audio-content
+    [data]="content"></app-dynamic-audio-content>
+  }
 </div>
 
-<app-exercise-input-select-options
-    *ngIf="input" 
+@if (input) {
+  <app-exercise-input-select-options
     [input]="input"
-    (optionSelected)="handleOptionSelected($event)"></app-exercise-input-select-options>
+  (optionSelected)="handleOptionSelected($event)"></app-exercise-input-select-options>
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { InstructionComponent } from '../../components/instruction/instruction.component';
 import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 import { ExerciseService } from '../../services/exercise.service';
@@ -8,7 +8,7 @@ import { ExerciseContentFlashcardDto } from '../../../../shared/api-client';
 @Component({
   selector: 'app-exercise-content-sort-flashcard-container',
   standalone: true,
-  imports: [CommonModule, InstructionComponent, DynamicFlashcardContentComponent],
+  imports: [InstructionComponent, DynamicFlashcardContentComponent],
   templateUrl: './exercise-content-sort-flashcard-container.component.html'
 })
 export class ExerciseContentSortFlashcardContainerComponent implements OnInit {

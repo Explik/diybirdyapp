@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { ExerciseContentDto, ExerciseInputArrangeTextOptionsDto } from '../../../../shared/api-client';
 import { ExerciseService } from '../../services/exercise.service';
@@ -8,7 +8,7 @@ import { DynamicContentComponent } from "../../components/dynamic-content/dynami
 
 @Component({
   selector: 'app-exercise-content-arrange-words-in-translation',
-  imports: [CommonModule, InstructionComponent, ExerciseInputArrangeTextOptionsComponent, DynamicContentComponent],
+  imports: [InstructionComponent, ExerciseInputArrangeTextOptionsComponent, DynamicContentComponent],
   templateUrl: './exercise-content-arrange-words-in-translation.component.html'
 })
 export class ExerciseContentArrangeWordsInTranslationComponent {

@@ -3,14 +3,14 @@ import { FlashcardEditContainerComponent } from "../../components/flashcard-edit
 import { FlashcardService } from '../../services/flashcard.service';
 import { zip } from 'rxjs';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FlashcardReviewContainerComponent } from '../../components/flashcard-review-container/flashcard-review-container.component';
 import { EditFlashcardDeckImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 
 @Component({
   selector: 'app-flashcard-deck-view-page',
   standalone: true,
-  imports: [RouterModule, CommonModule, FlashcardEditContainerComponent],
+  imports: [RouterModule, FlashcardEditContainerComponent],
   templateUrl: './flashcard-deck-edit-page.component.html',
   styleUrl: './flashcard-deck-edit-page.component.css'
 })

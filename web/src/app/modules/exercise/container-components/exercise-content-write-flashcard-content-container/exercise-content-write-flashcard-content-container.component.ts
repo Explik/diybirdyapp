@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InstructionComponent } from "../../components/instruction/instruction.component";
-import { CommonModule } from '@angular/common';
+
 import { ExerciseInputWriteTextComponent } from '../../components/exercise-input-write-text/exercise-input-write-text.component';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
@@ -10,7 +10,7 @@ import { ExerciseContentFlashcardDto, ExerciseInputWriteTextDto } from '../../..
 @Component({
   selector: 'app-exercise-content-write-flashcard-content-container',
   standalone: true,
-  imports: [InstructionComponent, CommonModule, ExerciseInputWriteTextComponent, DynamicFlashcardContentComponent],
+  imports: [InstructionComponent, ExerciseInputWriteTextComponent, DynamicFlashcardContentComponent],
   templateUrl: './exercise-content-write-flashcard-content-container.component.html'
 })
 export class ExerciseContentWriteFlashcardContentContainerComponent implements OnInit {

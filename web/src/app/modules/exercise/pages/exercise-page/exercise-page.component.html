@@ -1,16 +1,17 @@
 <!-- Header -->
-    <div header class="flex items-center">
-    <app-exit-icon-button class="pl-2 pr-0 flex-none"></app-exit-icon-button>
-    <app-progress-bar [progress]="40" class="flex-grow"></app-progress-bar>
-    </div>
+<div header class="flex items-center">
+  <app-exit-icon-button class="pl-2 pr-0 flex-none"></app-exit-icon-button>
+  <app-progress-bar [progress]="40" class="flex-grow"></app-progress-bar>
+</div>
 
 <!-- Content -->
 <div content class="px-12 py-6 max-w-lg mx-auto">
-    <ng-container *ngComponentOutlet=" exerciseComponent$ | async" />
+  <ng-container *ngComponentOutlet=" exerciseComponent$ | async" />
 </div>
 
 <!-- Footer -->
-<p *ngIf="exerciseNavigationComponent$ | async" footer class="px-12 max-w-lg mx-auto">
+@if (exerciseNavigationComponent$ | async) {
+  <p footer class="px-12 max-w-lg mx-auto">
     <ng-container *ngComponentOutlet="exerciseNavigationComponent$ | async" />
-</p>
-  
+  </p>
+}

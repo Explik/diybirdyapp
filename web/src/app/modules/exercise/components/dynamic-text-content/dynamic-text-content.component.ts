@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, HostListener, Input } from '@angular/core';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 import { AudioPlayService } from '../../../../shared/services/audioPlay.service';
@@ -7,7 +7,7 @@ import { ExerciseContentTextDto } from '../../../../shared/api-client';
 @Component({
   selector: 'app-dynamic-text-content',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [IconComponent],
   templateUrl: './dynamic-text-content.component.html'
 })
 export class DynamicTextContentComponent {

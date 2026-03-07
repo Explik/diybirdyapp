@@ -1,10 +1,13 @@
-<app-instruction  
-    title="Can you pronounce this?"
-    instruction='Click the button and do your best attempt'></app-instruction>
+<app-instruction
+  title="Can you pronounce this?"
+instruction='Click the button and do your best attempt'></app-instruction>
 
-<app-dynamic-text-content *ngIf="content" [data]="content" class="block mb-4" />
+@if (content) {
+  <app-dynamic-text-content [data]="content" class="block mb-4" />
+}
 
-<app-exercise-input-record-audio 
-    *ngIf="input" 
+@if (input) {
+  <app-exercise-input-record-audio
     [input]="input"
-    (recordingFinished)="handleRecordingFinished()"></app-exercise-input-record-audio>
+  (recordingFinished)="handleRecordingFinished()"></app-exercise-input-record-audio>
+}

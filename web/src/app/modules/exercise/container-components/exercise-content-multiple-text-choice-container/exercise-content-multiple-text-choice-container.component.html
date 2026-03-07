@@ -1,7 +1,8 @@
-<app-instruction 
-    title="Pick the correct option"
-    instruction="What is the translation of dog?"></app-instruction>
+<app-instruction
+  title="Pick the correct option"
+instruction="What is the translation of dog?"></app-instruction>
 
-<app-exercise-input-select-options
-    *ngIf="input"
-    [input]="input"></app-exercise-input-select-options>
+@if (input) {
+  <app-exercise-input-select-options
+  [input]="input"></app-exercise-input-select-options>
+}

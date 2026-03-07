@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 import { DynamicAudioContentComponent } from '../dynamic-audio-content/dynamic-audio-content.component';
 import { DynamicImageContentComponent } from '../dynamic-image-content/dynamic-image-content.component';
@@ -9,7 +9,7 @@ import { ExerciseContentAudioDto, ExerciseContentDto, ExerciseContentImageDto, E
 @Component({
   selector: 'app-dynamic-content',
   standalone: true,
-  imports: [CommonModule, DynamicAudioContentComponent, DynamicImageContentComponent, DynamicTextContentComponent, DynamicVideoContentComponent],
+  imports: [DynamicAudioContentComponent, DynamicImageContentComponent, DynamicTextContentComponent, DynamicVideoContentComponent],
   templateUrl: './dynamic-content.component.html'
 })
 export class DynamicContentComponent {

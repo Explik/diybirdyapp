@@ -1,32 +1,48 @@
-<div *ngIf="flashcardDeck" class="flashcard-deck-edit-container">
+@if (flashcardDeck) {
+  <div class="flashcard-deck-edit-container">
     @for(flashcard of flashcardDeck!.flashcards; track flashcard; let i = $index) {
-    <app-flashcard-edit class="flashcard-item block mb-4">
-      <ng-container *ngIf="flashcard.leftContentType === 'text'" left>
-        <span class="mr-1">{{flashcard.leftTextContent!.text }}</span>
-      </ng-container>
-      <ng-container *ngIf="flashcard.leftContentType === 'audio'" left>
-        <app-audio-preview [data]="flashcard.leftAudioContent!"></app-audio-preview>
-      </ng-container>
-      <ng-container *ngIf="flashcard.leftContentType === 'image'" left>
-        <app-image-preview [data]="flashcard.leftImageContent!"></app-image-preview>
-      </ng-container>
-      <ng-container *ngIf="flashcard.leftContentType === 'video'" left>
-        <app-video-preview [data]="flashcard.leftVideoContent!"></app-video-preview>
-      </ng-container>
-
-      <ng-container *ngIf="flashcard.rightContentType === 'text'" right>
-        <span class="mr-1">{{flashcard.rightTextContent!.text }}</span>
-      </ng-container>
-      <ng-container *ngIf="flashcard.rightContentType === 'audio'" right>
-        <app-audio-preview [data]="flashcard.rightAudioContent!"></app-audio-preview>
-      </ng-container>
-      <ng-container *ngIf="flashcard.rightContentType === 'image'" right>
-        <app-image-preview [data]="flashcard.rightImageContent!"></app-image-preview>
-      </ng-container>
-      <ng-container *ngIf="flashcard.rightContentType === 'video'" right>
-        <app-video-preview [data]="flashcard.rightVideoContent!"></app-video-preview>
-      </ng-container>
-
-    </app-flashcard-edit>
+      <app-flashcard-edit class="flashcard-item block mb-4">
+        @if (flashcard.leftContentType === 'text') {
+          <ng-container left>
+            <span class="mr-1">{{flashcard.leftTextContent!.text }}</span>
+          </ng-container>
+        }
+        @if (flashcard.leftContentType === 'audio') {
+          <ng-container left>
+            <app-audio-preview [data]="flashcard.leftAudioContent!"></app-audio-preview>
+          </ng-container>
+        }
+        @if (flashcard.leftContentType === 'image') {
+          <ng-container left>
+            <app-image-preview [data]="flashcard.leftImageContent!"></app-image-preview>
+          </ng-container>
+        }
+        @if (flashcard.leftContentType === 'video') {
+          <ng-container left>
+            <app-video-preview [data]="flashcard.leftVideoContent!"></app-video-preview>
+          </ng-container>
+        }
+        @if (flashcard.rightContentType === 'text') {
+          <ng-container right>
+            <span class="mr-1">{{flashcard.rightTextContent!.text }}</span>
+          </ng-container>
+        }
+        @if (flashcard.rightContentType === 'audio') {
+          <ng-container right>
+            <app-audio-preview [data]="flashcard.rightAudioContent!"></app-audio-preview>
+          </ng-container>
+        }
+        @if (flashcard.rightContentType === 'image') {
+          <ng-container right>
+            <app-image-preview [data]="flashcard.rightImageContent!"></app-image-preview>
+          </ng-container>
+        }
+        @if (flashcard.rightContentType === 'video') {
+          <ng-container right>
+            <app-video-preview [data]="flashcard.rightVideoContent!"></app-video-preview>
+          </ng-container>
+        }
+      </app-flashcard-edit>
     }
-</div>
+  </div>
+}

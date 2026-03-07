@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, forwardRef, Input } from '@angular/core';
 import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { APP_FORM_FIELD_CONTROL, AppFormFieldControl } from '../../models/form.interface';
@@ -7,7 +7,7 @@ import { APP_FORM_FIELD_CONTROL, AppFormFieldControl } from '../../models/form.i
   selector: 'app-text-field',
   standalone: true,
   templateUrl: './text-field.component.html',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

@@ -1,6 +1,6 @@
 
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy, Inject, LOCALE_ID } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 import { LabelComponent } from '../../../../shared/components/label/label.component';
@@ -13,7 +13,7 @@ import { FormErrorComponent } from "../../../../shared/components/form-error/for
 @Component({
   selector: 'app-session-options-learn-flashcard',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, LabelComponent, SlideToogleComponent, FormErrorComponent, FormErrorComponent],
+  imports: [ReactiveFormsModule, FormFieldComponent, LabelComponent, SlideToogleComponent, FormErrorComponent, FormErrorComponent],
   templateUrl: './session-options-learn-flashcard.component.html'
 })
 export class SessionOptionsLearnFlashcardComponent implements OnInit, OnChanges, OnDestroy, SessionOptionsComponent<ExerciseSessionOptionsLearnFlashcardsDto> {

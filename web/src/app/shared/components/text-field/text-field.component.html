@@ -1,20 +1,19 @@
-<ng-container *ngIf="rows && rows > 1; else singleLine">
-    <textarea 
-            [attr.id]="id"
-            [(ngModel)]="value" 
-            (ngModelChange)="onUpdatedValue()" 
-            [rows]="rows" 
-            [disabled]="disabled"
-            class="border border-black px-4 py-2 w-full">
-    </textarea>
-</ng-container>
-<ng-template #singleLine>
-    <input
-        [attr.id]="id"
-        [type]="type"
-        [(ngModel)]="value"
-        (ngModelChange)="onUpdatedValue()"
-        [disabled]="disabled"
-        class="border border-black px-4 py-2 w-full"
+@if (rows && rows > 1) {
+  <textarea
+    [attr.id]="id"
+    [(ngModel)]="value"
+    (ngModelChange)="onUpdatedValue()"
+    [rows]="rows"
+    [disabled]="disabled"
+    class="border border-black px-4 py-2 w-full">
+  </textarea>
+} @else {
+  <input
+    [attr.id]="id"
+    [type]="type"
+    [(ngModel)]="value"
+    (ngModelChange)="onUpdatedValue()"
+    [disabled]="disabled"
+    class="border border-black px-4 py-2 w-full"
     />
-</ng-template>
+  }

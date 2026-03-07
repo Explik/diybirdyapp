@@ -2,7 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet, Router } from '@angular/router';
 import { GenericExercise, MultipleChoiceOption } from './modules/exercise/models/exercise.interface';
-import { CommonModule } from '@angular/common';
+
 import { ExerciseService } from './modules/exercise/services/exercise.service';
 import { AuthService } from './shared/services/auth.service';
 import { ErrorToastComponent } from './shared/components/error-toast/error-toast.component';
@@ -10,7 +10,7 @@ import { ErrorToastComponent } from './shared/components/error-toast/error-toast
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, RouterOutlet, CommonModule, ErrorToastComponent],
+  imports: [RouterModule, RouterOutlet, ErrorToastComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

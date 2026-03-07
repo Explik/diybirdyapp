@@ -2,34 +2,31 @@
 
   <!-- Two-column grid: each row spans left + right so heights are always equal -->
   <div class="grid grid-cols-2 gap-2">
-    <ng-container *ngFor="let row of rows">
-
+    @for (row of rows; track row) {
       <!-- Left cell -->
-      <button
-        *ngIf="row.left.option; else blankCell"
-        (click)="selectLeft(row.left.option)"
-        [disabled]="isDisabled(row.left.option.id)"
-        [ngClass]="getButtonClass(row.left.state)"
-        class="option w-full h-full min-h-14 bg-white px-3 py-4 rounded-lg shadow-md border border-gray-200 hover:bg-slate-200 transition-colors break-words">
-        {{ row.left.option.text }}
-      </button>
-      <ng-template #blankCell>
+      @if (row.left.option) {
+        <button
+          (click)="selectLeft(row.left.option)"
+          [disabled]="isDisabled(row.left.option.id)"
+          [ngClass]="getButtonClass(row.left.state)"
+          class="option w-full h-full min-h-14 bg-white px-3 py-4 rounded-lg shadow-md border border-gray-200 hover:bg-slate-200 transition-colors break-words">
+          {{ row.left.option.text }}
+        </button>
+      } @else {
         <div class="w-full min-h-14 rounded-lg border border-transparent" aria-hidden="true"></div>
-      </ng-template>
-
+      }
       <!-- Right cell -->
-      <button
-        *ngIf="row.right.option; else blankCellR"
-        (click)="selectRight(row.right.option)"
-        [disabled]="isDisabled(row.right.option.id)"
-        [ngClass]="getButtonClass(row.right.state)"
-        class="option w-full h-full min-h-14 bg-white px-3 py-4 rounded-lg shadow-md border border-gray-200 hover:bg-slate-200 transition-colors break-words">
-        {{ row.right.option.text }}
-      </button>
-      <ng-template #blankCellR>
+      @if (row.right.option) {
+        <button
+          (click)="selectRight(row.right.option)"
+          [disabled]="isDisabled(row.right.option.id)"
+          [ngClass]="getButtonClass(row.right.state)"
+          class="option w-full h-full min-h-14 bg-white px-3 py-4 rounded-lg shadow-md border border-gray-200 hover:bg-slate-200 transition-colors break-words">
+          {{ row.right.option.text }}
+        </button>
+      } @else {
         <div class="w-full min-h-14 rounded-lg border border-transparent" aria-hidden="true"></div>
-      </ng-template>
-
-    </ng-container>
+      }
+    }
   </div>
 </div>

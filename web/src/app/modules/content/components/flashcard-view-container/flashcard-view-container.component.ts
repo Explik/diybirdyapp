@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FlashcardEditComponent } from "../flashcard-edit/flashcard-edit.component";
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
 import { FormsModule } from '@angular/forms';
@@ -13,7 +13,7 @@ import { VideoPreviewComponent } from "../video-preview/video-preview.component"
     standalone: true,
     templateUrl: './flashcard-view-container.component.html',
     styleUrl: './flashcard-view-container.component.css',
-    imports: [CommonModule, FormsModule, FlashcardEditComponent, AudioPreviewComponent, ImagePreviewComponent, VideoPreviewComponent]
+    imports: [FormsModule, FlashcardEditComponent, AudioPreviewComponent, ImagePreviewComponent, VideoPreviewComponent]
 })
 export class FlashcardViewContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;

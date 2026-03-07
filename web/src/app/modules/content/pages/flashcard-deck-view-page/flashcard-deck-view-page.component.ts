@@ -5,7 +5,7 @@ import { zip } from 'rxjs';
 import { RecursivePartial } from '../../../../shared/models/util.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FlashcardReviewComponent } from "../../components/flashcard-review/flashcard-review.component";
-import { CommonModule } from '@angular/common';
+
 import { FlashcardReviewContainerComponent } from '../../components/flashcard-review-container/flashcard-review-container.component';
 import { EditFlashcard, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguage, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
 import { FlashcardViewContainerComponent } from '../../components/flashcard-view-container/flashcard-view-container.component';
@@ -15,7 +15,7 @@ import { RowButtonComponent } from '../../../../shared/components/row-button/row
 @Component({
   selector: 'app-flashcard-deck-view-page',
   standalone: true,
-  imports: [RouterModule, CommonModule, FlashcardViewContainerComponent, FlashcardReviewContainerComponent, ButtonComponent, RowButtonComponent],
+  imports: [RouterModule, FlashcardViewContainerComponent, FlashcardReviewContainerComponent, ButtonComponent, RowButtonComponent],
   templateUrl: './flashcard-deck-view-page.component.html',
   styleUrl: './flashcard-deck-view-page.component.css'
 })

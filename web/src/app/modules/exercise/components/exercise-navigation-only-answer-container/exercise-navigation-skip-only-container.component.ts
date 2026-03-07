@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseStates } from '../../models/exercise.interface';
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
@@ -7,7 +7,7 @@ import { ButtonComponent } from "../../../../shared/components/button/button.com
 @Component({
   selector: 'app-exercise-navigation-skip-only-container',
   standalone: true,
-  imports: [CommonModule, ButtonComponent],
+  imports: [ButtonComponent],
   templateUrl: './exercise-navigation-skip-only-container.component.html'
 })
 export class ExerciseNavigationSkipOnlyContainerComponent {

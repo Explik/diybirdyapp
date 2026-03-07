@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AudioUploadService } from '../../../../shared/services/audioUpload.service';
-import { CommonModule } from '@angular/common';
+
 import { ExerciseInputRecordAudioDto, ExerciseInputRecordAudioFeedbackDto, FileUploadResultDto } from '../../../../shared/api-client';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
 
 @Component({
   selector: 'app-exercise-input-record-audio',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [IconComponent],
   templateUrl: './exercise-input-record-audio.component.html'
 })
 export class ExerciseInputRecordAudioComponent implements OnInit, OnChanges, OnDestroy {

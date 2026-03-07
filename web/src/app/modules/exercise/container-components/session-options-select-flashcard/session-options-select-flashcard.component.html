@@ -1,37 +1,39 @@
 <form [formGroup]="form" class="session-options-select-flashcard" class="min-h-48">
-	<div class="mb-4">
-		<app-form-field>
-			<app-label i18n>Initial flashcard language</app-label>
-			<app-select formControlName="initialFlashcardLanguageId">
-				<app-option *ngFor="let lang of availableLanguages" [value]="lang.id">{{ formatLanguageName(lang) }}</app-option>
-			</app-select>
-		</app-form-field>
-	</div>
+  <div class="mb-4">
+    <app-form-field>
+      <app-label i18n>Initial flashcard language</app-label>
+      <app-select formControlName="initialFlashcardLanguageId">
+        @for (lang of availableLanguages; track lang) {
+          <app-option [value]="lang.id">{{ formatLanguageName(lang) }}</app-option>
+        }
+      </app-select>
+    </app-form-field>
+  </div>
 
-	<div class="mb-4">
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Initially hide options</app-label>
-				<app-slide-toogle formControlName="initiallyHideOptions"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
+  <div class="mb-4">
+    <app-form-field>
+      <div class="flex items-center justify-between">
+        <app-label i18n>Initially hide options</app-label>
+        <app-slide-toogle formControlName="initiallyHideOptions"></app-slide-toogle>
+      </div>
+    </app-form-field>
+  </div>
 
-	<div>
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Text to speech</app-label>
-				<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
+  <div>
+    <app-form-field>
+      <div class="flex items-center justify-between">
+        <app-label i18n>Text to speech</app-label>
+        <app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
+      </div>
+    </app-form-field>
+  </div>
 
-	<div>
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Shuffle flashcards</app-label>
-				<app-slide-toogle formControlName="shuffleFlashcardsEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
+  <div>
+    <app-form-field>
+      <div class="flex items-center justify-between">
+        <app-label i18n>Shuffle flashcards</app-label>
+        <app-slide-toogle formControlName="shuffleFlashcardsEnabled"></app-slide-toogle>
+      </div>
+    </app-form-field>
+  </div>
 </form>

@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FlashcardComponent } from "../../../../shared/components/flashcard/flashcard.component";
-import { CommonModule } from '@angular/common';
+
 import { DynamicContentComponent } from '../dynamic-content/dynamic-content.component';
 import { ExerciseContentFlashcardDto, ExerciseContentFlashcardSideDto } from '../../../../shared/api-client';
 import { HotkeyService } from '../../../../shared/services/hotKey.service';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-dynamic-flashcard-content',
   standalone: true,
-  imports: [CommonModule, FlashcardComponent, DynamicContentComponent],
+  imports: [FlashcardComponent, DynamicContentComponent],
   templateUrl: './dynamic-flashcard-content.component.html'
 })
 export class DynamicFlashcardContentComponent implements OnInit, OnDestroy{

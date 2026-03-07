@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'app-icon',
   standalone: true,
-  imports: [NgIf],
+  imports: [],
   templateUrl: './icon.component.html',
   styleUrls: ['./icon.component.css']
 })

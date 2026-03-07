@@ -1,12 +1,15 @@
-<app-instruction 
-    *ngIf="targetLanguage" 
+@if (targetLanguage) {
+  <app-instruction
     title="Translate the sentence"
     [instruction]="'Translate the sentence below into ' + targetLanguage!" />
+}
 
-<app-text-quote 
-    *ngIf="content" 
+@if (content) {
+  <app-text-quote
     [content]="content!" />
+}
 
-<app-exercise-input-write-text 
-    *ngIf="input" 
+@if (input) {
+  <app-exercise-input-write-text
     [input]="input!" />
+}

@@ -1,13 +1,13 @@
 import { Component, Host, HostListener, Input } from '@angular/core';
 import { AudioPlayService } from '../../../../shared/services/audioPlay.service';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
-import { CommonModule } from '@angular/common';
+
 import { ExerciseContentAudioDto } from '../../../../shared/api-client';
 
 @Component({
   selector: 'app-dynamic-audio-content',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [IconComponent],
   templateUrl: './dynamic-audio-content.component.html'
 })
 export class DynamicAudioContentComponent {

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { AudioRecordingService } from '../../services/audioRecording.service';
 import { IconComponent } from "../../../../shared/components/icon/icon.component";
-import { CommonModule } from '@angular/common';
+
 import { AudioPlayingService } from '../../services/audioPlaying.service';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { EditFlashcardAudio, FileAudioContent } from '../../models/editFlashcard.model';
@@ -11,7 +11,7 @@ import { EditFlashcardAudio, FileAudioContent } from '../../models/editFlashcard
   templateUrl: './audio-input.component.html',
   styleUrls: ['./audio-input.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

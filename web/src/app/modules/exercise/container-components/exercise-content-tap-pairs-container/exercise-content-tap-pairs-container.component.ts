@@ -3,11 +3,11 @@ import { InstructionComponent } from "../../components/instruction/instruction.c
 import { ExerciseInputPairOptionsComponent } from "../../components/exercise-input-pair-options/exercise-input-pair-options.component";
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseInputPairOptionsDto } from '../../../../shared/api-client';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-exercise-content-tap-pairs-container',
-  imports: [CommonModule, InstructionComponent, ExerciseInputPairOptionsComponent],
+  imports: [InstructionComponent, ExerciseInputPairOptionsComponent],
   templateUrl: './exercise-content-tap-pairs-container.component.html',
 })
 export class ExerciseContentTapPairsContainerComponent {
