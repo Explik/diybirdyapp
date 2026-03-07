@@ -37,12 +37,6 @@ const ERR = {
   TITLE_REQUIRED: 'Title is required',
   FRONT_TEXT:     'Front text required',
   BACK_TEXT:      'Back text required',
-  FRONT_AUDIO:    'Front audio required',
-  BACK_AUDIO:     'Back audio required',
-  FRONT_IMAGE:    'Front image required',
-  BACK_IMAGE:     'Back image required',
-  FRONT_VIDEO:    'Front video required',
-  BACK_VIDEO:     'Back video required',
   FRONT_LANG:     'Front language required when text content exists',
   BACK_LANG:      'Back language required when text content exists',
 } as const;
@@ -110,24 +104,6 @@ function createAudioCard(): EditFlashcardImpl {
   fc.rightContentType = 'audio';
   fc.leftAudioContent = undefined;
   fc.rightAudioContent = undefined;
-  return fc;
-}
-
-function createImageCard(): EditFlashcardImpl {
-  const fc = EditFlashcardImpl.createDefault();
-  fc.leftContentType = 'image';
-  fc.rightContentType = 'image';
-  fc.leftImageContent = undefined;
-  fc.rightImageContent = undefined;
-  return fc;
-}
-
-function createVideoCard(): EditFlashcardImpl {
-  const fc = EditFlashcardImpl.createDefault();
-  fc.leftContentType = 'video';
-  fc.rightContentType = 'video';
-  fc.leftVideoContent = undefined;
-  fc.rightVideoContent = undefined;
   return fc;
 }
 
@@ -374,195 +350,6 @@ describe('FlashcardEditContainerComponent', () => {
   });
 
   // -------------------------------------------------------------------------
-  describe('Per-card content type selector', () => {
-    beforeEach(() => {
-      const deck = createDeck('Deck', '', [createTextCard('hello', 'hej', 'en', 'da')]);
-      mountComponent(deck);
-    });
-
-    it('shows the text input for both front and back by default', () => {
-      cy.get('#left-text-0').should('exist');
-      cy.get('#right-text-0').should('exist');
-      cy.get('.audio-input-container').should('not.exist');
-      cy.get('.image-input-container').should('not.exist');
-      cy.get('.video-input-container').should('not.exist');
-    });
-
-    it('shows the audio file input when front content type is switched to "audio"', () => {
-      selectOption(SEL.LEFT_TYPE, CONTENT_TYPE_LABEL.AUDIO);
-
-      cy.get('#left-audio-0 .audio-input-container').should('exist');
-      cy.get('#left-text-0').should('not.exist');
-    });
-
-    it('shows the image file input when front content type is switched to "image"', () => {
-      selectOption(SEL.LEFT_TYPE, CONTENT_TYPE_LABEL.IMAGE);
-
-      cy.get('#left-image-0 .image-input-container').should('exist');
-      cy.get('#left-text-0').should('not.exist');
-    });
-
-    it('shows the video file input when front content type is switched to "video"', () => {
-      selectOption(SEL.LEFT_TYPE, CONTENT_TYPE_LABEL.VIDEO);
-
-      cy.get('#left-video-0 .video-input-container').should('exist');
-      cy.get('#left-text-0').should('not.exist');
-    });
-
-    it('shows the audio file input when back content type is switched to "audio"', () => {
-      selectOption(SEL.RIGHT_TYPE, CONTENT_TYPE_LABEL.AUDIO);
-
-      cy.get('#right-audio-0 .audio-input-container').should('exist');
-      cy.get('#right-text-0').should('not.exist');
-    });
-
-    it('shows the image file input when back content type is switched to "image"', () => {
-      selectOption(SEL.RIGHT_TYPE, CONTENT_TYPE_LABEL.IMAGE);
-
-      cy.get('#right-image-0 .image-input-container').should('exist');
-      cy.get('#right-text-0').should('not.exist');
-    });
-
-    it('shows the video file input when back content type is switched to "video"', () => {
-      selectOption(SEL.RIGHT_TYPE, CONTENT_TYPE_LABEL.VIDEO);
-
-      cy.get('#right-video-0 .video-input-container').should('exist');
-      cy.get('#right-text-0').should('not.exist');
-    });
-
-    it('preserves front text content when switching away from text and back again', () => {
-      cy.get('#left-text-0 input').should('have.value', 'hello');
-
-      selectOption(SEL.LEFT_TYPE, CONTENT_TYPE_LABEL.AUDIO);
-      cy.get('#left-text-0').should('not.exist');
-
-      selectOption(SEL.LEFT_TYPE, CONTENT_TYPE_LABEL.TEXT);
-      cy.get('#left-text-0 input').should('have.value', 'hello');
-    });
-
-    it('preserves back text content when switching away from text and back again', () => {
-      cy.get('#right-text-0 input').should('have.value', 'hej');
-
-      selectOption(SEL.RIGHT_TYPE, CONTENT_TYPE_LABEL.AUDIO);
-      cy.get('#right-text-0').should('not.exist');
-
-      selectOption(SEL.RIGHT_TYPE, CONTENT_TYPE_LABEL.TEXT);
-      cy.get('#right-text-0 input').should('have.value', 'hej');
-    });
-  });
-
-  // -------------------------------------------------------------------------
-  describe('Text content — validation', () => {
-    beforeEach(() => {
-      // Card with empty text on both sides
-      const fc = EditFlashcardImpl.createDefault();
-      fc.leftTextContent  = EditFlashcardTextImpl.create();
-      fc.rightTextContent = EditFlashcardTextImpl.create();
-      const deck = createDeck('Deck', '', [fc]);
-      mountComponent(deck);
-    });
-
-    it('shows "Front text required" when front content type is text and the field is empty on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.LEFT_SIDE} app-form-error`).contains(ERR.FRONT_TEXT).should('exist');
-    });
-
-    it('shows "Back text required" when back content type is text and the field is empty on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.RIGHT_SIDE} app-form-error`).contains(ERR.BACK_TEXT).should('exist');
-    });
-  });
-
-  // -------------------------------------------------------------------------
-  describe('Text content — resolved language label', () => {
-    it('shows the resolved front global language name below the front text input when a front language is selected', () => {
-      const deck = createDeck('Deck', '', [createTextCard('word', 'ord', 'en', 'da')]);
-      mountComponent(deck);
-
-      // The component resolves the ISO code 'en' to "English" via Intl.DisplayNames
-      cy.get(SEL.LEFT_SIDE).should('contain.text', LANG_LABEL.ENGLISH);
-    });
-
-    it('shows the resolved back global language name below the back text input when a back language is selected', () => {
-      const deck = createDeck('Deck', '', [createTextCard('word', 'ord', 'en', 'da')]);
-      mountComponent(deck);
-
-      cy.get(SEL.RIGHT_SIDE).should('contain.text', LANG_LABEL.DANISH);
-    });
-
-    it('does not show a language label when no global language is selected', () => {
-      const deck = createDeck('Deck', '', [createTextCard('word', 'ord', '', '')]);
-      mountComponent(deck);
-
-      // When no language is selected the language name span is not rendered
-      cy.get(`${SEL.LEFT_SIDE} span`).should('not.contain.text', LANG_LABEL.ENGLISH);
-      cy.get(`${SEL.RIGHT_SIDE} span`).should('not.contain.text', LANG_LABEL.DANISH);
-    });
-  });
-
-  // -------------------------------------------------------------------------
-  describe('Audio content — validation', () => {
-    beforeEach(() => {
-      const deck = createDeck('Deck', '', [createAudioCard()]);
-      mountComponent(deck);
-    });
-
-    it('shows "Front audio required" when front content type is audio and no file is selected on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.LEFT_SIDE} app-form-error`).contains(ERR.FRONT_AUDIO).should('exist');
-    });
-
-    it('shows "Back audio required" when back content type is audio and no file is selected on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.RIGHT_SIDE} app-form-error`).contains(ERR.BACK_AUDIO).should('exist');
-    });
-  });
-
-  // -------------------------------------------------------------------------
-  describe('Image content — validation', () => {
-    beforeEach(() => {
-      const deck = createDeck('Deck', '', [createImageCard()]);
-      mountComponent(deck);
-    });
-
-    it('shows "Front image required" when front content type is image and neither a file nor a URL is present on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.LEFT_SIDE} app-form-error`).contains(ERR.FRONT_IMAGE).should('exist');
-    });
-
-    it('shows "Back image required" when back content type is image and neither a file nor a URL is present on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.RIGHT_SIDE} app-form-error`).contains(ERR.BACK_IMAGE).should('exist');
-    });
-  });
-
-  // -------------------------------------------------------------------------
-  describe('Video content — validation', () => {
-    beforeEach(() => {
-      const deck = createDeck('Deck', '', [createVideoCard()]);
-      mountComponent(deck);
-    });
-
-    it('shows "Front video required" when front content type is video and neither a file nor a URL is present on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.LEFT_SIDE} app-form-error`).contains(ERR.FRONT_VIDEO).should('exist');
-    });
-
-    it('shows "Back video required" when back content type is video and neither a file nor a URL is present on save', () => {
-      clickSave();
-
-      cy.get(`${SEL.RIGHT_SIDE} app-form-error`).contains(ERR.BACK_VIDEO).should('exist');
-    });
-  });
-
-  // -------------------------------------------------------------------------
   describe('Save — validation enforcement', () => {
     it('marks all form controls as touched on save attempt so all validation errors become visible', () => {
       const cards = [
@@ -668,8 +455,8 @@ describe('FlashcardEditContainerComponent', () => {
 
       cy.contains('button', BTN.ADD_CARD).click();
       // Fill in the required fields on the new (second) card
-      cy.get('#left-text-1 input').type('new front');
-      cy.get('#right-text-1 input').type('new back');
+      cy.get('#left-text-1').type('new front');
+      cy.get('#right-text-1').type('new back');
       clickSave();
 
       cy.get('@component').then((wrapper: any) => {

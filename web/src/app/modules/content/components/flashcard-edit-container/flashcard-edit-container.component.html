@@ -4,7 +4,7 @@
       <app-form-field fieldId="deck-name">
         <app-label i18n>Name</app-label>
         <app-text-field formControlName="name" class="deck-name-input mb-2"></app-text-field>
-        @if (form.get('name')?.errors?.['required']) {
+        @if (form.get('name')?.errors?.['required'] && form.get('name')?.touched) {
           <app-form-error i18n class="text-red-600 text-sm">Title is required</app-form-error>
         }
       </app-form-field>
@@ -44,111 +44,16 @@
       </div>
     </div>
     <div cdkDropList (cdkDropListDropped)="handleRearrangeFlashcard($event)" class="flashcard-list"
-      [ngClass]="{'dragging': currentDragIndex !== undefined}" formArrayName="flashcards">
+      [ngClass]="{'dragging': currentDragIndex !== undefined}">
       @for (fc of flashcardsControls; track fc; let i = $index) {
-        <div [formGroupName]="i" cdkDrag [cdkDragStartDelay]="{touch: 50, mouse: 0}" (cdkDragStarted)="handleDragStart(i)" (cdkDragEnded)="handleDragEnd()">
-          <app-flashcard-edit class="flashcard-item block mb-4">
-            <ng-container header>
-              <div class="inline-block">
-                <span class="flashcard-item-number font-bold mr-8">#{{ i + 1 }}</span>
-                <div class="inline-block mr-4">
-                  <app-select [id]="'left-content-type-' + i" class="left-content-type-input" formControlName="leftContentType">
-                    <app-option value="text" i18n>Text</app-option>
-                    <app-option value="audio" i18n>Audio</app-option>
-                    <app-option value="image" i18n>Image</app-option>
-                    <app-option value="video" i18n>Video</app-option>
-                  </app-select>
-                </div>
-                <div class="inline-block">
-                  <app-select [id]="'right-content-type-' + i" class="right-content-type-input" formControlName="rightContentType">
-                    <app-option value="text" i18n>Text</app-option>
-                    <app-option value="audio" i18n>Audio</app-option>
-                    <app-option value="image" i18n>Image</app-option>
-                    <app-option value="video" i18n>Video</app-option>
-                  </app-select>
-                </div>
-              </div>
-              <div class="inline-block float-right">
-                <button class="btn btn-primary" i18n (click)="handleDeleteFlashcard(fc.value)">Delete</button>
-              </div>
-            </ng-container>
-            @if (fc.get('leftContentType')?.value === 'text') {
-              <app-form-field left>
-                <app-text-input [id]="'left-text-' + i" formControlName="leftTextContent" (rows)="1"></app-text-input>
-                <div class="flex items-center justify-between w-full">
-                  @if (fc.get('leftTextContent')?.errors?.['text.required']) {
-                    <app-form-error i18n class="text-red-600 text-sm">Front text required</app-form-error>
-                  } @else {
-                    <app-label i18n>Front</app-label>
-                  }
-                  @if (form.get('frontLanguageId')?.value) {
-                    <span>{{ getFrontLanguageName() }}</span>
-                  }
-                </div>
-              </app-form-field>
-            }
-            @if (fc.get('leftContentType')?.value === 'audio') {
-              <app-form-field left>
-                <app-audio-input [id]="'left-audio-' + i" formControlName="leftAudioContent"></app-audio-input>
-              </app-form-field>
-            }
-            @if (fc.get('leftContentType')?.value === 'image') {
-              <app-form-field left>
-                <app-image-input [id]="'left-image-' + i" formControlName="leftImageContent"></app-image-input>
-                @if (fc.get('leftImageContent')?.errors?.['image.required']) {
-                  <app-form-error i18n class="text-red-600 text-sm">Front image required</app-form-error>
-                }
-              </app-form-field>
-            }
-            @if (fc.get('leftContentType')?.value === 'video') {
-              <app-form-field left>
-                <app-video-input [id]="'left-video-' + i" formControlName="leftVideoContent"></app-video-input>
-                @if (fc.get('leftVideoContent')?.errors?.['video.required']) {
-                  <app-form-error i18n class="text-red-600 text-sm">Front video required</app-form-error>
-                }
-              </app-form-field>
-            }
-            @if (fc.get('rightContentType')?.value === 'text') {
-              <app-form-field right>
-                <app-text-input [id]="'right-text-' + i" formControlName="rightTextContent" (rows)="1"></app-text-input>
-                <div class="flex items-center justify-between w-full">
-                  @if (fc.get('rightTextContent')?.errors?.['text.required']) {
-                    <app-form-error i18n>Back text required</app-form-error>
-                  } @else {
-                    <app-label i18n>Back</app-label>
-                  }
-                  @if (form.get('backLanguageId')?.value) {
-                    <span
-                      class="text-right">
-                    {{ getBackLanguageName() }}</span>
-                  }
-                </div>
-              </app-form-field>
-            }
-            @if (fc.get('rightContentType')?.value === 'audio') {
-              <app-form-field right>
-                <app-audio-input [id]="'right-audio-' + i" formControlName="rightAudioContent"></app-audio-input>
-                @if (fc.get('rightAudioContent')?.errors?.['audio.required']) {
-                  <app-form-error i18n>Back audio required</app-form-error>
-                }
-              </app-form-field>
-            }
-            @if (fc.get('rightContentType')?.value === 'image') {
-              <app-form-field right>
-                <app-image-input [id]="'right-image-' + i" formControlName="rightImageContent"></app-image-input>
-                @if (fc.get('rightImageContent')?.errors?.['image.required']) {
-                  <app-form-error i18n>Back image required</app-form-error>
-                }
-              </app-form-field>
-            }
-            @if (fc.get('rightContentType')?.value === 'video') {
-              <app-form-field right>
-                <app-video-input [id]="'right-video-' + i" formControlName="rightVideoContent"></app-video-input>
-                @if (fc.get('rightVideoContent')?.errors?.['video.required']) {
-                  <app-form-error i18n>Back video required</app-form-error>
-                }
-              </app-form-field>
-            }
+        <div cdkDrag [cdkDragStartDelay]="{touch: 50, mouse: 0}" (cdkDragStarted)="handleDragStart(i)" (cdkDragEnded)="handleDragEnd()">
+          <app-flashcard-edit
+            class="flashcard-item block mb-4"
+            [formGroup]="fc"
+            [index]="i"
+            [frontLanguageName]="getFrontLanguageName()"
+            [backLanguageName]="getBackLanguageName()"
+            (delete)="handleDeleteFlashcardAt(i)">
           </app-flashcard-edit>
         </div>
       }

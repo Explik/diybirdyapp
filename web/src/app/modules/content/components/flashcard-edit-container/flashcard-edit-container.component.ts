@@ -5,15 +5,11 @@ import { TextFieldComponent } from "../../../../shared/components/text-field/tex
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
-import { AudioInputComponent } from "../audio-input/audio-input.component";
-import { ImageInputComponent } from "../image-input/image-input.component";
-import { VideoInputComponent } from "../video-input/video-input.component";
 import { LabelComponent } from "../../../../shared/components/label/label.component";
 import { FormFieldComponent } from "../../../../shared/components/form-field/form-field.component";
 import { SelectComponent } from "../../../../shared/components/select/select.component";
 import { OptionComponent } from "../../../../shared/components/option/option.component";
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
-import { TextInputComponent } from '../text-input/text-input.component';
 import { FormErrorComponent } from "../../../../shared/components/form-error/form-error.component";
 import { FlashcardLanguageDto } from '../../../../shared/api-client';
 import { LOCALE_ID } from '@angular/core';
@@ -23,7 +19,7 @@ import { LOCALE_ID } from '@angular/core';
   standalone: true,
   templateUrl: './flashcard-edit-container.component.html',
   styleUrl: './flashcard-edit-container.component.css',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, TextInputComponent, VideoInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent, FormErrorComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent, FormErrorComponent]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
@@ -236,8 +232,16 @@ export class FlashcardEditContainerComponent {
   }
 
   // Template-friendly accessor for the form array controls
-  get flashcardsControls() {
-    return (this.form?.get('flashcards') as FormArray)?.controls || [];
+  get flashcardsControls(): FormGroup[] {
+    return ((this.form?.get('flashcards') as FormArray)?.controls as FormGroup[]) || [];
+  }
+
+  handleDeleteFlashcardAt(index: number): void {
+    if (!this.flashcardDeck) return;
+    const flashcard = this.flashcardDeck.flashcards[index];
+    if (flashcard) {
+      this.handleDeleteFlashcard(flashcard);
+    }
   }
 
   handleSaveFlashcards() {

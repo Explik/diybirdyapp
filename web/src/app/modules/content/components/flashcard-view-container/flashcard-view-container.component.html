@@ -1,48 +1,40 @@
 @if (flashcardDeck) {
   <div class="flashcard-deck-edit-container">
     @for(flashcard of flashcardDeck!.flashcards; track flashcard; let i = $index) {
-      <app-flashcard-edit class="flashcard-item block mb-4">
-        @if (flashcard.leftContentType === 'text') {
-          <ng-container left>
-            <span class="mr-1">{{flashcard.leftTextContent!.text }}</span>
-          </ng-container>
-        }
-        @if (flashcard.leftContentType === 'audio') {
-          <ng-container left>
-            <app-audio-preview [data]="flashcard.leftAudioContent!"></app-audio-preview>
-          </ng-container>
-        }
-        @if (flashcard.leftContentType === 'image') {
-          <ng-container left>
-            <app-image-preview [data]="flashcard.leftImageContent!"></app-image-preview>
-          </ng-container>
-        }
-        @if (flashcard.leftContentType === 'video') {
-          <ng-container left>
-            <app-video-preview [data]="flashcard.leftVideoContent!"></app-video-preview>
-          </ng-container>
-        }
-        @if (flashcard.rightContentType === 'text') {
-          <ng-container right>
-            <span class="mr-1">{{flashcard.rightTextContent!.text }}</span>
-          </ng-container>
-        }
-        @if (flashcard.rightContentType === 'audio') {
-          <ng-container right>
-            <app-audio-preview [data]="flashcard.rightAudioContent!"></app-audio-preview>
-          </ng-container>
-        }
-        @if (flashcard.rightContentType === 'image') {
-          <ng-container right>
-            <app-image-preview [data]="flashcard.rightImageContent!"></app-image-preview>
-          </ng-container>
-        }
-        @if (flashcard.rightContentType === 'video') {
-          <ng-container right>
-            <app-video-preview [data]="flashcard.rightVideoContent!"></app-video-preview>
-          </ng-container>
-        }
-      </app-flashcard-edit>
+      <div class="flashcard-item flashcard-edit-item block mb-4 p-6 border border-black rounded-lg bg-white overflow-hidden" style="box-shadow: 3px 3px;">
+        <div class="flex flex-col md:flex-row md:items-center md:space-x-4 overflow-x-auto">
+          <div class="left-side flex flex-col flex-grow md:basis-64">
+            @if (flashcard.leftContentType === 'text') {
+              <span class="mr-1">{{flashcard.leftTextContent!.text }}</span>
+            }
+            @if (flashcard.leftContentType === 'audio') {
+              <app-audio-preview [data]="flashcard.leftAudioContent!"></app-audio-preview>
+            }
+            @if (flashcard.leftContentType === 'image') {
+              <app-image-preview [data]="flashcard.leftImageContent!"></app-image-preview>
+            }
+            @if (flashcard.leftContentType === 'video') {
+              <app-video-preview [data]="flashcard.leftVideoContent!"></app-video-preview>
+            }
+          </div>
+          <div class="hidden md:flex flex-col p-4"></div>
+          <div class="my-8 border-t-2 border-dotted border-gray-400 md:hidden"></div>
+          <div class="right-side flex flex-col flex-grow md:basis-64">
+            @if (flashcard.rightContentType === 'text') {
+              <span class="mr-1">{{flashcard.rightTextContent!.text }}</span>
+            }
+            @if (flashcard.rightContentType === 'audio') {
+              <app-audio-preview [data]="flashcard.rightAudioContent!"></app-audio-preview>
+            }
+            @if (flashcard.rightContentType === 'image') {
+              <app-image-preview [data]="flashcard.rightImageContent!"></app-image-preview>
+            }
+            @if (flashcard.rightContentType === 'video') {
+              <app-video-preview [data]="flashcard.rightVideoContent!"></app-video-preview>
+            }
+          </div>
+        </div>
+      </div>
     }
   </div>
 }
