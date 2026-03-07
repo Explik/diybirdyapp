@@ -16,6 +16,7 @@ Component tests should be written for all components in the application using Cy
 - Focus on the component's own behavior rather than its children's implementations
 - Use descriptive test names that clearly indicate what is being tested
 - Test names should match any specifications or requirements related to the component's functionality
+- Any verification of data should happen through the components public API (inputs/outputs) rather than directly inspecting internal state or child components
 
 ## End-to-end tests
 End-to-end tests should be written for all features mentioned in the roadmap.

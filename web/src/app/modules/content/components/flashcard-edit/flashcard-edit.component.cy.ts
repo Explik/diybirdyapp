@@ -133,13 +133,13 @@ describe('FlashcardEditComponent', () => {
 
     it('preserves front text content when switching away from text and back again', () => {
       mountCard(createFormGroup({ leftTextContent: { text: 'hello' } }));
-      cy.get('#left-text-0 input').should('have.value', 'hello');
+      cy.get('#left-text-0').should('have.value', 'hello');
 
       selectOption(SEL.LEFT_TYPE, CONTENT_TYPE_LABEL.AUDIO);
       cy.get('#left-text-0').should('not.exist');
 
       selectOption(SEL.LEFT_TYPE, CONTENT_TYPE_LABEL.TEXT);
-      cy.get('#left-text-0 input').should('have.value', 'hello');
+      cy.get('#left-text-0').should('have.value', 'hello');
     });
   });
 
