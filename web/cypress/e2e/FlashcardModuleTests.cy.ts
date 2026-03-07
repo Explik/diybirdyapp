@@ -13,14 +13,17 @@ import {
     setLeftVideoContent, setRightVideoContent,
 } from './utils';
 
+const USERNAME = 'john@doe.com';
+const PASSWORD = 'G1CWdTbjVjHdEczJDKF%';
+
 describe('Flashcard deck features', () => {
   before(() => {
     resetData(); 
     goToSignUpPage();
     setName('John Doe');
-    setEmail('john@doe.com');
-    setPassword('password');
-    setRepeatPassword('password');
+    setEmail(USERNAME);
+    setPassword(PASSWORD);
+    setRepeatPassword(PASSWORD);
     clickSignUpButton();
 
     cy.wait(1500); // Wait for a moment to ensure the first registration is processed
@@ -28,9 +31,11 @@ describe('Flashcard deck features', () => {
 
   beforeEach(() => {
     goToLoginPage();
-    setEmail('john@doe.com');
-    setPassword('password');
+    setEmail(USERNAME);
+    setPassword(PASSWORD);
     clickLoginButton();
+
+    cy.wait(500); // Wait for a moment to ensure login is processed
   }); 
 
   describe('Flashcard deck data', () => {
