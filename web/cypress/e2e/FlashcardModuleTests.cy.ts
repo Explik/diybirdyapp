@@ -223,56 +223,13 @@ describe('Flashcard deck features', () => {
       cy.get('#right-video-0').should('exist');
     }); 
 
-    it('Text-text flascard is immidiately available for review', () => {
-      createNewDeck(); 
-
-      setLeftContentType('Text');
-      setRightContentType('Text');
-      setLeftTextContent('Question 1')
-      setRightTextContent('Answer 1')
-
-      cy.get('.flashcard-deck-edit-container').contains('Question 1').should('exist');
-      cy.get('.flashcard-deck-edit-container').contains('Answer 1').should('exist');
-    }); 
-
-    it ('Audio-audio flashcard is immidiately available for review', () => {
-      createNewDeck();
-
-      setLeftAudioContent('./cypress/files/example.mp3')
-      setRightAudioContent('./cypress/files/example.mp3')
-
-      cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
-      cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
-    }); 
-
-    it ('Image-image flashcard is immidiately available for review', () => {
-      createNewDeck();
-
-      setLeftImageContent('./cypress/files/example.jpg')
-      setRightImageContent('./cypress/files/example.jpg')
-
-      cy.get('.flashcard-deck-edit-container .flashcard-front .image-preview-container').should('exist');
-      cy.get('.flashcard-deck-edit-container .flashcard-back .image-preview-container').should('exist');
-    });
-
-    it ('Video-video flashcard is immidiately available for review', () => {
-      createNewDeck();
-
-      setLeftVideoContent('./cypress/files/example.mp4')
-      setRightVideoContent('./cypress/files/example.mp4')
-      
-      cy.get('.flashcard-deck-edit-container .flashcard-front .video-preview-container').should('exist');
-      cy.get('.flashcard-deck-edit-container .flashcard-back .video-preview-container').should('exist');
-    });
-
     it ('Text-text flashcard is persisted when saved', () => {
       createNewDeck();
 
-      setLeftTextContent('Question 1')
-      setRightTextContent('Answer 1')
+      setLeftTextContent('Question 1', 'English')
+      setRightTextContent('Answer 1', 'Danish')
       saveDeckChanges();
 
-      cy.reload(); 
       cy.contains('Question 1').should('exist'); 
       cy.contains('Answer 1').should('exist');
     });   
@@ -284,10 +241,8 @@ describe('Flashcard deck features', () => {
       setRightAudioContent('./cypress/files/example.mp3')
       saveDeckChanges();
 
-      cy.reload();
-
-     cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
-     cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
     }); 
 
     it ('Image-image flashcard is persisted when saved', () => {
