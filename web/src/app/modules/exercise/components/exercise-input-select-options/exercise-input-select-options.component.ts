@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
 })
 export class ExerciseInputSelectOptionsComponent implements OnChanges, OnDestroy {
   private subs = new Subscription();
-  private readonly longTextVerticalLayoutThreshold = 48;
+  private readonly longTextVerticalLayoutThreshold = 24;
   
   @Input() input: ExerciseInputSelectOptionsDto | undefined = undefined;
   @Output()  optionSelected: EventEmitter<string> = new EventEmitter<string>();
