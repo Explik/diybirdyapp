@@ -15,10 +15,12 @@
     }
     <!-- Options Grid (shown when options are visible or initiallyHideOptions is false) -->
     @if (optionsVisible || !input.initiallyHideOptions) {
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4">
+      <div [class]="isVerticalOptionsLayout ? 'grid grid-cols-1 md:grid-cols-1 gap-y-2 gap-x-4' : 'grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4'">
         @for (option of input!.options; track option; let i = $index) {
           <app-row-button
+            class="w-full"
             layout="single"
+            [heightClass]="optionHeightClass"
             [disabled]="!!(input.feedback && !input.feedback.isRetypeAnswerEnabled)"
             (click)="handleOptionSelected(option.id!)">
             @if (input.feedback?.correctOptionIds?.includes(option.id!)) {
@@ -40,7 +42,7 @@
               </app-icon>
             }
             @if (input.optionType == 'audio') {
-              <div (click)="handleAudioPlay(option.id!)">
+              <div class="flex w-full items-center justify-center" (click)="handleAudioPlay(option.id!)">
                 <app-icon icon="mdi-volume-high" class="mr-2" tabindex="0"></app-icon>
                 <svg width="100" height="20" viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg" class="inline-block">
                   <path d="M0 10 Q 10 0, 20 10 T 40 10 T 60 10 T 80 10 T 100 10" stroke="black" fill="transparent" stroke-width="3" />
@@ -48,16 +50,23 @@
               </div>
             }
             @if (input.optionType == 'text') {
-              <ng-content>{{castAsText(option).text}}</ng-content>
+              <ng-content>
+                <span
+                  class="block w-full px-1 text-center leading-snug"
+                  [class.truncate]="!isVerticalOptionsLayout"
+                  [class.option-text-vertical]="isVerticalOptionsLayout">
+                  {{castAsText(option).text}}
+                </span>
+              </ng-content>
             }
             @if (input.optionType == 'image') {
               <ng-content>
-                <img [src]="castAsImage(option).url" alt="Option Image" class="w-16 h-16 object-cover rounded-lg" />
+                <img [src]="castAsImage(option).url" alt="Option Image" class="option-media-preview" />
               </ng-content>
             }
             @if (input.optionType == 'video') {
               <ng-content>
-                <video [src]="castAsVideo(option).url" controls class="w-16 h-16 object-cover rounded-lg"></video>
+                <video [src]="castAsVideo(option).url" controls class="option-media-preview"></video>
               </ng-content>
             }
           </app-row-button>

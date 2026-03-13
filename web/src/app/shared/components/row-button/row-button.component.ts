@@ -24,6 +24,7 @@ export class RowButtonComponent {
   @Input() formnovalidate: boolean | null = null;
   @Input() formtarget: string | null = null;
   @Input() layout: 'single' | 'double' = 'single';
+  @Input() heightClass: string = 'h-9';
   
   @Output() buttonClick = new EventEmitter<MouseEvent>();
   
