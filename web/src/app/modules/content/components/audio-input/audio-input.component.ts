@@ -1,10 +1,10 @@
-import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, OnDestroy, Output } from '@angular/core';
 import { AudioRecordingService } from '../../services/audioRecording.service';
-import { IconComponent } from "../../../../shared/components/icon/icon.component";
 
 import { AudioPlayingService } from '../../services/audioPlaying.service';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { EditFlashcardAudio, FileAudioContent } from '../../models/editFlashcard.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-audio-input',
@@ -20,7 +20,7 @@ import { EditFlashcardAudio, FileAudioContent } from '../../models/editFlashcard
     }
   ]
 })
-export class AudioInputComponent implements ControlValueAccessor {
+export class AudioInputComponent implements ControlValueAccessor, OnDestroy {
   @Input() id: string | undefined;
   // Keep the EventEmitter for template / parent-component compatibility.
   @Output() audioDataChange = new EventEmitter<EditFlashcardAudio | undefined>();
@@ -81,6 +81,8 @@ export class AudioInputComponent implements ControlValueAccessor {
   isDropping = false;
   isDragging = false;
   private isDisabled = false;
+  private readonly playbackOwnerToken = Symbol('audio-input');
+  private readonly playbackStateSubscription: Subscription;
 
   // ControlValueAccessor callbacks
   private onChange: (value: any) => void = (_: any) => {};
@@ -89,10 +91,14 @@ export class AudioInputComponent implements ControlValueAccessor {
   constructor(
     private playService: AudioPlayingService,
     private recordingService: AudioRecordingService) {
-      this.playService.getCurrentState().subscribe(state => {
+      this.playbackStateSubscription = this.playService.getCurrentState(this.playbackOwnerToken).subscribe(state => {
         this.isPlaying = (state === 'playing');
       });
     }
+
+  ngOnDestroy(): void {
+    this.playbackStateSubscription.unsubscribe();
+  }
 
   startRecording() {
     if (this.isDisabled) return;
@@ -186,7 +192,12 @@ export class AudioInputComponent implements ControlValueAccessor {
     if (!this.audioData)
       return;
 
-    this.playService.startPlayingEditFlashcard(this.audioData);
+    if (this.isPlaying) {
+      this.playService.pausePlaying();
+      return;
+    }
+
+    this.playService.startPlayingEditFlashcard(this.audioData, this.playbackOwnerToken);
   }
 
   // Helper to set the internal value and notify Angular forms / parent bindings
