@@ -20,3 +20,10 @@ General exercise options:
 - Review exercise 
 - Pair options exercise
 etc. 
+
+## Option update behavior
+When learn-session options are updated through `POST /exercise-session/{id}/apply-options`:
+- The updated options are stored on the session.
+- Active learning content is rebuilt according to the new options.
+- A new current exercise is generated immediately.
+- The endpoint response returns the updated session state and the newly generated exercise.

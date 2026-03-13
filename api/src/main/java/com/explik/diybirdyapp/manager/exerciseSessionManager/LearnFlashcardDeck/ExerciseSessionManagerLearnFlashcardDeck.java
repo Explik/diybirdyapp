@@ -146,6 +146,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         if (stateVertex != null) {
             // Regenerate the batch with new options
             startNewBatch(traversalSource, sessionVertex, stateVertex);
+        } else {
+            // Recover gracefully if state is missing, then bootstrap a fresh batch.
+            populateInitialActiveContent(traversalSource, sessionVertex);
         }
         
         // Refresh available content for multiple choice options
@@ -157,6 +160,13 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         
         // Dispatch new content creation with updated target language  
         dispatchContentCreation(traversalSource, sessionVertex);
+
+        // Options updates must immediately produce a new current exercise.
+        sessionVertex.setCompleted(false);
+        var sessionModel = new ExerciseSessionDto();
+        sessionModel.setId(sessionId);
+        var context = ExerciseCreationContext.createDefault(sessionModel);
+        nextExercise(traversalSource, context);
     }
     
     /**
