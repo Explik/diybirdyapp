@@ -46,6 +46,9 @@
       @if (leftContentType === 'audio') {
         <app-form-field>
           <app-audio-input [id]="'left-audio-' + index" formControlName="leftAudioContent"></app-audio-input>
+          @if (formGroup.get('leftAudioContent')?.errors?.['audio.required']) {
+            <app-form-error i18n>Front audio required</app-form-error>
+          }
         </app-form-field>
       }
       @if (leftContentType === 'image') {
