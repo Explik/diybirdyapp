@@ -268,6 +268,49 @@ export class FlashcardEditContainerComponent {
     }
   }
 
+  private syncFlashcardModelsFromForm(): void {
+    if (!this.flashcardDeck || !this.form) return;
+
+    const formGroupsById = new Map<string, FormGroup>();
+    const flashcardFormGroups = this.getFlashcardsFormArray().controls as FormGroup[];
+
+    for (const fg of flashcardFormGroups) {
+      const id = fg.get('id')?.value;
+      if (id) {
+        formGroupsById.set(id, fg);
+      }
+    }
+
+    for (const flashcard of this.flashcardDeck.flashcards) {
+      if (flashcard.state === 'deleted') continue;
+
+      const fg = formGroupsById.get(flashcard.id);
+      if (!fg) continue;
+
+      const nextLeftType = fg.get('leftContentType')?.value ?? flashcard.leftContentType;
+      const nextRightType = fg.get('rightContentType')?.value ?? flashcard.rightContentType;
+      const contentTypeChanged =
+        flashcard.leftContentType !== nextLeftType ||
+        flashcard.rightContentType !== nextRightType;
+
+      flashcard.leftContentType = nextLeftType;
+      flashcard.rightContentType = nextRightType;
+
+      flashcard.leftTextContent = fg.get('leftTextContent')?.value;
+      flashcard.rightTextContent = fg.get('rightTextContent')?.value;
+      flashcard.leftAudioContent = fg.get('leftAudioContent')?.value;
+      flashcard.rightAudioContent = fg.get('rightAudioContent')?.value;
+      flashcard.leftImageContent = fg.get('leftImageContent')?.value;
+      flashcard.rightImageContent = fg.get('rightImageContent')?.value;
+      flashcard.leftVideoContent = fg.get('leftVideoContent')?.value;
+      flashcard.rightVideoContent = fg.get('rightVideoContent')?.value;
+
+      if (contentTypeChanged && flashcard.state === 'unchanged') {
+        flashcard.state = 'updated';
+      }
+    }
+  }
+
   handleSaveFlashcards() {
     // Trigger validators and mark touched so template shows errors. Abort save if invalid.
     if (this.form) {
@@ -282,19 +325,20 @@ export class FlashcardEditContainerComponent {
       this.flashcardDeck!.description = this.form.get('description')?.value;
     }
 
+    // Form controls are the source of truth while editing; persist them into the model before save.
+    this.syncFlashcardModelsFromForm();
+
     // Before saving, apply the globally selected languages to individual flashcards
     const front = this.form?.get('frontLanguageId')?.value;
     const back = this.form?.get('backLanguageId')?.value;
 
-    if (this.flashcardDeck?.flashcards?.length) {
-      for (let flashcard of this.flashcardDeck.flashcards) {
-        if (flashcard.state === 'deleted') continue;
-        if (front && flashcard.leftContentType === 'text' && flashcard.leftTextContent) {
-          flashcard.leftTextContent.languageId = front;
-        }
-        if (back && flashcard.rightContentType === 'text' && flashcard.rightTextContent) {
-          flashcard.rightTextContent.languageId = back;
-        }
+    for (let flashcard of this.flashcardDeck!.flashcards) {
+      if (flashcard.state === 'deleted') continue;
+      if (front && flashcard.leftContentType === 'text' && flashcard.leftTextContent) {
+        flashcard.leftTextContent.languageId = front;
+      }
+      if (back && flashcard.rightContentType === 'text' && flashcard.rightTextContent) {
+        flashcard.rightTextContent.languageId = back;
       }
     }
 
