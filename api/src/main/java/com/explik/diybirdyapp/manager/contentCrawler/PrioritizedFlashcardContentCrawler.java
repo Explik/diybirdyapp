@@ -23,7 +23,7 @@ import java.util.stream.StreamSupport;
 @Component
 public class PrioritizedFlashcardContentCrawler implements ContentCrawler<FlashcardDeckSessionParams> {
 
-    private static final int MAX_CONTENT_PER_BATCH = 3;
+    private static final int MAX_RETRY_CONTENT_PER_BATCH = 3;
 
     private final FailedExerciseContentCrawler failedContentCrawler;
     private final InsufficientlyExercisedContentCrawler insufficientlyExercisedContentCrawler;
@@ -42,9 +42,9 @@ public class PrioritizedFlashcardContentCrawler implements ContentCrawler<Flashc
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
         return firstNonEmptyStream(
-                () -> failedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH),
-                () -> insufficientlyExercisedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH),
-                () -> unpracticedFlashcardContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH));
+                () -> failedContentCrawler.crawl(params).limit(MAX_RETRY_CONTENT_PER_BATCH),
+                () -> insufficientlyExercisedContentCrawler.crawl(params).limit(MAX_RETRY_CONTENT_PER_BATCH),
+                () -> unpracticedFlashcardContentCrawler.crawl(params));
     }
 
     @SafeVarargs

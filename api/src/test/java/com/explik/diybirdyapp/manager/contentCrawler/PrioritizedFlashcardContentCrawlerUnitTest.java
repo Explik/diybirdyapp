@@ -66,7 +66,7 @@ class PrioritizedFlashcardContentCrawlerUnitTest {
     }
 
     @Test
-    void givenOnlyUnpracticedContentAvailable_whenCrawl_thenUsesLastFallbackAndLimitsBatchToThree() {
+    void givenOnlyUnpracticedContentAvailable_whenCrawl_thenUsesLastFallbackWithoutTruncatingBatch() {
         var params = new FlashcardDeckSessionParams(null, null);
         var unpracticedContent = mockVertices(4);
 
@@ -76,7 +76,7 @@ class PrioritizedFlashcardContentCrawlerUnitTest {
 
         var result = crawler.crawl(params).toList();
 
-        assertEquals(unpracticedContent.subList(0, 3), result);
+        assertEquals(unpracticedContent, result);
         verify(failedContentCrawler).crawl(params);
         verify(insufficientlyExercisedContentCrawler).crawl(params);
         verify(unpracticedFlashcardContentCrawler).crawl(params);

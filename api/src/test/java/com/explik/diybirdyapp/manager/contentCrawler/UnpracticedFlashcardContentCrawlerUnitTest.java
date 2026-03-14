@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.manager.contentCrawler;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UnpracticedFlashcardContentCrawlerUnitTest {
@@ -18,26 +17,68 @@ class UnpracticedFlashcardContentCrawlerUnitTest {
     private final UnpracticedFlashcardContentCrawler crawler = new UnpracticedFlashcardContentCrawler();
 
     @Test
-    void givenSequentialModeAndFirstFlashcardAlreadyActive_whenCrawl_thenReturnsNextFlashcardContent() {
+    void givenSequentialModeAndFirstFlashcardAlreadyActive_whenCrawl_thenReturnsNextThreeFlashcardsAndTheirContent() {
         var fixture = new ContentCrawlerTestFixture();
         var language = fixture.createLanguage(LANGUAGE_ID_DANISH);
 
-        var firstLeft = fixture.createTextContent("text-left-1", language);
-        var firstRight = fixture.createTextContent("text-right-1", language);
-        var secondLeft = fixture.createTextContent("text-left-2", language);
-        var secondRight = fixture.createTextContent("text-right-2", language);
+        var firstText = fixture.createTextContent("text-1", language);
+        var secondText = fixture.createTextContent("text-2", language);
+        var thirdText = fixture.createTextContent("text-3", language);
+        var fourthText = fixture.createTextContent("text-4", language);
 
-        var firstFlashcard = fixture.createFlashcard("flashcard-1", firstLeft, firstRight);
-        var secondFlashcard = fixture.createFlashcard("flashcard-2", secondLeft, secondRight);
-        var deck = fixture.createDeck(DECK_ID, firstFlashcard, secondFlashcard);
+        var firstFlashcard = fixture.createFlashcard("flashcard-1", firstText, null);
+        var secondFlashcard = fixture.createFlashcard("flashcard-2", secondText, null);
+        var thirdFlashcard = fixture.createFlashcard("flashcard-3", thirdText, null);
+        var fourthFlashcard = fixture.createFlashcard("flashcard-4", fourthText, null);
+        var deck = fixture.createDeck(DECK_ID, firstFlashcard, secondFlashcard, thirdFlashcard, fourthFlashcard);
 
         var sessionState = fixture.createSessionState(SESSION_TYPE);
         fixture.createSessionWithOptions(SESSION_ID, sessionState, false, language);
         sessionState.addActiveContent(firstFlashcard);
 
-        var resultIds = fixture.toIdSet(crawler.crawl(fixture.params(deck, sessionState)));
+        var resultIds = fixture.toIdList(crawler.crawl(fixture.params(deck, sessionState)));
 
-        assertEquals(java.util.Set.of("flashcard-2", "text-left-2", "text-right-2"), resultIds);
+        assertEquals(
+                java.util.List.of("flashcard-2", "flashcard-3", "flashcard-4", "text-2", "text-3", "text-4"),
+                resultIds);
+    }
+
+    @Test
+    void givenSharedContentAcrossSelectedFlashcards_whenCrawl_thenOrdersVerticesByLayerFromSelectedSet() {
+        var fixture = new ContentCrawlerTestFixture();
+        var language = fixture.createLanguage(LANGUAGE_ID_TARGET);
+
+        var textOne = fixture.createTextContent("text-1", language);
+        var textTwo = fixture.createTextContent("text-2", language);
+        var textThree = fixture.createTextContent("text-3", language);
+        fixture.createPronunciation("pron-1", textOne, textOne);
+        fixture.createPronunciation("pron-2", textTwo, textTwo);
+
+        var flashcardOne = fixture.createFlashcard("flashcard-1", textOne, null);
+        var flashcardTwo = fixture.createFlashcard("flashcard-2", textTwo, null);
+        var flashcardThree = fixture.createFlashcard("flashcard-3", textThree, null);
+        var flashcardFour = fixture.createFlashcard("flashcard-4", textOne, null);
+        var flashcardFive = fixture.createFlashcard("flashcard-5", textTwo, null);
+        var deck = fixture.createDeck(DECK_ID, flashcardOne, flashcardTwo, flashcardThree, flashcardFour, flashcardFive);
+
+        var sessionState = fixture.createSessionState(SESSION_TYPE);
+        fixture.createSessionWithOptions(SESSION_ID, sessionState, false, language);
+
+        var resultIds = fixture.toIdList(crawler.crawl(fixture.params(deck, sessionState)));
+
+        assertEquals(
+                java.util.List.of(
+                        "flashcard-1",
+                        "flashcard-2",
+                        "flashcard-3",
+                        "text-1",
+                        "text-2",
+                        "text-3",
+                        "pron-1",
+                        "pron-2",
+                        "flashcard-4",
+                        "flashcard-5"),
+                resultIds);
     }
 
     @Test
@@ -47,22 +88,20 @@ class UnpracticedFlashcardContentCrawlerUnitTest {
         var nonTargetLanguage = fixture.createLanguage(LANGUAGE_ID_OTHER);
 
         var left = fixture.createTextContent("text-left", targetLanguage);
-        var right = fixture.createTextContent("text-right", targetLanguage);
         var pronunciationTextTarget = fixture.createTextContent("text-pron-target", targetLanguage);
         var pronunciationTextNonTarget = fixture.createTextContent("text-pron-other", nonTargetLanguage);
         fixture.createPronunciation("pron-target", left, pronunciationTextTarget);
         fixture.createPronunciation("pron-other", left, pronunciationTextNonTarget);
 
-        var flashcard = fixture.createFlashcard("flashcard-1", left, right);
+        var flashcard = fixture.createFlashcard("flashcard-1", left, null);
         var deck = fixture.createDeck(DECK_ID, flashcard);
 
         var sessionState = fixture.createSessionState(SESSION_TYPE);
         fixture.createSessionWithOptions(SESSION_ID, sessionState, false, targetLanguage);
 
-        var resultIds = fixture.toIdSet(crawler.crawl(fixture.params(deck, sessionState)));
+        var resultIds = fixture.toIdList(crawler.crawl(fixture.params(deck, sessionState)));
 
-        assertTrue(resultIds.contains("pron-target"));
-        assertFalse(resultIds.contains("pron-other"));
+        assertEquals(java.util.List.of("flashcard-1", "text-left", "pron-target"), resultIds);
     }
 
     @Test

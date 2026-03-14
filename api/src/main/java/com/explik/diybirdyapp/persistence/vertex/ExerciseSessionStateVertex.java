@@ -77,9 +77,11 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     }
     
     public void addActiveContent(AbstractVertex vertex) {
-        // Use timestamp for ordering to handle multiple crawler runs
-        long timestamp = System.currentTimeMillis();
-        addOrderedEdgeOneToMany(EDGE_ACTIVE_CONTENT, vertex, EDGE_ACTIVE_CONTENT_ORDER, timestamp);
+        addOrderedEdgeOneToMany(
+                EDGE_ACTIVE_CONTENT,
+                vertex,
+                EDGE_ACTIVE_CONTENT_ORDER,
+                getNextOrderedEdgeValue(EDGE_ACTIVE_CONTENT, EDGE_ACTIVE_CONTENT_ORDER));
     }
     
     public void clearActiveContent() {
@@ -101,9 +103,11 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     }
     
     public void addAvailableContent(AbstractVertex vertex) {
-        // Use timestamp for ordering
-        long timestamp = System.currentTimeMillis();
-        addOrderedEdgeOneToMany(EDGE_AVAILABLE_CONTENT, vertex, EDGE_AVAILABLE_CONTENT_ORDER, timestamp);
+        addOrderedEdgeOneToMany(
+                EDGE_AVAILABLE_CONTENT,
+                vertex,
+                EDGE_AVAILABLE_CONTENT_ORDER,
+                getNextOrderedEdgeValue(EDGE_AVAILABLE_CONTENT, EDGE_AVAILABLE_CONTENT_ORDER));
     }
     
     public void setAvailableContent(List<AbstractVertex> vertices) {
@@ -199,6 +203,18 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public static ExerciseSessionStateVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new ExerciseSessionStateVertex(traversalSource, vertex);
+    }
+
+    private long getNextOrderedEdgeValue(String edgeLabel, String orderProperty) {
+        long nextValue = 0;
+
+        for (Object existingValue : traversalSource.V(vertex).outE(edgeLabel).values(orderProperty).toList()) {
+            if (existingValue instanceof Number numericValue) {
+                nextValue = Math.max(nextValue, numericValue.longValue() + 1);
+            }
+        }
+
+        return nextValue;
     }
 
     public static ExerciseSessionStateVertex findBy(GraphTraversalSource traversalSource, String type, ContentVertex contentVertex, ExerciseSessionVertex sessionVertex) {
