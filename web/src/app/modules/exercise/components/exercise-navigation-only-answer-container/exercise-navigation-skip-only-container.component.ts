@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseStates } from '../../models/exercise.interface';
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
+import { Subscription } from 'rxjs';
+import { HotkeyService } from '../../../../shared/services/hotKey.service';
 
 @Component({
   selector: 'app-exercise-navigation-skip-only-container',
@@ -10,13 +12,29 @@ import { ButtonComponent } from "../../../../shared/components/button/button.com
   imports: [ButtonComponent],
   templateUrl: './exercise-navigation-skip-only-container.component.html'
 })
-export class ExerciseNavigationSkipOnlyContainerComponent {
+export class ExerciseNavigationSkipOnlyContainerComponent implements OnDestroy {
+  private subs = new Subscription();
+
   showSkipExercise = false;
 
-  constructor(private exerciseService: ExerciseService) {
+  constructor(private exerciseService: ExerciseService, private hotkeyService: HotkeyService) {
     this.exerciseService.getState().subscribe(state => {
-      this.showSkipExercise = state === ExerciseStates.Unanswered;
+      const isAnswered = state !== ExerciseStates.Unanswered;
+      this.showSkipExercise = !isAnswered;
+
+      if (isAnswered) {
+        this.subs.add(
+          this.hotkeyService.onHotkey({ key: 'enter' }).subscribe(() => { this.handleNextExercise(); })
+        ); 
+      } else {
+        // Unsubscribe from Enter key if exercise returns to unanswered
+        this.subs.unsubscribe();
+      }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   handleNextExercise() {
