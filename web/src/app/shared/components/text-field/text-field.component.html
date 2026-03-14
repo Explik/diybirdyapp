@@ -14,6 +14,7 @@
     [(ngModel)]="value"
     (ngModelChange)="onUpdatedValue()"
     [disabled]="disabled"
+    [autocomplete]="type === 'password'"
     class="border border-black px-4 py-2 w-full"
     />
   }
