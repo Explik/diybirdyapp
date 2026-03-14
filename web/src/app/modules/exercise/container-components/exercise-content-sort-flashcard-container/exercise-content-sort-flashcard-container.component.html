@@ -8,15 +8,17 @@ i18n-instruction instruction="Sort this flashcard into a pile."></app-instructio
 
 <div class="flex gap-4 justify-center mt-4">
   <button
+    [disabled]="isSubmitting"
     (click)="handlePileSelected('dont-know')"
-    class="flex-1 py-3 px-4 rounded-lg border-2 border-red-300 bg-red-50 text-red-700 font-medium hover:bg-red-100 active:bg-red-200 transition-colors"
-    i18n>
-    I don't know this
+    class="flex-1 py-3 px-4 rounded-lg border-2 border-red-300 bg-red-50 text-red-700 font-medium hover:bg-red-100 active:bg-red-200 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
+    <app-icon [icon]="'key-left'" size="text-xs" color="text-current"></app-icon>
+    <span i18n>I don't know this</span>
   </button>
   <button
+    [disabled]="isSubmitting"
     (click)="handlePileSelected('know')"
-    class="flex-1 py-3 px-4 rounded-lg border-2 border-green-300 bg-green-50 text-green-700 font-medium hover:bg-green-100 active:bg-green-200 transition-colors"
-    i18n>
-    I know this
+    class="flex-1 py-3 px-4 rounded-lg border-2 border-green-300 bg-green-50 text-green-700 font-medium hover:bg-green-100 active:bg-green-200 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
+    <span i18n>I know this</span>
+    <app-icon [icon]="'key-right'" size="text-xs" color="text-current"></app-icon>
   </button>
 </div>
