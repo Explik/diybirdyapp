@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { InstructionComponent } from '../../components/instruction/instruction.component';
-import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseContentFlashcardDto } from '../../../../shared/api-client';
 import { HotkeyService } from '../../../../shared/services/hotKey.service';
 import { Subscription } from 'rxjs';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 
 @Component({
   selector: 'app-exercise-content-sort-flashcard-container',

@@ -3,8 +3,8 @@ import { InstructionComponent } from "../../components/instruction/instruction.c
 
 import { RecognizabilityRatingComponent } from "../../../../shared/components/recognizability-rating/recognizability-rating.component";
 import { ExerciseService } from '../../services/exercise.service';
-import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 import { ExerciseContentFlashcardDto } from '../../../../shared/api-client';
+import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 
 @Component({
   selector: 'app-exercise-content-review-flashcard-container',
