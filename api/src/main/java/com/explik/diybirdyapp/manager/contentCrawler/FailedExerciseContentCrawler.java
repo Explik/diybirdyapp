@@ -1,11 +1,13 @@
-package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck;
+package com.explik.diybirdyapp.manager.contentCrawler;
 
+import com.explik.diybirdyapp.model.FlashcardDeckSessionParams;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Failed Exercise Content Crawler - Retrieves content from recently failed exercises.
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
  * deck, either flashcards or associated content.
  */
 @Component
-public class FailedExerciseContentCrawler {
+public class FailedExerciseContentCrawler implements ContentCrawler<FlashcardDeckSessionParams> {
     
     /**
      * Collects content from recently failed exercises that hasn't been added to activeContent yet.
@@ -30,7 +32,12 @@ public class FailedExerciseContentCrawler {
      * @return List of AbstractVertex from failed exercises that are part of the flashcard deck
      *         Returns empty list if no failed exercise content is available
      */
-    public List<AbstractVertex> collectNextFlashcardContent(
+    @Override
+    public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
+        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState()).stream();
+    }
+
+    private List<AbstractVertex> collectNextFlashcardContent(
             FlashcardDeckVertex flashcardDeck,
             ExerciseSessionStateVertex sessionState) {
         

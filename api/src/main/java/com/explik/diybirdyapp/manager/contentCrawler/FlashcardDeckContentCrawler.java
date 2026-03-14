@@ -1,9 +1,10 @@
-package com.explik.diybirdyapp.manager.exerciseSessionManager;
+package com.explik.diybirdyapp.manager.contentCrawler;
 
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Content Crawler - Retrieves all content associated with a flashcard deck.
@@ -12,23 +13,24 @@ import java.util.*;
  * from the entire deck. Used primarily for generating options in multiple choice exercises.
  */
 @Component
-public class FlashcardDeckContentCrawler {
+public class FlashcardDeckContentCrawler implements ContentCrawler<FlashcardDeckVertex> {
     
     /**
      * Collects all content from all flashcards in the deck.
-     * 
-     * @param flashcardDeck The flashcard deck to crawl
-     * @return List of all AbstractVertex including all flashcards and their associated content
+     *
+     * @param flashcardDeck the flashcard deck to crawl
+     * @return stream of all AbstractVertex including all flashcards and their associated content
      */
-    public List<AbstractVertex> collectAllDeckContent(FlashcardDeckVertex flashcardDeck) {
+    @Override
+    public Stream<AbstractVertex> crawl(FlashcardDeckVertex flashcardDeck) {
         List<AbstractVertex> contentList = new ArrayList<>();
         Set<String> addedVertexIds = new HashSet<>();
-        
+
         for (FlashcardVertex flashcard : flashcardDeck.getFlashcards()) {
             collectFlashcardContent(flashcard, contentList, addedVertexIds);
         }
-        
-        return contentList;
+
+        return contentList.stream();
     }
     
     /**

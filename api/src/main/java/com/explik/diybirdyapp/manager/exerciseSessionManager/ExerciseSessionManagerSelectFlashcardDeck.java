@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager;
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.manager.contentCrawler.FlashcardDeckContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationContext;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.SelectFlashcardExerciseCreationManager;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
@@ -142,7 +143,7 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         }
         
         // Collect all deck content using FlashcardDeckContentCrawler
-        var allContent = deckContentCrawler.collectAllDeckContent(flashcardDeck);
+        var allContent = deckContentCrawler.crawl(flashcardDeck).toList();
         stateVertex.setAvailableContent(allContent);
     }
     

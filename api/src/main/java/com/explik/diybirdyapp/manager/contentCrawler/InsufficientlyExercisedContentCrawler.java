@@ -1,11 +1,11 @@
-package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck;
+package com.explik.diybirdyapp.manager.contentCrawler;
 
+import com.explik.diybirdyapp.model.FlashcardDeckSessionParams;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Insufficiently Exercised Content Crawler - Retrieves content that needs more practice.
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * exercised less than MAX_EXERCISES_PER_CONTENT times overall.
  */
 @Component
-public class InsufficientlyExercisedContentCrawler {
+public class InsufficientlyExercisedContentCrawler implements ContentCrawler<FlashcardDeckSessionParams> {
     
     /**
      * Collects content that has been practiced but needs more exercises (< MAX_EXERCISES_PER_CONTENT total).
@@ -27,7 +27,12 @@ public class InsufficientlyExercisedContentCrawler {
      * @return List of AbstractVertex that need more practice
      *         Returns empty list if no insufficiently exercised content is available
      */
-    public List<AbstractVertex> collectNextFlashcardContent(
+    @Override
+    public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
+        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState()).stream();
+    }
+
+    private List<AbstractVertex> collectNextFlashcardContent(
             FlashcardDeckVertex flashcardDeck,
             ExerciseSessionStateVertex sessionState) {
         

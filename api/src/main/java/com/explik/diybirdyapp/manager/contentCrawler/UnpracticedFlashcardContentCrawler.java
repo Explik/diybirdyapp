@@ -1,9 +1,11 @@
-package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck;
+package com.explik.diybirdyapp.manager.contentCrawler;
 
+import com.explik.diybirdyapp.model.FlashcardDeckSessionParams;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Unpracticed Content Crawler - Retrieves unpracticed flashcard content from a deck.
@@ -12,7 +14,7 @@ import java.util.*;
  * Supports both sequential (chronological) and shuffled flashcard selection.
  */
 @Component
-public class UnpracticedFlashcardContentCrawler {
+public class UnpracticedFlashcardContentCrawler implements ContentCrawler<FlashcardDeckSessionParams> {
     
     /**
      * Collects content for the next flashcard that hasn't been added to activeContent yet.
@@ -28,7 +30,12 @@ public class UnpracticedFlashcardContentCrawler {
      * @return List of AbstractVertex including one flashcard, its content, and associated content (Pronunciation)
      *         Returns empty list if all flashcards have been processed
      */
-    public List<AbstractVertex> collectNextFlashcardContent(
+    @Override
+    public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
+        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState()).stream();
+    }
+
+    private List<AbstractVertex> collectNextFlashcardContent(
             FlashcardDeckVertex flashcardDeck,
             ExerciseSessionStateVertex sessionState) {
         

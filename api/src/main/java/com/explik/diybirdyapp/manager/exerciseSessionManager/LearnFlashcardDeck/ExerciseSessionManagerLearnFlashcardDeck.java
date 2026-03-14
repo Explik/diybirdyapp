@@ -2,9 +2,13 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
+import com.explik.diybirdyapp.manager.contentCrawler.FailedExerciseContentCrawler;
+import com.explik.diybirdyapp.manager.contentCrawler.InsufficientlyExercisedContentCrawler;
+import com.explik.diybirdyapp.manager.contentCrawler.UnpracticedFlashcardContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
-import com.explik.diybirdyapp.manager.exerciseSessionManager.FlashcardDeckContentCrawler;
+import com.explik.diybirdyapp.manager.contentCrawler.FlashcardDeckContentCrawler;
+import com.explik.diybirdyapp.model.FlashcardDeckSessionParams;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
@@ -189,7 +193,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         }
         
         // Collect all deck content using FlashcardDeckContentCrawler
-        var allContent = deckContentCrawler.collectAllDeckContent(flashcardDeck);
+        var allContent = deckContentCrawler.crawl(flashcardDeck).toList();
         stateVertex.setAvailableContent(allContent);
     }
     
@@ -275,37 +279,23 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     private List<AbstractVertex> selectCrawlerAndCollect(
             FlashcardDeckVertex flashcardDeck,
             ExerciseSessionStateVertex stateVertex) {
-        
-        List<AbstractVertex> contentList;
-        
+
+        var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
+
         // Priority 1: Try to get content from failed exercises
-        contentList = failedContentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
-        if (!contentList.isEmpty()) {
-            return limitContentList(contentList);
+        var failedContent = failedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH).toList();
+        if (!failedContent.isEmpty()) {
+            return failedContent;
         }
-        
+
         // Priority 2: Try to get insufficiently practiced content (< 5 exercises)
-        contentList = insufficientlyExercisedContentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
-        if (!contentList.isEmpty()) {
-            return limitContentList(contentList);
+        var insufficientContent = insufficientlyExercisedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH).toList();
+        if (!insufficientContent.isEmpty()) {
+            return insufficientContent;
         }
-        
+
         // Priority 3: Get new unpracticed content from regular crawler
-        contentList = contentCrawler.collectNextFlashcardContent(flashcardDeck, stateVertex);
-        
-        return limitContentList(contentList);
-    }
-    
-    /**
-     * Limits the content list to the maximum allowed size per batch.
-     * 
-     * @param contentList The content list to limit
-     * @return Limited content list
-     */
-    private List<AbstractVertex> limitContentList(List<AbstractVertex> contentList) {
-        return contentList.size() > MAX_CONTENT_PER_BATCH 
-            ? contentList.subList(0, MAX_CONTENT_PER_BATCH) 
-            : contentList;
+        return contentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH).toList();
     }
     
     /**
