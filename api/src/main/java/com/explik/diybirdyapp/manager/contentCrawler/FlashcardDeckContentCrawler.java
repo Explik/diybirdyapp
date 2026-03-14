@@ -23,60 +23,47 @@ public class FlashcardDeckContentCrawler implements ContentCrawler<FlashcardDeck
      */
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckVertex flashcardDeck) {
-        List<AbstractVertex> contentList = new ArrayList<>();
-        Set<String> addedVertexIds = new HashSet<>();
+        Set<String> seenVertexIds = new HashSet<>();
 
-        for (FlashcardVertex flashcard : flashcardDeck.getFlashcards()) {
-            collectFlashcardContent(flashcard, contentList, addedVertexIds);
-        }
-
-        return contentList.stream();
+        return flashcardDeck.getFlashcards().stream()
+                .flatMap(this::streamFlashcardContent)
+                .filter(vertex -> markIfUnseen(vertex, seenVertexIds));
     }
-    
+
     /**
      * Collects all content related to a flashcard including the flashcard itself, its left/right content,
      * and associated content like pronunciations.
-     * 
+     *
      * @param flashcardVertex The flashcard to collect content for
-     * @param contentList The list to add collected content to
-     * @param addedVertexIds Set of vertex IDs already added to avoid duplicates
+     * @return stream of related content in deterministic order
      */
-    private void collectFlashcardContent(
-            FlashcardVertex flashcardVertex,
-            List<AbstractVertex> contentList,
-            Set<String> addedVertexIds) {
-        
-        // Add the flashcard itself
-        if (addedVertexIds.add(flashcardVertex.getId())) {
-            contentList.add(flashcardVertex);
+    private Stream<AbstractVertex> streamFlashcardContent(FlashcardVertex flashcardVertex) {
+        return Stream.concat(
+                Stream.of(flashcardVertex),
+                Stream.of(flashcardVertex.getLeftContent(), flashcardVertex.getRightContent())
+                        .filter(Objects::nonNull)
+                        .flatMap(this::streamContentAndAssociations));
+    }
+
+    private Stream<AbstractVertex> streamContentAndAssociations(ContentVertex content) {
+        if (content instanceof TextContentVertex textContent) {
+            return Stream.concat(Stream.of(content), textContent.getPronunciations().stream().map(p -> (AbstractVertex) p));
         }
-        
-        // Add left content and its pronunciations
-        ContentVertex leftContent = flashcardVertex.getLeftContent();
-        if (leftContent != null && addedVertexIds.add(leftContent.getId())) {
-            contentList.add(leftContent);
-            
-            if (leftContent instanceof TextContentVertex textContent) {
-                for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
-                    if (addedVertexIds.add(pronunciation.getId())) {
-                        contentList.add(pronunciation);
-                    }
-                }
-            }
+        return Stream.of(content);
+    }
+
+    private boolean markIfUnseen(AbstractVertex vertex, Set<String> seenVertexIds) {
+        String vertexId = getVertexId(vertex);
+        return vertexId != null && seenVertexIds.add(vertexId);
+    }
+
+    private String getVertexId(AbstractVertex vertex) {
+        if (vertex instanceof ContentVertex contentVertex) {
+            return contentVertex.getId();
         }
-        
-        // Add right content and its pronunciations
-        ContentVertex rightContent = flashcardVertex.getRightContent();
-        if (rightContent != null && addedVertexIds.add(rightContent.getId())) {
-            contentList.add(rightContent);
-            
-            if (rightContent instanceof TextContentVertex textContent) {
-                for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
-                    if (addedVertexIds.add(pronunciation.getId())) {
-                        contentList.add(pronunciation);
-                    }
-                }
-            }
+        if (vertex instanceof PronunciationVertex pronunciationVertex) {
+            return pronunciationVertex.getId();
         }
+        return null;
     }
 }

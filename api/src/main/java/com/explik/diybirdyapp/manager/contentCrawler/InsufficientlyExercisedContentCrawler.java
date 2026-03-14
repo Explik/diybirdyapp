@@ -24,134 +24,127 @@ public class InsufficientlyExercisedContentCrawler implements ContentCrawler<Fla
      * 
      * @param flashcardDeck The flashcard deck to check against
      * @param sessionState The session state containing activeContent to check for duplicates
-     * @return List of AbstractVertex that need more practice
-     *         Returns empty list if no insufficiently exercised content is available
+     * @return Stream of AbstractVertex that need more practice
+     *         Returns empty stream if no insufficiently exercised content is available
      */
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
-        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState()).stream();
+        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState());
     }
 
-    private List<AbstractVertex> collectNextFlashcardContent(
+    private Stream<AbstractVertex> collectNextFlashcardContent(
             FlashcardDeckVertex flashcardDeck,
             ExerciseSessionStateVertex sessionState) {
-        
-        // Get all vertices already in activeContent
-        List<AbstractVertex> activeContent = sessionState.getActiveContent();
-        Set<String> activeVertexIds = new HashSet<>();
-        
-        for (AbstractVertex vertex : activeContent) {
-            String id = getVertexId(vertex);
-            if (id != null) {
-                activeVertexIds.add(id);
-            }
-        }
-        
+
+        Set<String> activeVertexIds = sessionState.getActiveContent().stream()
+                .map(this::getVertexId)
+                .filter(Objects::nonNull)
+                .collect(HashSet::new, Set::add, Set::addAll);
+
         // Get the session to count exercises per content
         ExerciseSessionVertex session = sessionState.getSession();
         ExerciseSessionOptionsVertex options = session.getOptions();
-        
+
         var targetLanguage = options != null ? options.getTargetLanguage() : null;
         String targetLanguageId = targetLanguage != null ? targetLanguage.getId() : null;
-        
-        // Collect all flashcard content from the deck
-        Set<AbstractVertex> deckContent = new HashSet<>();
-        for (FlashcardVertex flashcard : flashcardDeck.getFlashcards()) {
-            deckContent.add(flashcard);
-            
-            // Add left and right content
-            if (flashcard.getLeftContent() != null) {
-                addContentAndAssociations(flashcard.getLeftContent(), deckContent, targetLanguageId);
-            }
-            if (flashcard.getRightContent() != null) {
-                addContentAndAssociations(flashcard.getRightContent(), deckContent, targetLanguageId);
-            }
-        }
-        
-        // Filter content that has been exercised but less than 5 times
-        List<AbstractVertex> insufficientlyExercised = new ArrayList<>();
-        
-        for (AbstractVertex content : deckContent) {
-            String contentId = getVertexId(content);
-            if (contentId == null || activeVertexIds.contains(contentId)) {
-                continue; // Skip if no ID or already in active content
-            }
-            
-            int exerciseCount = countExercisesForContent(session, contentId);
-            
-            // Include if exercised at least once but less than MAX_EXERCISES_PER_CONTENT times
-            if (exerciseCount > 0 && exerciseCount < ExerciseSessionStateVertex.MAX_EXERCISES_PER_CONTENT) {
-                insufficientlyExercised.add(content);
-            }
-        }
-        
-        return insufficientlyExercised;
+
+        Map<String, Integer> exerciseCounts = countExercisesByContentId(session.getExercises());
+        Set<String> seenVertexIds = new HashSet<>();
+
+        return flashcardDeck.getFlashcards().stream()
+                .flatMap(flashcard -> streamFlashcardContent(flashcard, targetLanguageId))
+                .filter(vertex -> includeInsufficientlyExercised(
+                        vertex,
+                        activeVertexIds,
+                        seenVertexIds,
+                        exerciseCounts));
     }
-    
+
     /**
      * Counts how many exercises have been created for a specific content vertex in this session.
-     * 
-     * @param session The exercise session
-     * @param contentId The content ID to count exercises for
-     * @return The number of exercises for this content
+     *
+     * @param exercises Exercises in the current session
+     * @return Map keyed by content ID with total exercise references count
      */
-    private int countExercisesForContent(ExerciseSessionVertex session, String contentId) {
-        List<ExerciseVertex> exercises = session.getExercises();
-        int count = 0;
-        
+    private Map<String, Integer> countExercisesByContentId(List<ExerciseVertex> exercises) {
+        Map<String, Integer> counts = new HashMap<>();
+
         for (ExerciseVertex exercise : exercises) {
-            // Check if this exercise's content matches the contentId
+            // Main exercise content
             ContentVertex exerciseContent = exercise.getContent();
-            if (exerciseContent != null && contentId.equals(exerciseContent.getId())) {
-                count++;
+            if (exerciseContent != null) {
+                incrementCount(counts, exerciseContent.getId());
             }
-            
-            // Also check based-on content
+
+            // Based-on content
             AbstractVertex basedOnContent = exercise.getBasedOnContent();
-            if (basedOnContent instanceof ContentVertex && 
-                contentId.equals(((ContentVertex) basedOnContent).getId())) {
-                count++;
+            if (basedOnContent instanceof ContentVertex contentVertex) {
+                incrementCount(counts, contentVertex.getId());
             }
-            
-            // Check if content appears in options
-            List<? extends ContentVertex> options = exercise.getOptions();
-            for (ContentVertex option : options) {
-                if (contentId.equals(option.getId())) {
-                    count++;
-                    break; // Only count once per exercise
-                }
-            }
+
+            // Count each option content at most once per exercise.
+            exercise.getOptions().stream()
+                    .map(ContentVertex::getId)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .forEach(optionId -> incrementCount(counts, optionId));
         }
-        
-        return count;
+
+        return counts;
     }
-    
+
+    private void incrementCount(Map<String, Integer> counts, String contentId) {
+        if (contentId == null) {
+            return;
+        }
+        counts.merge(contentId, 1, Integer::sum);
+    }
+
+    private Stream<AbstractVertex> streamFlashcardContent(FlashcardVertex flashcard, String targetLanguageId) {
+        return Stream.concat(
+                Stream.of(flashcard),
+                Stream.of(flashcard.getLeftContent(), flashcard.getRightContent())
+                        .filter(Objects::nonNull)
+                        .flatMap(content -> streamContentAndAssociations(content, targetLanguageId)));
+    }
+
     /**
      * Adds content and its associated content (like pronunciations) to the set.
      * Filters pronunciations by target language if specified.
-     * 
+     *
      * @param content The content to add
-     * @param contentSet The set to add content to
      * @param targetLanguageId Target language ID to filter pronunciations (null = all languages)
      */
-    private void addContentAndAssociations(ContentVertex content, Set<AbstractVertex> contentSet, String targetLanguageId) {
-        contentSet.add(content);
-        
-        // Add pronunciations if text content
-        if (content instanceof TextContentVertex) {
-            TextContentVertex textContent = (TextContentVertex) content;
-            for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
-                // Filter by target language if specified
-                if (targetLanguageId == null || matchesTargetLanguage(pronunciation, targetLanguageId)) {
-                    contentSet.add(pronunciation);
-                }
-            }
+    private Stream<AbstractVertex> streamContentAndAssociations(ContentVertex content, String targetLanguageId) {
+        if (!(content instanceof TextContentVertex textContent)) {
+            return Stream.of(content);
         }
+
+        Stream<AbstractVertex> pronunciationStream = textContent.getPronunciations().stream()
+                .filter(pronunciation -> targetLanguageId == null || matchesTargetLanguage(pronunciation, targetLanguageId))
+                .map(pronunciation -> (AbstractVertex) pronunciation);
+
+        return Stream.concat(Stream.of(content), pronunciationStream);
     }
-    
+
+    private boolean includeInsufficientlyExercised(
+            AbstractVertex vertex,
+            Set<String> activeVertexIds,
+            Set<String> seenVertexIds,
+            Map<String, Integer> exerciseCounts) {
+
+        String contentId = getVertexId(vertex);
+        if (contentId == null || activeVertexIds.contains(contentId) || !seenVertexIds.add(contentId)) {
+            return false;
+        }
+
+        int exerciseCount = exerciseCounts.getOrDefault(contentId, 0);
+        return exerciseCount > 0 && exerciseCount < ExerciseSessionStateVertex.MAX_EXERCISES_PER_CONTENT;
+    }
+
     /**
      * Checks if a pronunciation matches the target language.
-     * 
+     *
      * @param pronunciation The pronunciation vertex to check
      * @param targetLanguageId The target language ID
      * @return True if the pronunciation's text content matches the target language

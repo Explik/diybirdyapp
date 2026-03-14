@@ -5,7 +5,12 @@ import com.explik.diybirdyapp.persistence.vertex.AbstractVertex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Prioritized flashcard content crawler.
@@ -36,19 +41,31 @@ public class PrioritizedFlashcardContentCrawler implements ContentCrawler<Flashc
 
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
-        var failedContent = failedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH).toList();
-        if (!failedContent.isEmpty()) {
-            return failedContent.stream();
+        return firstNonEmptyStream(
+                () -> failedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH),
+                () -> insufficientlyExercisedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH),
+                () -> unpracticedFlashcardContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH));
+    }
+
+    @SafeVarargs
+    private Stream<AbstractVertex> firstNonEmptyStream(Supplier<Stream<AbstractVertex>>... suppliers) {
+        for (Supplier<Stream<AbstractVertex>> supplier : suppliers) {
+            Stream<AbstractVertex> candidate = supplier.get();
+            Iterator<AbstractVertex> iterator = candidate.iterator();
+
+            if (iterator.hasNext()) {
+                AbstractVertex first = iterator.next();
+                Stream<AbstractVertex> remaining = StreamSupport.stream(
+                        Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED),
+                        false);
+
+                return Stream.concat(Stream.of(first), remaining)
+                        .onClose(candidate::close);
+            }
+
+            candidate.close();
         }
 
-        var insufficientContent = insufficientlyExercisedContentCrawler
-                .crawl(params)
-                .limit(MAX_CONTENT_PER_BATCH)
-                .toList();
-        if (!insufficientContent.isEmpty()) {
-            return insufficientContent.stream();
-        }
-
-        return unpracticedFlashcardContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH);
+        return Stream.empty();
     }
 }

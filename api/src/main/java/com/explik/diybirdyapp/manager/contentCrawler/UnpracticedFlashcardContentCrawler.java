@@ -5,6 +5,7 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 /**
@@ -27,132 +28,117 @@ public class UnpracticedFlashcardContentCrawler implements ContentCrawler<Flashc
      * 
      * @param flashcardDeck The flashcard deck to crawl
      * @param sessionState The session state containing activeContent to check for duplicates
-     * @return List of AbstractVertex including one flashcard, its content, and associated content (Pronunciation)
-     *         Returns empty list if all flashcards have been processed
+     * @return Stream of AbstractVertex including one flashcard, its content, and associated content (Pronunciation)
+     *         Returns empty stream if all flashcards have been processed
      */
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
-        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState()).stream();
+        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState());
     }
 
-    private List<AbstractVertex> collectNextFlashcardContent(
+    private Stream<AbstractVertex> collectNextFlashcardContent(
             FlashcardDeckVertex flashcardDeck,
             ExerciseSessionStateVertex sessionState) {
-        
-        // Get all vertices already in activeContent
-        List<AbstractVertex> activeContent = sessionState.getActiveContent();
-        Set<String> activeVertexIds = new HashSet<>();
-        
-        for (AbstractVertex vertex : activeContent) {
-            String id = getVertexId(vertex);
-            if (id != null) {
-                activeVertexIds.add(id);
-            }
-        }
-        
+
+        Set<String> activeVertexIds = sessionState.getActiveContent().stream()
+                .map(this::getVertexId)
+                .filter(Objects::nonNull)
+                .collect(HashSet::new, Set::add, Set::addAll);
+
         // Get the session to check shuffle setting and target language
         ExerciseSessionVertex session = sessionState.getSession();
         ExerciseSessionOptionsVertex options = session.getOptions();
         boolean shuffleFlashcards = options != null && options.getShuffleFlashcards();
-        
+
         var targetLanguage = options != null ? options.getTargetLanguage() : null;
         String targetLanguageId = targetLanguage != null ? targetLanguage.getId() : null;
-        
-        // Get flashcards in appropriate order
-        List<FlashcardVertex> flashcards = new ArrayList<>(flashcardDeck.getFlashcards());
-        
-        // Find first flashcard not yet in activeContent
-        FlashcardVertex targetFlashcard = null;
-        
-        if (shuffleFlashcards) {
-            // Shuffle mode: filter out already processed flashcards, then pick randomly
-            List<FlashcardVertex> unprocessedFlashcards = flashcards.stream()
-                    .filter(f -> !activeVertexIds.contains(f.getId()))
-                    .toList();
-            
-            if (!unprocessedFlashcards.isEmpty()) {
-                // Pick a random flashcard from unprocessed ones
-                Random random = new Random();
-                targetFlashcard = unprocessedFlashcards.get(random.nextInt(unprocessedFlashcards.size()));
-            }
-        } else {
-            // Sequential mode: take flashcards in order
-            for (FlashcardVertex flashcard : flashcards) {
-                if (!activeVertexIds.contains(flashcard.getId())) {
-                    targetFlashcard = flashcard;
-                    break;
-                }
-            }
-        }
-        
-        // If no new flashcard found, return empty list
+
+        FlashcardVertex targetFlashcard = findTargetFlashcard(
+                flashcardDeck.getFlashcards(),
+                activeVertexIds,
+                shuffleFlashcards);
+
+        // If no new flashcard is found, return an empty stream.
         if (targetFlashcard == null) {
-            return new ArrayList<>();
+            return Stream.empty();
         }
-        
-        // Collect content for this flashcard, excluding duplicates
-        return collectFlashcardContent(targetFlashcard, activeVertexIds, targetLanguageId);
+
+        Set<String> emittedVertexIds = new HashSet<>();
+        return streamFlashcardContent(targetFlashcard, targetLanguageId)
+                .filter(vertex -> includeVertex(vertex, activeVertexIds, emittedVertexIds));
     }
-    
+
+    private FlashcardVertex findTargetFlashcard(
+            List<? extends FlashcardVertex> flashcards,
+            Set<String> activeVertexIds,
+            boolean shuffleFlashcards) {
+
+        if (!shuffleFlashcards) {
+            return flashcards.stream()
+                    .filter(flashcard -> !activeVertexIds.contains(flashcard.getId()))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        // Reservoir sampling keeps random selection uniform without allocating an intermediate list.
+        FlashcardVertex chosen = null;
+        int seen = 0;
+
+        for (FlashcardVertex flashcard : flashcards) {
+            if (activeVertexIds.contains(flashcard.getId())) {
+                continue;
+            }
+
+            seen++;
+            if (ThreadLocalRandom.current().nextInt(seen) == 0) {
+                chosen = flashcard;
+            }
+        }
+
+        return chosen;
+    }
+
     /**
      * Collects all content related to a flashcard including the flashcard itself, its left/right content,
      * and associated content like pronunciations. Excludes vertices already in the active set.
      * Filters pronunciations by target language if specified.
-     * 
+     *
      * @param flashcardVertex The flashcard to collect content for
-     * @param activeVertexIds Set of vertex IDs already in activeContent
      * @param targetLanguageId Target language ID to filter pronunciations (null = all languages)
-     * @return List of AbstractVertex including flashcard, content, and associated content (Pronunciation)
+     * @return Stream of AbstractVertex including flashcard, content, and associated content (Pronunciation)
      */
-    private List<AbstractVertex> collectFlashcardContent(
+    private Stream<AbstractVertex> streamFlashcardContent(
             FlashcardVertex flashcardVertex,
-            Set<String> activeVertexIds,
             String targetLanguageId) {
-        
-        List<AbstractVertex> contentList = new ArrayList<>();
-        
-        // Add the flashcard itself
-        if (!activeVertexIds.contains(flashcardVertex.getId())) {
-            contentList.add(flashcardVertex);
+
+        return Stream.concat(
+                Stream.of(flashcardVertex),
+                Stream.of(flashcardVertex.getLeftContent(), flashcardVertex.getRightContent())
+                        .filter(Objects::nonNull)
+                        .flatMap(content -> streamContentAndAssociations(content, targetLanguageId)));
+    }
+
+    private Stream<AbstractVertex> streamContentAndAssociations(ContentVertex content, String targetLanguageId) {
+        if (!(content instanceof TextContentVertex textContent)) {
+            return Stream.of(content);
         }
-        
-        // Add left content (if exists and not duplicate)
-        ContentVertex leftContent = flashcardVertex.getLeftContent();
-        if (leftContent != null && !activeVertexIds.contains(leftContent.getId())) {
-            contentList.add(leftContent);
-            
-            // Add pronunciation vertices for text content (needed for exercise generation)
-            if (leftContent instanceof TextContentVertex textContent) {
-                for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
-                    if (!activeVertexIds.contains(pronunciation.getId())) {
-                        // Only fetch associated content if it matches the session's target language
-                        if (targetLanguageId != null && matchesTargetLanguage(pronunciation, targetLanguageId)) {
-                            contentList.add(pronunciation);
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Add right content (if exists and not duplicate)
-        ContentVertex rightContent = flashcardVertex.getRightContent();
-        if (rightContent != null && !activeVertexIds.contains(rightContent.getId())) {
-            contentList.add(rightContent);
-            
-            // Add pronunciation vertices for text content (needed for exercise generation)
-            if (rightContent instanceof TextContentVertex textContent) {
-                for (PronunciationVertex pronunciation : textContent.getPronunciations()) {
-                    if (!activeVertexIds.contains(pronunciation.getId())) {
-                        // Only fetch associated content if it matches the session's target language
-                        if (targetLanguageId != null && matchesTargetLanguage(pronunciation, targetLanguageId)) {
-                            contentList.add(pronunciation);
-                        }
-                    }
-                }
-            }
-        }
-        
-        return contentList;
+
+        Stream<AbstractVertex> pronunciationStream = textContent.getPronunciations().stream()
+                .filter(pronunciation -> targetLanguageId != null && matchesTargetLanguage(pronunciation, targetLanguageId))
+                .map(pronunciation -> (AbstractVertex) pronunciation);
+
+        return Stream.concat(Stream.of(content), pronunciationStream);
+    }
+
+    private boolean includeVertex(
+            AbstractVertex vertex,
+            Set<String> activeVertexIds,
+            Set<String> emittedVertexIds) {
+
+        String vertexId = getVertexId(vertex);
+        return vertexId != null
+                && !activeVertexIds.contains(vertexId)
+                && emittedVertexIds.add(vertexId);
     }
     
     /**
@@ -169,7 +155,7 @@ public class UnpracticedFlashcardContentCrawler implements ContentCrawler<Flashc
         }
         var language = textContent.getLanguage();
         return language != null && targetLanguageId.equals(language.getId());
-        }
+    }
 
     /**
      * Gets the ID from a vertex, handling both ContentVertex and PronunciationVertex types.
