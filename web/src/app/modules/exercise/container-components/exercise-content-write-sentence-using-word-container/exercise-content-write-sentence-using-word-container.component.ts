@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { InstructionComponent } from "../../components/instruction/instruction.component";
-import { CommonModule } from '@angular/common';
+
 import { ExerciseInputWriteTextComponent } from "../../components/exercise-input-write-text/exercise-input-write-text.component";
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
@@ -9,7 +9,7 @@ import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
 @Component({
   selector: 'app-exercise-content-write-sentence-using-word-container',
   standalone: true,
-  imports: [CommonModule, InstructionComponent, ExerciseInputWriteTextComponent],
+  imports: [InstructionComponent, ExerciseInputWriteTextComponent],
   templateUrl: './exercise-content-write-sentence-using-word-container.component.html'
 })
 export class ExerciseContentWriteSentenceUsingWordContainerComponent implements OnInit {

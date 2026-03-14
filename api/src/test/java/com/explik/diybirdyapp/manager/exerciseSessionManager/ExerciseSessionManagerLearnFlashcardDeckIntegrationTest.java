@@ -186,6 +186,29 @@ public class ExerciseSessionManagerLearnFlashcardDeckIntegrationTest {
         assertTrue(totalExercises > 20, 
             "Should generate exercises beyond first batch (20). Generated: " + totalExercises);
     }
+
+    @Test
+    void givenSession_whenUpdateOptions_thenGeneratesNewCurrentExercise() {
+        // Arrange
+        var context = createContext(testDeck.getId());
+        var initialSession = sessionManager.init(traversalSource, context);
+        assertNotNull(initialSession.getExercise(), "Initial session should have an exercise");
+        var initialExerciseId = initialSession.getExercise().getId();
+
+        // Mimic config helper behavior: mutate options first, then invoke updateOptions.
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, initialSession.getId());
+        sessionVertex.getOptions().setShuffleFlashcards(true);
+
+        // Act
+        sessionManager.updateOptions(traversalSource, initialSession.getId());
+
+        // Assert
+        sessionVertex.reload();
+        var currentExercise = sessionVertex.getCurrentExercise();
+        assertNotNull(currentExercise, "Updated session should have a freshly generated exercise");
+        assertNotEquals(initialExerciseId, currentExercise.getId(), "Current exercise should change after options update");
+        assertFalse(sessionVertex.getCompleted(), "Session should not be marked completed after regenerating exercise");
+    }
     
     @Test
     void givenSession_whenExhaustedContent_thenSessionMarkedCompleted() {

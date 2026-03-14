@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { take } from 'rxjs';
 import { InstructionComponent } from '../../components/instruction/instruction.component';
 import { ExerciseInputMultiStagePairOptionsComponent } from '../../components/exercise-input-multi-stage-pair-options/exercise-input-multi-stage-pair-options.component';
@@ -9,7 +9,7 @@ import { ExerciseSessionDataService } from '../../services/exerciseSessionData.s
 
 @Component({
   selector: 'app-exercise-content-multi-stage-tap-pairs-container',
-  imports: [CommonModule, InstructionComponent, ExerciseInputMultiStagePairOptionsComponent],
+  imports: [InstructionComponent, ExerciseInputMultiStagePairOptionsComponent],
   templateUrl: './exercise-content-multi-stage-tap-pairs-container.component.html'
 })
 export class ExerciseContentMultiStageTapPairsContainerComponent implements OnInit {

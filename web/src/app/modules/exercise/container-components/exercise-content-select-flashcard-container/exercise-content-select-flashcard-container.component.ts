@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { InstructionComponent } from "../../components/instruction/instruction.component";
-import { CommonModule } from '@angular/common';
+
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseInputSelectOptionsComponent } from '../../components/exercise-input-select-options/exercise-input-select-options.component';
-import { DynamicFlashcardContentComponent } from "../../components/dynamic-flashcard-content/dynamic-flashcard-content.component";
 import { ExerciseContentFlashcardDto, ExerciseInputSelectOptionsDto } from '../../../../shared/api-client';
+import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 
 @Component({
   selector: 'app-exercise-content-select-flashcard-container',
   standalone: true,
-  imports: [CommonModule, InstructionComponent, ExerciseInputSelectOptionsComponent, DynamicFlashcardContentComponent],
+  imports: [InstructionComponent, ExerciseInputSelectOptionsComponent, DynamicFlashcardContentComponent],
   templateUrl: './exercise-content-select-flashcard-container.component.html'
 })
 export class ExerciseContentSelectFlashcardContainerComponent implements OnInit {

@@ -1,0 +1,7 @@
+<app-instruction
+  i18n-title title="Take a look at this flashcard"
+  i18n-instruction instruction="Review the flashcard, then continue when you are ready."></app-instruction>
+
+@if (content) {
+  <app-dynamic-flashcard-content [data]="content" class="block mb-6" />
+}

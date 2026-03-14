@@ -3,7 +3,7 @@ import { InstructionComponent } from "../../components/instruction/instruction.c
 import { TextQuoteComponent } from "../../../../shared/components/text-quote/text-quote.component";
 import { ExerciseInputWriteTextComponent } from "../../components/exercise-input-write-text/exercise-input-write-text.component";
 import { TextContent } from '../../../../shared/models/content.interface';
-import { CommonModule } from '@angular/common';
+
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
 import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
@@ -11,7 +11,7 @@ import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
 @Component({
   selector: 'app-exercise-content-write-translated-sentence-container',
   standalone: true,
-  imports: [CommonModule, InstructionComponent, TextQuoteComponent, ExerciseInputWriteTextComponent],
+  imports: [InstructionComponent, TextQuoteComponent, ExerciseInputWriteTextComponent],
   templateUrl: './exercise-content-write-translated-sentence-container.component.html'
 })
 export class ExerciseContentWriteTranslatedSentenceContainerComponent implements OnInit {

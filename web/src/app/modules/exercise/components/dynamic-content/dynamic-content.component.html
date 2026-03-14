@@ -1,11 +1,11 @@
 @if(data?.type === 'audio-content'){
-  <app-dynamic-audio-content [data]="castToAudio(data!)" />
+  <app-dynamic-audio-content [data]="castToAudio(data!)" [autoplay]="autoplay" />
 }
 @else if (data?.type === 'image-content') {
   <app-dynamic-image-content [data]="castToImage(data!)" />
 }
 @else if (data?.type === 'text-content') {
-    <app-dynamic-text-content [data]="castToText(data!)" />
+    <app-dynamic-text-content [data]="castToText(data!)" [autoplay]="autoplay" />
 }
 @else if (data?.type === 'video-content') {
     <app-dynamic-video-content [data]="castToVideo(data!)" />

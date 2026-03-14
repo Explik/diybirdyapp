@@ -1,10 +1,8 @@
-<div class="fixed bottom-16 left-0 right-0 px-4 w-full max-w-lg mx-auto">
-    <div class="float-left w-full">
-    @if(showSkipExercise) {
-        <app-button variant="secondary" i18n class="float-left" (click)="handleSkipExercise()">Skip</app-button>
-    }
-    @else {
-        <app-button variant="primary" i18n class="float-right" (click)="handleNextExercise()">Next</app-button>
-    }
-    </div>
+<div class="w-full flex justify-between">
+@if(showSkipExercise) {
+    <app-button variant="secondary" i18n class="float-left" (click)="handleSkipExercise()">Skip</app-button>
+}
+@else {
+    <app-button variant="primary" i18n class="float-right" (click)="handleNextExercise()">Next</app-button>
+}
 </div>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { TextFieldComponent } from '../../components/text-field/text-field.component';
 import { ButtonComponent } from '../../components/button/button.component';
@@ -21,7 +21,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 @Component({
   selector: 'app-signup-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TextFieldComponent, ButtonComponent, FormFieldComponent, LabelComponent, FormErrorComponent],
+  imports: [ReactiveFormsModule, RouterLink, TextFieldComponent, ButtonComponent, FormFieldComponent, LabelComponent, FormErrorComponent],
   templateUrl: './signup-page.component.html',
   styleUrls: ['./signup-page.component.css']
 })

@@ -1,9 +1,12 @@
-<app-instruction  
-    i18n-title title="Do you still know this?"
-    i18n-instruction instruction='Write the other side?'></app-instruction>
+<app-instruction
+  i18n-title title="Do you still know this?"
+i18n-instruction instruction='Write the other side?'></app-instruction>
 
-<app-dynamic-flashcard-content *ngIf="content" [data]="content" class="block mb-4" />
+@if (content) {
+  <app-dynamic-flashcard-content [data]="content" class="block mb-4" />
+}
 
-<app-exercise-input-write-text 
-    *ngIf="input" 
-    [input]="input"></app-exercise-input-write-text>
+@if (input) {
+  <app-exercise-input-write-text
+  [input]="input"></app-exercise-input-write-text>
+}

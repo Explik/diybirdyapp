@@ -88,27 +88,30 @@ public class ExerciseContentModelFactory implements ContextualModelFactory<Exerc
         model.setId(vertex.getId());
         model.setText(vertex.getValue());
 
-        var pronunciationVertex = PronunciationVertex.findByTextContentId(vertex.getUnderlyingSource(), vertex.getId());
-        if (pronunciationVertex != null && pronunciationVertex.getAudioContent() != null) {
-            model.setPronunciationUrl(pronunciationVertex.getAudioContent().getUrl());
-        }
-        else if (context.getTextToSpeechEnabled()) {
-            var query = new GetVoiceByLanguageIdQuery();
-            query.setLanguageId(vertex.getLanguage().getId());
-            var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
-            if (voiceConfig == null)
-                return model;
-
-            var textToSpeechModel = TextToSpeechModel.create(
-                    vertex.getValue(),
-                    voiceConfig);
-
-            var filePath = vertex.getId() + ".wav";
-            try {
-                textToSpeechService.generateAudioFile(textToSpeechModel, filePath);
-                model.setPronunciationUrl(filePath);
+        var textToSpeechEnabled = context != null && context.getTextToSpeechEnabled();
+        if (textToSpeechEnabled) {
+            var pronunciationVertex = PronunciationVertex.findByTextContentId(vertex.getUnderlyingSource(), vertex.getId());
+            if (pronunciationVertex != null && pronunciationVertex.getAudioContent() != null) {
+                model.setPronunciationUrl(pronunciationVertex.getAudioContent().getUrl());
             }
-            catch (Exception e) { }
+            else {
+                var query = new GetVoiceByLanguageIdQuery();
+                query.setLanguageId(vertex.getLanguage().getId());
+                var voiceConfig = generateVoiceConfigQueryHandler.handle(query);
+                if (voiceConfig == null)
+                    return model;
+
+                var textToSpeechModel = TextToSpeechModel.create(
+                        vertex.getValue(),
+                        voiceConfig);
+
+                var filePath = vertex.getId() + ".wav";
+                try {
+                    textToSpeechService.generateAudioFile(textToSpeechModel, filePath);
+                    model.setPronunciationUrl(filePath);
+                }
+                catch (Exception e) { }
+            }
         }
 
         var transcriptionVertex = TranscriptionVertex.findBySourceContentId(

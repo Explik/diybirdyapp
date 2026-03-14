@@ -1,0 +1,15 @@
+/* Keep long text readable while preserving equal option heights in stacked mode. */
+.option-text-vertical {
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.option-media-preview {
+	width: 100%;
+	max-width: 14rem;
+	height: 6rem;
+	object-fit: cover;
+	border-radius: 0.5rem;
+}

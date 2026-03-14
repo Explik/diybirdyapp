@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExerciseInputWriteTextDto } from '../../../../shared/api-client';
@@ -10,7 +10,7 @@ import { ExerciseService } from '../../services/exercise.service';
   selector: 'app-exercise-input-write-text',
   standalone: true,
   templateUrl: './exercise-input-write-text.component.html',
-  imports: [CommonModule, FormsModule, IconComponent, TextFieldComponent]
+  imports: [FormsModule, IconComponent, TextFieldComponent]
 })
 export class ExerciseInputWriteTextComponent implements OnInit {
   @Input({required: true}) input!: ExerciseInputWriteTextDto;

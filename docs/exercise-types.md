@@ -30,6 +30,14 @@ Components:
 - Flashcard content 
 - Recognition rating input 
 
+## View flashcard exercise
+Components:
+- Instruction
+- Flashcard content (both sides, flippable)
+- Continue button navigation
+
+Evaluation criteria: None
+
 ## Sort flashcard exercise
 Components:
 - Instruction

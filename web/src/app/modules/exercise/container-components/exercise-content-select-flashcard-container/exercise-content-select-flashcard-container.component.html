@@ -1,10 +1,13 @@
-<app-instruction  
-    i18n-title title="Do you still know this?"
-    i18n-instruction instruction='How well do you recognize this?'></app-instruction>
+<app-instruction
+  i18n-title title="Do you still know this?"
+i18n-instruction instruction='How well do you recognize this?'></app-instruction>
 
-<app-dynamic-flashcard-content *ngIf="content" [data]="content"/>
+@if (content) {
+  <app-dynamic-flashcard-content [data]="content"/>
+}
 
-<app-exercise-input-select-options
-    *ngIf="input"
+@if (input) {
+  <app-exercise-input-select-options
     [input]="input"
-    (optionSelected)="handleOptionSelected($event)"></app-exercise-input-select-options>
+  (optionSelected)="handleOptionSelected($event)"></app-exercise-input-select-options>
+}

@@ -1,22 +1,27 @@
 import { Component, ContentChildren, forwardRef, HostBinding, HostListener, Input, OnInit, QueryList, AfterContentInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { OptionComponent } from '../option/option.component';
-import { AppFormFieldControl } from '../../models/form.interface';
+import { APP_FORM_FIELD_CONTROL, AppFormFieldControl } from '../../models/form.interface';
 
 @Component({
   selector: 'app-select',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './select.component.html',
   host: {
-    class: 'block w-full relative'
+    class: 'block w-full relative',
+    '[attr.id]': 'id'
   },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => SelectComponent),
       multi: true
+    },
+    {
+      provide: APP_FORM_FIELD_CONTROL,
+      useExisting: forwardRef(() => SelectComponent)
     }
   ]
 })

@@ -1,15 +1,15 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'app-icon',
   standalone: true,
-  imports: [NgIf],
+  imports: [],
   templateUrl: './icon.component.html',
   styleUrls: ['./icon.component.css']
 })
 export class IconComponent implements OnChanges {
-  @Input() icon: string = ''; // The mdi icon name, e.g., 'mdi-account', 'key-A', 'mark-correct'
+  @Input() icon: string = ''; // The mdi icon name, e.g., 'mdi-account', 'key-A', 'key-left', 'mark-correct'
   @Input() size: string = 'text-base'; // Tailwind size classes
   @Input() color: string = 'text-black'; // Tailwind color classes
   
@@ -41,10 +41,8 @@ export class IconComponent implements OnChanges {
       this.isKeyIcon = true;
       
       // Extract the value after 'key-'
-      let value = keyMatch[1];
-
-      // Ensure letters are always uppercase
-      this.keyValue = value.toUpperCase();
+      const value = keyMatch[1];
+      this.keyValue = this.formatKeyValue(value);
       return;
     }
     
@@ -54,6 +52,21 @@ export class IconComponent implements OnChanges {
       this.isMarkIcon = true;
       this.markType = markMatch[1];
       return;
+    }
+  }
+
+  private formatKeyValue(value: string): string {
+    switch (value.toLowerCase()) {
+      case 'left':
+        return '\u2190';
+      case 'right':
+        return '\u2192';
+      case 'up':
+        return '\u2191';
+      case 'down':
+        return '\u2193';
+      default:
+        return value.toUpperCase();
     }
   }
 }

@@ -1,8 +1,6 @@
-import { AfterContentInit, Component, ContentChild } from '@angular/core';
+import { AfterContentInit, Component, ContentChild, Inject, Input, Optional } from '@angular/core';
 import { LabelComponent } from '../label/label.component';
-import { TextFieldComponent } from '../text-field/text-field.component';
-
-let nextId = 0;
+import { APP_FORM_FIELD_CONTROL, AppFormFieldControl } from '../../models/form.interface';
 
 @Component({
   selector: 'app-form-field',
@@ -11,15 +9,15 @@ let nextId = 0;
 })
 export class FormFieldComponent implements AfterContentInit {
   @ContentChild(LabelComponent) labelComponent: LabelComponent | undefined;
-  @ContentChild(TextFieldComponent) controlComponent: TextFieldComponent | undefined;
+  @ContentChild(APP_FORM_FIELD_CONTROL) controlComponent: AppFormFieldControl | undefined;
 
-  id = `form-input-${++nextId}`;
+  @Input() fieldId!: string;
 
   ngAfterContentInit(): void {
-    if (this.labelComponent) 
-      this.labelComponent.for = this.id;
-  
-    if (this.controlComponent)
-      this.controlComponent.id = this.id;
+    if (this.labelComponent && this.fieldId)
+      this.labelComponent.for = this.fieldId;
+
+    if (this.controlComponent && this.fieldId)
+      this.controlComponent.id = this.fieldId;
   }
 }

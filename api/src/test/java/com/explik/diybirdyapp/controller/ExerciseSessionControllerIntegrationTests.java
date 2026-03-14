@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -88,10 +89,10 @@ public class ExerciseSessionControllerIntegrationTests {
 
     @Test
     void givenShuffleFlashcardsEnabled_whenUpdateConfig_thenUpdateSessionConfig() {
-        var sessionConfig = new ExerciseSessionOptionsLearnFlashcardsDto();
+        createSession("shuffle-on-test-id");
+        var sessionConfig = (ExerciseSessionOptionsLearnFlashcardsDto) controller.getConfig("shuffle-on-test-id");
         sessionConfig.setShuffleFlashcardsEnabled(true);
 
-        createSession("shuffle-on-test-id");
         var updatedSessionConfig = updateConfig("shuffle-on-test-id", sessionConfig);
 
         assertNotNull(updatedSessionConfig);
@@ -100,14 +101,30 @@ public class ExerciseSessionControllerIntegrationTests {
 
     @Test
     void givenShuffleFlashcardsDisabled_whenUpdateConfig_thenUpdateSessionConfig() {
-        var sessionConfig = new ExerciseSessionOptionsLearnFlashcardsDto();
+        createSession("shuffle-off-test-id");
+        var sessionConfig = (ExerciseSessionOptionsLearnFlashcardsDto) controller.getConfig("shuffle-off-test-id");
         sessionConfig.setShuffleFlashcardsEnabled(false);
 
-        createSession("shuffle-off-test-id");
         var updatedSessionConfig = updateConfig("shuffle-off-test-id", sessionConfig);
 
         assertNotNull(updatedSessionConfig);
         assertFalse(updatedSessionConfig.getShuffleFlashcardsEnabled());
+    }
+
+    @Test
+    void givenLearnSession_whenUpdateConfig_thenReturnsNewCurrentExercise() {
+        var initialSession = createSession("update-config-new-exercise-test-id");
+        assertNotNull(initialSession.getExercise());
+        var initialExerciseId = initialSession.getExercise().getId();
+
+        var sessionConfig = (ExerciseSessionOptionsLearnFlashcardsDto) controller.getConfig("update-config-new-exercise-test-id");
+        sessionConfig.setShuffleFlashcardsEnabled(!sessionConfig.getShuffleFlashcardsEnabled());
+
+        var updatedSession = controller.updateConfig("update-config-new-exercise-test-id", sessionConfig);
+
+        assertNotNull(updatedSession);
+        assertNotNull(updatedSession.getExercise());
+        assertNotEquals(initialExerciseId, updatedSession.getExercise().getId());
     }
 
     ExerciseSessionDto createSession(String id) {

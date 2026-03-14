@@ -8,6 +8,7 @@ public class ExerciseTypes {
     public static final String ARRANGE_WORDS_IN_TRANSLATION = "arrange-words-in-translation-exercise";
     public static final String WRITE_FLASHCARD = "write-flashcard-exercise";
     public static final String REVIEW_FLASHCARD = "review-flashcard-exercise";
+    public static final String VIEW_FLASHCARD = "view-flashcard-exercise";
     public static final String SELECT_FLASHCARD = "select-flashcard-exercise";
     public static final String PRONOUNCE_FLASHCARD = "pronounce-flashcard-exercise";
     public static final String LISTEN_AND_SELECT = "listen-and-select-exercise";
@@ -24,6 +25,7 @@ public class ExerciseTypes {
                 MULTIPLE_CHOICE_TEXT,
                 WRITE_FLASHCARD,
                 REVIEW_FLASHCARD,
+                VIEW_FLASHCARD,
                 SELECT_FLASHCARD,
                 LISTEN_AND_SELECT,
                 LISTEN_AND_WRITE,

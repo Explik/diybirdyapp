@@ -4,11 +4,11 @@ import { ExerciseService } from '../../services/exercise.service';
 import { InstructionComponent } from "../../components/instruction/instruction.component";
 import { ExerciseInputSelectOptionsComponent } from "../../components/exercise-input-select-options/exercise-input-select-options.component";
 import { DynamicAudioContentComponent } from "../../components/dynamic-audio-content/dynamic-audio-content.component";
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-exercise-content-listen-and-select-container',
-  imports: [CommonModule, InstructionComponent, ExerciseInputSelectOptionsComponent, DynamicAudioContentComponent],
+  imports: [InstructionComponent, ExerciseInputSelectOptionsComponent, DynamicAudioContentComponent],
   templateUrl: './exercise-content-listen-and-select-container.component.html'
 })
 export class ExerciseContentListenAndSelectContainerComponent {

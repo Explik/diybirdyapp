@@ -1,55 +1,77 @@
-<div class="max-w-xl w-full mt-4 mb-2" *ngIf="input">
-
+@if (input) {
+  <div class="max-w-xl w-full mt-4 mb-2">
     <!-- Show Options Button (when initiallyHideOptions is true and options are not visible) -->
-    <div *ngIf="input.initiallyHideOptions" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+    @if (input.initiallyHideOptions) {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
         <app-row-button
-            layout="single"
-            class="md:col-span-2"
-            [disabled]="optionsVisible"
-            (click)="handleShowOptions()"
-            i18n>
+          layout="single"
+          class="md:col-span-2"
+          [disabled]="optionsVisible"
+          (click)="handleShowOptions()"
+          i18n>
             Show options
         </app-row-button>
-    </div>
-    
+      </div>
+    }
     <!-- Options Grid (shown when options are visible or initiallyHideOptions is false) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4" *ngIf="optionsVisible || !input.initiallyHideOptions">
-        <app-row-button
+    @if (optionsVisible || !input.initiallyHideOptions) {
+      <div [class]="isVerticalOptionsLayout ? 'grid grid-cols-1 md:grid-cols-1 gap-y-2 gap-x-4' : 'grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4'">
+        @for (option of input!.options; track option; let i = $index) {
+          <app-row-button
+            class="w-full"
             layout="single"
-            *ngFor="let option of input!.options; let i = index"
+            [heightClass]="optionHeightClass"
             [disabled]="!!(input.feedback && !input.feedback.isRetypeAnswerEnabled)"
             (click)="handleOptionSelected(option.id!)">
-            
-            <app-icon *ngIf="input?.feedback?.correctOptionIds?.includes(option.id!)" 
-                     icon="mark-correct" 
-                     class="mr-3">
-            </app-icon>
-            <app-icon *ngIf="input?.feedback?.incorrectOptionIds?.includes(option.id!)" 
-                     icon="mark-incorrect" 
-                     class="mr-3">
-            </app-icon>
-            <app-icon *ngIf="input?.feedback?.correctOptionIds?.includes(option.id!) !== true && input?.feedback?.incorrectOptionIds?.includes(option.id!) !== true" 
-                     [icon]="'key-' + (i + 1)"
-                     class="mr-3">
-            </app-icon>
-
-            <div *ngIf="input.optionType == 'audio'" (click)="handleAudioPlay(option.id!)">
+            @if (input.feedback?.correctOptionIds?.includes(option.id!)) {
+              <app-icon
+                icon="mark-correct"
+                class="mr-3">
+              </app-icon>
+            }
+            @if (input.feedback?.incorrectOptionIds?.includes(option.id!)) {
+              <app-icon
+                icon="mark-incorrect"
+                class="mr-3">
+              </app-icon>
+            }
+            @if (input.feedback?.correctOptionIds?.includes(option.id!) !== true && input.feedback?.incorrectOptionIds?.includes(option.id!) !== true) {
+              <app-icon
+                [icon]="'key-' + (i + 1)"
+                class="mr-3">
+              </app-icon>
+            }
+            @if (input.optionType == 'audio') {
+              <div class="flex w-full items-center justify-center" (click)="handleAudioPlay(option.id!)">
                 <app-icon icon="mdi-volume-high" class="mr-2" tabindex="0"></app-icon>
-
                 <svg width="100" height="20" viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg" class="inline-block">
-                    <path d="M0 10 Q 10 0, 20 10 T 40 10 T 60 10 T 80 10 T 100 10" stroke="black" fill="transparent" stroke-width="3" />
+                  <path d="M0 10 Q 10 0, 20 10 T 40 10 T 60 10 T 80 10 T 100 10" stroke="black" fill="transparent" stroke-width="3" />
                 </svg>
-            </div>
-
-            <ng-content *ngIf="input.optionType == 'text'">{{castAsText(option).text}}</ng-content>
-
-            <ng-content *ngIf="input.optionType == 'image'">
-                <img [src]="castAsImage(option).url" alt="Option Image" class="w-16 h-16 object-cover rounded-lg" />
-            </ng-content>
-
-            <ng-content *ngIf="input.optionType == 'video'">
-                <video [src]="castAsVideo(option).url" controls class="w-16 h-16 object-cover rounded-lg"></video>
-            </ng-content>
-        </app-row-button>
-    </div>
-</div>
+              </div>
+            }
+            @if (input.optionType == 'text') {
+              <ng-content>
+                <span
+                  class="block w-full px-1 text-center leading-snug"
+                  [class.truncate]="!isVerticalOptionsLayout"
+                  [class.option-text-vertical]="isVerticalOptionsLayout">
+                  {{castAsText(option).text}}
+                </span>
+              </ng-content>
+            }
+            @if (input.optionType == 'image') {
+              <ng-content>
+                <img [src]="castAsImage(option).url" alt="Option Image" class="option-media-preview" />
+              </ng-content>
+            }
+            @if (input.optionType == 'video') {
+              <ng-content>
+                <video [src]="castAsVideo(option).url" controls class="option-media-preview"></video>
+              </ng-content>
+            }
+          </app-row-button>
+        }
+      </div>
+    }
+  </div>
+}

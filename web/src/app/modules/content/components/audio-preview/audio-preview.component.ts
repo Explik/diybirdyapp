@@ -1,12 +1,12 @@
 import { Component, Host, HostListener, Input } from '@angular/core';
 import { AudioPlayingService } from '../../services/audioPlaying.service';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
-import { CommonModule } from '@angular/common';
+
 import { EditFlashcardAudio } from '../../models/editFlashcard.model';
 
 @Component({
   selector: 'app-audio-preview',
-  imports: [CommonModule, IconComponent],
+  imports: [IconComponent],
   templateUrl: './audio-preview.component.html',
   styleUrl: './audio-preview.component.css'
 })

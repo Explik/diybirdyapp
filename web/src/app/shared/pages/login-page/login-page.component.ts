@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { TextFieldComponent } from '../../components/text-field/text-field.component';
 import { ButtonComponent } from '../../components/button/button.component';
@@ -12,7 +12,7 @@ import { FormErrorComponent } from "../../components/form-error/form-error.compo
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TextFieldComponent, ButtonComponent, FormFieldComponent, LabelComponent, FormErrorComponent],
+  imports: [ReactiveFormsModule, RouterLink, TextFieldComponent, ButtonComponent, FormFieldComponent, LabelComponent, FormErrorComponent],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
 })

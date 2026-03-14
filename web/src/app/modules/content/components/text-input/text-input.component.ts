@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, Output, forwardRef, OnChanges } from '@angular/core';
 import { EditFlashcardTextImpl } from '../../models/editFlashcard.model';
 import { TextFieldComponent } from "../../../../shared/components/text-field/text-field.component";
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   standalone: true,
   selector: 'app-text-input',
-  imports: [CommonModule, FormsModule, TextFieldComponent],
+  imports: [FormsModule, TextFieldComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -19,6 +19,7 @@ import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/f
   styleUrl: './text-input.component.css'
 })
 export class TextInputComponent implements ControlValueAccessor, OnChanges {
+  @Input() id: string | undefined;
   @Input() textData: EditFlashcardTextImpl|undefined = undefined; 
   @Output() textDataChange = new EventEmitter<EditFlashcardTextImpl|undefined>();
   textValue: string = "";

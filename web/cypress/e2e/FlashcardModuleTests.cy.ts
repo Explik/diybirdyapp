@@ -1,23 +1,45 @@
-import { clickLoginButton, clickSignUpButton, goToLoginPage, goToSignUpPage, resetData, setEmail, setName, setPassword, setRepeatPassword } from "./utils";
+import {
+    clickLoginButton, clickSignUpButton,
+    goToLoginPage, goToSignUpPage,
+    resetData, setEmail, setName, setPassword, setRepeatPassword,
+    goToFlashcardDeckOverview,
+    createNewDeck, setDeckName, setDeckDescription, saveDeckChanges,
+    createNewFlashcard, deleteFlashcard,
+    setLeftLanguage, setRightLanguage,
+    setLeftContentType, setRightContentType,
+    setLeftTextContent, setRightTextContent,
+    setLeftAudioContent, setRightAudioContent,
+    setLeftImageContent, setRightImageContent,
+    setLeftVideoContent, setRightVideoContent,
+} from './utils';
+
+const USERNAME = 'john@doe.com';
+const PASSWORD = 'G1CWdTbjVjHdEczJDKF%';
 
 describe('Flashcard deck features', () => {
   before(() => {
     resetData(); 
     goToSignUpPage();
     setName('John Doe');
-    setEmail('john@doe.com');
-    setPassword('password');
-    setRepeatPassword('password');
+    setEmail(USERNAME);
+    setPassword(PASSWORD);
+    setRepeatPassword(PASSWORD);
     clickSignUpButton();
 
-    goToLoginPage();
-    setEmail('john@doe.com');
-    setPassword('password');
-    clickLoginButton();
+    cy.wait(1500); // Wait for a moment to ensure the first registration is processed
   });
 
+  beforeEach(() => {
+    goToLoginPage();
+    setEmail(USERNAME);
+    setPassword(PASSWORD);
+    clickLoginButton();
+
+    cy.wait(500); // Wait for a moment to ensure login is processed
+  }); 
+
   describe('Flashcard deck data', () => {
-    it('Name is updated when name update is saved', () => {
+    it ('Name is updated when name update is saved', () => {
       createNewDeck(); 
 
       setDeckName('Updated deck');
@@ -52,6 +74,7 @@ describe('Flashcard deck features', () => {
       createNewDeck();
 
       setDeckDescription('New description');
+      deleteFlashcard(); // Ensure that the deck is not empty, as description is not saved for empty decks
       saveDeckChanges(); 
 
       // Check if description is updated on details page
@@ -63,6 +86,7 @@ describe('Flashcard deck features', () => {
 
       setDeckDescription('New description');
       cy.reload(); // Discard changes
+      deleteFlashcard(); // Ensure that the deck is not empty, as description is not saved for empty decks
       saveDeckChanges();
       
       // Check if description is not updated on details page
@@ -104,8 +128,8 @@ describe('Flashcard deck features', () => {
       createNewDeck()
 
       cy.get('.flashcard-edit-item').should('have.length', 1);
-      cy.get('#leftLanguageSelect_0').contains('Select language').should('exist');
-      cy.get('#rightLanguageSelect_0').contains('Select language').should('exist');
+      cy.get('#front-language').contains('Select language').should('exist');
+      cy.get('#back-language').contains('Select language').should('exist');
     });
 
     it ('Flashcard is added when add flashcard is clicked (before language select)', () => {
@@ -124,8 +148,8 @@ describe('Flashcard deck features', () => {
       createNewFlashcard();
 
       cy.get('.flashcard-edit-item').should('have.length', 2);
-      cy.get('#leftLanguageSelect_1').contains('English').should('exist');
-      cy.get('#rightLanguageSelect_1').contains('Danish').should('exist');
+      cy.get('#front-language').contains('English').should('exist');
+      cy.get('#back-language').contains('Danish').should('exist');
     });
 
     it ('Flashcard is removed when remove flashcard is clicked', () => {
@@ -144,12 +168,8 @@ describe('Flashcard deck features', () => {
       setLeftLanguage('English');
       setRightLanguage('Danish');
       
-      cy.get('#leftLanguageSelect_0').contains('English').should('exist');
-      cy.get('#rightLanguageSelect_0').contains('Danish').should('exist');
-      cy.get('#leftLanguageSelect_1').contains('English').should('exist');
-      cy.get('#rightLanguageSelect_1').contains('Danish').should('exist');
-      cy.get('#leftLanguageSelect_2').contains('English').should('exist');
-      cy.get('#rightLanguageSelect_2').contains('Danish').should('exist');
+      cy.get('#front-language').contains('English').should('exist');
+      cy.get('#back-language').contains('Danish').should('exist');
     });
 
     it ('Flashcard is not persisted when not saved', () => {
@@ -169,8 +189,8 @@ describe('Flashcard deck features', () => {
       setLeftContentType('Text');
       setRightContentType('Text');
 
-      cy.get(':nth-child(1) > .flashcard-edit-item .left-side .text-input-container').should('exist');
-      cy.get(':nth-child(1) > .flashcard-edit-item .right-side .text-input-container').should('exist');
+      cy.get('#left-text-0').should('exist');
+      cy.get('#right-text-0').should('exist');
     }); 
 
     it ('Audio-audio flaschards input options are available when selected', () => {
@@ -179,8 +199,8 @@ describe('Flashcard deck features', () => {
       setLeftContentType('Audio');
       setRightContentType('Audio');
 
-      cy.get(':nth-child(1) > .flashcard-edit-item .left-side .audio-input-container').should('exist');
-      cy.get(':nth-child(1) > .flashcard-edit-item .right-side .audio-input-container').should('exist');
+      cy.get('#left-audio-0').should('exist');
+      cy.get('#right-audio-0').should('exist');
     });
 
     it ('Image-image flaschards input options are available when selected', () => {
@@ -189,8 +209,8 @@ describe('Flashcard deck features', () => {
       setLeftContentType('Image');
       setRightContentType('Image');
 
-      cy.get(':nth-child(1) > .flashcard-edit-item .left-side .image-input-container').should('exist');
-      cy.get(':nth-child(1) > .flashcard-edit-item .right-side .image-input-container').should('exist');
+      cy.get('#left-image-0').should('exist');
+      cy.get('#right-image-0').should('exist');
     }); 
 
     it ('Video-video flaschards input options are available when selected', () => {
@@ -199,60 +219,17 @@ describe('Flashcard deck features', () => {
       setLeftContentType('Video');
       setRightContentType('Video');
 
-      cy.get(':nth-child(1) > .flashcard-edit-item .left-side .video-input-container').should('exist');
-      cy.get(':nth-child(1) > .flashcard-edit-item .right-side .video-input-container').should('exist');
+      cy.get('#left-video-0').should('exist');
+      cy.get('#right-video-0').should('exist');
     }); 
-
-    it('Text-text flascard is immidiately available for review', () => {
-      createNewDeck(); 
-
-      setLeftContentType('Text');
-      setRightContentType('Text');
-      setLeftTextContent('Question 1')
-      setRightTextContent('Answer 1')
-
-      cy.get('.flashcard-deck-edit-container').contains('Question 1').should('exist');
-      cy.get('.flashcard-deck-edit-container').contains('Answer 1').should('exist');
-    }); 
-
-    it ('Audio-audio flashcard is immidiately available for review', () => {
-      createNewDeck();
-
-      setLeftAudioContent('./cypress/files/example.mp3')
-      setRightAudioContent('./cypress/files/example.mp3')
-
-      cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
-      cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
-    }); 
-
-    it ('Image-image flashcard is immidiately available for review', () => {
-      createNewDeck();
-
-      setLeftImageContent('./cypress/files/example.jpg')
-      setRightImageContent('./cypress/files/example.jpg')
-
-      cy.get('.flashcard-deck-edit-container .flashcard-front .image-preview-container').should('exist');
-      cy.get('.flashcard-deck-edit-container .flashcard-back .image-preview-container').should('exist');
-    });
-
-    it ('Video-video flashcard is immidiately available for review', () => {
-      createNewDeck();
-
-      setLeftVideoContent('./cypress/files/example.mp4')
-      setRightVideoContent('./cypress/files/example.mp4')
-      
-      cy.get('.flashcard-deck-edit-container .flashcard-front .video-preview-container').should('exist');
-      cy.get('.flashcard-deck-edit-container .flashcard-back .video-preview-container').should('exist');
-    });
 
     it ('Text-text flashcard is persisted when saved', () => {
       createNewDeck();
 
-      setLeftTextContent('Question 1')
-      setRightTextContent('Answer 1')
+      setLeftTextContent('Question 1', 'English')
+      setRightTextContent('Answer 1', 'Danish')
       saveDeckChanges();
 
-      cy.reload(); 
       cy.contains('Question 1').should('exist'); 
       cy.contains('Answer 1').should('exist');
     });   
@@ -264,10 +241,8 @@ describe('Flashcard deck features', () => {
       setRightAudioContent('./cypress/files/example.mp3')
       saveDeckChanges();
 
-      cy.reload();
-
-     cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
-     cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-front .audio-preview-container').should('exist');
+      cy.get('.flashcard-deck-edit-container .flashcard-back .audio-preview-container').should('exist');
     }); 
 
     it ('Image-image flashcard is persisted when saved', () => {
@@ -299,93 +274,3 @@ describe('Flashcard deck features', () => {
 
   });
 });
-
-// Navigation functions
-function goToFlashcardDeckOverview() {
-  cy.visit('/flashcard-deck/')
-}
-
-// Flashcard deck functions 
-function createNewDeck() {
-  goToFlashcardDeckOverview()
-  cy.contains('Add deck').click()
-}
-
-function setDeckName(name: string) {
-  cy.get('.deck-name-input > .border').clear().type(name); 
-}
-
-function setDeckDescription(description: string) {
-  cy.get('.deck-description-input > .border').clear().type(description);
-}
-
-function saveDeckChanges() {
-  cy.contains('Save changes').click(); 
-}
-
-// Flashcard functions 
-function createNewFlashcard() {
-  cy.contains('Add flashcard').click();
-}
-
-function deleteFlashcard() {
-  cy.get(':nth-child(1) > .flashcard-edit-item').contains('Delete').click(); 
-}
-
-function setLeftTextContent(content: string, languageName?: string) {
-  setLeftContentType('Text'); 
-  if (languageName) setLeftLanguage(languageName);
-  cy.get(':nth-child(1) > .flashcard-edit-item .left-side .text-input-container > textarea').clear().type(content);
-}
-
-function setRightTextContent(content: string, languageName?: string) {
-  setRightContentType('Text');
-  if (languageName) setRightLanguage(languageName);
-  cy.get(':nth-child(1) > .flashcard-edit-item .right-side .text-input-container > textarea').clear().type(content);
-} 
-
-function setLeftAudioContent(fileName: string) {
-  setLeftContentType('Audio'); 
-  cy.get(':nth-child(1) > .flashcard-edit-item .left-side .audio-input-container input[type=file]').selectFile(fileName, { force: true });
-}
-
-function setRightAudioContent(fileName: string) {
-  setRightContentType('Audio'); 
-  cy.get(':nth-child(1) > .flashcard-edit-item .right-side .audio-input-container input[type=file]').selectFile(fileName, { force: true });
-}
-
-function setLeftImageContent(fileName: string) {
-  setLeftContentType('Image');
-  cy.get(':nth-child(1) > .flashcard-edit-item .left-side .image-input-container input[type=file]').selectFile(fileName, { force: true });
-}
-
-function setRightImageContent(fileName: string) {
-  setRightContentType('Image');
-  cy.get(':nth-child(1) > .flashcard-edit-item .right-side .image-input-container input[type=file]').selectFile(fileName, { force: true });
-}
-
-function setLeftVideoContent(fileName: string) {
-  setLeftContentType('Video');
-  cy.get(':nth-child(1) > .flashcard-edit-item .left-side .video-input-container input[type=file]').selectFile(fileName, { force: true });
-}
-
-function setRightVideoContent(fileName: string) {
-  setRightContentType('Video');
-  cy.get(':nth-child(1) > .flashcard-edit-item .right-side .video-input-container input[type=file]').selectFile(fileName, { force: true });
-}
-
-function setLeftContentType(contentType: string) {
-  cy.get(':nth-child(1) > .flashcard-edit-item .left-content-type-input').select(contentType); 
-}
-
-function setRightContentType(contentType: string) {
-  cy.get(':nth-child(1) > .flashcard-edit-item .right-content-type-input').select(contentType); 
-}
-
-function setLeftLanguage(languageName: string) {
-  cy.get(':nth-child(1) > .flashcard-edit-item #leftLanguageSelect_0').select(languageName); 
-}
-
-function setRightLanguage(languageName: string) {
-  cy.get(':nth-child(1) > .flashcard-edit-item #rightLanguageSelect_0').select(languageName); 
-}

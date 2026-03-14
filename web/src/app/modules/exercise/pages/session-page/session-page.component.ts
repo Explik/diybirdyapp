@@ -46,6 +46,8 @@ export class SessionPageComponent {
     sessionOptionsComponent$: Observable<Type<any>|null>;
     /** Staged options object passed into child and modified there until applied on close */
     stagedOptions?: ExerciseSessionOptionsDto | ExerciseSessionOptionsLearnFlashcardsDto | undefined;
+    /** Snapshot of options as loaded when the modal opened; used to detect real changes on close */
+    private originalOptions?: ExerciseSessionOptionsDto | ExerciseSessionOptionsLearnFlashcardsDto | undefined;
 
     @ViewChild('optionsHost', { read: ViewContainerRef }) optionsHost!: ViewContainerRef;
     private optionsComponentRef?: ComponentRef<any>;
@@ -122,6 +124,7 @@ export class SessionPageComponent {
 
             // fetch options and apply to component once ready
             this.exerciseService.getExerciseSessionOptions().pipe(take(1)).subscribe(opt => {
+                this.originalOptions = opt ? JSON.parse(JSON.stringify(opt)) : undefined;
                 this.stagedOptions = opt;
                 if (this.stagedOptions && this.optionsComponentRef) {
                     // use setInput so Angular runs ngOnChanges on the dynamically created component
@@ -151,10 +154,13 @@ export class SessionPageComponent {
         this.optionsOutputSub?.unsubscribe();
         this.optionsOutputSub = undefined;
 
-        // Apply staged options in the background; the loading exercise will show while the request runs
-        if (this.stagedOptions) {
+        // Only apply if options exist and have actually changed since the modal opened
+        const hasChanges = this.stagedOptions !== undefined &&
+            JSON.stringify(this.stagedOptions) !== JSON.stringify(this.originalOptions);
+        if (hasChanges) {
             this.exerciseService.applyExerciseSessionOptions(this.stagedOptions as any).pipe(take(1)).subscribe();
         }
+        this.originalOptions = undefined;
     }
 
     onOptionsChanged(options: ExerciseSessionOptionsDto | ExerciseSessionOptionsLearnFlashcardsDto) {

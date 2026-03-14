@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, input, ViewChild } from '@angular/core';
 import { CdkDragDrop, DragDropModule, transferArrayItem, moveItemInArray } from '@angular/cdk/drag-drop';
-import { CommonModule } from '@angular/common';
+
 import { ExerciseInputSelectPlaceholdersDto, SelectPlaceholdersInputOption, SelectPlaceholdersInputPart } from '../../../../shared/api-client';
 
 interface Part extends SelectPlaceholdersInputPart {
@@ -11,7 +11,7 @@ interface Part extends SelectPlaceholdersInputPart {
 
 @Component({
   selector: 'app-exercise-input-select-placeholders',
-  imports: [CommonModule, DragDropModule],
+  imports: [DragDropModule],
   templateUrl: './exercise-input-select-placeholders.component.html',
   styleUrl: './exercise-input-select-placeholders.component.css'
 })

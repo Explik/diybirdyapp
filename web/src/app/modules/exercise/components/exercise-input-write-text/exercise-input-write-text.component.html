@@ -1,25 +1,29 @@
 <div class="w-full max-w-xl">
-  <ng-container *ngIf="input.feedback">
+  @if (input.feedback) {
     @for(feedbackValue of feedbackValues; track feedbackValue) {
-    <div class="flex items-center space-x-2 w-full mb-2">
-      <app-icon *ngIf="feedbackValue!.state === 'success'" icon="mark-correct"></app-icon>
-      <app-icon *ngIf="feedbackValue!.state === 'failure'" icon="mark-incorrect"></app-icon>
-      <span class="text-gray-800">{{ feedbackValue.value }}</span>
-    </div>
+      <div class="flex items-center space-x-2 w-full mb-2">
+        @if (feedbackValue!.state === 'success') {
+          <app-icon icon="mark-correct"></app-icon>
+        }
+        @if (feedbackValue!.state === 'failure') {
+          <app-icon icon="mark-incorrect"></app-icon>
+        }
+        <span class="text-gray-800">{{ feedbackValue.value }}</span>
+      </div>
     }
-    
-    <div *ngIf="hasIncorrectFeedback()" class="mt-4">
-      
-      <button 
-        (click)="handleUserCorrection()" 
-        class="py-2 italic bg-transparent border-0">
-        <app-icon icon="mdi-redo-variant"></app-icon>
-        I was right...
-      </button>
-    </div>
-  </ng-container>
+    @if (hasIncorrectFeedback()) {
+      <div class="mt-4">
+        <button
+          (click)="handleUserCorrection()"
+          class="py-2 italic bg-transparent border-0">
+          <app-icon icon="mdi-redo-variant"></app-icon>
+          I was right...
+        </button>
+      </div>
+    }
+  }
 
-  <ng-container *ngIf="input.feedback == undefined || input.feedback.isRetypeAnswerEnabled">
+  @if (input.feedback == undefined || input.feedback.isRetypeAnswerEnabled) {
     <app-text-field [rows]="3" [(ngModel)]="input.text"></app-text-field>
-  </ng-container>
+  }
 </div>

@@ -17,6 +17,8 @@ import { ExerciseContentMultiStageTapPairsContainerComponent } from "../containe
 import { ExerciseContentListenAndSelectContainerComponent } from "../container-components/exercise-content-listen-and-select-container/exercise-content-listen-and-select-container.component";
 import { ExerciseContentListenAndWriteContainerComponent } from "../container-components/exercise-content-listen-and-write-container/exercise-content-listen-and-write-container.component";
 import { ExerciseContentSortFlashcardContainerComponent } from "../container-components/exercise-content-sort-flashcard-container/exercise-content-sort-flashcard-container.component";
+import { ExerciseContentViewFlashcardContainerComponent } from "../container-components/exercise-content-view-flashcard-container/exercise-content-view-flashcard-container.component";
+import { ExerciseNavigationContinueContainerComponent } from "../components/exercise-navigation-continue-container/exercise-navigation-continue-container.component";
 
 @Injectable({
     providedIn: 'root'
@@ -53,6 +55,8 @@ export class ExerciseComponentService {
                 return ExerciseContentMultiStageTapPairsContainerComponent;
             case "review-flashcard-exercise":
                 return ExerciseContentReviewFlashcardContainerComponent;
+            case "view-flashcard-exercise":
+                return ExerciseContentViewFlashcardContainerComponent;
             case "sort-flashcard-exercise":
                 return ExerciseContentSortFlashcardContainerComponent;
             case "pronounce-flashcard-exercise":
@@ -85,6 +89,8 @@ export class ExerciseComponentService {
             case "pronounce-flashcard-exercise":
             case "multi-stage-tap-pairs-exercise":
                 return ExerciseNavigationSkipOnlyContainerComponent;
+            case "view-flashcard-exercise":
+                return ExerciseNavigationContinueContainerComponent;
             default: 
                 return null; 
         }

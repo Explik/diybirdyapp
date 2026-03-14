@@ -5,15 +5,11 @@ import { TextFieldComponent } from "../../../../shared/components/text-field/tex
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CdkDrag, CdkDragDrop, CdkDropList, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EditFlashcard, EditFlashcardDeck, EditFlashcardDeckImpl, EditFlashcardImpl, EditFlashcardLanguageImpl } from '../../models/editFlashcard.model';
-import { AudioInputComponent } from "../audio-input/audio-input.component";
-import { ImageInputComponent } from "../image-input/image-input.component";
-import { VideoInputComponent } from "../video-input/video-input.component";
 import { LabelComponent } from "../../../../shared/components/label/label.component";
 import { FormFieldComponent } from "../../../../shared/components/form-field/form-field.component";
 import { SelectComponent } from "../../../../shared/components/select/select.component";
 import { OptionComponent } from "../../../../shared/components/option/option.component";
 import { ButtonComponent } from "../../../../shared/components/button/button.component";
-import { TextInputComponent } from '../text-input/text-input.component';
 import { FormErrorComponent } from "../../../../shared/components/form-error/form-error.component";
 import { FlashcardLanguageDto } from '../../../../shared/api-client';
 import { LOCALE_ID } from '@angular/core';
@@ -23,7 +19,7 @@ import { LOCALE_ID } from '@angular/core';
   standalone: true,
   templateUrl: './flashcard-edit-container.component.html',
   styleUrl: './flashcard-edit-container.component.css',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, AudioInputComponent, ImageInputComponent, TextInputComponent, VideoInputComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent, FormErrorComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, CdkDropList, CdkDrag, FlashcardEditComponent, TextFieldComponent, LabelComponent, FormFieldComponent, SelectComponent, OptionComponent, ButtonComponent, FormErrorComponent]
 })
 export class FlashcardEditContainerComponent {
   @Input() flashcardDeck: EditFlashcardDeckImpl | undefined = undefined;
@@ -57,7 +53,7 @@ export class FlashcardEditContainerComponent {
         this.handleAddFlashcard();
       }
 
-      // Build reactive form from the deck
+      // Build reactive form from the deck (excluding deleted items)
       this.buildFormFromDeck();
     }
   }
@@ -80,11 +76,20 @@ export class FlashcardEditContainerComponent {
   }
 
   handleRearrangeFlashcard(event: CdkDragDrop<Partial<EditFlashcardImpl>[]>): void {
-    // Update the data model
-    moveItemInArray(this.flashcardDeck!.flashcards, event.previousIndex, event.currentIndex);
-    this.flashcardDeck!.flashcards
-      .filter(s => s.state !== 'deleted')
-      .forEach((flashcard, index) => flashcard.deckOrder = index + 1);
+    // Get active (non-deleted) flashcards and their indices in the full array
+    const activeFlashcards = this.flashcardDeck!.flashcards
+      .map((f, index) => ({ flashcard: f, originalIndex: index }))
+      .filter(item => item.flashcard.state !== 'deleted');
+
+    // Rearrange the active flashcards
+    const movedItem = activeFlashcards[event.previousIndex];
+    activeFlashcards.splice(event.previousIndex, 1);
+    activeFlashcards.splice(event.currentIndex, 0, movedItem);
+
+    // Update deckOrder for all active flashcards
+    activeFlashcards.forEach((item, index) => {
+      item.flashcard.deckOrder = index + 1;
+    });
     
     // Update the FormArray to reflect the new order in the UI
     const formArray = this.getFlashcardsFormArray();
@@ -162,25 +167,31 @@ export class FlashcardEditContainerComponent {
   }
 
   handleDeleteFlashcard(flashcard: EditFlashcardImpl): void {
-    // Remove the flashcard from the form array and the UI model immediately
-    // Find index in the deck
+    // Mark flashcard as deleted instead of removing it
+    // This keeps it in the change tracker until save
     if (!this.flashcardDeck) return;
 
     const idx = this.flashcardDeck.flashcards.findIndex(f => f === flashcard || f.id === flashcard.id);
     if (idx !== -1) {
-      // Remove from underlying model
-      this.flashcardDeck.flashcards.splice(idx, 1);
+      // Mark as deleted in the underlying model
+      this.flashcardDeck.flashcards[idx].state = 'deleted';
 
-      // Remove from reactive form array if present
+      // Find the corresponding index in the form array (which only has non-deleted items)
       if (this.form) {
         const fa = this.getFlashcardsFormArray();
-        if (fa && fa.length > idx) {
-          fa.removeAt(idx);
+        const formIndex = this.flashcardDeck.flashcards
+          .slice(0, idx)
+          .filter(f => f.state !== 'deleted')
+          .length;
+        
+        if (fa && fa.length > formIndex) {
+          fa.removeAt(formIndex);
         }
       }
 
-      // Recompute deckOrder for remaining items
+      // Recompute deckOrder for remaining active items
       this.flashcardDeck.flashcards
+        .filter(f => f.state !== 'deleted')
         .forEach((f, index) => f.deckOrder = index + 1);
     }
   }
@@ -195,18 +206,22 @@ export class FlashcardEditContainerComponent {
       description: [this.flashcardDeck.description],
       frontLanguageId: [this.getMostCommonLanguage('left')],
       backLanguageId: [this.getMostCommonLanguage('right')],
-      flashcards: this.fb.array(this.flashcardDeck.flashcards.map(f => {
-        const fg = this.buildFlashcardFormGroup(f);
-        fg.setValidators(this.flashcardValidator());
-        return fg;
-      }))
+      flashcards: this.fb.array(this.flashcardDeck.flashcards
+        .filter(f => f.state !== 'deleted')
+        .map(f => {
+          const fg = this.buildFlashcardFormGroup(f);
+          fg.setValidators(this.flashcardValidator());
+          return fg;
+        }))
     });
 
     // attach deck-level validator (e.g., require language selects when text exists)
     this.form.setValidators(this.deckValidator());
 
-    // Snapshot original ids for add/delete detection on save
-    this.originalFlashcardIds = new Set(this.flashcardDeck.flashcards.map(f => f.id));
+    // Snapshot original ids for add/delete detection on save (only non-deleted items)
+    this.originalFlashcardIds = new Set(this.flashcardDeck.flashcards
+      .filter(f => f.state !== 'deleted')
+      .map(f => f.id));
 
     // Ensure validators run at least once after building
     this.form.updateValueAndValidity({ onlySelf: false, emitEvent: false });
@@ -236,8 +251,64 @@ export class FlashcardEditContainerComponent {
   }
 
   // Template-friendly accessor for the form array controls
-  get flashcardsControls() {
-    return (this.form?.get('flashcards') as FormArray)?.controls || [];
+  // Note: Deleted items are already removed from the form array in handleDeleteFlashcard
+  get flashcardsControls(): FormGroup[] {
+    return ((this.form?.get('flashcards') as FormArray)?.controls as FormGroup[]) || [];
+  }
+
+  handleDeleteFlashcardAt(index: number): void {
+    if (!this.flashcardDeck) return;
+    
+    // Map form array index to flashcard (form array only contains non-deleted items)
+    const activeFlashcards = this.flashcardDeck.flashcards.filter(f => f.state !== 'deleted');
+    const flashcard = activeFlashcards[index];
+    
+    if (flashcard) {
+      this.handleDeleteFlashcard(flashcard);
+    }
+  }
+
+  private syncFlashcardModelsFromForm(): void {
+    if (!this.flashcardDeck || !this.form) return;
+
+    const formGroupsById = new Map<string, FormGroup>();
+    const flashcardFormGroups = this.getFlashcardsFormArray().controls as FormGroup[];
+
+    for (const fg of flashcardFormGroups) {
+      const id = fg.get('id')?.value;
+      if (id) {
+        formGroupsById.set(id, fg);
+      }
+    }
+
+    for (const flashcard of this.flashcardDeck.flashcards) {
+      if (flashcard.state === 'deleted') continue;
+
+      const fg = formGroupsById.get(flashcard.id);
+      if (!fg) continue;
+
+      const nextLeftType = fg.get('leftContentType')?.value ?? flashcard.leftContentType;
+      const nextRightType = fg.get('rightContentType')?.value ?? flashcard.rightContentType;
+      const contentTypeChanged =
+        flashcard.leftContentType !== nextLeftType ||
+        flashcard.rightContentType !== nextRightType;
+
+      flashcard.leftContentType = nextLeftType;
+      flashcard.rightContentType = nextRightType;
+
+      flashcard.leftTextContent = fg.get('leftTextContent')?.value;
+      flashcard.rightTextContent = fg.get('rightTextContent')?.value;
+      flashcard.leftAudioContent = fg.get('leftAudioContent')?.value;
+      flashcard.rightAudioContent = fg.get('rightAudioContent')?.value;
+      flashcard.leftImageContent = fg.get('leftImageContent')?.value;
+      flashcard.rightImageContent = fg.get('rightImageContent')?.value;
+      flashcard.leftVideoContent = fg.get('leftVideoContent')?.value;
+      flashcard.rightVideoContent = fg.get('rightVideoContent')?.value;
+
+      if (contentTypeChanged && flashcard.state === 'unchanged') {
+        flashcard.state = 'updated';
+      }
+    }
   }
 
   handleSaveFlashcards() {
@@ -254,19 +325,20 @@ export class FlashcardEditContainerComponent {
       this.flashcardDeck!.description = this.form.get('description')?.value;
     }
 
+    // Form controls are the source of truth while editing; persist them into the model before save.
+    this.syncFlashcardModelsFromForm();
+
     // Before saving, apply the globally selected languages to individual flashcards
     const front = this.form?.get('frontLanguageId')?.value;
     const back = this.form?.get('backLanguageId')?.value;
 
-    if (this.flashcardDeck?.flashcards?.length) {
-      for (let flashcard of this.flashcardDeck.flashcards) {
-        if (flashcard.state === 'deleted') continue;
-        if (front && flashcard.leftContentType === 'text' && flashcard.leftTextContent) {
-          flashcard.leftTextContent.languageId = front;
-        }
-        if (back && flashcard.rightContentType === 'text' && flashcard.rightTextContent) {
-          flashcard.rightTextContent.languageId = back;
-        }
+    for (let flashcard of this.flashcardDeck!.flashcards) {
+      if (flashcard.state === 'deleted') continue;
+      if (front && flashcard.leftContentType === 'text' && flashcard.leftTextContent) {
+        flashcard.leftTextContent.languageId = front;
+      }
+      if (back && flashcard.rightContentType === 'text' && flashcard.rightTextContent) {
+        flashcard.rightTextContent.languageId = back;
       }
     }
 

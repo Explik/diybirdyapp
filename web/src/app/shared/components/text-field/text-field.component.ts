@@ -1,18 +1,22 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+
+import { Component, forwardRef, Input } from '@angular/core';
 import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { AppFormFieldControl } from '../../models/form.interface';
+import { APP_FORM_FIELD_CONTROL, AppFormFieldControl } from '../../models/form.interface';
 
 @Component({
   selector: 'app-text-field',
   standalone: true,
   templateUrl: './text-field.component.html',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      multi:true,
+      multi: true,
       useExisting: TextFieldComponent
+    },
+    {
+      provide: APP_FORM_FIELD_CONTROL,
+      useExisting: forwardRef(() => TextFieldComponent)
     }
   ]
 })

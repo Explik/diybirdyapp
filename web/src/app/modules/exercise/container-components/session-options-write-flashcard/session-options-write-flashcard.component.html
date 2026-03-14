@@ -1,37 +1,39 @@
 <form [formGroup]="form" class="session-options-write-flashcard" class="min-h-48">
-	<div class="mb-4">
-		<app-form-field>
-			<app-label i18n>Answer language</app-label>
-			<app-select formControlName="answerLanguageId">
-				<app-option *ngFor="let lang of availableAnswerLanguages" [value]="lang.id">{{ formatLanguageName(lang) }}</app-option>
-			</app-select>
-		</app-form-field>
-	</div>
+  <div class="mb-4">
+    <app-form-field>
+      <app-label i18n>Answer language</app-label>
+      <app-select formControlName="answerLanguageId">
+        @for (lang of availableAnswerLanguages; track lang) {
+          <app-option [value]="lang.id">{{ formatLanguageName(lang) }}</app-option>
+        }
+      </app-select>
+    </app-form-field>
+  </div>
 
-	<div>
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Text to speech</app-label>
-				<app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
+  <div>
+    <app-form-field>
+      <div class="flex items-center justify-between">
+        <app-label i18n>Text to speech</app-label>
+        <app-slide-toogle formControlName="textToSpeechEnabled"></app-slide-toogle>
+      </div>
+    </app-form-field>
+  </div>
 
-	<div>
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Retype correct answer</app-label>
-				<app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
+  <div>
+    <app-form-field>
+      <div class="flex items-center justify-between">
+        <app-label i18n>Retype correct answer</app-label>
+        <app-slide-toogle formControlName="retypeCorrectAnswerEnabled"></app-slide-toogle>
+      </div>
+    </app-form-field>
+  </div>
 
-	<div>
-		<app-form-field>
-			<div class="flex items-center justify-between">
-				<app-label i18n>Shuffle flashcards</app-label>
-				<app-slide-toogle formControlName="shuffleFlashcardsEnabled"></app-slide-toogle>
-			</div>
-		</app-form-field>
-	</div>
+  <div>
+    <app-form-field>
+      <div class="flex items-center justify-between">
+        <app-label i18n>Shuffle flashcards</app-label>
+        <app-slide-toogle formControlName="shuffleFlashcardsEnabled"></app-slide-toogle>
+      </div>
+    </app-form-field>
+  </div>
 </form>

@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Subscription } from 'rxjs';
 import { ErrorToast, ErrorToastService } from '../../services/error-toast.service';
 
 @Component({
   selector: 'app-error-toast',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './error-toast.component.html',
   styleUrls: ['./error-toast.component.css']
 })

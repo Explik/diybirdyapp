@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { EditFlashcardImage, EditFlashcardImageImpl } from '../../models/editFlashcard.model';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   selector: 'app-image-input',
   providers: [{
     provide: NG_VALUE_ACCESSOR,
@@ -16,6 +16,7 @@ import { EditFlashcardImage, EditFlashcardImageImpl } from '../../models/editFla
   styleUrls: ['./image-input.component.css']
 })
 export class ImageInputComponent implements ControlValueAccessor {
+  @Input() id: string | undefined;
   @Input() imageData: EditFlashcardImage | undefined;
   @Output() imageDataChange = new EventEmitter<EditFlashcardImage | undefined>();
   @ViewChild('liveVideoElement') liveVideoElement!: ElementRef<HTMLVideoElement>;

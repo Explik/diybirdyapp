@@ -54,6 +54,9 @@ public class ExerciseSessionConfigHelper {
             sessionManager.updateOptions(traversalSource, modelId);
         }
 
+        // Reload to ensure manager-side mutations (for example, regenerated exercises) are reflected.
+        sessionVertex.reload();
+
         return sessionModelFactory.create(sessionVertex);
     }
 

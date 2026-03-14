@@ -1,7 +1,8 @@
 <app-instruction title="Tap the matching pairs"></app-instruction>
 
-<app-exercise-input-multi-stage-pair-options
-  *ngIf="input"
-  [input]="input"
-  (pairSelected)="onPairSelected($event)">
-</app-exercise-input-multi-stage-pair-options>
+@if (input) {
+  <app-exercise-input-multi-stage-pair-options
+    [input]="input"
+    (pairSelected)="onPairSelected($event)">
+  </app-exercise-input-multi-stage-pair-options>
+}

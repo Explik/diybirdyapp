@@ -80,6 +80,17 @@ public class ExerciseSessionManagerReviewFlashcardDeck implements ExerciseSessio
         return sessionModelFactory.create(sessionVertex);
     }
 
+    @Override
+    public void updateOptions(GraphTraversalSource traversalSource, String sessionId) {
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+        if (sessionVertex == null)
+            return;
+
+        // Generate a new exercise based on the potentially updated algorithm
+        nextExerciseVertex(traversalSource, sessionVertex);
+        sessionVertex.reload();
+    }
+
     private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         var algorithm = sessionVertex.getOptions() != null ? sessionVertex.getOptions().getAlgorithm() : "SuperMemo2";
 

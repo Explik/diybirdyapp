@@ -3,17 +3,21 @@
 </style>
 
 <nav class="bg-slate-500 p-4 flex items-center justify-between border-b border-black">
-    <div>
-      <a i18n class="text-2xl text-white hover:text-gray-300 " [routerLink]="['/']">DIY birdy app</a>
-    </div>
+  <div>
+    <a i18n class="text-2xl text-white hover:text-gray-300 " [routerLink]="['/']">DIY birdy app</a>
+  </div>
 
-    <div class="flex items-center space-x-4">
-      <button *ngIf="isLoggedIn" type="button" i18n
+  <div class="flex items-center space-x-4">
+    @if (isLoggedIn) {
+      <button type="button" i18n
         class="text-white hover:text-gray-300 bg-transparent border-0 cursor-pointer"
-        (click)="logout()">Logout</button>
+      (click)="logout()">Logout</button>
+    }
 
-      <a *ngIf="!isLoggedIn" i18n class="text-white hover:text-gray-300" [routerLink]="['/login']">Login</a>
-    </div>
+    @if (!isLoggedIn) {
+      <a i18n class="text-white hover:text-gray-300" [routerLink]="['/login']">Login</a>
+    }
+  </div>
 </nav>
 
 <router-outlet />

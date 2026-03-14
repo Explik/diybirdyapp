@@ -1,11 +1,11 @@
 import { Component, ElementRef, HostListener, Input, OnInit, Optional, AfterContentInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { SelectComponent } from '../select/select.component';
 
 @Component({
   selector: 'app-option',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './option.component.html',
   host: {
     class: 'block w-full'

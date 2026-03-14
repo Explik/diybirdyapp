@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { ExerciseSessionDataService } from '../../services/exerciseSessionData.service';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-exercise-samples-page',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './exercise-samples-page.component.html'
 })
 export class ExerciseSamplesPageComponent {

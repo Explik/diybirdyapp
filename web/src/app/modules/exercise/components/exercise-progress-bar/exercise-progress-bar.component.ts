@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ProgressBarComponent } from '../../../../shared/components/progress-bar/progress-bar.component';
 import { ExerciseService } from '../../services/exercise.service';
 
 @Component({
   selector: 'app-exercise-progress-bar',
   standalone: true,
-  imports: [CommonModule, ProgressBarComponent],
+  imports: [ProgressBarComponent],
   template: '<app-progress-bar [progress]="progress"></app-progress-bar>'
 })
 export class ExerciseProgressBarComponent implements OnInit {

@@ -49,11 +49,7 @@ public class FlashcardDeckController {
     @PutMapping("flashcard-deck")
     public FlashcardDeckDto update(Authentication authentication, @Valid @RequestBody FlashcardDeckDto dto) {
         var userId = getUserId(authentication);
-        var model = modelMapper.map(dto, FlashcardDeckDto.class);
-
-        var persistedModel = service.update(userId, model);
-
-        return modelMapper.map(persistedModel, FlashcardDeckDto.class);
+        return service.update(userId, dto);
     }
 
     @DeleteMapping("flashcard-deck/{id}")

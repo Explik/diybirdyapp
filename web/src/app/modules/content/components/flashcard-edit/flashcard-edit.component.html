@@ -1,21 +1,119 @@
-<div class="flashcard-edit-item p-6 border border-black rounded-lg bg-white overflow-hidden" style="box-shadow: 3px 3px;">
-    <div class="mb-2 min-w-[360px] overflow-x-auto">
-        <ng-content select="[header]" />
+<div [formGroup]="formGroup" class="flashcard-edit-item p-6 border border-black rounded-lg bg-white" style="box-shadow: 3px 3px;">
+  <!-- Header row: card number, content-type selectors, delete button -->
+  <div class="mb-2 min-w-[360px]">
+    <div class="inline-block">
+      <span class="flashcard-item-number font-bold mr-8">#{{ index + 1 }}</span>
+      <div class="inline-block mr-4">
+        <app-select [id]="'left-content-type-' + index" class="left-content-type-input" formControlName="leftContentType">
+          <app-option value="text" i18n>Text</app-option>
+          <app-option value="audio" i18n>Audio</app-option>
+          <app-option value="image" i18n>Image</app-option>
+          <app-option value="video" i18n>Video</app-option>
+        </app-select>
+      </div>
+      <div class="inline-block">
+        <app-select [id]="'right-content-type-' + index" class="right-content-type-input" formControlName="rightContentType">
+          <app-option value="text" i18n>Text</app-option>
+          <app-option value="audio" i18n>Audio</app-option>
+          <app-option value="image" i18n>Image</app-option>
+          <app-option value="video" i18n>Video</app-option>
+        </app-select>
+      </div>
+    </div>
+    <div class="inline-block float-right">
+      <button class="btn btn-primary" i18n (click)="handleDelete()">Delete</button>
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row md:items-center md:space-x-4 overflow-x-auto">
+    <!-- Left / front side -->
+    <div class="left-side flex flex-col flex-grow md:basis-64">
+      @if (leftContentType === 'text') {
+        <app-form-field>
+          <app-text-input [id]="'left-text-' + index" formControlName="leftTextContent" (rows)="1"></app-text-input>
+          <div class="flex items-center justify-between w-full">
+            @if (formGroup.get('leftTextContent')?.errors?.['text.required']) {
+              <app-form-error i18n class="text-red-600 text-sm">Front text required</app-form-error>
+            } @else {
+              <app-label i18n>Front</app-label>
+            }
+            @if (frontLanguageName) {
+              <span>{{ frontLanguageName }}</span>
+            }
+          </div>
+        </app-form-field>
+      }
+      @if (leftContentType === 'audio') {
+        <app-form-field>
+          <app-audio-input [id]="'left-audio-' + index" formControlName="leftAudioContent"></app-audio-input>
+          @if (formGroup.get('leftAudioContent')?.errors?.['audio.required']) {
+            <app-form-error i18n>Front audio required</app-form-error>
+          }
+        </app-form-field>
+      }
+      @if (leftContentType === 'image') {
+        <app-form-field>
+          <app-image-input [id]="'left-image-' + index" formControlName="leftImageContent"></app-image-input>
+          @if (formGroup.get('leftImageContent')?.errors?.['image.required']) {
+            <app-form-error i18n class="text-red-600 text-sm">Front image required</app-form-error>
+          }
+        </app-form-field>
+      }
+      @if (leftContentType === 'video') {
+        <app-form-field>
+          <app-video-input [id]="'left-video-' + index" formControlName="leftVideoContent"></app-video-input>
+          @if (formGroup.get('leftVideoContent')?.errors?.['video.required']) {
+            <app-form-error i18n class="text-red-600 text-sm">Front video required</app-form-error>
+          }
+        </app-form-field>
+      }
     </div>
 
-    <div class="flex flex-col md:flex-row md:items-center md:space-x-4 overflow-x-auto">
-        <!-- Left Language Abbreviation and Text Field -->
-        <div class="left-side flex flex-col flex-grow md:basis-64">
-            <ng-content select="[left]" />
-        </div>
+    <!-- Separator -->
+    <div class="hidden md:flex flex-col p-4"></div>
+    <div class="my-8 border-t-2 border-dotted border-gray-400 md:hidden"></div>
 
-        <!-- Separator - hidden on desktop, dotted line on mobile -->
-        <div class="hidden md:flex flex-col p-4"></div>
-        <div class="my-8 border-t-2 border-dotted border-gray-400 md:hidden"></div>
-
-        <!-- Right Language Abbreviation and Text Field -->
-        <div class="right-side flex flex-col flex-grow md:basis-64">
-            <ng-content select="[right]" />
-        </div>
+    <!-- Right / back side -->
+    <div class="right-side flex flex-col flex-grow md:basis-64">
+      @if (rightContentType === 'text') {
+        <app-form-field>
+          <app-text-input [id]="'right-text-' + index" formControlName="rightTextContent" (rows)="1"></app-text-input>
+          <div class="flex items-center justify-between w-full">
+            @if (formGroup.get('rightTextContent')?.errors?.['text.required']) {
+              <app-form-error i18n>Back text required</app-form-error>
+            } @else {
+              <app-label i18n>Back</app-label>
+            }
+            @if (backLanguageName) {
+              <span class="text-right">{{ backLanguageName }}</span>
+            }
+          </div>
+        </app-form-field>
+      }
+      @if (rightContentType === 'audio') {
+        <app-form-field>
+          <app-audio-input [id]="'right-audio-' + index" formControlName="rightAudioContent"></app-audio-input>
+          @if (formGroup.get('rightAudioContent')?.errors?.['audio.required']) {
+            <app-form-error i18n>Back audio required</app-form-error>
+          }
+        </app-form-field>
+      }
+      @if (rightContentType === 'image') {
+        <app-form-field>
+          <app-image-input [id]="'right-image-' + index" formControlName="rightImageContent"></app-image-input>
+          @if (formGroup.get('rightImageContent')?.errors?.['image.required']) {
+            <app-form-error i18n>Back image required</app-form-error>
+          }
+        </app-form-field>
+      }
+      @if (rightContentType === 'video') {
+        <app-form-field>
+          <app-video-input [id]="'right-video-' + index" formControlName="rightVideoContent"></app-video-input>
+          @if (formGroup.get('rightVideoContent')?.errors?.['video.required']) {
+            <app-form-error i18n>Back video required</app-form-error>
+          }
+        </app-form-field>
+      }
     </div>
+  </div>
 </div>

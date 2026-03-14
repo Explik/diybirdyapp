@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { ExerciseService } from '../../services/exercise.service';
 
 @Component({
   selector: 'app-exercise-review-progress-bar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex items-center justify-between p-4">
       <div class="w-full bg-white border border-black">
