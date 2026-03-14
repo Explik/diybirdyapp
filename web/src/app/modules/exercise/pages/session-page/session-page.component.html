@@ -1,48 +1,52 @@
-<!-- Header -->
-<div header class="flex items-center">
-  <app-exit-icon-button class="pl-2 pr-0 flex-none" (click)="handleExit()"></app-exit-icon-button>
-  <div class="flex-grow">
-    <ng-container *ngComponentOutlet="progressBarComponent$ | async" />
-  </div>
-  <button
-    class="p-2 flex-none hover:bg-gray-100 rounded-full transition-colors"
-    (click)="openSettingsModal()"
-    title="Settings"
-    >
-    <app-icon icon="mdi-cog" size="text-xl" color="text-gray-600"></app-icon>
-  </button>
-</div>
-
-<!-- Content -->
-@if (exerciseComponent$ | async) {
-  <div content class="px-12 py-6 max-w-lg mx-auto">
-    <ng-container *ngComponentOutlet="exerciseComponent$ | async" />
-  </div>
-}
-
-<!-- Footer -->
-@if (exerciseNavigationComponent$ | async) {
-  <p footer class="px-12 max-w-lg mx-auto">
-    <ng-container *ngComponentOutlet="exerciseNavigationComponent$ | async" />
-  </p>
-}
-
-@if (exerciseFeedback) {
-  <div id="feedback-banner"
-    class="fixed bottom-0 left-0 w-full bg-yellow-500 text-white p-4 flex justify-between items-center">
-    <!-- Feedback message -->
-    <span class="text-sm">
-      {{ exerciseFeedback }}
-    </span>
-    <!-- Close button -->
-    <button class="text-white hover:text-gray-200 focus:outline-none"
-      onclick="document.getElementById('feedback-banner').style.display='none'">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
+<div class="flex flex-col h-[calc(100vh-90px)] ">
+  <!-- Header -->
+  <div class="w-full flex items-center max-w-3xl mx-auto">
+    <app-exit-icon-button class="pl-2 pr-0 flex-none" (click)="handleExit()"></app-exit-icon-button>
+    <div class="flex-grow">
+      <ng-container *ngComponentOutlet="progressBarComponent$ | async" />
+    </div>
+    <button
+      class="p-2 flex-none hover:bg-gray-100 rounded-full transition-colors"
+      (click)="openSettingsModal()"
+      title="Settings"
+      >
+      <app-icon icon="mdi-cog" size="text-xl" color="text-gray-600"></app-icon>
     </button>
   </div>
-}
+
+  <!-- Content -->
+  @if (exerciseComponent$ | async) {
+    <div class="flex-grow w-full max-w-md mx-auto py-6">
+      <ng-container *ngComponentOutlet="exerciseComponent$ | async" />
+    </div>
+  }
+
+  <!-- Footer -->
+  @if (exerciseNavigationComponent$ | async) {
+    <div class="w-full max-w-md mx-auto pb-5 px-2 lg:px-0">
+      <ng-container *ngComponentOutlet="exerciseNavigationComponent$ | async" />
+    </div>
+  }
+
+  @if (exerciseFeedback) {
+    <div id="feedback-banner" class="w-full bg-yellow-500 text-white p-4 flex justify-between items-center">
+      <div class="w-full max-w-3xl mx-auto flex justify-between items-center">
+        <!-- Feedback message -->
+        <span class="text-sm">
+          {{ exerciseFeedback }}
+        </span>
+        <!-- Close button -->
+        <button class="text-white hover:text-gray-200 focus:outline-none"
+          onclick="document.getElementById('feedback-banner').style.display='none'">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
 
 <!-- Settings Modal -->
 <app-modal
