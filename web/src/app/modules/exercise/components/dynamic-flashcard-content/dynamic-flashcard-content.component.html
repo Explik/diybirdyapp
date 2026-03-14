@@ -1,13 +1,13 @@
 @if (flashcardData && !flashcardSideData) {
-  <app-flashcard [side]="side">
-    <app-dynamic-content front [data]="flashcardData.front" />
-    <app-dynamic-content back [data]="flashcardData.back" />
+  <app-flashcard [side]="side" (sideChange)="onSideChange($event)">
+    <app-dynamic-content front [data]="flashcardData.front" [autoplay]="frontAutoplay" />
+    <app-dynamic-content back [data]="flashcardData.back" [autoplay]="backAutoplay" />
   </app-flashcard>
 }
 
 @if (flashcardSideData && !flashcardData) {
   <app-flashcard [isFlippable]="false">
-    <app-dynamic-content front [data]="flashcardSideData.content" />
+    <app-dynamic-content front [data]="flashcardSideData.content" [autoplay]="autoplay" />
   </app-flashcard>
 }
 

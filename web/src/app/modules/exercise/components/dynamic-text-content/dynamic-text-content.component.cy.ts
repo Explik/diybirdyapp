@@ -35,6 +35,8 @@ function createMockAudioPlayService(
   overrides: Partial<AudioPlayService> = {}
 ): Partial<AudioPlayService> {
   return {
+    play: cy.stub().resolves(),
+    stop: cy.stub().resolves(),
     toggle: cy.stub().resolves(),
     ...overrides,
   };
@@ -43,9 +45,10 @@ function createMockAudioPlayService(
 function mountComponent(
   data?: ExerciseContentTextDto,
   audioPlayService: Partial<AudioPlayService> = createMockAudioPlayService(),
+  autoplay = true,
 ) {
   return mount(DynamicTextContentComponent, {
-    componentProperties: { data },
+    componentProperties: { data, autoplay },
     providers: [
       { provide: AudioPlayService, useValue: audioPlayService },
     ],
@@ -93,6 +96,21 @@ describe('DynamicTextContentComponent', () => {
   });
 
   describe('Audio playback', () => {
+    it('calls audioPlayService.play on appearance when pronunciationUrl is provided', () => {
+      const audioPlayService = createMockAudioPlayService();
+      const testUrl = 'audio.mp3';
+      mountComponent(createMockTextData('Test', testUrl), audioPlayService);
+
+      cy.wrap(audioPlayService.play).should('have.been.calledWith', testUrl);
+    });
+
+    it('does not autoplay when autoplay is disabled', () => {
+      const audioPlayService = createMockAudioPlayService();
+      mountComponent(createMockTextData('Test', 'audio.mp3'), audioPlayService, false);
+
+      cy.wrap(audioPlayService.play).should('not.have.been.called');
+    });
+
     it('calls audioPlayService.toggle when clicked with pronunciationUrl', () => {
       const audioPlayService = createMockAudioPlayService();
       const testUrl = 'audio.mp3';

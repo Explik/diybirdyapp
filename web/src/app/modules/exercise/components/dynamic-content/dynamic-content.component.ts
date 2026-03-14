@@ -14,6 +14,7 @@ import { ExerciseContentAudioDto, ExerciseContentDto, ExerciseContentImageDto, E
 })
 export class DynamicContentComponent {
   @Input() data?: ExerciseContentDto;
+  @Input() autoplay = true;
 
   castToAudio(data: ExerciseContentDto): ExerciseContentAudioDto {
     return data as ExerciseContentAudioDto;
