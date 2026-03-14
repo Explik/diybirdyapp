@@ -4,8 +4,8 @@ import { InstructionComponent } from "../../components/instruction/instruction.c
 import { ExerciseInputWriteTextComponent } from '../../components/exercise-input-write-text/exercise-input-write-text.component';
 import { DefaultContentService } from '../../services/defaultContent.service';
 import { ExerciseService } from '../../services/exercise.service';
-import { DynamicFlashcardContentComponent } from "../../components/dynamic-flashcard-content/dynamic-flashcard-content.component";
 import { ExerciseContentFlashcardDto, ExerciseInputWriteTextDto } from '../../../../shared/api-client';
+import { DynamicFlashcardContentComponent } from '../../components/dynamic-flashcard-content/dynamic-flashcard-content.component';
 
 @Component({
   selector: 'app-exercise-content-write-flashcard-content-container',
