@@ -17,7 +17,7 @@ General exercise options:
 - Enable pronunciation exercises
 
 ## Exercise types 
-- Review exercise 
+- View flashcard exercise
 - Pair options exercise
 etc. 
 

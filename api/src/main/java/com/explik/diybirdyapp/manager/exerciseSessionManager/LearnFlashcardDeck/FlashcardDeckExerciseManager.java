@@ -25,6 +25,9 @@ public class FlashcardDeckExerciseManager {
     private ReviewFlashcardExerciseCreationManager reviewFlashcardExerciseCreationManager;
 
     @Autowired
+    private ViewFlashcardExerciseCreationManager viewFlashcardExerciseCreationManager;
+
+    @Autowired
     private SelectFlashcardExerciseCreationManager selectFlashcardExerciseCreationManager;
 
     @Autowired
@@ -217,6 +220,11 @@ public class FlashcardDeckExerciseManager {
                     exercise = tryCreateReviewExercise(traversalSource, sessionVertex, flashcardVertex);
                 }
                 break;
+            case ExerciseTypes.VIEW_FLASHCARD:
+                if (flashcardVertex != null) {
+                    exercise = tryCreateViewExercise(traversalSource, sessionVertex, flashcardVertex);
+                }
+                break;
             case ExerciseTypes.SELECT_FLASHCARD:
                 if (flashcardVertex != null) {
                     exercise = tryCreateSelectExercise(traversalSource, sessionVertex, flashcardVertex);
@@ -322,6 +330,19 @@ public class FlashcardDeckExerciseManager {
                 ExerciseTypes.REVIEW_FLASHCARD);
         
         return reviewFlashcardExerciseCreationManager.createExercise(traversalSource, context);
+    }
+
+    private ExerciseVertex tryCreateViewExercise(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            FlashcardVertex flashcardVertex) {
+        var context = ExerciseCreationContext.createForFlashcard(
+                sessionVertex,
+                flashcardVertex,
+                null,
+                ExerciseTypes.VIEW_FLASHCARD);
+
+        return viewFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
 
     private ExerciseVertex tryCreateSelectExercise(
@@ -439,7 +460,7 @@ public class FlashcardDeckExerciseManager {
         var exerciseTypes = new ArrayList<String>();
         
         if (options.getIncludeReviewExercises()) {
-            exerciseTypes.add(ExerciseTypes.REVIEW_FLASHCARD);
+            exerciseTypes.add(ExerciseTypes.VIEW_FLASHCARD);
             exerciseTypes.add(ExerciseTypes.MULTI_STAGE_TAP_PAIRS);
         }
         

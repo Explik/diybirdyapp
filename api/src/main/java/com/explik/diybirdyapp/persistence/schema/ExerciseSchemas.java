@@ -53,6 +53,10 @@ public class ExerciseSchemas {
             .withContentType(ContentTypes.FLASHCARD)
             .withEvaluationType(ExerciseEvaluationTypes.RECOGNIZABILITY);
 
+    public static final ExerciseSchema VIEW_FLASHCARD_EXERCISE = new ExerciseSchema()
+            .withExerciseType(ExerciseTypes.VIEW_FLASHCARD)
+            .withContentType(ContentTypes.FLASHCARD);
+
     public static final ExerciseSchema WRITE_FLASHCARD_EXERCISE = new ExerciseSchema()
             .withExerciseType(ExerciseTypes.WRITE_FLASHCARD)
             .withContentType(ContentTypes.FLASHCARD_SIDE)
@@ -86,6 +90,7 @@ public class ExerciseSchemas {
             case ExerciseTypes.MULTI_STAGE_TAP_PAIRS -> MULTI_STAGE_TAP_PAIRS_EXERCISE;
             case ExerciseTypes.PRONOUNCE_FLASHCARD -> PRONOUNCE_FLASHCARD_EXERCISE;
             case ExerciseTypes.REVIEW_FLASHCARD -> REVIEW_FLASHCARD_EXERCISE;
+            case ExerciseTypes.VIEW_FLASHCARD -> VIEW_FLASHCARD_EXERCISE;
             case ExerciseTypes.WRITE_FLASHCARD -> WRITE_FLASHCARD_EXERCISE;
             case ExerciseTypes.WRITE_SENTENCE_USING_WORD -> WRITE_SENTENCE_USING_WORD_EXERCISE;
             case ExerciseTypes.WRITE_TRANSLATED_SENTENCE -> WRITE_TRANSLATED_SENTENCE_EXERCISE;
