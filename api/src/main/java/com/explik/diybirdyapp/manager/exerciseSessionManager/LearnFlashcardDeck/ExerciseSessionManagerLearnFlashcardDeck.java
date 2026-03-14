@@ -2,9 +2,7 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
-import com.explik.diybirdyapp.manager.contentCrawler.FailedExerciseContentCrawler;
-import com.explik.diybirdyapp.manager.contentCrawler.InsufficientlyExercisedContentCrawler;
-import com.explik.diybirdyapp.manager.contentCrawler.UnpracticedFlashcardContentCrawler;
+import com.explik.diybirdyapp.manager.contentCrawler.PrioritizedFlashcardContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
 import com.explik.diybirdyapp.manager.contentCrawler.FlashcardDeckContentCrawler;
@@ -18,16 +16,13 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSessionManager {
     
     // Batch configuration constants
-    private static final int BATCH_SIZE = 20;           // Number of exercises per batch
-    private static final int MAX_CONTENT_PER_BATCH = 3; // Maximum pieces of content per batch
+    private static final int BATCH_SIZE = 20; // Number of exercises per batch
     
     @Autowired
     private FlashcardDeckExerciseManager exerciseManager;
@@ -45,15 +40,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     private FlashcardDeckContentCrawler deckContentCrawler;
     
     @Autowired
-    private UnpracticedFlashcardContentCrawler contentCrawler;
-    
-    @Autowired
-    private FailedExerciseContentCrawler failedContentCrawler;
-    
-    @Autowired
-    private InsufficientlyExercisedContentCrawler insufficientlyExercisedContentCrawler;
-    
-    private Random random = new Random();
+    private PrioritizedFlashcardContentCrawler prioritizedContentCrawler;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -234,8 +221,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         stateVertex.setCurrentRound(0);
         sessionVertex.addState(stateVertex);
         
-        // Populate first batch of content using a randomly selected crawler (50/50)
-        var contentList = selectCrawlerAndCollect(flashcardDeck, stateVertex);
+        // Populate first batch of content using prioritized crawler selection.
+        var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
+        var contentList = prioritizedContentCrawler.crawl(params).toList();
         for (AbstractVertex content : contentList) {
             stateVertex.addActiveContent(content);
         }
@@ -255,47 +243,14 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             return;
         }
         
-        // Collect content using a randomly selected crawler (50/50)
-        var contentList = selectCrawlerAndCollect(flashcardDeck, stateVertex);
+        // Collect content using prioritized crawler selection.
+        var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
+        var contentList = prioritizedContentCrawler.crawl(params).toList();
         
         // Add all collected content to the active content collection
         for (AbstractVertex content : contentList) {
             stateVertex.addActiveContent(content);
         }
-    }
-    
-    /**
-     * Selects content using prioritized crawlers and collects it.
-     * Priority order: 
-     *   1. Failed exercises (content with errors)
-     *   2. Insufficiently practiced content (< 5 exercises)
-     *   3. New unpracticed content
-     * Limits the batch to a maximum number of content pieces.
-     * 
-     * @param flashcardDeck The flashcard deck to collect content from
-     * @param stateVertex The session state vertex
-     * @return List of collected content vertices (limited by MAX_CONTENT_PER_BATCH)
-     */
-    private List<AbstractVertex> selectCrawlerAndCollect(
-            FlashcardDeckVertex flashcardDeck,
-            ExerciseSessionStateVertex stateVertex) {
-
-        var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
-
-        // Priority 1: Try to get content from failed exercises
-        var failedContent = failedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH).toList();
-        if (!failedContent.isEmpty()) {
-            return failedContent;
-        }
-
-        // Priority 2: Try to get insufficiently practiced content (< 5 exercises)
-        var insufficientContent = insufficientlyExercisedContentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH).toList();
-        if (!insufficientContent.isEmpty()) {
-            return insufficientContent;
-        }
-
-        // Priority 3: Get new unpracticed content from regular crawler
-        return contentCrawler.crawl(params).limit(MAX_CONTENT_PER_BATCH).toList();
     }
     
     /**
@@ -350,7 +305,8 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         // Populate new content for the new batch
         var flashcardDeck = sessionVertex.getFlashcardDeck();
         if (flashcardDeck != null) {
-            var contentList = selectCrawlerAndCollect(flashcardDeck, stateVertex);
+            var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
+            var contentList = prioritizedContentCrawler.crawl(params).toList();
             for (AbstractVertex content : contentList) {
                 stateVertex.addActiveContent(content);
             }
