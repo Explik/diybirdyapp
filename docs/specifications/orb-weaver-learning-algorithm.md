@@ -89,14 +89,70 @@ Design considerations:
 - The process of generating content is inherently asynchronous. Content creation is mainly done through API calls to external services. Therefore, the orb weaver algorithm must be able to handle content creation tasks asynchronously. The delay in content creation is hidden in the exercise batch flow, so that the user does not experience any significant delays when interacting with the session.
 - The process of selecting/creating exercises must be synchronous. The user should not experience any delays when interacting with the exercises. Therefore, the orb weaver algorithm must be able to select/create exercises synchronously based on the available content. Asyncronously content will be included in the current batch onces it becomes available. The user can potentially be missing a specific exercise type if the content generation is delayed, but this is neccessarily a trade-off to ensure a smooth user experience.
 
+### Graph representation for "flashcard deck" session
+Special consideration must be taken for flashcard decks, because the text, pronunciation, etc. is clearly associated with a particular flashcard. This creates an expectation from the user that the flashcard and its associated content should be practiced together. The graph must therefore be read in a tree-like way, so the ordering becomes flashcard deck, flascard, associated content. 
+
+```mermaid 
+graph TB
+FlashcardDeck(FlashcardDeck)
+Flashcard1(Flashcard1)
+Flashcard2(Flashcard2)
+TextContent1(TextContent1)
+AudioContent1(AudioContent1)
+TextContent2(TextContent2)
+TextContent3(TextContent3)
+
+FlashcardDeck--hasFlashcard-->Flashcard1
+FlashcardDeck--hasFlashcard-->Flashcard2
+Flashcard1--hasLeftContent-->TextContent1
+Flashcard1--hasRightContent-->AudioContent1
+Flashcard2--hasLeftContent-->TextContent2
+Flashcard2--hasRightContent-->TextContent3
+```
+
+**Identifying "new" content**: For the flashcard-learning session, the practiced content is explicitly tracked as "practiced content" in the session state. This is required as the exercise history does not necessarily covers flashcard. Ex. flashcard-learning session where user has chosen to skip all review exercises. Identifying "new" content is therefore simply to look at all non-practiced flashcards and selecting one. 
+1. Select all flashcards from flashcard deck
+2. Subtract all flashcards in "practiced content"
+3A. If shuffle = false, then return flashcard ordered by flashcard-deck order
+3B. If shuffle = true, then return flascards in random order
+
+Please note, all "new" associated content will be pulled in by the identification of lightly practiced content. This is due to the aforementioned grouping of associated content under each flashcard. 
+
+**Identifying lightly-practiced content**: Practiced content can either be ligthly-practiced or sufficiently practiced. The threshold for number of exercises pr. content is dependent on the content type. This is due to some content supporting many exercises, while others only support one. Additionally, associated content is seen as part of the main content in regards to practice, so if you're practicing a flashcard, you not only want to practice writing, but also listening (from pronunciation) or speaking (from text content). The retrival therefore consists of two parts, (1) select ligtly-practiced content and (2) select non-practiced associated content. 
+1. Select "practiced content"
+2. For each content type, select content with less than required number of associated exercise practices
+3. For selected content from step 2, select associated content 
+4. Return one node from step 2, all associated nodes from step 3, repeat. 
+
+Example: 
+```mermaid 
+graph TB 
+FlashcardDeck(FlashcardDeck)
+Flashcard1(Flashcard1)
+TextContent1(TextContent)
+Pronunciation(Pronunciation)
+AudioContent(AudioContent)
+Flashcard2(Flashcard2)
+TextContent2(TextContent)
+
+FlashcardDeck--hasFlashcard-->Flashcard1
+Flashcard1--hasLeftContent-->TextContent1
+Pronunciation--hasTextContent-->TextContent1
+Pronunciation--hasAudioContent-->AudioContent
+FlashcardDeck--hasFlashcard-->Flashcard2
+Flashcard2--hasLeftContent-->TextContent2
+```
+
+Output: Flashcard1, TextContent1, Pronunciation, Flashcard2, TextContent2
+
 ### Implementation for "flashcard deck" session
 The orb weaver algorithm is used in the flashcard deck learning sessions. 
 
 **FlashcardDeckContentCrawler**: Retrieves all content from all flashcards in the deck. Used to generate options for multiple choice exercises.
 
-**UnpracticedFlashcardContentCrawler**: Retrieves the next unpracticed flashcard and its content. Supports sequential (chronological) or shuffled flashcard selection based on session settings.
+**UnpracticedFlashcardContentCrawler**: Retrieves the next unpracticed flashcard. Supports sequential or shuffled flashcard selection based on session options.
 
-**InsufficientlyExercisedContentCrawler**: The crawler takes a flashcard deck, identifies all practiced content, identifies any content that has not been sufficiently exercises returns a subset of this content to be used in the next exercise batch. An item of content has not been sufficiently exercised if it has been exercised less than 5 times overall.
+**InsufficientlyExercisedContentCrawler**: The crawler takes a flashcard deck, identifies all practiced content, identifies any content that has not been sufficiently exercises returns a subset of this content to be used in the next exercise batch. 
 
 **FailedExerciseContentCrawler**: The crawler takes a flashcard deck, identifies all recently "failed" exercise, identifies any content associated with these exercises and returns a subset of this content to be used in the next exercise batch. A relevant exercise is any exercise with an answer with incorrect feedback and no "I was correct" feedback. Content is associated with an exercise if it is the main content, an answer option or etc. All returned content must be part of the flashcard deck, either flashcards or associated content. 
 
@@ -105,3 +161,4 @@ The orb weaver algorithm is used in the flashcard deck learning sessions.
 **FlashcardDeckExerciseManager**: The manager creates or repeats exercises for the selected content (incl. flashcard, associated content) based on the exercise answer/feedback history. It implements the difficulty curve logic to determine whether to create a new exercise or repeat an existing exercise. If required, the manager will use a set of exercise creation strategies using the ExerciseCreationContext to create new exercises for the selected content.
 
 **FlashcardDeckExerciseCreationManager**: The manager delegates exercise creation to a set of exercise creation strategies based on the session settings. The exercise creation strategies use the ExerciseCreationContext to create exercises for the selected flashcards and their associated content. The exercise types include flashcard selection exercises, flashcard writing exercises, pronunciation exercises, transcription exercises, and so on.
+

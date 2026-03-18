@@ -226,9 +226,12 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         var contentList = prioritizedContentCrawler.crawl(params).toList();
         for (AbstractVertex content : contentList) {
             stateVertex.addActiveContent(content);
+            if (content instanceof FlashcardVertex) {
+                stateVertex.addPracticedContent(content);
+            }
         }
     }
-    
+
     /**
      * Populates more active content for an existing session.
      * Uses prioritized crawler selection: failed content > insufficiently practiced > new content.
@@ -246,13 +249,16 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         // Collect content using prioritized crawler selection.
         var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
         var contentList = prioritizedContentCrawler.crawl(params).toList();
-        
+
         // Add all collected content to the active content collection
         for (AbstractVertex content : contentList) {
             stateVertex.addActiveContent(content);
+            if (content instanceof FlashcardVertex) {
+                stateVertex.addPracticedContent(content);
+            }
         }
     }
-    
+
     /**
      * Gets the active content batch state vertex for the session.
      */
@@ -303,14 +309,17 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         stateVertex.setPropertyValue("batchExerciseCount", 0);
         
         // Populate new content for the new batch
-        var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck != null) {
-            var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
-            var contentList = prioritizedContentCrawler.crawl(params).toList();
-            for (AbstractVertex content : contentList) {
-                stateVertex.addActiveContent(content);
+            var flashcardDeck = sessionVertex.getFlashcardDeck();
+            if (flashcardDeck != null) {
+                var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
+                var contentList = prioritizedContentCrawler.crawl(params).toList();
+                for (AbstractVertex content : contentList) {
+                    stateVertex.addActiveContent(content);
+                    if (content instanceof FlashcardVertex) {
+                        stateVertex.addPracticedContent(content);
+                    }
+                }
             }
-        }
     }
     
     /**

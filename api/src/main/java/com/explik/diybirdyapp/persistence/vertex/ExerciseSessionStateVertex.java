@@ -25,6 +25,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String EDGE_ACTIVE_CONTENT_ORDER = "order";
     public final static String EDGE_AVAILABLE_CONTENT = "hasAvailableContent";
     public final static String EDGE_AVAILABLE_CONTENT_ORDER = "order";
+    public final static String EDGE_PRACTICED_CONTENT = "hasPracticedContent";
 
     public String getType() {
         return getPropertyAsString(PROPERTY_TYPE);
@@ -198,6 +199,14 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
      */
     public void setLastExerciseTypeForContent(String vertexId, String exerciseType) {
         setProperty("lastExerciseType_" + vertexId, exerciseType);
+    }
+
+    public List<FlashcardVertex> getPracticedContent() {
+        return VertexHelper.getOutgoingModels(this, EDGE_PRACTICED_CONTENT, FlashcardVertex::new);
+    }
+
+    public void addPracticedContent(AbstractVertex vertex) {
+        addEdgeOneToMany(EDGE_PRACTICED_CONTENT, vertex);
     }
 
     public static ExerciseSessionStateVertex create(GraphTraversalSource traversalSource) {
