@@ -145,6 +145,16 @@ Flashcard2--hasLeftContent-->TextContent2
 
 Output: Flashcard1, TextContent1, Pronunciation, Flashcard2, TextContent2
 
+**Identifying "hard" content**: Hard-to-learn content is associated with a higher rate of incorrectly-answered exercises compared to already mastered content. It is therefore possible to infer the difficulty of the content by looking at the "error score" for the exercises it's used in or "error score" for associated content, which again derived from the exercises. A positive "error score" indicates a high rate of incorrect answers, while a negative "error score" indicates a high rate fo correct answers. Calculating the distrubtion of error scores and relevant verticies follows this algorithm: 
+1. Calculate and cache "error score" for exercises in session 
+2. For n number of steps do the following steps
+2A. For any edge transfer the "error score" and subtract 1 
+2B. For any vertex take the sum of "error scores" of the edges
+3. Based on a minimum error rate, select relevant content nodes 
+4. Return a random sample of selected content nodes
+
+Note, the random selection is required to ensure the user is not only expossed to the most difficult content, but also to more moderately difficult content.  
+
 ### Implementation for "flashcard deck" session
 The orb weaver algorithm is used in the flashcard deck learning sessions. 
 

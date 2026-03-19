@@ -2,6 +2,7 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
+import com.explik.diybirdyapp.manager.contentCrawler.FailedExerciseErrorScoreEvaluator;
 import com.explik.diybirdyapp.manager.contentCrawler.PrioritizedFlashcardContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
@@ -41,6 +42,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     
     @Autowired
     private PrioritizedFlashcardContentCrawler prioritizedContentCrawler;
+
+    @Autowired
+    private FailedExerciseErrorScoreEvaluator failedExerciseErrorScoreEvaluator;
 
     @Override
     public ExerciseSessionDto init(GraphTraversalSource traversalSource, ExerciseCreationContext context) {
@@ -89,6 +93,11 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             throw new RuntimeException("Session with " + modelId +" not found");
 
         var stateVertex = getActiveContentState(sessionVertex);
+
+        // Refresh hard-content scores before selecting any new batch content.
+        if (stateVertex != null && sessionVertex.getFlashcardDeck() != null) {
+            failedExerciseErrorScoreEvaluator.evaluate(sessionVertex.getFlashcardDeck(), stateVertex);
+        }
         
         // Check if current batch has reached the batch size limit
         if (stateVertex != null && getBatchExerciseCount(stateVertex) >= BATCH_SIZE) {
@@ -102,9 +111,15 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         // If no exercise created, try to populate more content and try again
         if (exerciseVertex == null) {
             if (stateVertex != null) {
-                // Reset index and populate more content
-                stateVertex.setCurrentContentIndex(0);
+                int previousActiveContentSize = stateVertex.getActiveContent().size();
                 populateMoreActiveContent(traversalSource, sessionVertex, stateVertex);
+
+                int updatedActiveContentSize = stateVertex.getActiveContent().size();
+                if (updatedActiveContentSize > previousActiveContentSize) {
+                    // New content was appended, so restart round traversal for the expanded batch.
+                    stateVertex.setCurrentRound(0);
+                    stateVertex.setCurrentContentIndex(0);
+                }
                 
                 // Try to create exercise again with new content
                 exerciseVertex = exerciseManager.nextExerciseVertex(traversalSource, sessionVertex);
