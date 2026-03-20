@@ -2,7 +2,8 @@ package com.explik.diybirdyapp.manager.contentCrawler;
 
 import com.explik.diybirdyapp.model.FlashcardDeckSessionParams;
 import com.explik.diybirdyapp.persistence.vertex.*;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Order;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.stereotype.Component;
 
@@ -30,13 +31,6 @@ public class UnpracticedFlashcardContentCrawler implements ContentCrawler<Flashc
         var flashcardDeck = params.flashcardDeck();
         var sessionState = params.sessionState();
 
-        // Collect IDs of already-practiced flashcards
-        Set<String> practicedIds = new HashSet<>();
-        for (FlashcardVertex flashcard : sessionState.getPracticedContent()) {
-            String id = flashcard.getId();
-            if (id != null) practicedIds.add(id);
-        }
-
         // Determine shuffle setting from session options
         var session = sessionState.getSession();
         var options = session != null ? session.getOptions() : null;
@@ -44,32 +38,28 @@ public class UnpracticedFlashcardContentCrawler implements ContentCrawler<Flashc
 
         var traversalSource = flashcardDeck.getUnderlyingSource();
         var deckVertex = flashcardDeck.getUnderlyingVertex();
+        var sessionStateVertex = sessionState.getUnderlyingVertex();
 
         List<Vertex> rawVertices;
         if (shuffle) {
-            // Get all unpracticed flashcards then shuffle in Java
-            var traversal = traversalSource.V(deckVertex)
+            // Shuffle and limit in Gremlin while excluding already-practiced flashcards.
+            rawVertices = traversalSource.V(deckVertex)
                     .out(FlashcardDeckVertex.EDGE_FLASHCARD)
-                    .hasLabel(FlashcardVertex.LABEL);
-            if (!practicedIds.isEmpty()) {
-                traversal = traversal.has(FlashcardVertex.PROPERTY_ID, P.without(practicedIds));
-            }
-            rawVertices = new ArrayList<>(traversal.toList());
-            Collections.shuffle(rawVertices);
-            if (rawVertices.size() > ROOT_FLASHCARD_BATCH_SIZE) {
-                rawVertices = rawVertices.subList(0, ROOT_FLASHCARD_BATCH_SIZE);
-            }
+                    .hasLabel(FlashcardVertex.LABEL)
+                    .where(__.not(__.in(ExerciseSessionStateVertex.EDGE_PRACTICED_CONTENT).is(sessionStateVertex)))
+                    .order().by(Order.shuffle)
+                    .limit(ROOT_FLASHCARD_BATCH_SIZE)
+                    .toList();
         } else {
             // Get unpracticed flashcards ordered by deck order
-            var traversal = traversalSource.V(deckVertex)
+            rawVertices = traversalSource.V(deckVertex)
                     .outE(FlashcardDeckVertex.EDGE_FLASHCARD)
                     .order().by(FlashcardDeckVertex.EDGE_FLASHCARD_PROPERTY_ORDER)
                     .inV()
-                    .hasLabel(FlashcardVertex.LABEL);
-            if (!practicedIds.isEmpty()) {
-                traversal = traversal.has(FlashcardVertex.PROPERTY_ID, P.without(practicedIds));
-            }
-            rawVertices = traversal.limit(ROOT_FLASHCARD_BATCH_SIZE).toList();
+                    .hasLabel(FlashcardVertex.LABEL)
+                    .where(__.not(__.in(ExerciseSessionStateVertex.EDGE_PRACTICED_CONTENT).is(sessionStateVertex)))
+                    .limit(ROOT_FLASHCARD_BATCH_SIZE)
+                    .toList();
         }
 
         return rawVertices.stream()
