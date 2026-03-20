@@ -1,5 +1,10 @@
 import json
 import os
+import hashlib
+import mimetypes
+import time
+import uuid
+from types import SimpleNamespace
 from shared.api_client.openapi_client.models.flashcard_content_text_dto import FlashcardContentTextDto
 from shared.api_client.openapi_client import Configuration
 from shared.api_client.openapi_client.api_client import ApiClient
@@ -366,6 +371,385 @@ def list_local_decks():
 
 
 def upload_local_deck(deck_metadata):
+    """
+    Upload a local deck to the server using the content-import job API.
+
+    Falls back to the legacy upload flow when USE_CONTENT_IMPORT_API is disabled.
+    """
+    use_content_import_api = True
+
+    env_override = os.getenv("USE_CONTENT_IMPORT_API")
+    if env_override is not None:
+        use_content_import_api = env_override.strip().lower() in ("1", "true", "yes", "on")
+    else:
+        try:
+            use_content_import_api = bool(st.session_state.get("use_content_import_api", True))
+        except Exception:
+            use_content_import_api = True
+
+    if use_content_import_api:
+        return _upload_local_deck_content_import(deck_metadata)
+
+    return _upload_local_deck_legacy(deck_metadata)
+
+
+def _upload_local_deck_content_import(deck_metadata):
+    deck_dir, deck_data = _resolve_deck_upload_input(deck_metadata)
+    backend_url = get_backend_url()
+
+    manifest = _build_import_manifest(deck_data, deck_dir)
+
+    create_response = requests.post(
+        f"{backend_url}/content-import/jobs",
+        json=manifest,
+        cookies=_get_request_cookies()
+    )
+    if create_response.status_code != 202:
+        raise Exception(f"Failed to create import job: {create_response.text}")
+
+    create_payload = create_response.json()
+    job_id = create_payload.get("jobId")
+    if not job_id:
+        raise Exception(f"Import job response did not include jobId: {create_payload}")
+
+    attachments = manifest["contentSet"].get("attachments", [])
+    for attachment in attachments:
+        file_ref = attachment["fileRef"]
+        absolute_path = _resolve_media_path(deck_dir, file_ref)
+        _upload_attachment_chunks(job_id, file_ref, absolute_path, attachment.get("checksum"))
+
+    status_payload = _poll_import_job(job_id)
+    final_status = status_payload.get("status")
+    if final_status != "COMPLETED":
+        errors = status_payload.get("errors") or []
+        raise Exception(f"Import job ended with status {final_status}: {errors}")
+
+    created_root_id = (status_payload.get("result") or {}).get("createdRootId")
+    if not created_root_id:
+        raise Exception(f"Import completed but no createdRootId was returned: {status_payload}")
+
+    print(f"✅ Successfully imported deck '{deck_data.get('name')}' as {created_root_id}")
+    return SimpleNamespace(id=created_root_id, name=deck_data.get("name"), raw=status_payload)
+
+
+def _resolve_deck_upload_input(deck_metadata):
+    if isinstance(deck_metadata, str):
+        deck_dir = deck_metadata
+        deck_data = deck_storage.get_deck_data(deck_dir)
+        return deck_dir, deck_data
+
+    deck_dir = deck_metadata.get("deck_dir", deck_metadata)
+    if "data" in deck_metadata:
+        deck_data = deck_metadata["data"]
+    else:
+        deck_data = deck_storage.get_deck_data(deck_dir)
+
+    return deck_dir, deck_data
+
+
+def _build_import_manifest(deck_data, deck_dir):
+    flashcards = deck_data.get("flashcards", [])
+    records = []
+    contents = []
+    concepts = []
+    attachments_by_ref = {}
+    used_record_ids = set()
+
+    for index, flashcard in enumerate(flashcards):
+        record_id = str(flashcard.get("id") or f"flashcard-{index + 1}")
+        if record_id in used_record_ids:
+            record_id = f"{record_id}-{index + 1}"
+        used_record_ids.add(record_id)
+
+        front_slot = _build_slot_entries(record_id, "front", flashcard.get("frontContent", {}))
+        back_slot = _build_slot_entries(record_id, "back", flashcard.get("backContent", {}))
+
+        contents.extend(front_slot["contents"])
+        contents.extend(back_slot["contents"])
+        concepts.extend(front_slot["concepts"])
+        concepts.extend(back_slot["concepts"])
+
+        for file_ref in front_slot["attachmentRefs"] + back_slot["attachmentRefs"]:
+            if file_ref not in attachments_by_ref:
+                attachments_by_ref[file_ref] = _build_attachment_declaration(deck_dir, file_ref)
+
+        records.append({
+            "recordType": "flashcard",
+            "recordId": record_id,
+            "attributes": {
+                "deckOrder": flashcard.get("deckOrder", index)
+            },
+            "slots": [
+                {
+                    "slotKey": "front",
+                    "contentRef": front_slot["contentRef"],
+                    "conceptRefs": front_slot["conceptRefs"]
+                },
+                {
+                    "slotKey": "back",
+                    "contentRef": back_slot["contentRef"],
+                    "conceptRefs": back_slot["conceptRefs"]
+                }
+            ]
+        })
+
+    manifest = {
+        "schemaVersion": "1.0",
+        "clientRequestId": f"tool-{uuid.uuid4()}",
+        "importType": "content-set",
+        "source": {
+            "sourceSystem": "import-flashcards-tool",
+            "sourceVersion": "v1.0",
+            "sourceReference": deck_data.get("name")
+        },
+        "target": {
+            "containerType": "flashcard-deck",
+            "metadata": {
+                "name": deck_data.get("name", "Imported deck"),
+                "description": deck_data.get("description", "")
+            }
+        },
+        "contentSet": {
+            "setType": "flashcard-deck",
+            "setId": f"deck-{uuid.uuid4().hex}",
+            "metadata": {},
+            "records": records,
+            "contents": contents,
+            "concepts": concepts,
+            "attachments": list(attachments_by_ref.values())
+        },
+        "options": {
+            "dryRun": False,
+            "onError": "FAIL_FAST",
+            "onCancel": "ROLLBACK"
+        }
+    }
+
+    return manifest
+
+
+def _build_slot_entries(record_id, slot_key, side_content):
+    if not side_content:
+        raise ValueError(f"Missing {slot_key} content in flashcard {record_id}")
+
+    side_type = side_content.get("type", "text")
+    content_ref = f"cnt-{record_id}-{slot_key}"
+    contents = []
+    concepts = []
+    concept_refs = []
+    attachment_refs = []
+
+    normalized_type = _normalize_content_type(side_type)
+    payload = _build_content_payload(side_content, normalized_type)
+    if "fileRef" in payload:
+        attachment_refs.append(payload["fileRef"])
+
+    contents.append({
+        "contentId": content_ref,
+        "contentType": normalized_type,
+        "payload": payload
+    })
+
+    if normalized_type == "text":
+        pronunciation = side_content.get("pronunciation") or {}
+        pronunciation_ref = pronunciation.get("content")
+        if pronunciation_ref:
+            pronunciation_file_ref = _normalize_file_ref(pronunciation_ref)
+            pronunciation_content_ref = f"cnt-pron-{record_id}-{slot_key}"
+
+            pronunciation_payload = {
+                "fileRef": pronunciation_file_ref
+            }
+            if side_content.get("languageId"):
+                pronunciation_payload["languageId"] = side_content.get("languageId")
+
+            contents.append({
+                "contentId": pronunciation_content_ref,
+                "contentType": "audio-upload",
+                "payload": pronunciation_payload
+            })
+            attachment_refs.append(pronunciation_file_ref)
+
+            pronunciation_concept_ref = f"cnc-pron-{record_id}-{slot_key}"
+            concepts.append({
+                "conceptId": pronunciation_concept_ref,
+                "conceptType": "pronunciation",
+                "payload": {
+                    "sourceContentRef": content_ref,
+                    "pronunciationContentRef": pronunciation_content_ref
+                }
+            })
+            concept_refs.append(pronunciation_concept_ref)
+
+        transcription = side_content.get("transcription") or {}
+        if transcription.get("transcription"):
+            transcription_concept_ref = f"cnc-trans-{record_id}-{slot_key}"
+            concepts.append({
+                "conceptId": transcription_concept_ref,
+                "conceptType": "transcription",
+                "payload": {
+                    "sourceContentRef": content_ref,
+                    "transcription": transcription.get("transcription"),
+                    "transcriptionSystem": transcription.get("transcriptionSystem", "unknown")
+                }
+            })
+            concept_refs.append(transcription_concept_ref)
+
+    return {
+        "contentRef": content_ref,
+        "contents": contents,
+        "concepts": concepts,
+        "conceptRefs": concept_refs,
+        "attachmentRefs": attachment_refs
+    }
+
+
+def _normalize_content_type(content_type):
+    if content_type in ("audio", "audio-upload"):
+        return "audio-upload"
+    if content_type in ("image", "image-upload"):
+        return "image-upload"
+    if content_type in ("video", "video-upload"):
+        return "video-upload"
+    return "text"
+
+
+def _build_content_payload(side_content, normalized_type):
+    if normalized_type == "text":
+        return {
+            "text": side_content.get("text", ""),
+            "languageId": side_content.get("languageId")
+        }
+
+    file_ref = None
+    if normalized_type == "audio-upload":
+        if side_content.get("audioFileName"):
+            file_ref = f"media/{side_content['audioFileName']}"
+        elif side_content.get("content"):
+            file_ref = side_content.get("content")
+    elif normalized_type == "image-upload":
+        if side_content.get("imageFileName"):
+            file_ref = f"media/{side_content['imageFileName']}"
+        elif side_content.get("content"):
+            file_ref = side_content.get("content")
+    elif normalized_type == "video-upload":
+        if side_content.get("videoFileName"):
+            file_ref = f"media/{side_content['videoFileName']}"
+        elif side_content.get("content"):
+            file_ref = side_content.get("content")
+
+    if not file_ref:
+        raise ValueError(f"Missing media reference for content type '{normalized_type}'")
+
+    payload = {
+        "fileRef": _normalize_file_ref(file_ref)
+    }
+    if normalized_type in ("audio-upload", "video-upload") and side_content.get("languageId"):
+        payload["languageId"] = side_content.get("languageId")
+
+    return payload
+
+
+def _normalize_file_ref(file_ref):
+    normalized = file_ref.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    while normalized.startswith("/"):
+        normalized = normalized[1:]
+    return normalized
+
+
+def _resolve_media_path(deck_dir, file_ref):
+    normalized = _normalize_file_ref(file_ref)
+    return os.path.normpath(os.path.join(deck_dir, normalized.replace("/", os.sep)))
+
+
+def _compute_sha256(file_path):
+    digest = hashlib.sha256()
+    with open(file_path, "rb") as f:
+        while True:
+            chunk = f.read(1024 * 1024)
+            if not chunk:
+                break
+            digest.update(chunk)
+    return f"sha256:{digest.hexdigest()}"
+
+
+def _build_attachment_declaration(deck_dir, file_ref):
+    absolute_path = _resolve_media_path(deck_dir, file_ref)
+    if not os.path.exists(absolute_path):
+        raise ValueError(f"Declared attachment does not exist: {absolute_path}")
+
+    mime_type, _ = mimetypes.guess_type(absolute_path)
+    return {
+        "fileRef": _normalize_file_ref(file_ref),
+        "mimeType": mime_type or "application/octet-stream",
+        "sizeBytes": os.path.getsize(absolute_path),
+        "checksum": _compute_sha256(absolute_path),
+        "required": True
+    }
+
+
+def _upload_attachment_chunks(job_id, file_ref, file_path, final_checksum=None, chunk_size=5 * 1024 * 1024):
+    backend_url = get_backend_url()
+    file_size = os.path.getsize(file_path)
+    total_chunks = max(1, (file_size + chunk_size - 1) // chunk_size)
+
+    with open(file_path, "rb") as file_handle:
+        chunk_index = 0
+        while True:
+            chunk_bytes = file_handle.read(chunk_size)
+            if not chunk_bytes:
+                break
+
+            data = {
+                "fileRef": file_ref,
+                "chunkIndex": chunk_index,
+                "totalChunks": total_chunks
+            }
+            if final_checksum and chunk_index == total_chunks - 1:
+                data["finalChecksum"] = final_checksum
+
+            files = {
+                "chunk": (os.path.basename(file_path), chunk_bytes, "application/octet-stream")
+            }
+
+            response = requests.post(
+                f"{backend_url}/content-import/jobs/{job_id}/attachments",
+                data=data,
+                files=files,
+                cookies=_get_request_cookies()
+            )
+            if response.status_code not in (200, 202):
+                raise Exception(f"Failed to upload attachment chunk for {file_ref}: {response.text}")
+
+            chunk_index += 1
+
+
+def _poll_import_job(job_id, timeout_seconds=1800):
+    backend_url = get_backend_url()
+    deadline = time.time() + timeout_seconds
+
+    while time.time() < deadline:
+        response = requests.get(
+            f"{backend_url}/content-import/jobs/{job_id}",
+            cookies=_get_request_cookies()
+        )
+        if response.status_code != 200:
+            raise Exception(f"Failed to poll import job status: {response.text}")
+
+        payload = response.json()
+        status = payload.get("status")
+        if status in ("COMPLETED", "FAILED", "CANCELLED"):
+            return payload
+
+        poll_after_ms = payload.get("pollAfterMs", 1500)
+        time.sleep(max(0.2, poll_after_ms / 1000.0))
+
+    raise TimeoutError(f"Import job {job_id} did not finish within {timeout_seconds} seconds")
+
+
+def _upload_local_deck_legacy(deck_metadata):
     """
     Upload a local deck to the server.
     
