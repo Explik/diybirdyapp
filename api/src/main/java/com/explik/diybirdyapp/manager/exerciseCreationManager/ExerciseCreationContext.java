@@ -132,4 +132,13 @@ public class ExerciseCreationContext {
         context.setExerciseType(exerciseType);
         return context;
     }
+
+    public static ExerciseCreationContext createForSession(
+            ExerciseSessionVertex sessionVertex,
+            String exerciseType) {
+        var context = new ExerciseCreationContext();
+        context.setSessionVertex(sessionVertex);
+        context.setExerciseType(exerciseType);
+        return context;
+    }
 }
