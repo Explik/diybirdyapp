@@ -70,6 +70,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
         
         // Populate availableContent cache for multiple choice options
+        // TODO move into crawler as caching, because it gets slow for larger decks
         populateAvailableContent(traversalSource, vertex);
         
         // Populate initial active content batch
@@ -343,13 +344,16 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
      * Created pronunciation vertices are automatically added to the active content batch.
      */
     private void dispatchContentCreation(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck == null) {
-            return;
-        }
-        
-        var flashcards = flashcardDeck.getFlashcards();
-        var contentVertices = flashcards.stream()
+        var activeContentState = getActiveContentState(sessionVertex);
+        if (activeContentState == null)
+            return; // Cannot add content without an active content state
+
+        var activeFlashcards = activeContentState.getActiveContent().stream()
+                .filter(vertex -> vertex instanceof FlashcardVertex)
+                .map(vertex -> (FlashcardVertex) vertex)
+                .toList();
+
+        var contentVertices = activeFlashcards.stream()
                 .flatMap(flashcard -> {
                     var contents = new java.util.ArrayList<ContentVertex>();
                     if (flashcard.getLeftContent() != null) contents.add(flashcard.getLeftContent());
@@ -357,10 +361,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
                     return contents.stream();
                 })
                 .toList();
-        
-        // Get the active content state to add created pronunciations
-        var stateVertex = getActiveContentState(sessionVertex);
-        
+
         // Get target language from session options
         var options = sessionVertex.getOptions();
         var targetLanguage = options != null ? options.getTargetLanguage() : null;
@@ -368,8 +369,8 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         
         // Dispatch content creation with callback to add created vertices to active content
         contentCreationManager.dispatchContentCreation(contentVertices, targetLanguageId, pronunciationVertex -> {
-            if (stateVertex != null && pronunciationVertex != null) {
-                stateVertex.addActiveContent(pronunciationVertex);
+            if (pronunciationVertex != null) {
+                activeContentState.addActiveContent(pronunciationVertex);
             }
         });
     }
