@@ -7,7 +7,7 @@ import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.PronunciationVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 public class ExerciseCreationContext {
     private ExerciseSessionDto sessionModel;
@@ -18,7 +18,7 @@ public class ExerciseCreationContext {
     private TextContentVertex textContentVertex;
     private AbstractVertex basedOnContent;
     private String exerciseType;
-    private List<AbstractVertex> activeContent;
+    private Stream<AbstractVertex> contentStream;
 
     public ExerciseSessionDto getSessionModel() {
         return sessionModel;
@@ -84,12 +84,12 @@ public class ExerciseCreationContext {
         this.basedOnContent = basedOnContent;
     }
 
-    public List<AbstractVertex> getActiveContent() {
-        return activeContent;
+    public Stream<AbstractVertex> getContentStream() {
+        return contentStream;
     }
 
-    public void setActiveContent(List<AbstractVertex> activeContent) {
-        this.activeContent = activeContent;
+    public void setContentStream(Stream<AbstractVertex> contentStream) {
+        this.contentStream = contentStream;
     }
 
     public static ExerciseCreationContext createDefault(ExerciseSessionDto sessionModel) {

@@ -6,7 +6,6 @@ import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseContentParameters;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseInputParametersSelectOptions;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseParameters;
-import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.service.ExerciseCreationService;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Creates select flashcard exercises.
@@ -42,13 +40,13 @@ public class SelectFlashcardExerciseCreationManager implements ExerciseCreationM
         var answerContentType = flashcardVertex.getOtherSide(flashcardSide).getClass();
         var correctContentVertex = flashcardVertex.getOtherSide(flashcardSide);
         
-        // Get alternative answers from active content instead of flashcard deck
-        var activeContent = context.getActiveContent();
-        if (activeContent == null || activeContent.isEmpty()) {
+        // Get alternative answers from the content stream.
+        var contentStream = context.getContentStream();
+        if (contentStream == null) {
             return null;
         }
         
-        var incorrectContentVertices = activeContent.stream()
+        var incorrectContentVertices = contentStream
                 .filter(vertex -> vertex instanceof FlashcardVertex)
                 .map(vertex -> (FlashcardVertex) vertex)
                 .filter(flashcard -> !flashcard.getId().equals(flashcardVertex.getId()))

@@ -85,7 +85,7 @@ List of components:
 
 Design considerations:
 - The orb weaver algorithm is content-agnostic and exercise-agnostic. The algorithm can be applied to any type of content as long as the content can be represented as interconnected nodes on a graph. The exercise creation must be content-dependent and the created exercises must be able to support the standard answers and feedback loops. 
-- The orb weaver algorithm manages heavy or time-consuming tasks by implementing the exercise batch flow. All heavy tasks are handled on the start of the session or at the start of an exercise batch. This ensures that the user does not experience any significant delays while going between exercises. Any async tasks are dispatched at the start of the exercise batch and may not be directly dependent upon as they might fail or be delayed. 
+- The orb weaver algorithm manages heavy or time-consuming tasks by implementing the exercise batch flow. Most heavy tasks are handled on the start of the session or at the start of an exercise batch. Option-source crawling for multiple-choice exercises is streamed on demand through the exercise creation context to avoid persisting large caches for big decks. This ensures that the user does not experience any significant delays while going between exercises. Any async tasks are dispatched at the start of the exercise batch and may not be directly dependent upon as they might fail or be delayed. 
 - The process of generating content is inherently asynchronous. Content creation is mainly done through API calls to external services. Therefore, the orb weaver algorithm must be able to handle content creation tasks asynchronously. The delay in content creation is hidden in the exercise batch flow, so that the user does not experience any significant delays when interacting with the session.
 - The process of selecting/creating exercises must be synchronous. The user should not experience any delays when interacting with the exercises. Therefore, the orb weaver algorithm must be able to select/create exercises synchronously based on the available content. Asyncronously content will be included in the current batch onces it becomes available. The user can potentially be missing a specific exercise type if the content generation is delayed, but this is neccessarily a trade-off to ensure a smooth user experience.
 
@@ -158,7 +158,7 @@ Note, the random selection is required to ensure the user is not only expossed t
 ### Implementation for "flashcard deck" session
 The orb weaver algorithm is used in the flashcard deck learning sessions. 
 
-**FlashcardDeckContentCrawler**: Retrieves all content from all flashcards in the deck. Used to generate options for multiple choice exercises.
+**FlashcardDeckContentCrawler**: Retrieves a stream of content from all flashcards in the deck. The crawler is dispatched by the exercise manager while building the ExerciseCreationContext, and exercise creators consume the context `contentStream` on demand for option generation.
 
 **UnpracticedFlashcardContentCrawler**: Retrieves the next unpracticed flashcard. Supports sequential or shuffled flashcard selection based on session options.
 
@@ -168,7 +168,7 @@ The orb weaver algorithm is used in the flashcard deck learning sessions.
 
 **FlashcardDeckAssociatedContentCreationManager**: The manager dispatches async content creation tasks to create associated content for the flashcards selected by the crawler. Depending on the session settings, the associated content may include auto-generated transcriptions, pronunciation, etc. The manager uses a set of content creation strategies to create the associated content using the ContentCreationContext.
 
-**FlashcardDeckExerciseManager**: The manager creates or repeats exercises for the selected content (incl. flashcard, associated content) based on the exercise answer/feedback history. It implements the difficulty curve logic to determine whether to create a new exercise or repeat an existing exercise. If required, the manager will use a set of exercise creation strategies using the ExerciseCreationContext to create new exercises for the selected content.
+**FlashcardDeckExerciseManager**: The manager creates or repeats exercises for the selected content (incl. flashcard, associated content) based on the exercise answer/feedback history. It implements the difficulty curve logic to determine whether to create a new exercise or repeat an existing exercise. For option-based exercises, it dispatches FlashcardDeckContentCrawler and injects the resulting stream into the ExerciseCreationContext `contentStream`.
 
 **FlashcardDeckExerciseCreationManager**: The manager delegates exercise creation to a set of exercise creation strategies based on the session settings. The exercise creation strategies use the ExerciseCreationContext to create exercises for the selected flashcards and their associated content. The exercise types include flashcard selection exercises, flashcard writing exercises, pronunciation exercises, transcription exercises, and so on.
 

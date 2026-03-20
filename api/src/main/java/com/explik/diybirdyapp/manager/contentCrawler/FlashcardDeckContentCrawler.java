@@ -7,7 +7,10 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Content Crawler - Retrieves all content associated with a flashcard deck.
@@ -38,7 +41,7 @@ public class FlashcardDeckContentCrawler implements ContentCrawler<FlashcardDeck
 
         Set<String> seenVertexIds = new HashSet<>();
 
-        List<Vertex> rawVertices = traversalSource.V(deckVertex)
+        var traversal = traversalSource.V(deckVertex)
                 .outE(FlashcardDeckVertex.EDGE_FLASHCARD)
                 .order().by(FlashcardDeckVertex.EDGE_FLASHCARD_PROPERTY_ORDER)
                 .inV()
@@ -55,10 +58,11 @@ public class FlashcardDeckContentCrawler implements ContentCrawler<FlashcardDeck
                                 .hasLabel(TextContentVertex.LABEL)
                                 .out(TextContentVertex.EDGE_PRONUNCIATION)
                                 .hasLabel(PronunciationVertex.LABEL)
-                ))
-                .toList();
+                    ));
 
-        return rawVertices.stream()
+                return StreamSupport.stream(
+                        Spliterators.spliteratorUnknownSize(traversal, Spliterator.ORDERED),
+                        false)
                 .filter(vertex -> markIfUnseen(vertex, seenVertexIds))
                 .map(vertex -> mapToVertexModel(traversalSource, vertex))
                 .filter(Objects::nonNull);

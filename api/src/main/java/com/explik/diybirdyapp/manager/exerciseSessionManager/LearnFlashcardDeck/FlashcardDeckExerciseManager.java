@@ -1,6 +1,7 @@
 package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck;
 
 import com.explik.diybirdyapp.ExerciseTypes;
+import com.explik.diybirdyapp.manager.contentCrawler.FlashcardDeckContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.MultiStageTapPairsExerciseCreationManager;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -44,6 +45,9 @@ public class FlashcardDeckExerciseManager {
 
     @Autowired
     private MultiStageTapPairsExerciseCreationManager multiStageTapPairsExerciseCreationManager;
+
+    @Autowired
+    private FlashcardDeckContentCrawler deckContentCrawler;
 
     /**
      * Generates the next exercise for the session using a round-based approach.
@@ -92,12 +96,14 @@ public class FlashcardDeckExerciseManager {
             // Mark immediately so we don't retry on subsequent calls regardless of outcome
             stateVertex.setPropertyValue("multiStageTapPairsInserted", true);
 
-            var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
-            var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
-            var flashcardList = availableContent.stream()
-                    .filter(c -> c instanceof FlashcardVertex)
-                    .map(c -> (FlashcardVertex) c)
-                    .toList();
+            var flashcardDeck = sessionVertex.getFlashcardDeck();
+            var flashcardList = flashcardDeck != null
+                ? deckContentCrawler.crawl(flashcardDeck)
+                .filter(c -> c instanceof FlashcardVertex)
+                .map(c -> (FlashcardVertex) c)
+                .toList()
+                : List.<FlashcardVertex>of();
+
             var tapPairsExercise = multiStageTapPairsExerciseCreationManager.createExercise(
                     traversalSource, sessionVertex, flashcardList);
             if (tapPairsExercise != null) {
@@ -281,17 +287,6 @@ public class FlashcardDeckExerciseManager {
     }
     
     /**
-     * Gets the availableContent state vertex (all deck content for multiple choice options).
-     */
-    private ExerciseSessionStateVertex getAvailableContentState(
-            GraphTraversalSource traversalSource,
-            ExerciseSessionVertex sessionVertex) {
-        
-        var stateVertices = sessionVertex.getStatesWithType("availableContent");
-        return stateVertices.isEmpty() ? null : stateVertices.get(0);
-    }
-    
-    /**
      * Gets the ID from a vertex, handling both ContentVertex and PronunciationVertex types.
      */
     private String getContentId(AbstractVertex vertex) {
@@ -303,6 +298,15 @@ public class FlashcardDeckExerciseManager {
             return flashcardVertex.getId();
         }
         return null;
+    }
+
+    private void setContentStreamFromFlashcardDeck(
+            ExerciseCreationContext context,
+            ExerciseSessionVertex sessionVertex) {
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck != null) {
+            context.setContentStream(deckContentCrawler.crawl(flashcardDeck));
+        }
     }
 
     private ExerciseVertex tryCreateReviewExercise(
@@ -349,16 +353,12 @@ public class FlashcardDeckExerciseManager {
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
             FlashcardVertex flashcardVertex) {
-        
-        var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
-        var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
-        
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
                 "front",
                 ExerciseTypes.SELECT_FLASHCARD);
-        context.setActiveContent(availableContent);
+        setContentStreamFromFlashcardDeck(context, sessionVertex);
         
         return selectFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -373,15 +373,12 @@ public class FlashcardDeckExerciseManager {
         if (targetLanguage != null && !currentLanguageId.equals(targetLanguage.getId())) {
             return null;
         }
-
-        var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
-        var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
         
         var context = ExerciseCreationContext.createForPronunciation(
                 sessionVertex,
                 pronunciationVertex,
                 ExerciseTypes.LISTEN_AND_SELECT);
-        context.setActiveContent(availableContent);
+        setContentStreamFromFlashcardDeck(context, sessionVertex);
         
         return listenAndSelectExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -390,15 +387,11 @@ public class FlashcardDeckExerciseManager {
             GraphTraversalSource traversalSource, 
             ExerciseSessionVertex sessionVertex,
             FlashcardVertex flashcardVertex) {
-        var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
-        var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
-
         var context = ExerciseCreationContext.createForFlashcard(
                 sessionVertex,
                 flashcardVertex,
                 "front",
                 ExerciseTypes.WRITE_FLASHCARD);
-        context.setActiveContent(availableContent);
         
         return writeFlashcardExerciseCreationManager.createExercise(traversalSource, context);
     }
@@ -414,14 +407,10 @@ public class FlashcardDeckExerciseManager {
             return null;
         }
         
-        var availableContentState = getAvailableContentState(traversalSource, sessionVertex);
-        var availableContent = availableContentState != null ? availableContentState.getAvailableContent() : new ArrayList<AbstractVertex>();
-        
         var context = ExerciseCreationContext.createForPronunciation(
                 sessionVertex,
                 pronunciationVertex,
                 ExerciseTypes.LISTEN_AND_WRITE);
-        context.setActiveContent(availableContent);
         
         return listenAndWriteExerciseCreationManager.createExercise(traversalSource, context);
     }

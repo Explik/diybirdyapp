@@ -6,7 +6,6 @@ import com.explik.diybirdyapp.manager.contentCrawler.FailedExerciseErrorScoreEva
 import com.explik.diybirdyapp.manager.contentCrawler.PrioritizedFlashcardContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
-import com.explik.diybirdyapp.manager.contentCrawler.FlashcardDeckContentCrawler;
 import com.explik.diybirdyapp.model.FlashcardDeckSessionParams;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.persistence.command.CreateLearnFlashcardSessionCommand;
@@ -38,9 +37,6 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     private FlashcardDeckAssociatedContentCreationManager contentCreationManager;
     
     @Autowired
-    private FlashcardDeckContentCrawler deckContentCrawler;
-    
-    @Autowired
     private PrioritizedFlashcardContentCrawler prioritizedContentCrawler;
 
     @Autowired
@@ -63,15 +59,11 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         command.setIncludeListeningExercises(true);
         command.setIncludePronunciationExercises(true);
         command.setShuffleFlashcards(false);
-        
+
         createLearnFlashcardSessionCommandHandler.handle(command);
 
         // Load the created session
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
-        
-        // Populate availableContent cache for multiple choice options
-        // TODO move into crawler as caching, because it gets slow for larger decks
-        populateAvailableContent(traversalSource, vertex);
         
         // Populate initial active content batch
         populateInitialActiveContent(traversalSource, vertex);
@@ -158,13 +150,6 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             populateInitialActiveContent(traversalSource, sessionVertex);
         }
         
-        // Refresh available content for multiple choice options
-        var availableContentState = getAvailableContentState(sessionVertex);
-        if (availableContentState != null) {
-            availableContentState.clearAvailableContent();
-            populateAvailableContent(traversalSource, sessionVertex);
-        }
-        
         // Dispatch new content creation with updated target language  
         dispatchContentCreation(traversalSource, sessionVertex);
 
@@ -174,49 +159,6 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         sessionModel.setId(sessionId);
         var context = ExerciseCreationContext.createDefault(sessionModel);
         nextExercise(traversalSource, context);
-    }
-    
-    /**
-     * Populates availableContent for the session.
-     * This content is used to generate multiple choice options in exercises.
-     * Creates a separate state vertex to cache all deck content.
-     */
-    private void populateAvailableContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck == null) {
-            return;
-        }
-        
-        // Create or get the availableContent state
-        var stateVertex = getOrCreateAvailableContentState(traversalSource, sessionVertex);
-        
-        // Check if already populated
-        if (!stateVertex.getAvailableContent().isEmpty()) {
-            return;
-        }
-        
-        // Collect all deck content using FlashcardDeckContentCrawler
-        var allContent = deckContentCrawler.crawl(flashcardDeck).toList();
-        stateVertex.setAvailableContent(allContent);
-    }
-    
-    /**
-     * Gets or creates the availableContent state vertex.
-     */
-    private ExerciseSessionStateVertex getOrCreateAvailableContentState(
-            GraphTraversalSource traversalSource,
-            ExerciseSessionVertex sessionVertex) {
-        
-        var stateVertices = sessionVertex.getStatesWithType("availableContent");
-        
-        if (stateVertices.isEmpty()) {
-            var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
-            stateVertex.setType("availableContent");
-            sessionVertex.addState(stateVertex);
-            return stateVertex;
-        }
-        
-        return stateVertices.get(0);
     }
     
     /**
@@ -284,14 +226,6 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
     
     /**
-     * Gets the available content state vertex for the session.
-     */
-    private ExerciseSessionStateVertex getAvailableContentState(ExerciseSessionVertex sessionVertex) {
-        var stateVertices = sessionVertex.getStatesWithType("availableContent");
-        return stateVertices.isEmpty() ? null : stateVertices.get(0);
-    }
-    
-    /**
      * Gets the number of exercises created in the current batch.
      */
     private int getBatchExerciseCount(ExerciseSessionStateVertex stateVertex) {
@@ -325,17 +259,17 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         stateVertex.setPropertyValue("batchExerciseCount", 0);
         
         // Populate new content for the new batch
-            var flashcardDeck = sessionVertex.getFlashcardDeck();
-            if (flashcardDeck != null) {
-                var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
-                var contentList = prioritizedContentCrawler.crawl(params).toList();
-                for (AbstractVertex content : contentList) {
-                    stateVertex.addActiveContent(content);
-                    if (content instanceof FlashcardVertex) {
-                        stateVertex.addPracticedContent(content);
-                    }
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        if (flashcardDeck != null) {
+            var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
+            var contentList = prioritizedContentCrawler.crawl(params).toList();
+            for (AbstractVertex content : contentList) {
+                stateVertex.addActiveContent(content);
+                if (content instanceof FlashcardVertex) {
+                    stateVertex.addPracticedContent(content);
                 }
             }
+        }
     }
     
     /**
