@@ -2,7 +2,6 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
-import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.manager.contentCrawler.FailedExerciseErrorScoreEvaluator;
 import com.explik.diybirdyapp.manager.contentCrawler.PrioritizedFlashcardContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
@@ -117,9 +115,8 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
             int updatedActiveContentSize = stateVertex.getActiveContent().size();
             if (updatedActiveContentSize > previousActiveContentSize) {
-                // New content was appended, so restart round traversal for the expanded batch.
-                stateVertex.setCurrentRound(0);
-                stateVertex.setCurrentContentIndex(0);
+                // New content was appended, so continue from the previously reached end.
+                stateVertex.setCurrentContentIndex(previousActiveContentSize);
             }
 
             // Try to create exercise again with new content
@@ -171,7 +168,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
     /**
      * Creates the next exercise from the current active batch.
-     * Handles round progression and content traversal; exercise creation is delegated.
+     * Traverses active content linearly; exercise creation is delegated.
      */
     private ExerciseVertex nextExerciseVertex(
             GraphTraversalSource traversalSource,
@@ -182,36 +179,13 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             return null;
         }
 
-        var exerciseTypes = calculateEnabledExerciseTypes(sessionVertex);
-        if (exerciseTypes.isEmpty()) {
+        var activeContent = stateVertex.getActiveContent();
+        if (activeContent.isEmpty()) {
             return null;
         }
 
-        while (stateVertex.getCurrentRound() < ExerciseSessionStateVertex.MAX_EXERCISES_PER_CONTENT) {
-            int currentRound = stateVertex.getCurrentRound();
-
-            var tapPairsExercise = tryCreateMultiStageTapPairsExercise(
-                    traversalSource,
-                    sessionVertex,
-                    stateVertex,
-                    exerciseTypes,
-                    currentRound);
-            if (tapPairsExercise != null) {
-                return tapPairsExercise;
-            }
-
-            var activeContent = stateVertex.getActiveContent();
-            if (activeContent.isEmpty()) {
-                return null;
-            }
-
-            int currentIndex = stateVertex.getCurrentContentIndex();
-            if (currentIndex >= activeContent.size()) {
-                stateVertex.setCurrentRound(currentRound + 1);
-                stateVertex.setCurrentContentIndex(0);
-                continue;
-            }
-
+        int currentIndex = stateVertex.getCurrentContentIndex();
+        while (currentIndex < activeContent.size()) {
             var content = activeContent.get(currentIndex);
             var exerciseVertex = exerciseManager.createExerciseForContent(
                     traversalSource,
@@ -229,65 +203,11 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
                 return exerciseVertex;
             }
+
+            currentIndex = stateVertex.getCurrentContentIndex();
         }
 
         return null;
-    }
-
-    private ExerciseVertex tryCreateMultiStageTapPairsExercise(
-            GraphTraversalSource traversalSource,
-            ExerciseSessionVertex sessionVertex,
-            ExerciseSessionStateVertex stateVertex,
-            List<String> exerciseTypes,
-            int currentRound) {
-        int selectFlashcardRoundIndex = exerciseTypes.indexOf(ExerciseTypes.SELECT_FLASHCARD);
-        boolean multiStageTapPairsInserted = Boolean.TRUE.equals(
-                stateVertex.getPropertyValue("multiStageTapPairsInserted", false));
-
-        if (selectFlashcardRoundIndex >= 0
-                && currentRound > selectFlashcardRoundIndex
-                && !multiStageTapPairsInserted) {
-            // Mark immediately so we don't retry on subsequent calls regardless of outcome.
-            stateVertex.setPropertyValue("multiStageTapPairsInserted", true);
-            return exerciseManager.createMultiStageTapPairsExercise(traversalSource, sessionVertex);
-        }
-
-        return null;
-    }
-
-    private List<String> calculateEnabledExerciseTypes(ExerciseSessionVertex sessionVertex) {
-        var options = sessionVertex.getOptions();
-        if (options == null) {
-            return List.of();
-        }
-
-        var exerciseTypes = new ArrayList<String>();
-
-        if (options.getIncludeReviewExercises()) {
-            exerciseTypes.add(ExerciseTypes.VIEW_FLASHCARD);
-        }
-
-        if (options.getIncludeMultipleChoiceExercises()) {
-            exerciseTypes.add(ExerciseTypes.SELECT_FLASHCARD);
-
-            if (options.getIncludeListeningExercises()) {
-                exerciseTypes.add(ExerciseTypes.LISTEN_AND_SELECT);
-            }
-        }
-
-        if (options.getIncludeWritingExercises()) {
-            exerciseTypes.add(ExerciseTypes.WRITE_FLASHCARD);
-
-            if (options.getIncludeListeningExercises()) {
-                exerciseTypes.add(ExerciseTypes.LISTEN_AND_WRITE);
-            }
-        }
-
-        if (options.getIncludePronunciationExercises()) {
-            exerciseTypes.add(ExerciseTypes.PRONOUNCE_FLASHCARD);
-        }
-
-        return exerciseTypes;
     }
 
     private String getContentId(AbstractVertex vertex) {
@@ -321,9 +241,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
         stateVertex.setType("activeContentBatch");
         stateVertex.setCurrentContentIndex(0);
-        stateVertex.setCurrentRound(0);
         stateVertex.setPropertyValue("batchExerciseCount", 0);
-        stateVertex.setPropertyValue("multiStageTapPairsInserted", false);
         sessionVertex.addState(stateVertex);
         
         // Populate first batch of content using prioritized crawler selection.
@@ -414,9 +332,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         
         // Reset counters
         stateVertex.setCurrentContentIndex(0);
-        stateVertex.setCurrentRound(0);
         stateVertex.setPropertyValue("batchExerciseCount", 0);
-        stateVertex.setPropertyValue("multiStageTapPairsInserted", false);
         
         // Populate new content for the new batch
         var flashcardDeck = sessionVertex.getFlashcardDeck();
