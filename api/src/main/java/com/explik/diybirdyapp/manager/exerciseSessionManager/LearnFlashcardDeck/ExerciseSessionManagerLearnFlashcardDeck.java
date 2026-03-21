@@ -2,8 +2,10 @@ package com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck
 
 import com.explik.diybirdyapp.ComponentTypes;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
+import com.explik.diybirdyapp.manager.contentCrawler.FailedExerciseContentCrawler;
 import com.explik.diybirdyapp.manager.contentCrawler.FailedExerciseErrorScoreEvaluator;
-import com.explik.diybirdyapp.manager.contentCrawler.PrioritizedFlashcardContentCrawler;
+import com.explik.diybirdyapp.manager.contentCrawler.InsufficientlyExercisedContentCrawler;
+import com.explik.diybirdyapp.manager.contentCrawler.UnpracticedFlashcardContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
 import com.explik.diybirdyapp.model.FlashcardDeckSessionParams;
@@ -18,12 +20,17 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSessionManager {
-    
-    // Batch configuration constants
     private static final int BATCH_SIZE = 20; // Number of exercises per batch
+    private static final int INITIAL_NEW_CONTENT_COUNT = 3;
+    private static final int INITIAL_INSUFFICIENT_CONTENT_COUNT = 3;
+    private static final int INITIAL_DIFFICULT_CONTENT_COUNT = 4;
+    private static final int SUBSEQUENT_INSUFFICIENT_CONTENT_COUNT = 3;
+    private static final int SUBSEQUENT_DIFFICULT_CONTENT_COUNT = 4;
+    private static final int SUBSEQUENT_FALLBACK_NEW_CONTENT_COUNT = 3;
     
     @Autowired
     private FlashcardDeckExerciseManager exerciseManager;
@@ -38,7 +45,13 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     private FlashcardDeckAssociatedContentCreationManager contentCreationManager;
     
     @Autowired
-    private PrioritizedFlashcardContentCrawler prioritizedContentCrawler;
+    private UnpracticedFlashcardContentCrawler unpracticedFlashcardContentCrawler;
+
+    @Autowired
+    private InsufficientlyExercisedContentCrawler insufficientlyExercisedContentCrawler;
+
+    @Autowired
+    private FailedExerciseContentCrawler failedExerciseContentCrawler;
 
     @Autowired
     private FailedExerciseErrorScoreEvaluator failedExerciseErrorScoreEvaluator;
@@ -65,16 +78,9 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
         // Load the created session
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
-        
-        // Populate initial active content batch
-        populateInitialActiveContent(traversalSource, vertex);
-        
-        // Dispatch async content creation for flashcard deck
-        dispatchContentCreation(traversalSource, vertex);
 
-        // Generate first exercise
-        var stateVertex = getActiveContentState(vertex);
-        nextExerciseVertex(traversalSource, vertex, stateVertex);
+        var exerciseVertex = generateBatch(traversalSource, vertex);
+        vertex.setCompleted(exerciseVertex == null);
         vertex.reload();
 
         return sessionModelFactory.create(vertex);
@@ -86,53 +92,19 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         var sessionVertex = ExerciseSessionVertex.findById(traversalSource, modelId);
         if (sessionVertex == null)
             throw new RuntimeException("Session with " + modelId +" not found");
+        assert sessionVertex.getFlashcardDeck() != null : "Session should have an associated flashcard deck";
 
-        var stateVertex = getOrCreateActiveContentState(traversalSource, sessionVertex);
-        if (stateVertex == null) {
-            sessionVertex.setCompleted(true);
-            sessionVertex.reload();
-            return sessionModelFactory.create(sessionVertex);
-        }
+        var stateVertex = createOrGetActiveContentState(traversalSource, sessionVertex);
+        assert stateVertex != null : "Active content state should have been created if it did not exist";
 
-        // Refresh error scores before selecting any new batch content.
-        if (sessionVertex.getFlashcardDeck() != null) {
-            failedExerciseErrorScoreEvaluator.evaluate(sessionVertex.getFlashcardDeck(), stateVertex);
-        }
-        
-        // Check if current batch has reached the batch size limit
+        ExerciseVertex exerciseVertex;
         if (getBatchExerciseCount(stateVertex) >= BATCH_SIZE) {
-            // Start a new batch: clear content and reset counters
-            startNewBatch(traversalSource, sessionVertex, stateVertex);
+            exerciseVertex = generateBatch(traversalSource, sessionVertex);
+        } else {
+            exerciseVertex = generateBatchExercise(traversalSource, sessionVertex, stateVertex);
         }
-        
-        // Try to generate next exercise
-        var exerciseVertex = nextExerciseVertex(traversalSource, sessionVertex, stateVertex);
-        
-        // If no exercise created, try to populate more content and try again
-        if (exerciseVertex == null) {
-            int previousActiveContentSize = stateVertex.getActiveContent().size();
-            populateMoreActiveContent(traversalSource, sessionVertex, stateVertex);
 
-            int updatedActiveContentSize = stateVertex.getActiveContent().size();
-            if (updatedActiveContentSize > previousActiveContentSize) {
-                // New content was appended, so continue from the previously reached end.
-                stateVertex.setCurrentContentIndex(previousActiveContentSize);
-            }
-
-            // Try to create exercise again with new content
-            exerciseVertex = nextExerciseVertex(traversalSource, sessionVertex, stateVertex);
-        }
-        
-        // If exercise was created, increment batch counter
-        if (exerciseVertex != null) {
-            incrementBatchExerciseCount(stateVertex);
-            sessionVertex.setCompleted(false);
-        }
-        
-        // Mark session as completed if still no exercises after populating
-        if (exerciseVertex == null) {
-            sessionVertex.setCompleted(true);
-        }
+        sessionVertex.setCompleted(exerciseVertex == null);
         
         sessionVertex.reload();
 
@@ -145,25 +117,73 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         if (sessionVertex == null) {
             return; // Session not found, nothing to do
         }
-        
-        var stateVertex = getActiveContentState(sessionVertex);
-        if (stateVertex != null) {
-            // Regenerate the batch with new options
-            startNewBatch(traversalSource, sessionVertex, stateVertex);
-        } else {
-            // Recover gracefully if state is missing, then bootstrap a fresh batch.
-            populateInitialActiveContent(traversalSource, sessionVertex);
-        }
-        
-        // Dispatch new content creation with updated target language  
-        dispatchContentCreation(traversalSource, sessionVertex);
 
-        // Options updates must immediately produce a new current exercise.
-        sessionVertex.setCompleted(false);
-        var sessionModel = new ExerciseSessionDto();
-        sessionModel.setId(sessionId);
-        var context = ExerciseCreationContext.createDefault(sessionModel);
-        nextExercise(traversalSource, context);
+        var exerciseVertex = generateBatch(traversalSource, sessionVertex);
+        sessionVertex.setCompleted(exerciseVertex == null);
+        sessionVertex.reload();
+    }
+
+    /**
+     * Regenerates the active batch and immediately creates the first exercise.
+     * This method can be called on a fresh session and will create required state.
+     */
+    private ExerciseVertex generateBatch(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex) {
+
+        var stateVertex = createOrGetActiveContentState(traversalSource, sessionVertex);
+        assert stateVertex != null : "Active content state vertex should have been created if it did not exist";
+
+        stateVertex.clearActiveContent();
+        stateVertex.setCurrentContentIndex(0);
+        stateVertex.setPropertyValue("batchExerciseCount", 0);
+
+        fetchInitialContent(sessionVertex, stateVertex);
+        dispatchContentCreation(sessionVertex, stateVertex);
+
+        return generateBatchExercise(traversalSource, sessionVertex, stateVertex);
+    }
+
+    /**
+     * Creates one exercise from the current batch and retries after fetching more content.
+     * This method can be called on a fresh session and will create required state.
+     */
+    private ExerciseVertex generateBatchExercise(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex) {
+        assert traversalSource != null : "Traversal source should not be null";
+        assert sessionVertex != null : "Session vertex should not be null";
+        assert stateVertex != null : "State vertex should not be null";
+
+        var exerciseVertex = nextExerciseVertex(traversalSource, sessionVertex, stateVertex);
+        if (exerciseVertex == null) {
+            fetchAdditionalContent(sessionVertex, stateVertex);
+            exerciseVertex = nextExerciseVertex(traversalSource, sessionVertex, stateVertex);
+        }
+        if (exerciseVertex == null) {
+            // Fetch new content until exercise can be create or no more content is available
+            for (int i = 0; i < 10; i++) {
+                var params = new FlashcardDeckSessionParams(sessionVertex.getFlashcardDeck(), stateVertex);
+                var count = appendContent(stateVertex, unpracticedFlashcardContentCrawler.crawl(params), SUBSEQUENT_FALLBACK_NEW_CONTENT_COUNT);
+                if (count == 0)
+                    break;
+
+                exerciseVertex = nextExerciseVertex(traversalSource, sessionVertex, stateVertex);
+                if (exerciseVertex != null)
+                    break;
+            }
+        }
+
+        if (exerciseVertex != null) {
+            incrementBatchExerciseCount(stateVertex);
+        }
+        else {
+            // No exercise could be created even after fetching additional content, mark session as completed
+            sessionVertex.setCompleted(true);
+        }
+
+        return exerciseVertex;
     }
 
     /**
@@ -227,85 +247,97 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
     }
     
     /**
-     * Populates initial active content for the session.
-     * Creates the activeContentBatch state and adds the first batch of content.
-     * Uses prioritized crawler selection: failed content > insufficiently practiced > new content.
+     * Appends initial batch content: first new, then insufficiently practiced, then difficult items.
      */
-    private void populateInitialActiveContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
+    private void fetchInitialContent(
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex) {
+
         var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck == null) {
+        if (flashcardDeck == null)
             return;
-        }
-        
-        // Create the activeContentBatch state
-        var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
-        stateVertex.setType("activeContentBatch");
-        stateVertex.setCurrentContentIndex(0);
-        stateVertex.setPropertyValue("batchExerciseCount", 0);
-        sessionVertex.addState(stateVertex);
-        
-        // Populate first batch of content using prioritized crawler selection.
+
+        failedExerciseErrorScoreEvaluator.evaluate(flashcardDeck, stateVertex);
+
         var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
-        var contentList = prioritizedContentCrawler.crawl(params).toList();
-        for (AbstractVertex content : contentList) {
-            stateVertex.addActiveContent(content);
-            if (content instanceof FlashcardVertex) {
-                stateVertex.addPracticedContent(content);
-            }
-        }
+        appendContent(stateVertex, unpracticedFlashcardContentCrawler.crawl(params), INITIAL_NEW_CONTENT_COUNT);
+        appendContent(stateVertex, insufficientlyExercisedContentCrawler.crawl(params), INITIAL_INSUFFICIENT_CONTENT_COUNT);
+        appendContent(stateVertex, failedExerciseContentCrawler.crawl(params), INITIAL_DIFFICULT_CONTENT_COUNT);
     }
 
     /**
-     * Populates more active content for an existing session.
-     * Uses prioritized crawler selection: failed content > insufficiently practiced > new content.
+     * Appends subsequent content pulls: first insufficiently practiced, then difficult items;
      */
-    private void populateMoreActiveContent(
-            GraphTraversalSource traversalSource,
+    private void fetchAdditionalContent(
             ExerciseSessionVertex sessionVertex,
             ExerciseSessionStateVertex stateVertex) {
-        
-        var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck == null) {
-            return;
-        }
-        
-        // Collect content using prioritized crawler selection.
-        var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
-        var contentList = prioritizedContentCrawler.crawl(params).toList();
+        assert sessionVertex != null : "Session vertex should not be null";
+        assert stateVertex != null : "State vertex should not be null";
 
-        // Add all collected content to the active content collection
-        for (AbstractVertex content : contentList) {
-            stateVertex.addActiveContent(content);
-            if (content instanceof FlashcardVertex) {
-                stateVertex.addPracticedContent(content);
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+        assert flashcardDeck != null : "Session should have an associated flashcard deck";
+
+        failedExerciseErrorScoreEvaluator.evaluate(flashcardDeck, stateVertex);
+
+        var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
+        appendContent(stateVertex, insufficientlyExercisedContentCrawler.crawl(params), SUBSEQUENT_INSUFFICIENT_CONTENT_COUNT);
+        appendContent(stateVertex, failedExerciseContentCrawler.crawl(params), SUBSEQUENT_DIFFICULT_CONTENT_COUNT);
+    }
+
+    private int appendContent(
+            ExerciseSessionStateVertex stateVertex,
+            Stream<AbstractVertex> contentStream,
+            int maxCount) {
+        assert stateVertex != null : "State vertex should not be null";
+        assert contentStream != null : "Content stream should not be null";
+        assert maxCount > 0 : "Max count should be greater than 0";
+
+        try (var limitedStream = contentStream.limit(maxCount)) {
+            var contentList = limitedStream.toList();
+
+            for (AbstractVertex content : contentList) {
+                stateVertex.addActiveContent(content);
+
+                if (content instanceof FlashcardVertex) {
+                    stateVertex.addPracticedContent(content);
+                }
             }
+            return contentList.size();
         }
     }
 
     /**
      * Gets the active content batch state vertex for the session.
      */
-    private ExerciseSessionStateVertex getActiveContentState(ExerciseSessionVertex sessionVertex) {
-        var stateVertices = sessionVertex.getStatesWithType("activeContentBatch");
-        return stateVertices.isEmpty() ? null : stateVertices.get(0);
-    }
-
-    private ExerciseSessionStateVertex getOrCreateActiveContentState(
+    private ExerciseSessionStateVertex createOrGetActiveContentState(
             GraphTraversalSource traversalSource,
             ExerciseSessionVertex sessionVertex) {
-        var stateVertex = getActiveContentState(sessionVertex);
-        if (stateVertex != null) {
+        var stateVertices = sessionVertex.getStatesWithType("activeContentBatch");
+        var stateVertex = stateVertices.isEmpty() ? null : stateVertices.get(0);
+
+        if (stateVertex == null) {
+            stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+            stateVertex.setType("activeContentBatch");
+            stateVertex.setCurrentContentIndex(0);
+            stateVertex.setPropertyValue("batchExerciseCount", 0);
+            sessionVertex.addState(stateVertex);
             return stateVertex;
         }
 
-        populateInitialActiveContent(traversalSource, sessionVertex);
-        return getActiveContentState(sessionVertex);
+        Integer batchExerciseCount = stateVertex.getPropertyValue("batchExerciseCount");
+        if (batchExerciseCount == null) {
+            stateVertex.setPropertyValue("batchExerciseCount", 0);
+        }
+
+        return stateVertex;
     }
     
     /**
      * Gets the number of exercises created in the current batch.
      */
     private int getBatchExerciseCount(ExerciseSessionStateVertex stateVertex) {
+        assert stateVertex != null : "State vertex should not be null";
+
         Integer count = stateVertex.getPropertyValue("batchExerciseCount", 0);
         return count != null ? count : 0;
     }
@@ -314,38 +346,10 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
      * Increments the batch exercise counter.
      */
     private void incrementBatchExerciseCount(ExerciseSessionStateVertex stateVertex) {
+        assert stateVertex != null : "State vertex should not be null";
+
         int currentCount = getBatchExerciseCount(stateVertex);
         stateVertex.setPropertyValue("batchExerciseCount", currentCount + 1);
-    }
-    
-    /**
-     * Starts a new batch by clearing active content and resetting counters.
-     * Then populates new content from the crawlers.
-     */
-    private void startNewBatch(
-            GraphTraversalSource traversalSource,
-            ExerciseSessionVertex sessionVertex,
-            ExerciseSessionStateVertex stateVertex) {
-        
-        // Clear all active content
-        stateVertex.clearActiveContent();
-        
-        // Reset counters
-        stateVertex.setCurrentContentIndex(0);
-        stateVertex.setPropertyValue("batchExerciseCount", 0);
-        
-        // Populate new content for the new batch
-        var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck != null) {
-            var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
-            var contentList = prioritizedContentCrawler.crawl(params).toList();
-            for (AbstractVertex content : contentList) {
-                stateVertex.addActiveContent(content);
-                if (content instanceof FlashcardVertex) {
-                    stateVertex.addPracticedContent(content);
-                }
-            }
-        }
     }
     
     /**
@@ -353,10 +357,11 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
      * This includes TTS generation for text content that has a language with TTS configuration.
      * Created pronunciation vertices are automatically added to the active content batch.
      */
-    private void dispatchContentCreation(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var activeContentState = getActiveContentState(sessionVertex);
-        if (activeContentState == null)
-            return; // Cannot add content without an active content state
+    private void dispatchContentCreation(
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex activeContentState) {
+        assert sessionVertex != null : "Session vertex should not be null";
+        assert activeContentState != null : "Active content state vertex should not be null";
 
         var activeFlashcards = activeContentState.getActiveContent().stream()
                 .filter(vertex -> vertex instanceof FlashcardVertex)

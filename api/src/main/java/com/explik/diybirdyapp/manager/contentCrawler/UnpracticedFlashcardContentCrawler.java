@@ -23,9 +23,6 @@ import java.util.stream.Stream;
  */
 @Component
 public class UnpracticedFlashcardContentCrawler implements ContentCrawler<FlashcardDeckSessionParams> {
-
-    private static final int ROOT_FLASHCARD_BATCH_SIZE = 3;
-
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
         var flashcardDeck = params.flashcardDeck();
@@ -40,7 +37,7 @@ public class UnpracticedFlashcardContentCrawler implements ContentCrawler<Flashc
         var deckVertex = flashcardDeck.getUnderlyingVertex();
         var sessionStateVertex = sessionState.getUnderlyingVertex();
 
-        List<Vertex> rawVertices;
+        Stream<Vertex> rawVertices;
         if (shuffle) {
             // Shuffle and limit in Gremlin while excluding already-practiced flashcards.
             rawVertices = traversalSource.V(deckVertex)
@@ -48,8 +45,7 @@ public class UnpracticedFlashcardContentCrawler implements ContentCrawler<Flashc
                     .hasLabel(FlashcardVertex.LABEL)
                     .where(__.not(__.in(ExerciseSessionStateVertex.EDGE_PRACTICED_CONTENT).is(sessionStateVertex)))
                     .order().by(Order.shuffle)
-                    .limit(ROOT_FLASHCARD_BATCH_SIZE)
-                    .toList();
+                    .toStream();
         } else {
             // Get unpracticed flashcards ordered by deck order
             rawVertices = traversalSource.V(deckVertex)
@@ -58,11 +54,9 @@ public class UnpracticedFlashcardContentCrawler implements ContentCrawler<Flashc
                     .inV()
                     .hasLabel(FlashcardVertex.LABEL)
                     .where(__.not(__.in(ExerciseSessionStateVertex.EDGE_PRACTICED_CONTENT).is(sessionStateVertex)))
-                    .limit(ROOT_FLASHCARD_BATCH_SIZE)
-                    .toList();
+                    .toStream();
         }
 
-        return rawVertices.stream()
-                .map(v -> (AbstractVertex) new FlashcardVertex(traversalSource, v));
+        return rawVertices.map(v -> (AbstractVertex) new FlashcardVertex(traversalSource, v));
     }
 }
