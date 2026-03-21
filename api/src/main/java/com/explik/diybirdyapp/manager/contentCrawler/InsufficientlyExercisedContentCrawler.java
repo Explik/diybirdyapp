@@ -61,6 +61,10 @@ public class InsufficientlyExercisedContentCrawler implements ContentCrawler<Fla
             return Stream.empty();
         }
 
+        // Shuffle roots to avoid repeatedly favoring low-order deck flashcards
+        // when callers apply a limit to the crawler output.
+        Collections.shuffle(practicedFlashcards);
+
         List<AbstractVertex> selectedContent = new ArrayList<>();
         Set<String> emittedVertexIds = new HashSet<>();
 
