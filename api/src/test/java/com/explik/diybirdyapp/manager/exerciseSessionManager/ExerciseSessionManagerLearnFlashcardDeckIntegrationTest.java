@@ -1,7 +1,9 @@
 package com.explik.diybirdyapp.manager.exerciseSessionManager;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationContext;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck.FlashcardDeckExerciseManager;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck.ExerciseSessionManagerLearnFlashcardDeck;
 import com.explik.diybirdyapp.model.exercise.*;
 import com.explik.diybirdyapp.persistence.vertex.*;
@@ -16,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +39,9 @@ public class ExerciseSessionManagerLearnFlashcardDeckIntegrationTest {
     
     @Autowired
     private ExerciseSessionManagerLearnFlashcardDeck sessionManager;
+
+    @Autowired
+    private FlashcardDeckExerciseManager flashcardDeckExerciseManager;
     
     private FlashcardDeckVertex testDeck;
     
@@ -234,6 +240,74 @@ public class ExerciseSessionManagerLearnFlashcardDeckIntegrationTest {
             "Session should be marked as completed after exhausting all content");
     }
 
+    @Test
+    void givenFlashcardContent_whenIncorrectRepeated_thenDifficultyLadderBacksOffAndRecovers() {
+        // Arrange
+        var deck = testDeck;
+        var sessionVertex = createLearnSession(deck);
+        var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+        stateVertex.setType("activeContentBatch");
+        sessionVertex.addState(stateVertex);
+
+        var flashcard = deck.getFlashcards().get(0);
+
+        // 1) No history => first ladder step
+        var firstExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(firstExercise);
+        assertEquals(ExerciseTypes.VIEW_FLASHCARD, firstExercise.getExerciseType().getId());
+
+        // 2) No scorable outcome for view => continue to next step
+        var secondExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(secondExercise);
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, secondExercise.getExerciseType().getId());
+
+        // 3) First incorrect => repeat same exercise type
+        addExerciseFeedback(secondExercise, sessionVertex, "incorrect");
+        var thirdExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(thirdExercise);
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, thirdExercise.getExerciseType().getId());
+
+        // 4) Second consecutive incorrect => step back to previous rung
+        addExerciseFeedback(thirdExercise, sessionVertex, "incorrect");
+        var fourthExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(fourthExercise);
+        assertEquals(ExerciseTypes.VIEW_FLASHCARD, fourthExercise.getExerciseType().getId());
+
+        // 5) Back on select, then correct => advance to write
+        var fifthExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(fifthExercise);
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, fifthExercise.getExerciseType().getId());
+
+        addExerciseFeedback(fifthExercise, sessionVertex, "correct");
+        var sixthExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(sixthExercise);
+        assertEquals(ExerciseTypes.WRITE_FLASHCARD, sixthExercise.getExerciseType().getId());
+    }
+
     // Helper method
     private FlashcardDeckVertex createTestDeckWithFlashcards(int count) {
         var deck = FlashcardDeckVertex.create(traversalSource);
@@ -270,6 +344,43 @@ public class ExerciseSessionManagerLearnFlashcardDeckIntegrationTest {
         }
         
         return deck;
+    }
+
+    private ExerciseSessionVertex createLearnSession(FlashcardDeckVertex deck) {
+        var sessionVertex = ExerciseSessionVertex.create(traversalSource);
+        sessionVertex.setId("learn-session-" + System.currentTimeMillis());
+        sessionVertex.setType(ExerciseSessionTypes.LEARN_FLASHCARD);
+        sessionVertex.setCompleted(false);
+        sessionVertex.setFlashcardDeck(deck);
+
+        var optionsVertex = ExerciseSessionOptionsVertex.create(traversalSource);
+        optionsVertex.setIncludeReviewExercises(true);
+        optionsVertex.setIncludeMultipleChoiceExercises(true);
+        optionsVertex.setIncludeWritingExercises(true);
+        optionsVertex.setIncludeListeningExercises(false);
+        optionsVertex.setIncludePronunciationExercises(false);
+        sessionVertex.setOptions(optionsVertex);
+
+        return sessionVertex;
+    }
+
+    private void addExerciseFeedback(
+            ExerciseVertex exerciseVertex,
+            ExerciseSessionVertex sessionVertex,
+            String status) {
+        var answerVertex = ExerciseAnswerVertex.create(traversalSource);
+        answerVertex.setId(UUID.randomUUID().toString());
+        answerVertex.setExercise(exerciseVertex);
+        answerVertex.setSession(sessionVertex);
+
+        if (exerciseVertex.getContent() instanceof ContentVertex contentVertex) {
+            answerVertex.setContent(contentVertex);
+        }
+
+        var feedbackVertex = ExerciseFeedbackVertex.create(traversalSource);
+        feedbackVertex.setType("general");
+        feedbackVertex.setStatus(status);
+        feedbackVertex.setAnswer(answerVertex);
     }
     
     private ExerciseCreationContext createContext(String deckId) {

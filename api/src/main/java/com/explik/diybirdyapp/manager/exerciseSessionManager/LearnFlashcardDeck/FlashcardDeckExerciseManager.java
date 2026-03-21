@@ -5,9 +5,12 @@ import com.explik.diybirdyapp.manager.contentCrawler.FlashcardDeckContentCrawler
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.MultiStageTapPairsExerciseCreationManager;
 import com.explik.diybirdyapp.persistence.vertex.*;
+import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,39 @@ import java.util.List;
  */
 @Component
 public class FlashcardDeckExerciseManager {
+
+    private static final String FEEDBACK_STATUS_CORRECT = "correct";
+    private static final String FEEDBACK_STATUS_INCORRECT = "incorrect";
+    private static final String FEEDBACK_TYPE_I_WAS_CORRECT = "i-was-correct";
+    private static final String FEEDBACK_PROPERTY_TYPE = "type";
+    private static final String FEEDBACK_PROPERTY_STATUS = "status";
+
+    private static final String REVIEW_RATING_AGAIN = "again";
+    private static final String REVIEW_RATING_HARD = "hard";
+
+    private enum AttemptResult {
+        CORRECT,
+        INCORRECT,
+        UNKNOWN
+    }
+
+    private static final class ExerciseAttempt {
+        private final String exerciseType;
+        private final AttemptResult result;
+
+        private ExerciseAttempt(String exerciseType, AttemptResult result) {
+            this.exerciseType = exerciseType;
+            this.result = result;
+        }
+
+        private String getExerciseType() {
+            return exerciseType;
+        }
+
+        private AttemptResult getResult() {
+            return result;
+        }
+    }
     
     @Autowired
     private ReviewFlashcardExerciseCreationManager reviewFlashcardExerciseCreationManager;
@@ -62,15 +98,14 @@ public class FlashcardDeckExerciseManager {
             return null;
         }
 
-        int startIndex = 0;
         var contentId = getContentId(content);
-        if (stateVertex != null && contentId != null) {
-            var lastExerciseType = stateVertex.getLastExerciseTypeForContent(contentId);
-            int lastExerciseTypeIndex = exerciseTypes.indexOf(lastExerciseType);
-            if (lastExerciseTypeIndex >= 0) {
-                startIndex = (lastExerciseTypeIndex + 1) % exerciseTypes.size();
-            }
-        }
+        int startIndex = determineStartIndex(
+                traversalSource,
+                sessionVertex,
+                stateVertex,
+                content,
+                exerciseTypes,
+                contentId);
 
         for (int i = 0; i < exerciseTypes.size(); i++) {
             int exerciseTypeIndex = (startIndex + i) % exerciseTypes.size();
@@ -91,6 +126,159 @@ public class FlashcardDeckExerciseManager {
         }
 
         return null;
+    }
+
+    private int determineStartIndex(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex,
+            AbstractVertex content,
+            List<String> exerciseTypes,
+            String contentId) {
+
+        int defaultStartIndex = 0;
+
+        if (stateVertex != null && contentId != null) {
+            var lastExerciseType = stateVertex.getLastExerciseTypeForContent(contentId);
+            int lastExerciseTypeIndex = exerciseTypes.indexOf(lastExerciseType);
+            if (lastExerciseTypeIndex >= 0) {
+                defaultStartIndex = (lastExerciseTypeIndex + 1) % exerciseTypes.size();
+            }
+        }
+
+        if (sessionVertex == null || content == null) {
+            return defaultStartIndex;
+        }
+
+        var attemptHistory = getAttemptHistoryForContent(traversalSource, sessionVertex, content);
+        if (attemptHistory.isEmpty()) {
+            return defaultStartIndex;
+        }
+
+        var latestAttempt = attemptHistory.get(0);
+        int latestExerciseTypeIndex = exerciseTypes.indexOf(latestAttempt.getExerciseType());
+        if (latestExerciseTypeIndex < 0) {
+            return defaultStartIndex;
+        }
+
+        return switch (latestAttempt.getResult()) {
+            case CORRECT -> (latestExerciseTypeIndex + 1) % exerciseTypes.size();
+            case INCORRECT -> {
+                int consecutiveIncorrect = countConsecutiveIncorrectAttempts(
+                        attemptHistory,
+                        latestAttempt.getExerciseType());
+
+                if (consecutiveIncorrect >= 2) {
+                    yield Math.max(0, latestExerciseTypeIndex - 1);
+                }
+
+                yield latestExerciseTypeIndex;
+            }
+            case UNKNOWN -> defaultStartIndex;
+        };
+    }
+
+    private List<ExerciseAttempt> getAttemptHistoryForContent(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            AbstractVertex content) {
+        if (sessionVertex == null || content == null) {
+            return List.of();
+        }
+
+        var contentVertexId = content.getUnderlyingVertex().id();
+        List<Vertex> exerciseVertices = traversalSource.V(sessionVertex.getUnderlyingVertex())
+                .outE(ExerciseSessionVertex.EDGE_EXERCISE)
+                .order()
+                .by(ExerciseSessionVertex.EDGE_EXERCISE_PROPERTY_CREATED_AT, Order.asc)
+                .inV()
+                .hasLabel(ExerciseVertex.LABEL)
+                .where(__.out(ExerciseVertex.EDGE_CONTENT).hasId(contentVertexId))
+                .toList();
+
+        var attempts = new ArrayList<ExerciseAttempt>();
+        for (var exerciseVertex : exerciseVertices) {
+            var exercise = new ExerciseVertex(traversalSource, exerciseVertex);
+            attempts.add(new ExerciseAttempt(
+                    exercise.getExerciseType().getId(),
+                    resolveAttemptResult(traversalSource, exerciseVertex)));
+        }
+
+        return attempts;
+    }
+
+    private int countConsecutiveIncorrectAttempts(
+            List<ExerciseAttempt> attemptHistory,
+            String exerciseType) {
+        int count = 0;
+
+        for (var attempt : attemptHistory) {
+            if (attempt.getResult() != AttemptResult.INCORRECT) {
+                break;
+            }
+
+            if (!attempt.getExerciseType().equals(exerciseType)) {
+                break;
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    private AttemptResult resolveAttemptResult(GraphTraversalSource traversalSource, Vertex exerciseVertex) {
+        boolean hasIWasCorrectFeedback = traversalSource.V(exerciseVertex)
+                .in(ExerciseAnswerVertex.EDGE_EXERCISE)
+                .hasLabel(ExerciseAnswerVertex.LABEL)
+                .in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
+                .hasLabel(ExerciseFeedbackVertex.LABEL)
+            .has(FEEDBACK_PROPERTY_TYPE, FEEDBACK_TYPE_I_WAS_CORRECT)
+                .hasNext();
+        if (hasIWasCorrectFeedback) {
+            return AttemptResult.CORRECT;
+        }
+
+        boolean hasIncorrectFeedback = traversalSource.V(exerciseVertex)
+                .in(ExerciseAnswerVertex.EDGE_EXERCISE)
+                .hasLabel(ExerciseAnswerVertex.LABEL)
+                .in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
+                .hasLabel(ExerciseFeedbackVertex.LABEL)
+            .has(FEEDBACK_PROPERTY_STATUS, FEEDBACK_STATUS_INCORRECT)
+                .hasNext();
+        if (hasIncorrectFeedback) {
+            return AttemptResult.INCORRECT;
+        }
+
+        boolean hasCorrectFeedback = traversalSource.V(exerciseVertex)
+                .in(ExerciseAnswerVertex.EDGE_EXERCISE)
+                .hasLabel(ExerciseAnswerVertex.LABEL)
+                .in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
+                .hasLabel(ExerciseFeedbackVertex.LABEL)
+            .has(FEEDBACK_PROPERTY_STATUS, FEEDBACK_STATUS_CORRECT)
+                .hasNext();
+        if (hasCorrectFeedback) {
+            return AttemptResult.CORRECT;
+        }
+
+        var recognizabilityRating = traversalSource.V(exerciseVertex)
+                .in(ExerciseAnswerVertex.EDGE_EXERCISE)
+                .hasLabel(ExerciseAnswerVertex.LABEL)
+                .out(ExerciseAnswerVertex.EDGE_RECOGNIZABILITY_RATING)
+                .hasLabel(RecognizabilityRatingVertex.LABEL)
+                .values(RecognizabilityRatingVertex.PROPERTY_RATING)
+                .tryNext();
+
+        if (recognizabilityRating.isPresent()) {
+            var rating = recognizabilityRating.get().toString();
+            if (REVIEW_RATING_AGAIN.equals(rating) || REVIEW_RATING_HARD.equals(rating)) {
+                return AttemptResult.INCORRECT;
+            }
+
+            return AttemptResult.CORRECT;
+        }
+
+        return AttemptResult.UNKNOWN;
     }
 
     private ExerciseVertex tryCreateExerciseForType(
