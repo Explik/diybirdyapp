@@ -1,5 +1,6 @@
 package com.explik.diybirdyapp.manager.contentCrawler;
 
+import com.explik.diybirdyapp.persistence.command.helper.ExerciseAnswerCommandHelper;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseAnswerVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseFeedbackVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionStateVertex;
@@ -44,6 +45,7 @@ public class FailedExerciseErrorScoreEvaluator {
     private static final String FEEDBACK_TYPE_I_WAS_CORRECT = "i-was-correct";
         private static final String FEEDBACK_PROPERTY_TYPE = "type";
         private static final String FEEDBACK_PROPERTY_STATUS = "status";
+        private static final String ANSWER_PROPERTY_TYPE = "type";
 
     private static final double SCORE_INCORRECT = 3.0d;
     private static final double SCORE_CORRECT = -3.0d;
@@ -208,12 +210,17 @@ public class FailedExerciseErrorScoreEvaluator {
     private GraphTraversal<?, ?> hasScorableFeedback() {
         return __.in(ExerciseAnswerVertex.EDGE_EXERCISE)
                 .hasLabel(ExerciseAnswerVertex.LABEL)
-                .in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
-                .hasLabel(ExerciseFeedbackVertex.LABEL)
                 .or(
-                        __.has(FEEDBACK_PROPERTY_TYPE, FEEDBACK_TYPE_I_WAS_CORRECT),
-                        __.has(FEEDBACK_PROPERTY_STATUS, FEEDBACK_STATUS_INCORRECT),
-                        __.has(FEEDBACK_PROPERTY_STATUS, FEEDBACK_STATUS_CORRECT));
+                        __.has(ANSWER_PROPERTY_TYPE, ExerciseAnswerCommandHelper.ANSWER_TYPE_SKIPPED),
+                        __.in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
+                                .hasLabel(ExerciseFeedbackVertex.LABEL)
+                                .has(FEEDBACK_PROPERTY_TYPE, FEEDBACK_TYPE_I_WAS_CORRECT),
+                        __.in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
+                                .hasLabel(ExerciseFeedbackVertex.LABEL)
+                                .has(FEEDBACK_PROPERTY_STATUS, FEEDBACK_STATUS_INCORRECT),
+                        __.in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
+                                .hasLabel(ExerciseFeedbackVertex.LABEL)
+                                .has(FEEDBACK_PROPERTY_STATUS, FEEDBACK_STATUS_CORRECT));
     }
 
     private GraphTraversal<?, ?> answerScoreSumTraversal() {
@@ -221,6 +228,9 @@ public class FailedExerciseErrorScoreEvaluator {
                 .hasLabel(ExerciseAnswerVertex.LABEL)
                 .map(
                         __.coalesce(
+                                __.has(ANSWER_PROPERTY_TYPE, ExerciseAnswerCommandHelper.ANSWER_TYPE_SKIPPED)
+                                        .limit(1)
+                                        .constant(SCORE_CORRECT),
                                 __.in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
                                         .hasLabel(ExerciseFeedbackVertex.LABEL)
                                         .has(FEEDBACK_PROPERTY_TYPE, FEEDBACK_TYPE_I_WAS_CORRECT)

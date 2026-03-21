@@ -153,13 +153,15 @@ Output: Flashcard1, TextContent1, Pronunciation, Flashcard2, TextContent2
 3. Based on a minimum error rate, select relevant content nodes 
 4. Return a random sample of selected content nodes
 
+If an exercise is skipped, the system stores a special-case answer (`type = skipped`) and scores it as correct in this calculation.
+
 Note, the random selection is required to ensure the user is not only expossed to the most difficult content, but also to more moderately difficult content.  
 
 **Identifying relevant exercise**: Exercise generation is based on content type and prior exercise history. For example, review, select and write exercises can all be generated for a flashcard, but it makes sense to start with review, then select and then writing exercise. Additionally, if a user does not perform well in the select exercise, then it does not make sense to show them a writing exercise for the same flashcard, because they will most likely fail. Each content type, therefore, has a difficulty ladder of exercise types, and the exercise manager selects the most appropiate exercise type based on the content type and the exercise history for that content. Algorithm: 
 1. Determine content type (ex. flashcard, text content, pronunciation content)
 2. For the content type, determine the exercise type ladder (ex. for flashcard: review -> select -> write)
 3A. If no prior exercises, then select first exercise type in ladder
-3B. If the previous exercise was answered correctly, then select next exercise type in ladder
+3B. If the previous exercise was answered correctly (or skipped), then select next exercise type in ladder
 3C. If the previous exercise was answered incorrectly once, then repeat the same exercise type in ladder 
 3D. If the previous exercise was answered incorrectly multiple times, then select previous exercise type in ladder
 4. If the exercise has already been shown 3 times in the last 10 exercise, then skip the generation of an exercise for now to avoid showing the same exercise too many times in a short periode.
@@ -173,7 +175,7 @@ The orb weaver algorithm is used in the flashcard deck learning sessions.
 
 **InsufficientlyExercisedContentCrawler**: The crawler takes a flashcard deck, identifies all practiced content, identifies any content that has not been sufficiently exercises returns a subset of this content to be used in the next exercise batch. 
 
-**FailedExerciseContentCrawler**: The crawler takes a flashcard deck, identifies all recently "failed" exercise, identifies any content associated with these exercises and returns a subset of this content to be used in the next exercise batch. A relevant exercise is any exercise with an answer with incorrect feedback and no "I was correct" feedback. Content is associated with an exercise if it is the main content, an answer option or etc. All returned content must be part of the flashcard deck, either flashcards or associated content. 
+**FailedExerciseContentCrawler**: The crawler takes a flashcard deck, identifies all recently "failed" exercise, identifies any content associated with these exercises and returns a subset of this content to be used in the next exercise batch. A relevant exercise is any exercise with an answer with incorrect feedback and no "I was correct" feedback. Skipped answers are stored as `type = skipped` with `correct` feedback status, so skipped exercises are not considered failed. Content is associated with an exercise if it is the main content, an answer option or etc. All returned content must be part of the flashcard deck, either flashcards or associated content. 
 
 **FlashcardDeckAssociatedContentCreationManager**: The manager dispatches async content creation tasks to create associated content for the flashcards selected by the crawler. Depending on the session settings, the associated content may include auto-generated transcriptions, pronunciation, etc. The manager uses a set of content creation strategies to create the associated content using the ContentCreationContext.
 

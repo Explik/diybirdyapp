@@ -4,6 +4,7 @@ import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.manager.contentCrawler.FlashcardDeckContentCrawler;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.*;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.MultiStageTapPairsExerciseCreationManager;
+import com.explik.diybirdyapp.persistence.command.helper.ExerciseAnswerCommandHelper;
 import com.explik.diybirdyapp.persistence.vertex.*;
 import org.apache.tinkerpop.gremlin.process.traversal.Order;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -28,6 +29,7 @@ public class FlashcardDeckExerciseManager {
     private static final String FEEDBACK_TYPE_I_WAS_CORRECT = "i-was-correct";
     private static final String FEEDBACK_PROPERTY_TYPE = "type";
     private static final String FEEDBACK_PROPERTY_STATUS = "status";
+    private static final String ANSWER_PROPERTY_TYPE = "type";
 
     private static final String REVIEW_RATING_AGAIN = "again";
     private static final String REVIEW_RATING_HARD = "hard";
@@ -228,12 +230,21 @@ public class FlashcardDeckExerciseManager {
     }
 
     private AttemptResult resolveAttemptResult(GraphTraversalSource traversalSource, Vertex exerciseVertex) {
+        boolean hasSkippedAnswer = traversalSource.V(exerciseVertex)
+                .in(ExerciseAnswerVertex.EDGE_EXERCISE)
+                .hasLabel(ExerciseAnswerVertex.LABEL)
+                .has(ANSWER_PROPERTY_TYPE, ExerciseAnswerCommandHelper.ANSWER_TYPE_SKIPPED)
+                .hasNext();
+        if (hasSkippedAnswer) {
+            return AttemptResult.CORRECT;
+        }
+
         boolean hasIWasCorrectFeedback = traversalSource.V(exerciseVertex)
                 .in(ExerciseAnswerVertex.EDGE_EXERCISE)
                 .hasLabel(ExerciseAnswerVertex.LABEL)
                 .in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
                 .hasLabel(ExerciseFeedbackVertex.LABEL)
-            .has(FEEDBACK_PROPERTY_TYPE, FEEDBACK_TYPE_I_WAS_CORRECT)
+                .has(FEEDBACK_PROPERTY_TYPE, FEEDBACK_TYPE_I_WAS_CORRECT)
                 .hasNext();
         if (hasIWasCorrectFeedback) {
             return AttemptResult.CORRECT;
