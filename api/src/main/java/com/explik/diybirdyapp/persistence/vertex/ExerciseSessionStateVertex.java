@@ -16,6 +16,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String PROPERTY_TYPE = "type";
     public final static String PROPERTY_CURRENT_CONTENT_INDEX = "currentContentIndex";
     public final static String PROPERTY_CURRENT_ROUND = "currentRound";
+    private static final String PROPERTY_HAS_SEEN_VIEW_EXERCISE_PREFIX = "hasSeenViewExercise_";
     
     // Exercise round configuration
     public static final int MAX_EXERCISES_PER_CONTENT = 5; // Number of rounds per content piece
@@ -164,6 +165,14 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
      */
     public void setLastExerciseTypeForContent(String vertexId, String exerciseType) {
         setProperty("lastExerciseType_" + vertexId, exerciseType);
+    }
+
+    public boolean hasSeenViewExerciseForContent(String vertexId) {
+        return getProperty(PROPERTY_HAS_SEEN_VIEW_EXERCISE_PREFIX + vertexId, false);
+    }
+
+    public void setHasSeenViewExerciseForContent(String vertexId, boolean hasSeen) {
+        setProperty(PROPERTY_HAS_SEEN_VIEW_EXERCISE_PREFIX + vertexId, hasSeen);
     }
 
     public List<FlashcardVertex> getPracticedContent() {

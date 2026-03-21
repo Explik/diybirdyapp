@@ -95,12 +95,17 @@ public class FlashcardDeckExerciseManager {
             return null;
         }
 
-        var exerciseTypes = determineExerciseTypesForContent(sessionVertex, content);
+        var contentId = getContentId(content);
+        var exerciseTypes = determineExerciseTypesForContent(
+                traversalSource,
+                sessionVertex,
+                stateVertex,
+                contentId,
+                content);
         if (exerciseTypes.isEmpty()) {
             return null;
         }
 
-        var contentId = getContentId(content);
         int startIndex = determineStartIndex(
                 traversalSource,
                 sessionVertex,
@@ -121,6 +126,9 @@ public class FlashcardDeckExerciseManager {
             if (exercise != null) {
                 if (stateVertex != null && contentId != null) {
                     stateVertex.setLastExerciseTypeForContent(contentId, exerciseType);
+                    if (ExerciseTypes.VIEW_FLASHCARD.equals(exerciseType)) {
+                        stateVertex.setHasSeenViewExerciseForContent(contentId, true);
+                    }
                 }
 
                 return exercise;
@@ -346,7 +354,10 @@ public class FlashcardDeckExerciseManager {
     }
 
     private List<String> determineExerciseTypesForContent(
+            GraphTraversalSource traversalSource,
             ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex,
+            String contentId,
             AbstractVertex content) {
         var options = sessionVertex.getOptions();
         if (options == null) {
@@ -354,9 +365,16 @@ public class FlashcardDeckExerciseManager {
         }
 
         var exerciseTypes = new ArrayList<String>();
+        boolean hasSeenViewExercise = hasSeenViewExerciseForContent(
+                traversalSource,
+                sessionVertex,
+                stateVertex,
+                content,
+                contentId);
 
         if (content instanceof FlashcardVertex) {
-            if (options.getIncludeReviewExercises()) {
+            if (options.getIncludeReviewExercises() &&
+                    !hasSeenViewExercise) {
                 exerciseTypes.add(ExerciseTypes.VIEW_FLASHCARD);
             }
 
@@ -382,6 +400,43 @@ public class FlashcardDeckExerciseManager {
         }
 
         return exerciseTypes;
+    }
+
+    private boolean hasSeenViewExerciseForContent(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex,
+            AbstractVertex content,
+            String contentId) {
+        if (contentId != null && stateVertex != null && stateVertex.hasSeenViewExerciseForContent(contentId)) {
+            return true;
+        }
+
+        return hasExerciseTypeForContentInSession(
+                traversalSource,
+                sessionVertex,
+                content,
+                ExerciseTypes.VIEW_FLASHCARD);
+    }
+
+    private boolean hasExerciseTypeForContentInSession(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            AbstractVertex content,
+            String exerciseTypeId) {
+        if (traversalSource == null || sessionVertex == null || content == null || exerciseTypeId == null) {
+            return false;
+        }
+
+        var contentVertexId = content.getUnderlyingVertex().id();
+        return traversalSource.V(sessionVertex.getUnderlyingVertex())
+                .out(ExerciseSessionVertex.EDGE_EXERCISE)
+                .hasLabel(ExerciseVertex.LABEL)
+                .where(__.out(ExerciseVertex.EDGE_CONTENT).hasId(contentVertexId))
+                .where(__.out(ExerciseVertex.EDGE_TYPE)
+                        .hasLabel(ExerciseTypeVertex.LABEL)
+                        .has(ExerciseTypeVertex.PROPERTY_ID, exerciseTypeId))
+                .hasNext();
     }
 
     private String getContentId(AbstractVertex vertex) {
