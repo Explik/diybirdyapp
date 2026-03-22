@@ -39,12 +39,17 @@ if 'backend_languages' not in st.session_state:
 # Helper functions
 def format_field_values(anki_deck, field_name, max_length=100):
     """Format field values from Anki deck for preview"""
-    iterator = (card.get_raw_value(field_name).replace(".", "").replace("?", " ").replace("\n", " ").replace("<br>", " ") for card in anki_deck.get_flashcards())
-
     buffer = set()
     buffer_length = 0
 
-    for item in iterator: 
+    for card in anki_deck.get_flashcards():
+        try:
+            raw_value = card.get_raw_value(field_name)
+        except ValueError:
+            continue
+
+        item = str(raw_value).replace(".", "").replace("?", " ").replace("\n", " ").replace("<br>", " ")
+
         if len(item) == 0: 
             continue
         if buffer_length > max_length:
@@ -87,13 +92,25 @@ def detect_content_type(anki_deck, field_name) -> str:
     """Detect content type (text, audio, image, video) from a field by checking file extensions"""
     import re
     
-    # Check the first card to determine the field type
-    first_card = anki_deck.get_flashcards()[0]
-    raw_value = first_card.get_raw_value(field_name)
+    raw_value = ""
+
+    # Find the first non-empty value for the selected field
+    for flashcard in anki_deck.get_flashcards():
+        try:
+            candidate_value = flashcard.get_raw_value(field_name)
+        except ValueError:
+            continue
+
+        if candidate_value:
+            raw_value = candidate_value
+            break
+
+    if not raw_value:
+        return "Text"
     
     # Extract potential filenames from the field
     # Check for sound tag: [sound:filename.ext]
-    sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value)
+    sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value, re.IGNORECASE)
     if sound_match:
         filename = sound_match.group(1)
         ext = filename.split('.')[-1].lower() if '.' in filename else ''

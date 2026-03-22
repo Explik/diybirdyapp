@@ -60,31 +60,44 @@ def fetch_media_map(folder_path):
 
     return media_map   
 
-def get_field_names(db): 
-    # Fetch cursor 
+def get_model_field_map(db) -> dict[str, list[str]]:
+    # Fetch model schema from Anki collection metadata
     cursor = db.cursor()
-
-    # Collection data is stored inside as a single row the "col" and "models" column table
     result = cursor.execute("SELECT models FROM col LIMIT 1").fetchone()
-    
+
+    if not result or not result[0]:
+        raise ValueError("Could not load Anki model metadata from collection database")
+
     field_schema = json.loads(result[0])
+    model_field_map = dict()
 
-    # Collection columns
-    main_key = next(iter(field_schema))
-    flds = field_schema[main_key]["flds"]
+    for model_id, model in field_schema.items():
+        fields = model.get("flds", [])
+        model_field_map[str(model_id)] = [field.get("name") for field in fields if field.get("name")]
 
-    return [x["name"] for x in flds]
+    return model_field_map
+
+def get_field_names(db): 
+    model_field_map = get_model_field_map(db)
+    if not model_field_map:
+        return []
+
+    # Keep default behavior: expose field names from the first model for primary mapping UI
+    main_key = next(iter(model_field_map))
+    return model_field_map[main_key]
 
 # Fetches flashcards from the ANKI database 
 def get_flashcards(db) -> list[dict]: 
-    # Fetch field names 
-    field_names = get_field_names(db)
+    model_field_map = get_model_field_map(db)
+    default_field_names = model_field_map[next(iter(model_field_map))] if model_field_map else []
 
     # Fetch flashcard fields 
     buffer = list()
 
     for row in db.cursor().execute("SELECT * FROM notes").fetchall():
         fields = dict()
+        model_id = str(row[2]) if len(row) > 2 else None
+        field_names = model_field_map.get(model_id, default_field_names)
         field_values = row[6].split("\x1f")
 
         for i in range(min(len(field_names), len(field_values))):
@@ -111,12 +124,26 @@ class AnkiDeck:
         return self.field_names
     
     def get_sound_field_names(self) -> list[str]:
-        buffer = list()
+        """Get field names that contain sound tags (e.g., [sound:file.mp3])."""
+        import re
 
-        for field_name in self.field_names:
-            first_field_value = self.flashcards[0].get_raw_value(field_name)
-            if first_field_value and first_field_value.startswith("[sound:"):
-                buffer.append(field_name)
+        buffer = list()
+        sound_pattern = re.compile(r'\[sound:[^\]]+\]', re.IGNORECASE)
+
+        candidate_field_names = list(dict.fromkeys(
+            list(self.field_names or []) +
+            [field for flashcard in self.flashcards for field in flashcard.flashcard.keys()]
+        ))
+
+        for field_name in candidate_field_names:
+            for flashcard in self.flashcards:
+                try:
+                    raw_value = flashcard.get_raw_value(field_name)
+                except ValueError:
+                    continue
+                if raw_value and sound_pattern.search(raw_value):
+                    buffer.append(field_name)
+                    break
 
         return buffer
     
@@ -124,10 +151,20 @@ class AnkiDeck:
         """Get field names that contain image references (e.g., <img src="file.jpg">)"""
         buffer = list()
 
-        for field_name in self.field_names:
-            first_field_value = self.flashcards[0].get_raw_value(field_name)
-            if first_field_value and "<img" in first_field_value.lower():
-                buffer.append(field_name)
+        candidate_field_names = list(dict.fromkeys(
+            list(self.field_names or []) +
+            [field for flashcard in self.flashcards for field in flashcard.flashcard.keys()]
+        ))
+
+        for field_name in candidate_field_names:
+            for flashcard in self.flashcards:
+                try:
+                    raw_value = flashcard.get_raw_value(field_name)
+                except ValueError:
+                    continue
+                if raw_value and "<img" in raw_value.lower():
+                    buffer.append(field_name)
+                    break
 
         return buffer
     
@@ -135,16 +172,32 @@ class AnkiDeck:
         """Get field names that contain video references (e.g., <video src="file.mp4">)"""
         buffer = list()
 
-        for field_name in self.field_names:
-            first_field_value = self.flashcards[0].get_raw_value(field_name)
-            if first_field_value and "<video" in first_field_value.lower():
-                buffer.append(field_name)
+        candidate_field_names = list(dict.fromkeys(
+            list(self.field_names or []) +
+            [field for flashcard in self.flashcards for field in flashcard.flashcard.keys()]
+        ))
+
+        for field_name in candidate_field_names:
+            for flashcard in self.flashcards:
+                try:
+                    raw_value = flashcard.get_raw_value(field_name)
+                except ValueError:
+                    continue
+                if raw_value and "<video" in raw_value.lower():
+                    buffer.append(field_name)
+                    break
 
         return buffer
     
     def get_media_field_names(self) -> list[str]:
         """Get all field names that contain any type of media (sound, image, or video)"""
-        return list(set(self.get_sound_field_names() + self.get_image_field_names() + self.get_video_field_names()))
+        media_fields = list()
+
+        for field_name in self.get_sound_field_names() + self.get_image_field_names() + self.get_video_field_names():
+            if field_name not in media_fields:
+                media_fields.append(field_name)
+
+        return media_fields
 
     def get_flashcards(self) -> list['AnkiCard']:
         return self.flashcards
@@ -188,11 +241,16 @@ class AnkiCard:
         self.flashcard = flashcard
 
     def get_media_path(self, field_name, transform=None):
+        import re
+
         text_value = self.get_text_value(field_name, transform)
-        text_value = text_value.lstrip("[sound:]").rstrip("]")
-        media_path = self.file.get_media_path(text_value)
+
+        sound_match = re.search(r'\[sound:([^\]]+)\]', text_value, re.IGNORECASE)
+        media_name = sound_match.group(1) if sound_match else text_value.strip()
+
+        media_path = self.file.get_media_path(media_name)
         if not media_path:
-            raise ValueError(f"Media file not found for text value {text_value}")
+            raise ValueError(f"Media file not found for text value {media_name}")
 
         return media_path
     
@@ -207,7 +265,7 @@ class AnkiCard:
         raw_value = self.get_raw_value(field_name)
         
         # Check for sound tag: [sound:filename]
-        sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value)
+        sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value, re.IGNORECASE)
         if sound_match:
             return sound_match.group(1)
         
@@ -226,12 +284,13 @@ class AnkiCard:
     def get_media_type(self, field_name) -> str:
         """Determine the media type (audio, image, video) from the field content"""
         raw_value = self.get_raw_value(field_name)
+        raw_value_lower = raw_value.lower()
         
-        if "[sound:" in raw_value:
+        if "[sound:" in raw_value_lower:
             return "audio"
-        elif "<img" in raw_value.lower():
+        elif "<img" in raw_value_lower:
             return "image"
-        elif "<video" in raw_value.lower():
+        elif "<video" in raw_value_lower:
             return "video"
         
         return None
