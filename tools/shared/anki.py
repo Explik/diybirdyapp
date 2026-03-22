@@ -4,6 +4,8 @@ import tempfile
 import sqlite3
 import zipfile 
 import os
+import html
+import re
 
 ####################################################################################################
 ## Functions 
@@ -59,6 +61,27 @@ def fetch_media_map(folder_path):
         media_map[value] = os.path.join(folder_path, key)
 
     return media_map   
+
+def strip_anki_html(text: str) -> str:
+    """Strip HTML formatting and Anki sound tags from a text field value."""
+    if text is None:
+        return ""
+
+    cleaned_text = str(text)
+
+    # Preserve spacing for common block-level tags before removing all tags.
+    cleaned_text = re.sub(r"(?i)<br\s*/?>", " ", cleaned_text)
+    cleaned_text = re.sub(
+        r"(?i)</?(div|p|li|ul|ol|tr|td|th|table|blockquote|h[1-6])[^>]*>",
+        " ",
+        cleaned_text,
+    )
+
+    cleaned_text = re.sub(r"<[^>]+>", "", cleaned_text)
+    cleaned_text = re.sub(r"\[sound:[^\]]+\]", "", cleaned_text, flags=re.IGNORECASE)
+    cleaned_text = html.unescape(cleaned_text)
+
+    return re.sub(r"\s+", " ", cleaned_text).strip()
 
 def get_model_field_map(db) -> dict[str, list[str]]:
     # Fetch model schema from Anki collection metadata
@@ -241,9 +264,7 @@ class AnkiCard:
         self.flashcard = flashcard
 
     def get_media_path(self, field_name, transform=None):
-        import re
-
-        text_value = self.get_text_value(field_name, transform)
+        text_value = self.get_text_value(field_name, transform, strip_html=False)
 
         sound_match = re.search(r'\[sound:([^\]]+)\]', text_value, re.IGNORECASE)
         media_name = sound_match.group(1) if sound_match else text_value.strip()
@@ -255,7 +276,7 @@ class AnkiCard:
         return media_path
     
     def has_media_path(self, field_name, transform=None):
-        text_value = self.get_text_value(field_name, transform)
+        text_value = self.get_text_value(field_name, transform, strip_html=False)
         media_path = self.file.get_media_path(text_value)
         return media_path is not None
     
@@ -317,10 +338,13 @@ class AnkiCard:
         except Exception:
             return False
     
-    def get_text_value(self, field_name, transform=None):
+    def get_text_value(self, field_name, transform=None, strip_html=True):
         raw_value = self.get_raw_value(field_name)
         transformed_value = transform(raw_value) if transform else raw_value
-        return transformed_value
+        if not strip_html:
+            return transformed_value
+
+        return strip_anki_html(transformed_value)
     
     def get_raw_value(self, field_name):
         if (field_name not in self.flashcard):

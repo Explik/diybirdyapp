@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from login_utils import render_login_sidebar
 from deck_storage import DeckStorage
 from app_utils import show_error, show_success, show_warning, show_info, display_flashcard_preview
-from shared.anki import AnkiDeck
+from shared.anki import AnkiDeck, strip_anki_html
 from import_client import get_languages
 
 st.set_page_config(page_title="Create Deck from Anki", page_icon="📦", layout="wide")
@@ -48,7 +48,7 @@ def format_field_values(anki_deck, field_name, max_length=100):
         except ValueError:
             continue
 
-        item = str(raw_value).replace(".", "").replace("?", " ").replace("\n", " ").replace("<br>", " ")
+        item = strip_anki_formatting(raw_value).replace(".", "").replace("?", " ").replace("\n", " ")
 
         if len(item) == 0: 
             continue
@@ -79,14 +79,7 @@ def create_text_content(text: str, language_id: str = None):
 
 def strip_anki_formatting(text: str) -> str:
     """Strip Anki-specific formatting from text"""
-    import re
-    # Remove HTML tags
-    text = re.sub(r'<[^>]+>', '', text)
-    # Remove sound tags
-    text = re.sub(r'\[sound:[^\]]+\]', '', text)
-    # Clean up extra whitespace
-    text = ' '.join(text.split())
-    return text.strip()
+    return strip_anki_html(text)
 
 def detect_content_type(anki_deck, field_name) -> str:
     """Detect content type (text, audio, image, video) from a field by checking file extensions"""
