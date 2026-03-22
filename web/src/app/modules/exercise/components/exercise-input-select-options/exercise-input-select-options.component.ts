@@ -50,6 +50,12 @@ export class ExerciseInputSelectOptionsComponent implements OnChanges, OnDestroy
         this.hotkeyService.onHotkey({ key }).subscribe(() => this.selectOptionByIndex(index))
       );
     });
+    
+    if (this.input?.initiallyHideOptions) {
+      this.subs.add(
+        this.hotkeyService.onHotkey({ key: 'space' }).subscribe(() => this.handleShowOptions())
+      );
+    }
   }
 
   get optionHeightClass(): string {

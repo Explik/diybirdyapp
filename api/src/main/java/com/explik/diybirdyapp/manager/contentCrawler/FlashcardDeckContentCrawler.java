@@ -1,10 +1,16 @@
 package com.explik.diybirdyapp.manager.contentCrawler;
 
 import com.explik.diybirdyapp.persistence.vertex.*;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Content Crawler - Retrieves all content associated with a flashcard deck.
@@ -23,47 +29,73 @@ public class FlashcardDeckContentCrawler implements ContentCrawler<FlashcardDeck
      */
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckVertex flashcardDeck) {
+        if (flashcardDeck == null) {
+            return Stream.empty();
+        }
+
+        GraphTraversalSource traversalSource = flashcardDeck.getUnderlyingSource();
+        Vertex deckVertex = flashcardDeck.getUnderlyingVertex();
+        if (traversalSource == null || deckVertex == null) {
+            return Stream.empty();
+        }
+
         Set<String> seenVertexIds = new HashSet<>();
 
-        return flashcardDeck.getFlashcards().stream()
-                .flatMap(this::streamFlashcardContent)
-                .filter(vertex -> markIfUnseen(vertex, seenVertexIds));
+        var traversal = traversalSource.V(deckVertex)
+                .outE(FlashcardDeckVertex.EDGE_FLASHCARD)
+                .order().by(FlashcardDeckVertex.EDGE_FLASHCARD_PROPERTY_ORDER)
+                .inV()
+                .hasLabel(FlashcardVertex.LABEL)
+                .local(__.union(
+                        __.identity(),
+                        __.out(FlashcardVertex.EDGE_LEFT_CONTENT),
+                        __.out(FlashcardVertex.EDGE_LEFT_CONTENT)
+                                .hasLabel(TextContentVertex.LABEL)
+                                .out(TextContentVertex.EDGE_PRONUNCIATION)
+                                .hasLabel(PronunciationVertex.LABEL),
+                        __.out(FlashcardVertex.EDGE_RIGHT_CONTENT),
+                        __.out(FlashcardVertex.EDGE_RIGHT_CONTENT)
+                                .hasLabel(TextContentVertex.LABEL)
+                                .out(TextContentVertex.EDGE_PRONUNCIATION)
+                                .hasLabel(PronunciationVertex.LABEL)
+                    ));
+
+                return StreamSupport.stream(
+                        Spliterators.spliteratorUnknownSize(traversal, Spliterator.ORDERED),
+                        false)
+                .filter(vertex -> markIfUnseen(vertex, seenVertexIds))
+                .map(vertex -> mapToVertexModel(traversalSource, vertex))
+                .filter(Objects::nonNull);
     }
 
-    /**
-     * Collects all content related to a flashcard including the flashcard itself, its left/right content,
-     * and associated content like pronunciations.
-     *
-     * @param flashcardVertex The flashcard to collect content for
-     * @return stream of related content in deterministic order
-     */
-    private Stream<AbstractVertex> streamFlashcardContent(FlashcardVertex flashcardVertex) {
-        return Stream.concat(
-                Stream.of(flashcardVertex),
-                Stream.of(flashcardVertex.getLeftContent(), flashcardVertex.getRightContent())
-                        .filter(Objects::nonNull)
-                        .flatMap(this::streamContentAndAssociations));
-    }
-
-    private Stream<AbstractVertex> streamContentAndAssociations(ContentVertex content) {
-        if (content instanceof TextContentVertex textContent) {
-            return Stream.concat(Stream.of(content), textContent.getPronunciations().stream().map(p -> (AbstractVertex) p));
-        }
-        return Stream.of(content);
-    }
-
-    private boolean markIfUnseen(AbstractVertex vertex, Set<String> seenVertexIds) {
+    private boolean markIfUnseen(Vertex vertex, Set<String> seenVertexIds) {
         String vertexId = getVertexId(vertex);
         return vertexId != null && seenVertexIds.add(vertexId);
     }
 
-    private String getVertexId(AbstractVertex vertex) {
-        if (vertex instanceof ContentVertex contentVertex) {
-            return contentVertex.getId();
+    private AbstractVertex mapToVertexModel(GraphTraversalSource traversalSource, Vertex vertex) {
+        String label = vertex.label();
+        if (PronunciationVertex.LABEL.equals(label)) {
+            return new PronunciationVertex(traversalSource, vertex);
         }
-        if (vertex instanceof PronunciationVertex pronunciationVertex) {
-            return pronunciationVertex.getId();
+
+        if (FlashcardVertex.LABEL.equals(label)
+                || TextContentVertex.LABEL.equals(label)
+                || AudioContentVertex.LABEL.equals(label)
+                || ImageContentVertex.LABEL.equals(label)
+                || VideoContentVertex.LABEL.equals(label)) {
+            return VertexHelper.createContent(traversalSource, vertex);
         }
+
         return null;
+    }
+
+    private String getVertexId(Vertex vertex) {
+        if (vertex == null || !vertex.property(ContentVertex.PROPERTY_ID).isPresent()) {
+            return null;
+        }
+
+        Object idValue = vertex.property(ContentVertex.PROPERTY_ID).value();
+        return idValue != null ? idValue.toString() : null;
     }
 }

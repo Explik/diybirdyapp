@@ -9,6 +9,7 @@ import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.Translation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.HtmlUtils;
 
 @Component
 public class TranslationService {
@@ -35,8 +36,12 @@ public class TranslationService {
         );
 
         // Prepare and return the response DTO
-        var dto = new TranslationResponseDto();
-        dto.setTranslatedText(translation.getTranslatedText());
+                var dto = new TranslationResponseDto();
+                dto.setTranslatedText(unescapeHtmlEntities(translation.getTranslatedText()));
         return dto;
     }
+
+        private String unescapeHtmlEntities(String translatedText) {
+                return translatedText == null ? null : HtmlUtils.htmlUnescape(translatedText);
+        }
 }

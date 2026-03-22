@@ -50,9 +50,6 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         // Load the created session
         var vertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
         
-        // Populate availableContent cache for multiple choice options
-        populateAvailableContent(traversalSource, vertex);
-        
         // Populate activeContent with all flashcards
         populateActiveContent(traversalSource, vertex);
 
@@ -107,11 +104,10 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
                     flashcardVertex,
                     "front",
                     ExerciseTypes.SELECT_FLASHCARD);
-            
-            // Set activeContent from session state
-            var activeContentState = getActiveContentState(sessionVertex);
-            if (activeContentState != null) {
-                context.setActiveContent(activeContentState.getActiveContent());
+
+            var flashcardDeck = sessionVertex.getFlashcardDeck();
+            if (flashcardDeck != null) {
+                context.setContentStream(deckContentCrawler.crawl(flashcardDeck));
             }
             
             return selectFlashcardExerciseCreationManager.createExercise(traversalSource, context);
@@ -121,49 +117,6 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         }
 
         return null;
-    }
-    
-    /**
-     * Populates availableContent for the session.
-     * This content is used to generate multiple choice options in exercises.
-     * Creates a separate state vertex to cache all deck content.
-     */
-    private void populateAvailableContent(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
-        var flashcardDeck = sessionVertex.getFlashcardDeck();
-        if (flashcardDeck == null) {
-            return;
-        }
-        
-        // Create or get the availableContent state
-        var stateVertex = getOrCreateAvailableContentState(traversalSource, sessionVertex);
-        
-        // Check if already populated
-        if (!stateVertex.getAvailableContent().isEmpty()) {
-            return;
-        }
-        
-        // Collect all deck content using FlashcardDeckContentCrawler
-        var allContent = deckContentCrawler.crawl(flashcardDeck).toList();
-        stateVertex.setAvailableContent(allContent);
-    }
-    
-    /**
-     * Gets or creates the availableContent state vertex.
-     */
-    private ExerciseSessionStateVertex getOrCreateAvailableContentState(
-            GraphTraversalSource traversalSource,
-            ExerciseSessionVertex sessionVertex) {
-        
-        var stateVertices = sessionVertex.getStatesWithType("availableContent");
-        
-        if (stateVertices.isEmpty()) {
-            var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
-            stateVertex.setType("availableContent");
-            sessionVertex.addState(stateVertex);
-            return stateVertex;
-        }
-        
-        return stateVertices.get(0);
     }
     
     /**
@@ -212,11 +165,4 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         return stateVertices.get(0);
     }
     
-    /**
-     * Gets the active content state vertex for the session.
-     */
-    private ExerciseSessionStateVertex getActiveContentState(ExerciseSessionVertex sessionVertex) {
-        var stateVertices = sessionVertex.getStatesWithType("activeContent");
-        return stateVertices.isEmpty() ? null : stateVertices.get(0);
-    }
 }
