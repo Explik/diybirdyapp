@@ -6,7 +6,6 @@ import com.explik.diybirdyapp.persistence.schema.ExerciseSchemas;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseInputParametersPairOptions;
 import com.explik.diybirdyapp.persistence.schema.parameter.ExerciseParameters;
 import com.explik.diybirdyapp.persistence.vertex.ContentVertex;
-import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseVertex;
 import com.explik.diybirdyapp.persistence.vertex.FlashcardVertex;
 import com.explik.diybirdyapp.persistence.vertex.TextContentVertex;
@@ -15,15 +14,13 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  * Creates a multi-stage tap-pairs exercise for a session.
- * This is a session-level exercise using all text-text flashcard pairs in the active content batch.
+ * This is a session-level exercise using text-text flashcard pairs in the active content batch.
  * Minimum of 8 text-text flashcard pairs is required to generate this exercise.
  */
 @Component
-public class MultiStageTapPairsExerciseCreationManager {
+public class MultiStageTapPairsExerciseCreationManager implements ExerciseCreationManager {
 
     /** Minimum number of text-text flashcard pairs required to create this exercise. */
     public static final int MIN_FLASHCARD_PAIRS = 8;
@@ -34,26 +31,27 @@ public class MultiStageTapPairsExerciseCreationManager {
     @Autowired
     private CommandHandler<CreateExerciseCommand> createExerciseCommandHandler;
 
-    /**
-     * Creates a multi-stage tap pairs exercise from the given flashcard list.
-     * Only text-text flashcards (both sides are text content) are used as pairs.
-     * Returns null if fewer than MIN_FLASHCARD_PAIRS text-text pairs are available.
-     *
-     * @param traversalSource The graph traversal source
-     * @param sessionVertex   The exercise session vertex
-     * @param flashcards      List of flashcard vertices to source pairs from
-     * @return The created exercise vertex, or null if the minimum pair count is not met
-     */
+    @Override
     public ExerciseVertex createExercise(
             GraphTraversalSource traversalSource,
-            ExerciseSessionVertex sessionVertex,
-            List<FlashcardVertex> flashcards) {
+            ExerciseCreationContext context) {
 
-        // Collect text-text pairs: both sides must be TextContentVertex
-        var pairs = flashcards.stream()
-                .filter(f -> f.getLeftContent() instanceof TextContentVertex
-                          && f.getRightContent() instanceof TextContentVertex)
-                .map(f -> List.of((ContentVertex) f.getLeftContent(), (ContentVertex) f.getRightContent()))
+        var sessionVertex = context.getSessionVertex();
+        var contentStream = context.getContentStream();
+
+        if (sessionVertex == null || contentStream == null) {
+            return null;
+        }
+
+        // Collect text-text pairs lazily from the content stream.
+        var pairs = contentStream
+                .filter(vertex -> vertex instanceof FlashcardVertex)
+                .map(vertex -> (FlashcardVertex) vertex)
+                .filter(flashcard -> flashcard.getLeftContent() instanceof TextContentVertex
+                        && flashcard.getRightContent() instanceof TextContentVertex)
+                .map(flashcard -> java.util.List.of(
+                        (ContentVertex) flashcard.getLeftContent(),
+                        (ContentVertex) flashcard.getRightContent()))
                 .toList();
 
         if (pairs.size() < MIN_FLASHCARD_PAIRS) {

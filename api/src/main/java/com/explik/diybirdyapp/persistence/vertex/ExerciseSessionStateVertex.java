@@ -16,6 +16,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String PROPERTY_TYPE = "type";
     public final static String PROPERTY_CURRENT_CONTENT_INDEX = "currentContentIndex";
     public final static String PROPERTY_CURRENT_ROUND = "currentRound";
+    private static final String PROPERTY_HAS_SEEN_VIEW_EXERCISE_PREFIX = "hasSeenViewExercise_";
     
     // Exercise round configuration
     public static final int MAX_EXERCISES_PER_CONTENT = 5; // Number of rounds per content piece
@@ -23,8 +24,7 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_ACTIVE_CONTENT = "hasActiveContent";
     public final static String EDGE_ACTIVE_CONTENT_ORDER = "order";
-    public final static String EDGE_AVAILABLE_CONTENT = "hasAvailableContent";
-    public final static String EDGE_AVAILABLE_CONTENT_ORDER = "order";
+    public final static String EDGE_PRACTICED_CONTENT = "hasPracticedContent";
 
     public String getType() {
         return getPropertyAsString(PROPERTY_TYPE);
@@ -77,44 +77,15 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     }
     
     public void addActiveContent(AbstractVertex vertex) {
-        // Use timestamp for ordering to handle multiple crawler runs
-        long timestamp = System.currentTimeMillis();
-        addOrderedEdgeOneToMany(EDGE_ACTIVE_CONTENT, vertex, EDGE_ACTIVE_CONTENT_ORDER, timestamp);
+        addOrderedEdgeOneToMany(
+                EDGE_ACTIVE_CONTENT,
+                vertex,
+                EDGE_ACTIVE_CONTENT_ORDER,
+                getNextOrderedEdgeValue(EDGE_ACTIVE_CONTENT, EDGE_ACTIVE_CONTENT_ORDER));
     }
     
     public void clearActiveContent() {
         removeEdges(EDGE_ACTIVE_CONTENT);
-    }
-    
-    public List<AbstractVertex> getAvailableContent() {
-        return VertexHelper.getOrderedOutgoingModels(this, EDGE_AVAILABLE_CONTENT, EDGE_AVAILABLE_CONTENT_ORDER, (source, vertex) -> {
-            String label = vertex.label();
-            
-            // Handle PronunciationVertex (not a ContentVertex subclass)
-            if (label.equals(PronunciationVertex.LABEL)) {
-                return new PronunciationVertex(source, vertex);
-            }
-            
-            // Handle all ContentVertex types (including FlashcardVertex, TextContentVertex, AudioContentVertex, etc.)
-            return VertexHelper.createContent(source, vertex);
-        });
-    }
-    
-    public void addAvailableContent(AbstractVertex vertex) {
-        // Use timestamp for ordering
-        long timestamp = System.currentTimeMillis();
-        addOrderedEdgeOneToMany(EDGE_AVAILABLE_CONTENT, vertex, EDGE_AVAILABLE_CONTENT_ORDER, timestamp);
-    }
-    
-    public void setAvailableContent(List<AbstractVertex> vertices) {
-        clearAvailableContent();
-        for (AbstractVertex vertex : vertices) {
-            addAvailableContent(vertex);
-        }
-    }
-    
-    public void clearAvailableContent() {
-        removeEdges(EDGE_AVAILABLE_CONTENT);
     }
     
     /**
@@ -196,9 +167,37 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
         setProperty("lastExerciseType_" + vertexId, exerciseType);
     }
 
+    public boolean hasSeenViewExerciseForContent(String vertexId) {
+        return getProperty(PROPERTY_HAS_SEEN_VIEW_EXERCISE_PREFIX + vertexId, false);
+    }
+
+    public void setHasSeenViewExerciseForContent(String vertexId, boolean hasSeen) {
+        setProperty(PROPERTY_HAS_SEEN_VIEW_EXERCISE_PREFIX + vertexId, hasSeen);
+    }
+
+    public List<FlashcardVertex> getPracticedContent() {
+        return VertexHelper.getOutgoingModels(this, EDGE_PRACTICED_CONTENT, FlashcardVertex::new);
+    }
+
+    public void addPracticedContent(AbstractVertex vertex) {
+        addEdgeOneToMany(EDGE_PRACTICED_CONTENT, vertex);
+    }
+
     public static ExerciseSessionStateVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new ExerciseSessionStateVertex(traversalSource, vertex);
+    }
+
+    private long getNextOrderedEdgeValue(String edgeLabel, String orderProperty) {
+        long nextValue = 0;
+
+        for (Object existingValue : traversalSource.V(vertex).outE(edgeLabel).values(orderProperty).toList()) {
+            if (existingValue instanceof Number numericValue) {
+                nextValue = Math.max(nextValue, numericValue.longValue() + 1);
+            }
+        }
+
+        return nextValue;
     }
 
     public static ExerciseSessionStateVertex findBy(GraphTraversalSource traversalSource, String type, ContentVertex contentVertex, ExerciseSessionVertex sessionVertex) {

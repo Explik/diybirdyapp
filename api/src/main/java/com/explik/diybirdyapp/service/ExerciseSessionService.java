@@ -5,6 +5,10 @@ import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsDto;
 import com.explik.diybirdyapp.persistence.query.modelFactory.ExerciseSessionModelFactory;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationContext;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerSkippedCommand;
+import com.explik.diybirdyapp.persistence.command.CreateExerciseFeedbackCommand;
+import com.explik.diybirdyapp.persistence.command.helper.ExerciseAnswerCommandHelper;
+import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionConfigQuery;
@@ -14,6 +18,8 @@ import com.explik.diybirdyapp.service.helper.ExerciseSessionConfigHelper;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class ExerciseSessionService {
@@ -34,6 +40,12 @@ public class ExerciseSessionService {
 
     @Autowired
     private ExerciseSessionConfigHelper configHelper;
+
+    @Autowired
+    private CommandHandler<CreateExerciseAnswerSkippedCommand> createExerciseAnswerSkippedCommandHandler;
+
+    @Autowired
+    private CommandHandler<CreateExerciseFeedbackCommand> createExerciseFeedbackCommandHandler;
 
     public ExerciseSessionDto add(ExerciseSessionDto model) {
         var sessionType = model.getType();
@@ -62,6 +74,25 @@ public class ExerciseSessionService {
     }
 
     public ExerciseSessionDto skipExercise(String modelId) {
+        var sessionVertex = getSessionVertex(modelId);
+        var currentExercise = sessionVertex.getCurrentExercise();
+
+        if (currentExercise != null) {
+            var answerId = UUID.randomUUID().toString();
+
+            var answerCommand = new CreateExerciseAnswerSkippedCommand();
+            answerCommand.setId(answerId);
+            answerCommand.setExerciseId(currentExercise.getId());
+            answerCommand.setSessionId(sessionVertex.getId());
+            createExerciseAnswerSkippedCommandHandler.handle(answerCommand);
+
+            var feedbackCommand = new CreateExerciseFeedbackCommand();
+            feedbackCommand.setExerciseAnswerId(answerId);
+            feedbackCommand.setType(ExerciseAnswerCommandHelper.ANSWER_TYPE_SKIPPED);
+            feedbackCommand.setStatus("correct");
+            createExerciseFeedbackCommandHandler.handle(feedbackCommand);
+        }
+
         return nextExercise(modelId);
     }
 

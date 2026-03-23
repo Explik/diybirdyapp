@@ -1,11 +1,16 @@
 package com.explik.diybirdyapp.manager.exerciseSessionManager;
 
 import com.explik.diybirdyapp.ExerciseSessionTypes;
+import com.explik.diybirdyapp.ExerciseTypes;
 import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationContext;
+import com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck.FlashcardDeckExerciseManager;
 import com.explik.diybirdyapp.manager.exerciseSessionManager.LearnFlashcardDeck.ExerciseSessionManagerLearnFlashcardDeck;
 import com.explik.diybirdyapp.model.exercise.*;
+import com.explik.diybirdyapp.persistence.command.helper.ExerciseAnswerCommandHelper;
 import com.explik.diybirdyapp.persistence.vertex.*;
+import com.explik.diybirdyapp.service.ExerciseSessionService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +42,12 @@ public class ExerciseSessionManagerLearnFlashcardDeckIntegrationTest {
     
     @Autowired
     private ExerciseSessionManagerLearnFlashcardDeck sessionManager;
+
+    @Autowired
+    private FlashcardDeckExerciseManager flashcardDeckExerciseManager;
+
+    @Autowired
+    private ExerciseSessionService exerciseSessionService;
     
     private FlashcardDeckVertex testDeck;
     
@@ -234,6 +246,157 @@ public class ExerciseSessionManagerLearnFlashcardDeckIntegrationTest {
             "Session should be marked as completed after exhausting all content");
     }
 
+        @Test
+        void givenSessionWithCurrentExercise_whenSkipExercise_thenRecordsSkippedAnswerAndCorrectFeedback() {
+        // Arrange
+        var context = createContext(testDeck.getId());
+        var sessionDto = sessionManager.init(traversalSource, context);
+        assertNotNull(sessionDto.getExercise(), "Session should have a current exercise before skipping");
+        var skippedExerciseId = sessionDto.getExercise().getId();
+
+        // Act
+        var updatedSession = exerciseSessionService.skipExercise(sessionDto.getId());
+
+        // Assert
+        assertNotNull(updatedSession.getExercise(), "Skipping should still produce the next exercise");
+
+        var skippedAnswerRawVertex = traversalSource.V()
+            .hasLabel(ExerciseAnswerVertex.LABEL)
+            .has("type", ExerciseAnswerCommandHelper.ANSWER_TYPE_SKIPPED)
+            .where(__.out(ExerciseAnswerVertex.EDGE_EXERCISE).has(ExerciseVertex.PROPERTY_ID, skippedExerciseId))
+            .tryNext()
+            .orElse(null);
+
+        assertNotNull(skippedAnswerRawVertex, "Skipping should create a special skipped answer");
+
+        var skippedAnswerVertex = new ExerciseAnswerVertex(traversalSource, skippedAnswerRawVertex);
+        var skippedFeedbackStatuses = traversalSource.V(skippedAnswerVertex.getUnderlyingVertex())
+            .in(ExerciseFeedbackVertex.EDGE_EXERCISE_ANSWER)
+            .hasLabel(ExerciseFeedbackVertex.LABEL)
+            .values("status")
+            .toList();
+
+        assertTrue(skippedFeedbackStatuses.contains("correct"),
+            "Skipped answers should be scored as correct in orb-weaver");
+        }
+
+    @Test
+    void givenFlashcardContent_whenIncorrectRepeated_thenDifficultyLadderBacksOffAndRecovers() {
+        // Arrange
+        var deck = testDeck;
+        var sessionVertex = createLearnSession(deck);
+        var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+        stateVertex.setType("activeContentBatch");
+        sessionVertex.addState(stateVertex);
+
+        var flashcard = deck.getFlashcards().get(0);
+
+        // 1) No history => first ladder step
+        var firstExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(firstExercise);
+        assertEquals(ExerciseTypes.VIEW_FLASHCARD, firstExercise.getExerciseType().getId());
+
+        // 2) No scorable outcome for view => continue to next step
+        var secondExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(secondExercise);
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, secondExercise.getExerciseType().getId());
+
+        // 3) First incorrect => repeat same exercise type
+        addExerciseFeedback(secondExercise, sessionVertex, "incorrect");
+        var thirdExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(thirdExercise);
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, thirdExercise.getExerciseType().getId());
+
+        // 4) Second consecutive incorrect => remain on select because view is one-time per flashcard/session
+        addExerciseFeedback(thirdExercise, sessionVertex, "incorrect");
+        var fourthExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(fourthExercise);
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, fourthExercise.getExerciseType().getId());
+
+        // 5) Correct on select => advance to write
+        addExerciseFeedback(fourthExercise, sessionVertex, "correct");
+        var fifthExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(fifthExercise);
+        assertEquals(ExerciseTypes.WRITE_FLASHCARD, fifthExercise.getExerciseType().getId());
+    }
+
+        @Test
+        void givenFlashcardContent_whenSkippedAfterIncorrect_thenDifficultyLadderAdvancesLikeCorrect() {
+        // Arrange
+            var deck = createTestDeckWithFlashcards(10);
+        var sessionVertex = createLearnSession(deck);
+        var stateVertex = ExerciseSessionStateVertex.create(traversalSource);
+        stateVertex.setType("activeContentBatch");
+        sessionVertex.addState(stateVertex);
+
+        var flashcard = deck.getFlashcards().get(0);
+
+        // First step in ladder (view)
+        var firstExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(firstExercise);
+        assertEquals(ExerciseTypes.VIEW_FLASHCARD, firstExercise.getExerciseType().getId());
+
+        // Second step in ladder (select)
+        var secondExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(secondExercise);
+        assertEquals(ExerciseTypes.SELECT_FLASHCARD, secondExercise.getExerciseType().getId());
+
+        // Mark select as incorrect once so next select is repeated.
+        addExerciseFeedback(secondExercise, sessionVertex, "incorrect");
+        var repeatedSelectExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(repeatedSelectExercise);
+        var repeatedExerciseType = repeatedSelectExercise.getExerciseType().getId();
+        assertTrue(
+            ExerciseTypes.SELECT_FLASHCARD.equals(repeatedExerciseType) ||
+                ExerciseTypes.WRITE_FLASHCARD.equals(repeatedExerciseType),
+            "After one incorrect attempt, the next rung should stay within select/write for the same flashcard");
+
+        // Mark repeated exercise as skipped; this should be treated as correct and advance one rung.
+        addSkippedExerciseAnswer(repeatedSelectExercise, sessionVertex);
+        var advancedExercise = flashcardDeckExerciseManager.createExerciseForContent(
+            traversalSource,
+            sessionVertex,
+            stateVertex,
+            flashcard);
+        assertNotNull(advancedExercise);
+        var expectedAdvancedType = ExerciseTypes.SELECT_FLASHCARD.equals(repeatedExerciseType)
+            ? ExerciseTypes.WRITE_FLASHCARD
+            : ExerciseTypes.SELECT_FLASHCARD;
+        assertEquals(expectedAdvancedType, advancedExercise.getExerciseType().getId());
+        }
+
     // Helper method
     private FlashcardDeckVertex createTestDeckWithFlashcards(int count) {
         var deck = FlashcardDeckVertex.create(traversalSource);
@@ -270,6 +433,58 @@ public class ExerciseSessionManagerLearnFlashcardDeckIntegrationTest {
         }
         
         return deck;
+    }
+
+    private ExerciseSessionVertex createLearnSession(FlashcardDeckVertex deck) {
+        var sessionVertex = ExerciseSessionVertex.create(traversalSource);
+        sessionVertex.setId("learn-session-" + System.currentTimeMillis());
+        sessionVertex.setType(ExerciseSessionTypes.LEARN_FLASHCARD);
+        sessionVertex.setCompleted(false);
+        sessionVertex.setFlashcardDeck(deck);
+
+        var optionsVertex = ExerciseSessionOptionsVertex.create(traversalSource);
+        optionsVertex.setIncludeReviewExercises(true);
+        optionsVertex.setIncludeMultipleChoiceExercises(true);
+        optionsVertex.setIncludeWritingExercises(true);
+        optionsVertex.setIncludeListeningExercises(false);
+        optionsVertex.setIncludePronunciationExercises(false);
+        sessionVertex.setOptions(optionsVertex);
+
+        return sessionVertex;
+    }
+
+    private void addExerciseFeedback(
+            ExerciseVertex exerciseVertex,
+            ExerciseSessionVertex sessionVertex,
+            String status) {
+        var answerVertex = ExerciseAnswerVertex.create(traversalSource);
+        answerVertex.setId(UUID.randomUUID().toString());
+        answerVertex.setExercise(exerciseVertex);
+        answerVertex.setSession(sessionVertex);
+
+        if (exerciseVertex.getContent() instanceof ContentVertex contentVertex) {
+            answerVertex.setContent(contentVertex);
+        }
+
+        var feedbackVertex = ExerciseFeedbackVertex.create(traversalSource);
+        feedbackVertex.setType("general");
+        feedbackVertex.setStatus(status);
+        feedbackVertex.setAnswer(answerVertex);
+    }
+
+    private void addSkippedExerciseAnswer(
+            ExerciseVertex exerciseVertex,
+            ExerciseSessionVertex sessionVertex) {
+        var answerVertex = ExerciseAnswerVertex.create(traversalSource);
+        answerVertex.setId(UUID.randomUUID().toString());
+        answerVertex.setType(ExerciseAnswerCommandHelper.ANSWER_TYPE_SKIPPED);
+        answerVertex.setExercise(exerciseVertex);
+        answerVertex.setSession(sessionVertex);
+
+        var feedbackVertex = ExerciseFeedbackVertex.create(traversalSource);
+        feedbackVertex.setType(ExerciseAnswerCommandHelper.ANSWER_TYPE_SKIPPED);
+        feedbackVertex.setStatus("correct");
+        feedbackVertex.setAnswer(answerVertex);
     }
     
     private ExerciseCreationContext createContext(String deckId) {

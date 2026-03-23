@@ -20,4 +20,14 @@ describe('RowButtonComponent', () => {
   it('should create', () => {
     expect(component).toBeDefined();
   });
+
+  it('prevents default on primary mouse down to avoid click focus', () => {
+    const buttonEl = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    const event = new MouseEvent('mousedown', { button: 0, bubbles: true, cancelable: true });
+    const preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
+
+    buttonEl.dispatchEvent(event);
+
+    expect(preventDefaultSpy).toHaveBeenCalled();
+  });
 });

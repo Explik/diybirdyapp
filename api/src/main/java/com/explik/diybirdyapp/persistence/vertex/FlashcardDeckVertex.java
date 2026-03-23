@@ -3,7 +3,6 @@ package com.explik.diybirdyapp.persistence.vertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FlashcardDeckVertex extends ContentVertex {
@@ -81,25 +80,18 @@ public class FlashcardDeckVertex extends ContentVertex {
     }
 
     public List<LanguageVertex> getFlashcardLanguages() {
-        var languages = new ArrayList<LanguageVertex>();
-        for (var flashcard : this.getFlashcards()) {
-            var leftContent = flashcard.getLeftContent();
-            if (leftContent instanceof TextContentVertex leftTextContent)
-                languages.add(leftTextContent.getLanguage());
-
-            var rightContent = flashcard.getRightContent();
-            if (rightContent instanceof TextContentVertex rightTextContent)
-                languages.add(rightTextContent.getLanguage());
-        }
-
-        var distinctLanguages = new ArrayList<LanguageVertex>();
-        for (var language : languages) {
-            if (distinctLanguages.stream().noneMatch(l -> l.getId().equals(language.getId()))) {
-                distinctLanguages.add(language);
-            }
-        }
-
-        return distinctLanguages;
+        return this.traversalSource.V(this.vertex)
+                .out(EDGE_FLASHCARD)
+                .out(FlashcardVertex.EDGE_LEFT_CONTENT, FlashcardVertex.EDGE_RIGHT_CONTENT)
+                .hasLabel(TextContentVertex.LABEL)
+                .out(TextContentVertex.EDGE_LANGUAGE)
+                .hasLabel(LanguageVertex.LABEL)
+                .dedup()
+                .by(LanguageVertex.PROPERTY_ID)
+                .toList()
+                .stream()
+                .map(languageVertex -> new LanguageVertex(this.traversalSource, languageVertex))
+                .toList();
     }
 
     public static FlashcardDeckVertex create(GraphTraversalSource traversalSource) {

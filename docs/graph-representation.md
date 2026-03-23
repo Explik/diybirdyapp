@@ -350,10 +350,12 @@ graph TB
 ExerciseSession(ExerciseSession)
 ExerciseSessionState(ExerciseSessionState)
 FlashcardDeck(FlashcardDeck)
+PracticedContent(<any> Vertex)
 ActiveContent(<any> Vertex)
 
 ExerciseSession--hasState-->ExerciseSessionState
 ExerciseSession--hasFlashcardDeck-->FlashcardDeck
+ExerciseSessionState--hasPracticedContent-->PracticedContent
 ExerciseSessionState--hasActiveContent-->ActiveContent
 ```
 

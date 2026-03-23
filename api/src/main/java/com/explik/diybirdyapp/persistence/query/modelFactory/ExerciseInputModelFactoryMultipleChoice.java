@@ -7,6 +7,8 @@ import com.explik.diybirdyapp.persistence.vertex.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
+
 
 @Component
 public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelFactory<ExerciseVertex, ExerciseInputSelectOptionsDto, ExerciseRetrievalContext> {
@@ -20,10 +22,11 @@ public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelF
         input.setType(ExerciseInputTypes.SELECT_OPTIONS);
         input.setInitiallyHideOptions(context.getInitiallyHideOptions());
 
-        var inputOptions = allOptionVertices
+        var inputOptions = new ArrayList<>(allOptionVertices
                 .stream()
                 .map(this::createOption)
-                .toList();
+                .toList());
+        Collections.shuffle(inputOptions);
         input.setOptions(inputOptions);
 
         // Determine option type
@@ -36,7 +39,6 @@ public class ExerciseInputModelFactoryMultipleChoice implements ContextualModelF
             else if (firstOption instanceof ImageContentVertex)
                 input.setOptionType("image");
         }
-
         return input;
     }
 

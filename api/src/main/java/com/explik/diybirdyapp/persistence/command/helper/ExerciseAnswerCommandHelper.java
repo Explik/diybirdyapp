@@ -12,6 +12,8 @@ import java.util.UUID;
  */
 public class ExerciseAnswerCommandHelper {
 
+    public static final String ANSWER_TYPE_SKIPPED = "skipped";
+
     /**
      * Creates an ExerciseAnswerVertex with text content.
      *
@@ -109,6 +111,34 @@ public class ExerciseAnswerCommandHelper {
         answerVertex.setExercise(exerciseVertex);
         answerVertex.setSession(sessionVertex);
         answerVertex.setRecognizabilityRating(ratingVertex);
+
+        return answerVertex;
+    }
+
+    /**
+     * Creates an ExerciseAnswerVertex that marks a skipped attempt.
+     *
+     * @param traversalSource the graph traversal source
+     * @param id the ID for the answer vertex (generated if null)
+     * @param exerciseId the exercise ID
+     * @param sessionId the session ID
+     * @return the created ExerciseAnswerVertex
+     */
+    public static ExerciseAnswerVertex createSkippedAnswer(
+            GraphTraversalSource traversalSource,
+            String id,
+            String exerciseId,
+            String sessionId) {
+
+        var exerciseVertex = ExerciseVertex.getById(traversalSource, exerciseId);
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+
+        var answerId = (id != null) ? id : UUID.randomUUID().toString();
+        var answerVertex = ExerciseAnswerVertex.create(traversalSource);
+        answerVertex.setId(answerId);
+        answerVertex.setType(ANSWER_TYPE_SKIPPED);
+        answerVertex.setExercise(exerciseVertex);
+        answerVertex.setSession(sessionVertex);
 
         return answerVertex;
     }

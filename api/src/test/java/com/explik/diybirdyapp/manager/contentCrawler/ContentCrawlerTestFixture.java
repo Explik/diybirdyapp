@@ -27,6 +27,32 @@ import java.util.stream.Stream;
 class ContentCrawlerTestFixture {
     final GraphTraversalSource traversalSource = TinkerGraph.open().traversal();
 
+    void setExerciseErrorScore(ExerciseVertex exercise, double score) {
+        traversalSource.V(exercise.getUnderlyingVertex())
+                .property(FailedExerciseErrorScoreEvaluator.PROPERTY_EXERCISE_ERROR_SCORE, score)
+                .iterate();
+    }
+
+    void setContentErrorScore(AbstractVertex contentVertex, double score) {
+        traversalSource.V(contentVertex.getUnderlyingVertex())
+                .property(FailedExerciseErrorScoreEvaluator.PROPERTY_CONTENT_ERROR_SCORE, score)
+                .iterate();
+    }
+
+    boolean hasProperty(AbstractVertex vertex, String propertyName) {
+        return traversalSource.V(vertex.getUnderlyingVertex())
+                .properties(propertyName)
+                .hasNext();
+    }
+
+    Double getNumericProperty(AbstractVertex vertex, String propertyName) {
+        return traversalSource.V(vertex.getUnderlyingVertex())
+                .values(propertyName)
+                .tryNext()
+                .map(value -> ((Number) value).doubleValue())
+                .orElse(null);
+    }
+
     LanguageVertex createLanguage(String id) {
         var language = LanguageVertex.create(traversalSource);
         language.setId(id);
