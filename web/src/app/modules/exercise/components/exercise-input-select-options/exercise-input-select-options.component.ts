@@ -14,8 +14,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [FormsModule, IconComponent, RowButtonComponent],
   templateUrl: './exercise-input-select-options.component.html',
-  styleUrl: './exercise-input-select-options.component.css',
-  providers: [HotkeyService]
+  styleUrl: './exercise-input-select-options.component.css'
 })
 export class ExerciseInputSelectOptionsComponent implements OnChanges, OnDestroy {
   private subs = new Subscription();
