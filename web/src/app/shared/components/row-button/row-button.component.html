@@ -20,6 +20,7 @@
     [attr.formmethod]="formmethod"
     [attr.formnovalidate]="formnovalidate || null"
     [attr.formtarget]="formtarget"
+    (mousedown)="onMouseDown($event)"
     (click)="onClick($event)">
 
     <!-- Single layout -->

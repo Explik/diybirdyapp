@@ -33,7 +33,10 @@ export class HotkeyService implements OnDestroy {
 
     // Subscribe to global keydown events but only emit when active
     const sub = this.root.events$
-      .pipe(filter(() => this.isActiveScope()))
+      .pipe(
+        filter(() => this.isActiveScope()),
+        filter(() => !this.hasBlockingFocusElement())
+      )
       .subscribe(e => this.localEvents$.next(e));
 
     this.subs.add(sub);
@@ -42,6 +45,37 @@ export class HotkeyService implements OnDestroy {
   /** Whether this service is currently the active hotkey scope */
   private isActiveScope(): boolean {
     return this.root.currentScope === this.id;
+  }
+
+  /** Block hotkeys when keyboard navigation is currently focused on an element. */
+  private hasBlockingFocusElement(): boolean {
+    if (typeof document === 'undefined') {
+      return false;
+    }
+
+    const activeElement = document.activeElement;
+    if (!(activeElement instanceof HTMLElement)) {
+      return false;
+    }
+
+    if (activeElement === document.body || activeElement === document.documentElement) {
+      return false;
+    }
+
+    if (this.isTextEntryElement(activeElement)) {
+      return true;
+    }
+
+    try {
+      return activeElement.matches(':focus-visible');
+    } catch {
+      return activeElement.tabIndex >= 0;
+    }
+  }
+
+  private isTextEntryElement(element: HTMLElement): boolean {
+    const tagName = element.tagName.toLowerCase();
+    return tagName === 'input' || tagName === 'textarea' || tagName === 'select' || element.isContentEditable;
   }
 
   /** Normalize key values for consistent matching */

@@ -33,4 +33,10 @@ export class RowButtonComponent {
       this.buttonClick.emit(event);
     }
   }
+
+  onMouseDown(event: MouseEvent): void {
+    if (event.button === 0) {
+      event.preventDefault();
+    }
+  }
 }
