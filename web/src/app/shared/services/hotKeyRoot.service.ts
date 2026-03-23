@@ -14,9 +14,11 @@ export class HotkeyRootService implements OnDestroy {
   private activeScopes: string[] = [];
 
   constructor(zone: NgZone) {
-    this.subscription = fromEvent<KeyboardEvent>(window, 'keydown')
-      .pipe(filter(e => e instanceof KeyboardEvent)) // Prevents error "Uncaught Error: Attempting to use a disconnected port object..."
-      .subscribe(event => zone.runOutsideAngular(() => this.keydown$.next(event)));
+    this.subscription = zone.runOutsideAngular(() =>
+      fromEvent<KeyboardEvent>(window, 'keydown')
+        .pipe(filter(e => e instanceof KeyboardEvent)) // Prevents error "Uncaught Error: Attempting to use a disconnected port object..."
+        .subscribe(event => zone.run(() => this.keydown$.next(event)))
+    );
   }
 
   /** Observable of all keydown events */
