@@ -68,6 +68,22 @@ export class ExerciseService {
         );
     }
 
+    restartExerciseSession(): Observable<ExerciseSessionDto> {
+        this.exercise$.next(undefined);
+
+        return this.session$.pipe(take(1)).pipe(
+            switchMap(session => {
+                if (!session)
+                    throw new Error("No session found");
+                return this.service.restartSession(session.id!);
+            }),
+            map(newSession => {
+                this.setExerciseSession(newSession);
+                return newSession;
+            })
+        );
+    }
+
 
     getExercise(): Observable<ExerciseDto | undefined> {
         return this.exercise$.asObservable();

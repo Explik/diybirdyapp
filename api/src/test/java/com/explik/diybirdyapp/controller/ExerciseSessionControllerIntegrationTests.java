@@ -171,6 +171,28 @@ public class ExerciseSessionControllerIntegrationTests {
         assertNotEquals(initialExerciseId, updatedSession.getExercise().getId());
     }
 
+    @Test
+    void givenExistingSession_whenRestartSession_thenCompleteOldAndCreateNewWithSameParams() {
+        var initialSession = createSession("restart-source-session-id");
+        var initialConfig = (ExerciseSessionOptionsLearnFlashcardsDto) controller.getConfig(initialSession.getId());
+        initialConfig.setShuffleFlashcardsEnabled(true);
+        controller.updateConfig(initialSession.getId(), initialConfig);
+
+        var restartedSession = controller.restartSession(initialSession.getId());
+
+        assertNotNull(restartedSession);
+        assertNotNull(restartedSession.getId());
+        assertNotEquals(initialSession.getId(), restartedSession.getId());
+        assertEquals(initialSession.getType(), restartedSession.getType());
+        assertEquals(initialSession.getFlashcardDeckId(), restartedSession.getFlashcardDeckId());
+
+        var sourceVertex = ExerciseSessionVertex.findById(traversalSource, initialSession.getId());
+        assertTrue(sourceVertex.getCompleted());
+
+        var restartedConfig = (ExerciseSessionOptionsLearnFlashcardsDto) controller.getConfig(restartedSession.getId());
+        assertTrue(restartedConfig.getShuffleFlashcardsEnabled());
+    }
+
     ExerciseSessionDto createSession(String id) {
         var session = new ExerciseSessionDto();
         session.setId(id);

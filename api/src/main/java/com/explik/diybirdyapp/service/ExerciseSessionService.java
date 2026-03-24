@@ -7,6 +7,7 @@ import com.explik.diybirdyapp.manager.exerciseCreationManager.ExerciseCreationCo
 import com.explik.diybirdyapp.manager.exerciseSessionManager.ExerciseSessionManager;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseAnswerSkippedCommand;
 import com.explik.diybirdyapp.persistence.command.CreateExerciseFeedbackCommand;
+import com.explik.diybirdyapp.persistence.command.CompleteExerciseSessionCommand;
 import com.explik.diybirdyapp.persistence.command.helper.ExerciseAnswerCommandHelper;
 import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
@@ -50,6 +51,9 @@ public class ExerciseSessionService {
 
     @Autowired
     private CommandHandler<CreateExerciseFeedbackCommand> createExerciseFeedbackCommandHandler;
+
+    @Autowired
+    private CommandHandler<CompleteExerciseSessionCommand> completeExerciseSessionCommandHandler;
 
     public ExerciseSessionDto getOrCreate(ExerciseSessionDto model) {
         var existingSession = findMatchingUncompletedSession(model);
@@ -119,6 +123,35 @@ public class ExerciseSessionService {
 
     public ExerciseSessionDto updateConfig(String modelId, ExerciseSessionOptionsDto config) {
         return configHelper.updateConfig(modelId, config);
+    }
+
+    public ExerciseSessionDto restartSession(String modelId) {
+        var sessionVertex = getSessionVertex(modelId);
+        var originalConfig = getConfig(modelId);
+        var sessionType = sessionVertex.getType();
+        var flashcardDeck = sessionVertex.getFlashcardDeck();
+
+        if (flashcardDeck == null)
+            throw new IllegalArgumentException("No flashcard deck attached to session " + modelId);
+
+        var completeCommand = new CompleteExerciseSessionCommand();
+        completeCommand.setSessionId(modelId);
+        completeExerciseSessionCommandHandler.handle(completeCommand);
+
+        var sessionManager = sessionOperationProvider.get(sessionType);
+        if (sessionManager == null)
+            throw new IllegalArgumentException("No session manager found for type " + sessionType);
+
+        var restartModel = new ExerciseSessionDto();
+        restartModel.setType(sessionType);
+        restartModel.setFlashcardDeckId(flashcardDeck.getId());
+
+        var restartedSession = sessionManager.init(traversalSource, ExerciseCreationContext.createDefault(restartModel));
+
+        if (originalConfig != null)
+            return configHelper.updateConfig(restartedSession.getId(), originalConfig);
+
+        return restartedSession;
     }
 
     private ExerciseSessionVertex getSessionVertex(String modelId) {

@@ -76,6 +76,11 @@ export class ExerciseSessionDataService {
         return this.http.post<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${sessionId}/apply-options`, config);
     }
 
+    restartSession(sessionId: string): Observable<ExerciseSessionDto> {
+        // TODO Add error handling
+        return this.http.post<ExerciseSessionDto>(`${environment.apiUrl}/exercise-session/${sessionId}/restart-session`, {});
+    }
+
     // === ExerciseAnswer Feedback ===
     submitExerciseAnswerFeedback(exerciseAnswerId: string, feedbackType: string): Observable<void> {
         // TODO Add error handling

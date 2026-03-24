@@ -163,6 +163,22 @@ export class SessionPageComponent {
         this.originalOptions = undefined;
     }
 
+    restartSession() {
+        this.isSettingsModalOpen = false;
+
+        this.exerciseService.restartExerciseSession().pipe(take(1)).subscribe({
+            next: newSession => {
+                this.closeSettingsModal();
+                if (newSession?.id) {
+                    this.router.navigate(['/session', newSession.id]);
+                }
+            },
+            error: () => {
+                // TODO add error handling
+            }
+        });
+    }
+
     onOptionsChanged(options: ExerciseSessionOptionsDto | ExerciseSessionOptionsLearnFlashcardsDto) {
         // update staged options as child emits changes
         this.stagedOptions = options;

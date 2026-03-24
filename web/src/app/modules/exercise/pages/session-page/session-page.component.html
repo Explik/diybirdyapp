@@ -66,4 +66,14 @@
       </div>
     }
   </div>
+
+  <div class="mt-4 pt-3 border-t border-gray-200 flex">
+    <button
+      type="button"
+      class="py-2 text-sm font-medium  text-red-600 rounded hover:text-red-700 disabled:opacity-60"
+      [disabled]="isOptionsLoading"
+      (click)="restartSession()">
+      Restart session
+    </button>
+  </div>
 </app-modal>

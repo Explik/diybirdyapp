@@ -46,4 +46,9 @@ public class ExerciseSessionController {
     public ExerciseSessionDto updateConfig(@PathVariable String id, @Valid @RequestBody ExerciseSessionOptionsDto dto) {
         return service.updateConfig(id, dto);
     }
+
+    @PostMapping("/exercise-session/{id}/restart-session")
+    public ExerciseSessionDto restartSession(@PathVariable String id) {
+        return service.restartSession(id);
+    }
 }
