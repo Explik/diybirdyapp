@@ -12,6 +12,7 @@ import com.explik.diybirdyapp.persistence.command.handler.CommandHandler;
 import com.explik.diybirdyapp.persistence.provider.GenericProvider;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionByIdQuery;
 import com.explik.diybirdyapp.persistence.query.GetExerciseSessionConfigQuery;
+import com.explik.diybirdyapp.persistence.query.GetUncompletedMatchingExerciseSessionQuery;
 import com.explik.diybirdyapp.persistence.query.handler.QueryHandler;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.service.helper.ExerciseSessionConfigHelper;
@@ -33,6 +34,9 @@ public class ExerciseSessionService {
     private QueryHandler<GetExerciseSessionConfigQuery, ExerciseSessionOptionsDto> getExerciseSessionConfigQueryHandler;
 
     @Autowired
+    private QueryHandler<GetUncompletedMatchingExerciseSessionQuery, ExerciseSessionDto> getUncompletedMatchingExerciseSessionQueryHandler;
+
+    @Autowired
     private GenericProvider<ExerciseSessionManager> sessionOperationProvider;
 
     @Autowired
@@ -47,7 +51,11 @@ public class ExerciseSessionService {
     @Autowired
     private CommandHandler<CreateExerciseFeedbackCommand> createExerciseFeedbackCommandHandler;
 
-    public ExerciseSessionDto add(ExerciseSessionDto model) {
+    public ExerciseSessionDto getOrCreate(ExerciseSessionDto model) {
+        var existingSession = findMatchingUncompletedSession(model);
+        if (existingSession != null)
+            return existingSession;
+
         var sessionType = model.getType();
         
         var sessionManager = sessionOperationProvider.get(sessionType);
@@ -55,6 +63,13 @@ public class ExerciseSessionService {
             throw new IllegalArgumentException("No session manager found for type " + sessionType);
 
         return sessionManager.init(traversalSource, ExerciseCreationContext.createDefault(model));
+    }
+
+    private ExerciseSessionDto findMatchingUncompletedSession(ExerciseSessionDto model) {
+        var query = new GetUncompletedMatchingExerciseSessionQuery();
+        query.setType(model.getType());
+        query.setFlashcardDeckId(model.getFlashcardDeckId());
+        return getUncompletedMatchingExerciseSessionQueryHandler.handle(query);
     }
 
     public ExerciseSessionDto get(String id) {

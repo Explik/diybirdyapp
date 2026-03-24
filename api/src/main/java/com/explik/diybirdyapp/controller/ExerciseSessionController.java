@@ -15,7 +15,7 @@ public class ExerciseSessionController {
 
     @PostMapping("/exercise-session")
     public ExerciseSessionDto create(@Valid @RequestBody ExerciseSessionDto dto) {
-        return service.add(dto);
+        return service.getOrCreate(dto);
     }
 
     @GetMapping("/exercise-session/{id}")

@@ -45,6 +45,7 @@ public class ExerciseSessionCommandHelper {
         vertex.setId(id);
         vertex.setType(sessionType);
         vertex.setFlashcardDeck(flashcardDeckVertex);
+        vertex.setCompleted(false);
 
         return vertex;
     }

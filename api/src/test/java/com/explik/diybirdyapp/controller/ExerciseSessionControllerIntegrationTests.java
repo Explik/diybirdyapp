@@ -3,6 +3,7 @@ package com.explik.diybirdyapp.controller;
 import com.explik.diybirdyapp.ExerciseSessionTypes;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionDto;
 import com.explik.diybirdyapp.model.exercise.ExerciseSessionOptionsLearnFlashcardsDto;
+import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionVertex;
 import com.explik.diybirdyapp.service.DataInitializerService;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
@@ -27,6 +28,9 @@ public class ExerciseSessionControllerIntegrationTests {
     @Autowired
     ExerciseSessionController controller;
 
+    @Autowired
+    GraphTraversalSource traversalSource;
+
     @BeforeEach
     void setUp() {
         dataInitializerService.resetInitialData();
@@ -45,6 +49,46 @@ public class ExerciseSessionControllerIntegrationTests {
         assertNotNull(savedSession.getExercise());
         assertEquals(session.getId(), savedSession.getId());
         assertEquals(session.getType(), savedSession.getType());
+    }
+
+    @Test
+    void givenMatchingUncompletedSession_whenCreate_thenReturnExistingSession() {
+        var firstSession = new ExerciseSessionDto();
+        firstSession.setId("existing-session-id");
+        firstSession.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
+        firstSession.setFlashcardDeckId("flashcardDeckVertex2");
+        var savedSession = controller.create(firstSession);
+
+        var secondSession = new ExerciseSessionDto();
+        secondSession.setId("new-session-id");
+        secondSession.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
+        secondSession.setFlashcardDeckId("flashcardDeckVertex2");
+
+        var returnedSession = controller.create(secondSession);
+
+        assertEquals(savedSession.getId(), returnedSession.getId());
+    }
+
+    @Test
+    void givenMatchingCompletedSession_whenCreate_thenCreateNewSession() {
+        var firstSession = new ExerciseSessionDto();
+        firstSession.setId("completed-session-id");
+        firstSession.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
+        firstSession.setFlashcardDeckId("flashcardDeckVertex2");
+        var savedSession = controller.create(firstSession);
+
+        var existingSessionVertex = ExerciseSessionVertex.findById(traversalSource, savedSession.getId());
+        existingSessionVertex.setCompleted(true);
+
+        var secondSession = new ExerciseSessionDto();
+        secondSession.setId("fresh-session-id");
+        secondSession.setType(ExerciseSessionTypes.REVIEW_FLASHCARD);
+        secondSession.setFlashcardDeckId("flashcardDeckVertex2");
+
+        var returnedSession = controller.create(secondSession);
+
+        assertNotEquals(savedSession.getId(), returnedSession.getId());
+        assertEquals(secondSession.getId(), returnedSession.getId());
     }
 
     @Test
