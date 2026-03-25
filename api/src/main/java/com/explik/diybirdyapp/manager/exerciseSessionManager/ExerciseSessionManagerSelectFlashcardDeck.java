@@ -73,6 +73,18 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
 
         return sessionModelFactory.create(sessionVertex);
     }
+
+    @Override
+    public void updateOptions(GraphTraversalSource traversalSource, String sessionId) {
+        var sessionVertex = ExerciseSessionVertex.findById(traversalSource, sessionId);
+        if (sessionVertex == null) {
+            return;
+        }
+
+        var exerciseVertex = nextExerciseVertex(traversalSource, sessionVertex);
+        sessionVertex.setCompleted(exerciseVertex == null);
+        sessionVertex.reload();
+    }
     
     private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         // Check if shuffle is enabled
