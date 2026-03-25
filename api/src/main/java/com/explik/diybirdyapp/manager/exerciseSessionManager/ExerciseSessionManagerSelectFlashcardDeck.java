@@ -73,7 +73,7 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
 
         return sessionModelFactory.create(sessionVertex);
     }
-
+    
     private ExerciseVertex nextExerciseVertex(GraphTraversalSource traversalSource, ExerciseSessionVertex sessionVertex) {
         // Check if shuffle is enabled
         var options = sessionVertex.getOptions();
@@ -99,10 +99,12 @@ public class ExerciseSessionManagerSelectFlashcardDeck implements ExerciseSessio
         }
 
         if (flashcardVertex != null) {
+            var flashcardLanguageId = options != null ? options.getInitialFlashcardLanguageId() : null;
+            var flashcardSide = FlashcardVertex.findSideByLanguageId(flashcardVertex, flashcardLanguageId);
             var context = ExerciseCreationContext.createForFlashcard(
                     sessionVertex,
                     flashcardVertex,
-                    "front",
+                    flashcardSide,
                     ExerciseTypes.SELECT_FLASHCARD);
 
             var flashcardDeck = sessionVertex.getFlashcardDeck();

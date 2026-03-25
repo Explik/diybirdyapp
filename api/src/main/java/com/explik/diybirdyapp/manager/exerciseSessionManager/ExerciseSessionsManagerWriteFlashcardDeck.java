@@ -93,10 +93,14 @@ public class ExerciseSessionsManagerWriteFlashcardDeck implements ExerciseSessio
         }
 
         if (flashcardVertex != null) {
+            var answerLanguageId = (options != null && !options.getAnswerLanguages().isEmpty())
+                    ? options.getAnswerLanguages().get(0).getId()
+                    : null;
+            var flashcardSide = FlashcardVertex.findPromptSideForAnswerLanguageId(flashcardVertex, answerLanguageId);
             var context = ExerciseCreationContext.createForFlashcard(
                     sessionVertex,
                     flashcardVertex,
-                    "front",
+                    flashcardSide,
                     ExerciseTypes.WRITE_FLASHCARD);
             
             return writeFlashcardExerciseCreationManager.createExercise(traversalSource, context);

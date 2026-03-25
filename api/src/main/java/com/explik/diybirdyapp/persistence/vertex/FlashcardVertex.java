@@ -84,6 +84,39 @@ public class FlashcardVertex extends ContentVertex {
         };
     }
 
+    public static String findSideByLanguageId(FlashcardVertex flashcardVertex, String languageId) {
+        return findSideByLanguageId(flashcardVertex, languageId, "front");
+    }
+
+    public static String findSideByLanguageId(FlashcardVertex flashcardVertex, String languageId, String fallbackSide) {
+        if (flashcardVertex == null || languageId == null || languageId.isBlank()) {
+            return fallbackSide;
+        }
+
+        if (flashcardVertex.getLeftContent() instanceof TextContentVertex leftTextContent
+                && leftTextContent.getLanguage() != null
+                && languageId.equals(leftTextContent.getLanguage().getId())) {
+            return "front";
+        }
+
+        if (flashcardVertex.getRightContent() instanceof TextContentVertex rightTextContent
+                && rightTextContent.getLanguage() != null
+                && languageId.equals(rightTextContent.getLanguage().getId())) {
+            return "back";
+        }
+
+        return fallbackSide;
+    }
+
+    public static String findPromptSideForAnswerLanguageId(FlashcardVertex flashcardVertex, String answerLanguageId) {
+        var answerSide = findSideByLanguageId(flashcardVertex, answerLanguageId, null);
+        if (answerSide == null) {
+            return "front";
+        }
+
+        return "front".equals(answerSide) ? "back" : "front";
+    }
+
     public static FlashcardVertex create(GraphTraversalSource traversalSource) {
         var vertex = traversalSource.addV(LABEL).next();
         return new FlashcardVertex(traversalSource, vertex);
