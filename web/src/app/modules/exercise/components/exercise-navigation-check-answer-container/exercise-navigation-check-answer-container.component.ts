@@ -16,6 +16,7 @@ export class ExerciseNavigationCheckAnswerContainerComponent implements OnDestro
   private subs = new Subscription();
 
   showCheckAnswer = false;
+  isBusy = false;
 
   constructor(private exerciseService: ExerciseService, private hotkeyService: HotkeyService) {
     this.exerciseService.getState().subscribe(state => {
@@ -32,6 +33,10 @@ export class ExerciseNavigationCheckAnswerContainerComponent implements OnDestro
         this.subs.unsubscribe(); 
       } 
     });
+
+    this.exerciseService.getIsBusy().subscribe(isBusy => {
+      this.isBusy = isBusy;
+    });
   }
 
   ngOnDestroy(): void {
@@ -39,10 +44,16 @@ export class ExerciseNavigationCheckAnswerContainerComponent implements OnDestro
   }
 
   handleNextExercise() {
+    if (this.isBusy)
+      return;
+
     this.exerciseService.nextExerciseAsync();
   }
 
   handleSkipExercise() {
+    if (this.isBusy)
+      return;
+
     this.exerciseService.skipExerciseAsync();
   }
 

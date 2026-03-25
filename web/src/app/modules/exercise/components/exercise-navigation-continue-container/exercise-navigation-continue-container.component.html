@@ -1,3 +1,10 @@
 <div class="w-full flex justify-end">
-  <app-button variant="primary" i18n (click)="handleContinue()">Continue</app-button>
+  <app-button variant="primary" (click)="handleContinue()" [disabled]="isBusy">
+    @if (isBusy) {
+      <span i18n>Loading...</span>
+    }
+    @else {
+      <span i18n>Continue</span>
+    }
+  </app-button>
 </div>

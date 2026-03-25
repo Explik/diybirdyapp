@@ -12,12 +12,19 @@ import { Subscription } from 'rxjs';
 })
 export class ExerciseNavigationContinueContainerComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
+  isBusy = false;
 
   constructor(private exerciseService: ExerciseService, private hotkeyService: HotkeyService) {}
   
   ngOnInit(): void {
     this.subs.add(
       this.hotkeyService.onHotkey({ key: 'enter' }).subscribe(() => this.handleContinue())
+    );
+
+    this.subs.add(
+      this.exerciseService.getIsBusy().subscribe(isBusy => {
+        this.isBusy = isBusy;
+      })
     );
   }
 
@@ -26,6 +33,9 @@ export class ExerciseNavigationContinueContainerComponent implements OnInit, OnD
   }
 
   handleContinue() {
+    if (this.isBusy)
+      return;
+
     void this.exerciseService.nextExerciseAsync();
   }
 }

@@ -16,18 +16,23 @@ export class ExerciseNavigationSkipOnlyContainerComponent implements OnInit, OnD
   private subs = new Subscription();
 
   showSkipExercise = false;
+  isBusy = false;
 
   constructor(private exerciseService: ExerciseService, private hotkeyService: HotkeyService) {
     this.exerciseService.getState().subscribe(state => {
       const isAnswered = state !== ExerciseStates.Unanswered;
       this.showSkipExercise = !isAnswered;
     });
+
+    this.exerciseService.getIsBusy().subscribe(isBusy => {
+      this.isBusy = isBusy;
+    });
   }
 
   ngOnInit(): void {
     this.subs.add(
       this.hotkeyService.onHotkey({ key: 'enter' }).subscribe(() => { 
-        if (!this.showSkipExercise) this.handleNextExercise(); 
+        if (!this.showSkipExercise && !this.isBusy) this.handleNextExercise(); 
       })
     ); 
   }
@@ -37,10 +42,16 @@ export class ExerciseNavigationSkipOnlyContainerComponent implements OnInit, OnD
   }
 
   handleNextExercise() {
+    if (this.isBusy)
+      return;
+
     this.exerciseService.nextExerciseAsync();
   }
 
   handleSkipExercise() {
+    if (this.isBusy)
+      return;
+
     this.exerciseService.skipExerciseAsync();
   }
 }

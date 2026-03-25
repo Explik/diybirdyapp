@@ -1,8 +1,17 @@
 import { Injectable } from "@angular/core";
-import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom, take } from 'rxjs';
+import { Observable, BehaviorSubject, of, map, switchMap, lastValueFrom, take, finalize } from 'rxjs';
 import { Exercise, ExerciseAnswer, ExerciseStates } from "../models/exercise.interface";
 import { ExerciseSessionDataService } from "./exerciseSessionData.service";
 import { ExerciseDto, ExerciseFeedbackDto, ExerciseSessionDto, ExerciseSessionOptionsDto, ExerciseSessionProgressDto } from "../../../shared/api-client";
+
+export enum ExerciseSessionState {
+    Idle = 'idle',
+    LoadingSession = 'loading-session',
+    ApplyingOptions = 'applying-options',
+    RestartingSession = 'restarting-session',
+    SubmittingAnswer = 'submitting-answer',
+    TransitioningExercise = 'transitioning-exercise'
+}
 
 @Injectable({
     providedIn: 'root'
@@ -15,16 +24,21 @@ export class ExerciseService {
     private exersiceInput$: BehaviorSubject<unknown | undefined> = new BehaviorSubject<unknown | undefined>(undefined);
     private exerciseAnswer$: BehaviorSubject<ExerciseAnswer | undefined> = new BehaviorSubject<ExerciseAnswer | undefined>(undefined);
     private exerciseFeedback$: BehaviorSubject<ExerciseFeedbackDto | undefined> = new BehaviorSubject<ExerciseFeedbackDto | undefined>(undefined);
+    private sessionState$: BehaviorSubject<ExerciseSessionState> = new BehaviorSubject<ExerciseSessionState>(ExerciseSessionState.Idle);
 
     constructor(private service: ExerciseSessionDataService) { }
 
     // State functions 
     loadExerciseSession(id: string) {
+        this.sessionState$.next(ExerciseSessionState.LoadingSession);
+
         // Clear stale state immediately so loading component shows instead of old exercise
         this.exercise$.next(undefined);
         this.session$.next(undefined);
         
-        this.service.getExerciseSession(id).subscribe(data => {
+        this.service.getExerciseSession(id).pipe(
+            finalize(() => this.sessionState$.next(ExerciseSessionState.Idle))
+        ).subscribe(data => {
             this.setExerciseSession(data);
         });
     }
@@ -53,6 +67,8 @@ export class ExerciseService {
     }
 
     applyExerciseSessionOptions(options: ExerciseSessionOptionsDto): Observable<void> {
+        this.sessionState$.next(ExerciseSessionState.ApplyingOptions);
+
         // Clear current exercise immediately so the loading state shows while the new exercise is fetched
         this.exercise$.next(undefined);
         
@@ -64,11 +80,13 @@ export class ExerciseService {
             }),
             map(newSession => {
                 this.setExerciseSession(newSession);
-            })
+            }),
+            finalize(() => this.sessionState$.next(ExerciseSessionState.Idle))
         );
     }
 
     restartExerciseSession(): Observable<ExerciseSessionDto> {
+        this.sessionState$.next(ExerciseSessionState.RestartingSession);
         this.exercise$.next(undefined);
 
         return this.session$.pipe(take(1)).pipe(
@@ -80,7 +98,8 @@ export class ExerciseService {
             map(newSession => {
                 this.setExerciseSession(newSession);
                 return newSession;
-            })
+            }),
+            finalize(() => this.sessionState$.next(ExerciseSessionState.Idle))
         );
     }
 
@@ -133,6 +152,20 @@ export class ExerciseService {
         return this.exerciseFeedback$.pipe(map(data => data?.message));
     }
 
+    getSessionState(): Observable<ExerciseSessionState> {
+        return this.sessionState$.asObservable();
+    }
+
+    getIsBusy(): Observable<boolean> {
+        return this.getSessionState().pipe(map(state => state !== ExerciseSessionState.Idle));
+    }
+
+    getIsTransitioning(): Observable<boolean> {
+        return this.getSessionState().pipe(
+            map(state => state === ExerciseSessionState.TransitioningExercise)
+        );
+    }
+
     // Actions
     async checkAnswerAsync() {
         const currentInput = this.exersiceInput$.getValue();
@@ -140,57 +173,95 @@ export class ExerciseService {
     }
 
     async nextExerciseAsync() {
+        if (this.sessionState$.getValue() === ExerciseSessionState.TransitioningExercise)
+            return;
+
         const session = this.session$.getValue();
         if (!session) 
             throw new Error("No session found");
-        
-        const newSession = await this.service.nextExercise(session.id!).toPromise();
-        this.setExerciseSession(newSession);
-        
-        if (newSession?.exercise)
-            this.setExercise(newSession.exercise);
+
+        const previousExercise = this.exercise$.getValue();
+        this.sessionState$.next(ExerciseSessionState.TransitioningExercise);
+        this.exercise$.next(undefined);
+
+        try {
+            const newSession = await lastValueFrom(this.service.nextExercise(session.id!));
+            this.setExerciseSession(newSession);
+
+            if (newSession?.exercise)
+                this.setExercise(newSession.exercise);
+        } catch (error) {
+            if (previousExercise)
+                this.setExercise(previousExercise);
+
+            throw error;
+        } finally {
+            this.sessionState$.next(ExerciseSessionState.Idle);
+        }
     }
 
     async skipExerciseAsync() {
+        if (this.sessionState$.getValue() === ExerciseSessionState.TransitioningExercise)
+            return;
+
         const session = this.session$.getValue();
         if (!session) 
             throw new Error("No session found");
 
-        const newSession = await this.service.skipExercise(session.id!).toPromise();
-        this.setExerciseSession(newSession);
+        const previousExercise = this.exercise$.getValue();
+        this.sessionState$.next(ExerciseSessionState.TransitioningExercise);
+        this.exercise$.next(undefined);
 
-        if (newSession?.exercise)
-            this.setExercise(newSession.exercise);
+        try {
+            const newSession = await lastValueFrom(this.service.skipExercise(session.id!));
+            this.setExerciseSession(newSession);
+
+            if (newSession?.exercise)
+                this.setExercise(newSession.exercise);
+        } catch (error) {
+            if (previousExercise)
+                this.setExercise(previousExercise);
+
+            throw error;
+        } finally {
+            this.sessionState$.next(ExerciseSessionState.Idle);
+        }
     }
 
     async submitAnswerAsync(answer: ExerciseAnswer) {
-        // Save the answer locally
-        this.exerciseAnswer$.next(answer);
+        this.sessionState$.next(ExerciseSessionState.SubmittingAnswer);
 
-        // Save the answer to server
-        const currentExercise = this.exercise$.getValue();
-        if (!currentExercise)
-            throw new Error("No exercise loaded");
+        try {
+            // Save the answer locally
+            this.exerciseAnswer$.next(answer);
 
-        const currentSession = this.session$.getValue();
-        if (!currentSession)
-            throw new Error("No session found");
+            // Save the answer to server
+            const currentExercise = this.exercise$.getValue();
+            if (!currentExercise)
+                throw new Error("No exercise loaded");
 
-        const exerciseWithFeedback = await this.service.submitExerciseAnswer(currentExercise.id, {...answer, sessionId: currentSession.id }).toPromise();
-        
-        // Update input feedback
-        if ((exerciseWithFeedback?.input as any)?.feedback) {
-            const currentInput = this.exersiceInput$.getValue() as any;
-            this.exersiceInput$.next({ ...currentInput, feedback: (exerciseWithFeedback!.input as any).feedback });
-        }
-        
-        // Update general feedback
-        this.exerciseFeedback$.next(exerciseWithFeedback?.feedback);
-        
-        // Update answer with answer ID
-        const answerId = (exerciseWithFeedback?.feedback as any)?.answerId;
-        if (answerId) {
-            this.exerciseAnswer$.next({ ...answer, answerId });
+            const currentSession = this.session$.getValue();
+            if (!currentSession)
+                throw new Error("No session found");
+
+            const exerciseWithFeedback = await lastValueFrom(this.service.submitExerciseAnswer(currentExercise.id, {...answer, sessionId: currentSession.id }));
+            
+            // Update input feedback
+            if ((exerciseWithFeedback?.input as any)?.feedback) {
+                const currentInput = this.exersiceInput$.getValue() as any;
+                this.exersiceInput$.next({ ...currentInput, feedback: (exerciseWithFeedback!.input as any).feedback });
+            }
+            
+            // Update general feedback
+            this.exerciseFeedback$.next(exerciseWithFeedback?.feedback);
+            
+            // Update answer with answer ID
+            const answerId = (exerciseWithFeedback?.feedback as any)?.answerId;
+            if (answerId) {
+                this.exerciseAnswer$.next({ ...answer, answerId });
+            }
+        } finally {
+            this.sessionState$.next(ExerciseSessionState.Idle);
         }
     }
 

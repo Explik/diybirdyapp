@@ -22,12 +22,16 @@ function createMockExerciseService(
   initialState: ExerciseStates = ExerciseStates.Unanswered
 ): Partial<ExerciseService> {
   const stateSubject = new BehaviorSubject(initialState);
+  const transitioningSubject = new BehaviorSubject(false);
   return {
     getState: () => stateSubject.asObservable(),
+    getIsBusy: () => transitioningSubject.asObservable(),
+    getIsTransitioning: () => transitioningSubject.asObservable(),
     nextExerciseAsync: cy.stub().resolves(),
     skipExerciseAsync: cy.stub().resolves(),
     checkAnswerAsync: cy.stub().resolves(),
     _testSetState: (state: ExerciseStates) => stateSubject.next(state),
+    _testSetTransitioning: (isTransitioning: boolean) => transitioningSubject.next(isTransitioning),
   } as any;
 }
 
