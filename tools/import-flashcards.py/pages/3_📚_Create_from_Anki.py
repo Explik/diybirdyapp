@@ -84,6 +84,10 @@ def strip_anki_formatting(text: str) -> str:
 def detect_content_type(anki_deck, field_name) -> str:
     """Detect content type (text, audio, image, video) from a field by checking file extensions"""
     import re
+
+    audio_exts = {'mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'wma', 'opus'}
+    video_exts = {'mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', 'm4v'}
+    image_exts = {'jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico'}
     
     raw_value = ""
 
@@ -107,9 +111,9 @@ def detect_content_type(anki_deck, field_name) -> str:
     if sound_match:
         filename = sound_match.group(1)
         ext = filename.split('.')[-1].lower() if '.' in filename else ''
-        
-        # Audio extensions
-        audio_exts = ['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'wma', 'opus']
+
+        if ext in video_exts:
+            return "Video"
         if ext in audio_exts:
             return "Audio"
     
@@ -118,9 +122,7 @@ def detect_content_type(anki_deck, field_name) -> str:
     if img_match:
         filename = img_match.group(1)
         ext = filename.split('.')[-1].lower() if '.' in filename else ''
-        
-        # Image extensions
-        image_exts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico']
+
         if ext in image_exts:
             return "Image"
     
@@ -129,9 +131,7 @@ def detect_content_type(anki_deck, field_name) -> str:
     if video_match:
         filename = video_match.group(1)
         ext = filename.split('.')[-1].lower() if '.' in filename else ''
-        
-        # Video extensions
-        video_exts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', 'm4v']
+
         if ext in video_exts:
             return "Video"
     
@@ -375,12 +375,13 @@ if st.session_state.anki_deck is not None:
                     if card.has_media(front_field):
                         media_path = card.get_media_file_path(front_field)
                         media_type = card.get_media_type(front_field)
-                        
-                        if media_type == "audio" or front_content_type == "Audio":
+                        resolved_media_type = media_type or front_content_type.lower()
+
+                        if resolved_media_type == "audio":
                             st.audio(media_path)
-                        elif media_type == "image" or front_content_type == "Image":
+                        elif resolved_media_type == "image":
                             st.image(media_path)
-                        elif media_type == "video" or front_content_type == "Video":
+                        elif resolved_media_type == "video":
                             st.video(media_path)
                     else:
                         st.caption("⚠️ No media file in this field")
@@ -415,12 +416,13 @@ if st.session_state.anki_deck is not None:
                     if card.has_media(back_field):
                         media_path = card.get_media_file_path(back_field)
                         media_type = card.get_media_type(back_field)
-                        
-                        if media_type == "audio" or back_content_type == "Audio":
+                        resolved_media_type = media_type or back_content_type.lower()
+
+                        if resolved_media_type == "audio":
                             st.audio(media_path)
-                        elif media_type == "image" or back_content_type == "Image":
+                        elif resolved_media_type == "image":
                             st.image(media_path)
-                        elif media_type == "video" or back_content_type == "Video":
+                        elif resolved_media_type == "video":
                             st.video(media_path)
                     else:
                         st.caption("⚠️ No media file in this field")

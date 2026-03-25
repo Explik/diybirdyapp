@@ -7,6 +7,9 @@ import os
 import html
 import re
 
+AUDIO_EXTENSIONS = {"mp3", "wav", "ogg", "flac", "m4a", "aac", "wma", "opus"}
+VIDEO_EXTENSIONS = {"mp4", "avi", "mov", "wmv", "flv", "mkv", "webm", "m4v"}
+
 ####################################################################################################
 ## Functions 
 ####################################################################################################
@@ -192,7 +195,7 @@ class AnkiDeck:
         return buffer
     
     def get_video_field_names(self) -> list[str]:
-        """Get field names that contain video references (e.g., <video src="file.mp4">)"""
+        """Get field names that contain video references."""
         buffer = list()
 
         candidate_field_names = list(dict.fromkeys(
@@ -206,9 +209,22 @@ class AnkiDeck:
                     raw_value = flashcard.get_raw_value(field_name)
                 except ValueError:
                     continue
-                if raw_value and "<video" in raw_value.lower():
+                if not raw_value:
+                    continue
+
+                raw_value_lower = raw_value.lower()
+                if "<video" in raw_value_lower:
                     buffer.append(field_name)
                     break
+
+                # Some Anki decks store videos in [sound:...] tags.
+                sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value, re.IGNORECASE)
+                if sound_match:
+                    media_name = sound_match.group(1)
+                    extension = media_name.split('.')[-1].lower() if '.' in media_name else ''
+                    if extension in VIDEO_EXTENSIONS:
+                        buffer.append(field_name)
+                        break
 
         return buffer
     
@@ -308,6 +324,12 @@ class AnkiCard:
         raw_value_lower = raw_value.lower()
         
         if "[sound:" in raw_value_lower:
+            sound_match = re.search(r'\[sound:([^\]]+)\]', raw_value, re.IGNORECASE)
+            if sound_match:
+                media_name = sound_match.group(1)
+                extension = media_name.split('.')[-1].lower() if '.' in media_name else ''
+                if extension in VIDEO_EXTENSIONS:
+                    return "video"
             return "audio"
         elif "<img" in raw_value_lower:
             return "image"

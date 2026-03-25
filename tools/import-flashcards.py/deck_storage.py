@@ -6,6 +6,7 @@ Format: ZIP file containing data.json and media files.
 
 import json
 import os
+import re
 import zipfile
 from pathlib import Path
 from typing import List, Dict, Optional, Any
@@ -14,6 +15,30 @@ import shutil
 
 class DeckStorage:
     """Manages local storage of flashcard decks before upload."""
+
+    @staticmethod
+    def _normalize_media_filename(media_name: str, source_file: str) -> str:
+        """Normalize media filename to a backend-safe ASCII format."""
+        source_path = Path(source_file)
+        candidate_name = Path(media_name).name if media_name else source_path.name
+
+        stem = Path(candidate_name).stem
+        suffix = Path(candidate_name).suffix
+
+        # Fallback to source extension when the provided name has no extension.
+        if not suffix:
+            suffix = source_path.suffix
+
+        # Keep only alphanumeric, underscore, and hyphen in the basename.
+        safe_stem = re.sub(r"[^A-Za-z0-9_-]+", "_", stem)
+        safe_stem = re.sub(r"_+", "_", safe_stem).strip("_")
+        if not safe_stem:
+            safe_stem = "media"
+
+        # Keep extension simple and lowercase.
+        safe_suffix = re.sub(r"[^A-Za-z0-9]", "", suffix.lstrip(".")).lower()
+
+        return f"{safe_stem}.{safe_suffix}" if safe_suffix else safe_stem
     
     def __init__(self, storage_dir: str = None):
         """
@@ -152,6 +177,8 @@ class DeckStorage:
         # Determine media filename
         if media_name is None:
             media_name = Path(source_file).name
+
+        media_name = self._normalize_media_filename(media_name, source_file)
         
         # Ensure unique filename
         base_name = Path(media_name).stem
