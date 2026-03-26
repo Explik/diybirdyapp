@@ -19,11 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 @Component(ExerciseSessionTypes.LEARN_FLASHCARD + ComponentTypes.OPERATIONS)
 public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSessionManager {
+    private static final String ACTIVE_CONTENT_ITEM_TYPE = "activeContentItem";
+
     private static final int BATCH_SIZE = 20; // Number of exercises per batch
     private static final int INITIAL_NEW_CONTENT_COUNT = 3;
     private static final int INITIAL_INSUFFICIENT_CONTENT_COUNT = 3;
@@ -135,6 +138,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         assert stateVertex != null : "Active content state vertex should have been created if it did not exist";
 
         stateVertex.clearActiveContent();
+        stateVertex.clearItems();
         stateVertex.setCurrentContentIndex(0);
         stateVertex.setPropertyValue("batchExerciseCount", 0);
 
@@ -199,29 +203,43 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             return null;
         }
 
-        var activeContent = stateVertex.getActiveContent();
-        if (activeContent.isEmpty()) {
-            return null;
+        var activeItems = stateVertex.getItems();
+        if (activeItems.isEmpty()) {
+            // Backward compatibility for sessions created before grouped active-content items.
+            var activeContent = stateVertex.getActiveContent();
+            if (activeContent.isEmpty()) {
+                return null;
+            }
+
+            for (var content : activeContent) {
+                addActiveContentItem(stateVertex, List.of(content));
+            }
+
+            stateVertex.clearActiveContent();
+            activeItems = stateVertex.getItems();
+            if (activeItems.isEmpty()) {
+                return null;
+            }
         }
 
         int currentIndex = stateVertex.getCurrentContentIndex();
-        while (currentIndex < activeContent.size()) {
-            var content = activeContent.get(currentIndex);
-            var exerciseVertex = exerciseManager.createExerciseForContent(
+        while (currentIndex < activeItems.size()) {
+            var activeItem = activeItems.get(currentIndex);
+            var result = exerciseManager.createExerciseForContentGroup(
                     traversalSource,
                     sessionVertex,
                     stateVertex,
-                    content);
+                    activeItem.getActiveContent());
 
             stateVertex.setCurrentContentIndex(currentIndex + 1);
 
-            if (exerciseVertex != null) {
-                var contentId = getContentId(content);
+            if (result != null && result.getExercise() != null) {
+                var contentId = getContentId(result.getContent());
                 if (contentId != null) {
                     stateVertex.incrementExerciseCountForContent(contentId);
                 }
 
-                return exerciseVertex;
+                return result.getExercise();
             }
 
             currentIndex = stateVertex.getCurrentContentIndex();
@@ -261,7 +279,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
 
         var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
         appendContent(stateVertex, unpracticedFlashcardContentCrawler.crawl(params), INITIAL_NEW_CONTENT_COUNT);
-        appendContent(stateVertex, insufficientlyExercisedContentCrawler.crawl(params), INITIAL_INSUFFICIENT_CONTENT_COUNT);
+        appendGroupedContent(stateVertex, insufficientlyExercisedContentCrawler.crawlGroups(params), INITIAL_INSUFFICIENT_CONTENT_COUNT);
         appendContent(stateVertex, failedExerciseContentCrawler.crawl(params), INITIAL_DIFFICULT_CONTENT_COUNT);
     }
 
@@ -280,7 +298,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         failedExerciseErrorScoreEvaluator.evaluate(flashcardDeck, stateVertex);
 
         var params = new FlashcardDeckSessionParams(flashcardDeck, stateVertex);
-        appendContent(stateVertex, insufficientlyExercisedContentCrawler.crawl(params), SUBSEQUENT_INSUFFICIENT_CONTENT_COUNT);
+        appendGroupedContent(stateVertex, insufficientlyExercisedContentCrawler.crawlGroups(params), SUBSEQUENT_INSUFFICIENT_CONTENT_COUNT);
         appendContent(stateVertex, failedExerciseContentCrawler.crawl(params), SUBSEQUENT_DIFFICULT_CONTENT_COUNT);
     }
 
@@ -288,22 +306,61 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
             ExerciseSessionStateVertex stateVertex,
             Stream<AbstractVertex> contentStream,
             int maxCount) {
+        var groupedStream = contentStream.map(List::of);
+        return appendGroupedContent(stateVertex, groupedStream, maxCount);
+    }
+
+    private int appendGroupedContent(
+            ExerciseSessionStateVertex stateVertex,
+            Stream<List<AbstractVertex>> groupedContentStream,
+            int maxCount) {
         assert stateVertex != null : "State vertex should not be null";
-        assert contentStream != null : "Content stream should not be null";
+        assert groupedContentStream != null : "Grouped content stream should not be null";
         assert maxCount > 0 : "Max count should be greater than 0";
 
-        try (var limitedStream = contentStream.limit(maxCount)) {
-            var contentList = limitedStream.toList();
+        try (var limitedStream = groupedContentStream.limit(maxCount)) {
+            var groupedContent = limitedStream.toList();
+            int addedGroupCount = 0;
 
-            for (AbstractVertex content : contentList) {
-                stateVertex.addActiveContent(content);
-
-                if (content instanceof FlashcardVertex) {
-                    stateVertex.addPracticedContent(content);
+            for (var group : groupedContent) {
+                if (addActiveContentItem(stateVertex, group)) {
+                    addedGroupCount++;
                 }
             }
-            return contentList.size();
+
+            return addedGroupCount;
         }
+    }
+
+    private boolean addActiveContentItem(
+            ExerciseSessionStateVertex stateVertex,
+            List<AbstractVertex> contentGroup) {
+        if (contentGroup == null || contentGroup.isEmpty()) {
+            return false;
+        }
+
+        var itemState = ExerciseSessionStateVertex.create(stateVertex.getUnderlyingSource());
+        itemState.setType(ACTIVE_CONTENT_ITEM_TYPE);
+
+        for (var content : contentGroup) {
+            if (content == null) {
+                continue;
+            }
+
+            itemState.addActiveContent(content);
+
+            if (content instanceof FlashcardVertex) {
+                stateVertex.addPracticedContent(content);
+            }
+        }
+
+        if (itemState.getActiveContent().isEmpty()) {
+            itemState.delete();
+            return false;
+        }
+
+        stateVertex.addItem(itemState);
+        return true;
     }
 
     /**
@@ -363,10 +420,18 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         assert sessionVertex != null : "Session vertex should not be null";
         assert activeContentState != null : "Active content state vertex should not be null";
 
-        var activeFlashcards = activeContentState.getActiveContent().stream()
+        var groupedActiveFlashcards = activeContentState.getItems().stream()
+            .flatMap(item -> item.getActiveContent().stream())
+            .filter(vertex -> vertex instanceof FlashcardVertex)
+            .map(vertex -> (FlashcardVertex) vertex)
+            .toList();
+
+        var activeFlashcards = groupedActiveFlashcards.isEmpty()
+            ? activeContentState.getActiveContent().stream()
                 .filter(vertex -> vertex instanceof FlashcardVertex)
                 .map(vertex -> (FlashcardVertex) vertex)
-                .toList();
+                .toList()
+            : groupedActiveFlashcards;
 
         var contentVertices = activeFlashcards.stream()
                 .flatMap(flashcard -> {
@@ -385,7 +450,7 @@ public class ExerciseSessionManagerLearnFlashcardDeck implements ExerciseSession
         // Dispatch content creation with callback to add created vertices to active content
         contentCreationManager.dispatchContentCreation(contentVertices, targetLanguageId, pronunciationVertex -> {
             if (pronunciationVertex != null) {
-                activeContentState.addActiveContent(pronunciationVertex);
+                addActiveContentItem(activeContentState, List.of(pronunciationVertex));
             }
         });
     }

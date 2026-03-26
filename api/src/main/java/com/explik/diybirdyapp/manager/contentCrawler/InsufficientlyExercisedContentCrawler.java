@@ -20,7 +20,9 @@ import java.util.stream.Stream;
  * 4. Return as grouped output: one root, then its associated content.
  */
 @Component
-public class InsufficientlyExercisedContentCrawler implements ContentCrawler<FlashcardDeckSessionParams> {
+public class InsufficientlyExercisedContentCrawler implements
+    ContentCrawler<FlashcardDeckSessionParams>,
+    GroupedContentCrawler<FlashcardDeckSessionParams> {
 
     private static final int REQUIRED_PRACTICES_TEXT = 1;
     private static final int REQUIRED_PRACTICES_PRONUNCIATION = 2;
@@ -30,14 +32,19 @@ public class InsufficientlyExercisedContentCrawler implements ContentCrawler<Fla
      */
     @Override
     public Stream<AbstractVertex> crawl(FlashcardDeckSessionParams params) {
+        return crawlGroups(params).flatMap(List::stream);
+    }
+
+    @Override
+    public Stream<List<AbstractVertex>> crawlGroups(FlashcardDeckSessionParams params) {
         if (params == null || params.flashcardDeck() == null || params.sessionState() == null) {
             return Stream.empty();
         }
 
-        return collectNextFlashcardContent(params.flashcardDeck(), params.sessionState());
+        return collectNextFlashcardContentGroups(params.flashcardDeck(), params.sessionState());
     }
 
-    private Stream<AbstractVertex> collectNextFlashcardContent(
+    private Stream<List<AbstractVertex>> collectNextFlashcardContentGroups(
             FlashcardDeckVertex flashcardDeck,
             ExerciseSessionStateVertex sessionState) {
 
@@ -65,7 +72,7 @@ public class InsufficientlyExercisedContentCrawler implements ContentCrawler<Fla
         // when callers apply a limit to the crawler output.
         Collections.shuffle(practicedFlashcards);
 
-        List<AbstractVertex> selectedContent = new ArrayList<>();
+        List<List<AbstractVertex>> selectedContentGroups = new ArrayList<>();
         Set<String> emittedVertexIds = new HashSet<>();
 
         for (Vertex flashcardVertex : practicedFlashcards) {
@@ -83,8 +90,10 @@ public class InsufficientlyExercisedContentCrawler implements ContentCrawler<Fla
                 continue;
             }
 
+            List<AbstractVertex> group = new ArrayList<>();
+
             addVertexIfEligible(
-                    selectedContent,
+                    group,
                     traversalSource,
                     flashcardVertex,
                     activeVertexIds,
@@ -92,24 +101,44 @@ public class InsufficientlyExercisedContentCrawler implements ContentCrawler<Fla
 
             for (Vertex associatedVertex : associatedNeedingPractice) {
                 addVertexIfEligible(
-                        selectedContent,
+                        group,
                         traversalSource,
                         associatedVertex,
                         activeVertexIds,
                         emittedVertexIds);
             }
+
+            if (!group.isEmpty()) {
+                selectedContentGroups.add(group);
+            }
         }
 
-        return selectedContent.stream();
+        return selectedContentGroups.stream();
     }
 
     private Set<String> collectActiveContentIds(GraphTraversalSource traversalSource, Vertex sessionStateVertex) {
         Set<String> ids = new HashSet<>();
-        for (Object idValue : traversalSource.V(sessionStateVertex)
+        var directActiveIds = traversalSource.V(sessionStateVertex)
                 .out(ExerciseSessionStateVertex.EDGE_ACTIVE_CONTENT)
                 .has(ContentVertex.PROPERTY_ID)
                 .values(ContentVertex.PROPERTY_ID)
-                .toList()) {
+                .toList();
+
+        var groupedActiveIds = traversalSource.V(sessionStateVertex)
+                .out(ExerciseSessionStateVertex.EDGE_ITEM)
+                .hasLabel(ExerciseSessionStateVertex.LABEL)
+                .out(ExerciseSessionStateVertex.EDGE_ACTIVE_CONTENT)
+                .has(ContentVertex.PROPERTY_ID)
+                .values(ContentVertex.PROPERTY_ID)
+                .toList();
+
+        for (Object idValue : directActiveIds) {
+            if (idValue != null) {
+                ids.add(idValue.toString());
+            }
+        }
+
+        for (Object idValue : groupedActiveIds) {
             if (idValue != null) {
                 ids.add(idValue.toString());
             }

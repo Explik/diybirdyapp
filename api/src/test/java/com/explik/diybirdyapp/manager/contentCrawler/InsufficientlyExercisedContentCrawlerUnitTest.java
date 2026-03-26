@@ -3,7 +3,10 @@ package com.explik.diybirdyapp.manager.contentCrawler;
 import com.explik.diybirdyapp.persistence.vertex.ExerciseSessionStateVertex;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InsufficientlyExercisedContentCrawlerUnitTest {
@@ -34,6 +37,9 @@ class InsufficientlyExercisedContentCrawlerUnitTest {
         var sessionState = fixture.createSessionState(SESSION_TYPE);
         var session = fixture.createSessionWithoutOptions(SESSION_ID, sessionState);
 
+        sessionState.addPracticedContent(flashcardOne);
+        sessionState.addPracticedContent(flashcardTwo);
+
         fixture.createExercise("exercise-1", session, flashcardOne);
         fixture.createExercise("exercise-2", session, flashcardOne);
 
@@ -43,7 +49,13 @@ class InsufficientlyExercisedContentCrawlerUnitTest {
 
         var resultIds = fixture.toIdSet(crawler.crawl(fixture.params(deck, sessionState)));
 
-        assertEquals(java.util.Set.of(FLASHCARD_ONE_ID), resultIds);
+        assertEquals(java.util.Set.of(
+            FLASHCARD_ONE_ID,
+            FLASHCARD_TWO_ID,
+            "text-left-1",
+            "text-right-1",
+            "text-left-2",
+            "text-right-2"), resultIds);
     }
 
     @Test
@@ -58,12 +70,46 @@ class InsufficientlyExercisedContentCrawlerUnitTest {
 
         var sessionState = fixture.createSessionState(SESSION_TYPE);
         var session = fixture.createSessionWithoutOptions(SESSION_ID, sessionState);
+        sessionState.addPracticedContent(flashcard);
         fixture.createExercise("exercise-1", session, flashcard);
 
         sessionState.addActiveContent(flashcard);
+        sessionState.addActiveContent(left);
+        sessionState.addActiveContent(right);
 
         var result = crawler.crawl(fixture.params(deck, sessionState)).toList();
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenInsufficientlyExercisedFlashcard_whenCrawlGroups_thenReturnsFlashcardGroupedWithAssociatedContent() {
+        var fixture = new ContentCrawlerTestFixture();
+        var language = fixture.createLanguage(LANGUAGE_ID);
+
+        var left = fixture.createTextContent("text-left", language);
+        var right = fixture.createTextContent("text-right", language);
+        var flashcard = fixture.createFlashcard(FLASHCARD_ONE_ID, left, right);
+        var deck = fixture.createDeck(DECK_ID, flashcard);
+
+        var sessionState = fixture.createSessionState(SESSION_TYPE);
+        var session = fixture.createSessionWithoutOptions(SESSION_ID, sessionState);
+        sessionState.addPracticedContent(flashcard);
+        fixture.createExercise("exercise-1", session, flashcard);
+
+        var groups = crawler.crawlGroups(fixture.params(deck, sessionState)).toList();
+
+        assertEquals(1, groups.size());
+
+        List<String> groupIds = groups.get(0).stream()
+                .map(fixture::idOf)
+                .filter(id -> id != null)
+                .toList();
+
+        assertFalse(groupIds.isEmpty());
+        assertEquals(FLASHCARD_ONE_ID, groupIds.get(0));
+        assertTrue(groupIds.contains(FLASHCARD_ONE_ID));
+        assertTrue(groupIds.contains("text-left"));
+        assertTrue(groupIds.contains("text-right"));
     }
 }

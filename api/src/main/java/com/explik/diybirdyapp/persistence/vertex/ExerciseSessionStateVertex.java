@@ -24,6 +24,8 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     public final static String EDGE_CONTENT = "hasContent";
     public final static String EDGE_ACTIVE_CONTENT = "hasActiveContent";
     public final static String EDGE_ACTIVE_CONTENT_ORDER = "order";
+    public final static String EDGE_ITEM = "hasItem";
+    public final static String EDGE_ITEM_ORDER = "order";
     public final static String EDGE_PRACTICED_CONTENT = "hasPracticedContent";
 
     public String getType() {
@@ -86,6 +88,26 @@ public class ExerciseSessionStateVertex extends AbstractVertex {
     
     public void clearActiveContent() {
         removeEdges(EDGE_ACTIVE_CONTENT);
+    }
+
+    public List<ExerciseSessionStateVertex> getItems() {
+        return VertexHelper.getOrderedOutgoingModels(this, EDGE_ITEM, EDGE_ITEM_ORDER, ExerciseSessionStateVertex::new);
+    }
+
+    public void addItem(ExerciseSessionStateVertex itemVertex) {
+        addOrderedEdgeOneToMany(
+                EDGE_ITEM,
+                itemVertex,
+                EDGE_ITEM_ORDER,
+                getNextOrderedEdgeValue(EDGE_ITEM, EDGE_ITEM_ORDER));
+    }
+
+    public void clearItems() {
+        var items = getItems();
+        removeEdges(EDGE_ITEM);
+        for (var item : items) {
+            item.delete();
+        }
     }
     
     /**

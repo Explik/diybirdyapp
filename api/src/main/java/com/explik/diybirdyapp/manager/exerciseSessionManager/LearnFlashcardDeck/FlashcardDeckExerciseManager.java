@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -85,6 +86,45 @@ public class FlashcardDeckExerciseManager {
     @Autowired
     private FlashcardDeckContentCrawler deckContentCrawler;
 
+    public static final class GroupedExerciseResult {
+        private final ExerciseVertex exercise;
+        private final AbstractVertex content;
+
+        public GroupedExerciseResult(ExerciseVertex exercise, AbstractVertex content) {
+            this.exercise = exercise;
+            this.content = content;
+        }
+
+        public ExerciseVertex getExercise() {
+            return exercise;
+        }
+
+        public AbstractVertex getContent() {
+            return content;
+        }
+    }
+
+    public GroupedExerciseResult createExerciseForContentGroup(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex,
+            List<AbstractVertex> contentGroup) {
+
+        if (contentGroup == null || contentGroup.isEmpty()) {
+            return null;
+        }
+
+        var orderedGroup = orderGroupContentForSelection(contentGroup);
+        for (var content : orderedGroup) {
+            var exercise = createExerciseForContent(traversalSource, sessionVertex, stateVertex, content);
+            if (exercise != null) {
+                return new GroupedExerciseResult(exercise, content);
+            }
+        }
+
+        return null;
+    }
+
     public ExerciseVertex createExerciseForContent(
             GraphTraversalSource traversalSource,
             ExerciseSessionVertex sessionVertex,
@@ -136,6 +176,29 @@ public class FlashcardDeckExerciseManager {
         }
 
         return null;
+    }
+
+    private List<AbstractVertex> orderGroupContentForSelection(List<AbstractVertex> contentGroup) {
+        return contentGroup.stream()
+                .filter(content -> content != null)
+                .sorted(Comparator.comparingInt(this::getGroupSelectionPriority))
+                .toList();
+    }
+
+    private int getGroupSelectionPriority(AbstractVertex content) {
+        if (content instanceof FlashcardVertex) {
+            return 0;
+        }
+
+        if (content instanceof PronunciationVertex) {
+            return 1;
+        }
+
+        if (content instanceof TextContentVertex) {
+            return 2;
+        }
+
+        return 3;
     }
 
     private int determineStartIndex(
