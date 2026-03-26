@@ -90,23 +90,37 @@ public class InsufficientlyExercisedContentCrawler implements
                 continue;
             }
 
-            List<AbstractVertex> group = new ArrayList<>();
-
-            addVertexIfEligible(
-                    group,
-                    traversalSource,
-                    flashcardVertex,
-                    activeVertexIds,
-                    emittedVertexIds);
-
+            List<AbstractVertex> associatedGroupContent = new ArrayList<>();
             for (Vertex associatedVertex : associatedNeedingPractice) {
                 addVertexIfEligible(
-                        group,
+                        associatedGroupContent,
                         traversalSource,
                         associatedVertex,
                         activeVertexIds,
                         emittedVertexIds);
             }
+
+            if (!flashcardNeedsPractice && associatedGroupContent.isEmpty()) {
+                continue;
+            }
+
+            List<AbstractVertex> group = new ArrayList<>();
+
+            boolean includeActiveRootForContext = !associatedGroupContent.isEmpty();
+            boolean addedRoot = addRootFlashcardToGroup(
+                    group,
+                    traversalSource,
+                    flashcardVertex,
+                    activeVertexIds,
+                    includeActiveRootForContext,
+                    emittedVertexIds);
+
+            if (!addedRoot) {
+                // Keep associated content tied to a flashcard context group.
+                continue;
+            }
+
+            group.addAll(associatedGroupContent);
 
             if (!group.isEmpty()) {
                 selectedContentGroups.add(group);
@@ -114,6 +128,27 @@ public class InsufficientlyExercisedContentCrawler implements
         }
 
         return selectedContentGroups.stream();
+    }
+
+    private boolean addRootFlashcardToGroup(
+            List<AbstractVertex> group,
+            GraphTraversalSource traversalSource,
+            Vertex flashcardVertex,
+            Set<String> activeVertexIds,
+            boolean includeIfActive,
+            Set<String> emittedVertexIds) {
+        String flashcardId = getVertexId(flashcardVertex);
+        if (flashcardId == null || (!includeIfActive && activeVertexIds.contains(flashcardId)) || !emittedVertexIds.add(flashcardId)) {
+            return false;
+        }
+
+        AbstractVertex mappedVertex = mapToVertexModel(traversalSource, flashcardVertex);
+        if (mappedVertex != null) {
+            group.add(mappedVertex);
+            return true;
+        }
+
+        return false;
     }
 
     private Set<String> collectActiveContentIds(GraphTraversalSource traversalSource, Vertex sessionStateVertex) {

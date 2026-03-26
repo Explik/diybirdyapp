@@ -114,7 +114,11 @@ public class FlashcardDeckExerciseManager {
             return null;
         }
 
-        var orderedGroup = orderGroupContentForSelection(contentGroup);
+        var orderedGroup = orderGroupContentForSelection(
+                traversalSource,
+                sessionVertex,
+                stateVertex,
+                contentGroup);
         for (var content : orderedGroup) {
             var exercise = createExerciseForContent(traversalSource, sessionVertex, stateVertex, content);
             if (exercise != null) {
@@ -178,11 +182,63 @@ public class FlashcardDeckExerciseManager {
         return null;
     }
 
-    private List<AbstractVertex> orderGroupContentForSelection(List<AbstractVertex> contentGroup) {
+    private List<AbstractVertex> orderGroupContentForSelection(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex,
+            List<AbstractVertex> contentGroup) {
         return contentGroup.stream()
                 .filter(content -> content != null)
-                .sorted(Comparator.comparingInt(this::getGroupSelectionPriority))
+            .sorted(Comparator
+                .<AbstractVertex>comparingInt(content -> getExerciseSelectionPriority(
+                                traversalSource,
+                                sessionVertex,
+                                stateVertex,
+                                content))
+                        .thenComparingInt(this::getGroupSelectionPriority))
                 .toList();
+    }
+
+    private int getExerciseSelectionPriority(
+            GraphTraversalSource traversalSource,
+            ExerciseSessionVertex sessionVertex,
+            ExerciseSessionStateVertex stateVertex,
+            AbstractVertex content) {
+        if (sessionVertex == null || content == null) {
+            return 2;
+        }
+
+        var contentId = getContentId(content);
+        var exerciseTypes = determineExerciseTypesForContent(
+                traversalSource,
+                sessionVertex,
+                stateVertex,
+                contentId,
+                content);
+
+        if (exerciseTypes.isEmpty()) {
+            return 2;
+        }
+
+        int startIndex = determineStartIndex(
+                traversalSource,
+                sessionVertex,
+                stateVertex,
+                content,
+                exerciseTypes,
+                contentId);
+
+        var nextExerciseType = exerciseTypes.get(startIndex);
+        if (ExerciseTypes.WRITE_FLASHCARD.equals(nextExerciseType)
+                || ExerciseTypes.LISTEN_AND_WRITE.equals(nextExerciseType)) {
+            return 0;
+        }
+
+        if (ExerciseTypes.PRONOUNCE_FLASHCARD.equals(nextExerciseType)) {
+            return 2;
+        }
+
+        return 1;
     }
 
     private int getGroupSelectionPriority(AbstractVertex content) {

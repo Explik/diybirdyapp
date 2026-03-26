@@ -112,4 +112,38 @@ class InsufficientlyExercisedContentCrawlerUnitTest {
         assertTrue(groupIds.contains("text-left"));
         assertTrue(groupIds.contains("text-right"));
     }
+
+    @Test
+    void givenFlashcardAlreadyActive_whenAssociatedNeedsPractice_thenCrawlGroupsIncludesFlashcardRootWithAssociatedContent() {
+        var fixture = new ContentCrawlerTestFixture();
+        var language = fixture.createLanguage(LANGUAGE_ID);
+
+        var left = fixture.createTextContent("text-left", language);
+        var right = fixture.createTextContent("text-right", language);
+        var flashcard = fixture.createFlashcard(FLASHCARD_ONE_ID, left, right);
+        var deck = fixture.createDeck(DECK_ID, flashcard);
+
+        var sessionState = fixture.createSessionState(SESSION_TYPE);
+        var session = fixture.createSessionWithoutOptions(SESSION_ID, sessionState);
+        sessionState.addPracticedContent(flashcard);
+
+        for (int i = 0; i < ExerciseSessionStateVertex.MAX_EXERCISES_PER_CONTENT; i++) {
+            fixture.createExercise("exercise-max-" + i, session, flashcard);
+        }
+
+        // Simulate existing active root content from another crawler phase in the same batch.
+        sessionState.addActiveContent(flashcard);
+
+        var groups = crawler.crawlGroups(fixture.params(deck, sessionState)).toList();
+        assertEquals(1, groups.size());
+
+        var groupIds = groups.get(0).stream()
+                .map(fixture::idOf)
+                .filter(id -> id != null)
+                .toList();
+
+        assertTrue(groupIds.contains(FLASHCARD_ONE_ID));
+        assertTrue(groupIds.contains("text-left"));
+        assertTrue(groupIds.contains("text-right"));
+    }
 }
